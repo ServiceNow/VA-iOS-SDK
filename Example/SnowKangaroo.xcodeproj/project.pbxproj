@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BE3BCB8B1FBA00270019A21A /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E22C1FB934FF00948FBC /* SnowChat.framework */; };
+		BE3BCB8C1FBA00270019A21A /* SnowChat.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E22C1FB934FF00948FBC /* SnowChat.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BE50E1ED1FB92EB800948FBC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E1EC1FB92EB800948FBC /* AppDelegate.swift */; };
 		BE50E1EF1FB92EB800948FBC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E1EE1FB92EB800948FBC /* ViewController.swift */; };
 		BE50E1F21FB92EB800948FBC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE50E1F01FB92EB800948FBC /* Main.storyboard */; };
@@ -14,7 +16,6 @@
 		BE50E1F71FB92EB800948FBC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE50E1F51FB92EB800948FBC /* LaunchScreen.storyboard */; };
 		BE50E2021FB92EB800948FBC /* SnowKangarooTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E2011FB92EB800948FBC /* SnowKangarooTests.swift */; };
 		BE50E20D1FB92EB800948FBC /* SnowKangarooUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E20C1FB92EB800948FBC /* SnowKangarooUITests.swift */; };
-		BE50E22D1FB9385800948FBC /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E22E1FB9385800948FBC /* SnowChat.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +34,20 @@
 			remoteInfo = SnowKangaroo;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BE3BCB8D1FBA00270019A21A /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BE3BCB8C1FBA00270019A21A /* SnowChat.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		BE50E1E91FB92EB800948FBC /* SnowKangaroo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnowKangaroo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -57,7 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE50E22D1FB9385800948FBC /* SnowChat.framework in Frameworks */,
+				BE3BCB8B1FBA00270019A21A /* SnowChat.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,6 +164,8 @@
 				BE50E1E51FB92EB800948FBC /* Sources */,
 				BE50E1E61FB92EB800948FBC /* Frameworks */,
 				BE50E1E71FB92EB800948FBC /* Resources */,
+				BE3BCB8D1FBA00270019A21A /* Embed Frameworks */,
+				BE3BCB8E1FBA00590019A21A /* Copy Carthage Frameworks */,
 			);
 			buildRules = (
 			);
@@ -267,6 +284,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		BE3BCB8E1FBA00590019A21A /* Copy Carthage Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../Carthage/Build/iOS/Alamofire.framework",
+			);
+			name = "Copy Carthage Frameworks";
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/../$(FRAMEWORKS_FOLDER_PATH)/Alamofire.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BE50E1E51FB92EB800948FBC /* Sources */ = {
