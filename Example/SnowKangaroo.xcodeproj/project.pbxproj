@@ -1,0 +1,563 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BE50E1ED1FB92EB800948FBC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E1EC1FB92EB800948FBC /* AppDelegate.swift */; };
+		BE50E1EF1FB92EB800948FBC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E1EE1FB92EB800948FBC /* ViewController.swift */; };
+		BE50E1F21FB92EB800948FBC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE50E1F01FB92EB800948FBC /* Main.storyboard */; };
+		BE50E1F41FB92EB800948FBC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE50E1F31FB92EB800948FBC /* Assets.xcassets */; };
+		BE50E1F71FB92EB800948FBC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE50E1F51FB92EB800948FBC /* LaunchScreen.storyboard */; };
+		BE50E2021FB92EB800948FBC /* SnowKangarooTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E2011FB92EB800948FBC /* SnowKangarooTests.swift */; };
+		BE50E20D1FB92EB800948FBC /* SnowKangarooUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E20C1FB92EB800948FBC /* SnowKangarooUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BE50E1FE1FB92EB800948FBC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BE50E1E11FB92EB800948FBC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BE50E1E81FB92EB800948FBC;
+			remoteInfo = SnowKangaroo;
+		};
+		BE50E2091FB92EB800948FBC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BE50E1E11FB92EB800948FBC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BE50E1E81FB92EB800948FBC;
+			remoteInfo = SnowKangaroo;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		BE50E1E91FB92EB800948FBC /* SnowKangaroo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnowKangaroo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE50E1EC1FB92EB800948FBC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BE50E1EE1FB92EB800948FBC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		BE50E1F11FB92EB800948FBC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		BE50E1F31FB92EB800948FBC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BE50E1F61FB92EB800948FBC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		BE50E1F81FB92EB800948FBC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BE50E1FD1FB92EB800948FBC /* SnowKangarooTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnowKangarooTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE50E2011FB92EB800948FBC /* SnowKangarooTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowKangarooTests.swift; sourceTree = "<group>"; };
+		BE50E2031FB92EB800948FBC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BE50E2081FB92EB800948FBC /* SnowKangarooUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnowKangarooUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE50E20C1FB92EB800948FBC /* SnowKangarooUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowKangarooUITests.swift; sourceTree = "<group>"; };
+		BE50E20E1FB92EB800948FBC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BE50E1E61FB92EB800948FBC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BE50E1FA1FB92EB800948FBC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BE50E2051FB92EB800948FBC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BE50E1E01FB92EB800948FBC = {
+			isa = PBXGroup;
+			children = (
+				BE50E1EB1FB92EB800948FBC /* SnowKangaroo */,
+				BE50E2001FB92EB800948FBC /* SnowKangarooTests */,
+				BE50E20B1FB92EB800948FBC /* SnowKangarooUITests */,
+				BE50E1EA1FB92EB800948FBC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BE50E1EA1FB92EB800948FBC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BE50E1E91FB92EB800948FBC /* SnowKangaroo.app */,
+				BE50E1FD1FB92EB800948FBC /* SnowKangarooTests.xctest */,
+				BE50E2081FB92EB800948FBC /* SnowKangarooUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BE50E1EB1FB92EB800948FBC /* SnowKangaroo */ = {
+			isa = PBXGroup;
+			children = (
+				BE50E1EC1FB92EB800948FBC /* AppDelegate.swift */,
+				BE50E1EE1FB92EB800948FBC /* ViewController.swift */,
+				BE50E1F01FB92EB800948FBC /* Main.storyboard */,
+				BE50E1F31FB92EB800948FBC /* Assets.xcassets */,
+				BE50E1F51FB92EB800948FBC /* LaunchScreen.storyboard */,
+				BE50E1F81FB92EB800948FBC /* Info.plist */,
+			);
+			path = SnowKangaroo;
+			sourceTree = "<group>";
+		};
+		BE50E2001FB92EB800948FBC /* SnowKangarooTests */ = {
+			isa = PBXGroup;
+			children = (
+				BE50E2011FB92EB800948FBC /* SnowKangarooTests.swift */,
+				BE50E2031FB92EB800948FBC /* Info.plist */,
+			);
+			path = SnowKangarooTests;
+			sourceTree = "<group>";
+		};
+		BE50E20B1FB92EB800948FBC /* SnowKangarooUITests */ = {
+			isa = PBXGroup;
+			children = (
+				BE50E20C1FB92EB800948FBC /* SnowKangarooUITests.swift */,
+				BE50E20E1FB92EB800948FBC /* Info.plist */,
+			);
+			path = SnowKangarooUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BE50E1E81FB92EB800948FBC /* SnowKangaroo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BE50E2111FB92EB800948FBC /* Build configuration list for PBXNativeTarget "SnowKangaroo" */;
+			buildPhases = (
+				BE50E1E51FB92EB800948FBC /* Sources */,
+				BE50E1E61FB92EB800948FBC /* Frameworks */,
+				BE50E1E71FB92EB800948FBC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SnowKangaroo;
+			productName = SnowKangaroo;
+			productReference = BE50E1E91FB92EB800948FBC /* SnowKangaroo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		BE50E1FC1FB92EB800948FBC /* SnowKangarooTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BE50E2141FB92EB800948FBC /* Build configuration list for PBXNativeTarget "SnowKangarooTests" */;
+			buildPhases = (
+				BE50E1F91FB92EB800948FBC /* Sources */,
+				BE50E1FA1FB92EB800948FBC /* Frameworks */,
+				BE50E1FB1FB92EB800948FBC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BE50E1FF1FB92EB800948FBC /* PBXTargetDependency */,
+			);
+			name = SnowKangarooTests;
+			productName = SnowKangarooTests;
+			productReference = BE50E1FD1FB92EB800948FBC /* SnowKangarooTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BE50E2071FB92EB800948FBC /* SnowKangarooUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BE50E2171FB92EB800948FBC /* Build configuration list for PBXNativeTarget "SnowKangarooUITests" */;
+			buildPhases = (
+				BE50E2041FB92EB800948FBC /* Sources */,
+				BE50E2051FB92EB800948FBC /* Frameworks */,
+				BE50E2061FB92EB800948FBC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BE50E20A1FB92EB800948FBC /* PBXTargetDependency */,
+			);
+			name = SnowKangarooUITests;
+			productName = SnowKangarooUITests;
+			productReference = BE50E2081FB92EB800948FBC /* SnowKangarooUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BE50E1E11FB92EB800948FBC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0910;
+				LastUpgradeCheck = 0910;
+				ORGANIZATIONNAME = ServiceNow;
+				TargetAttributes = {
+					BE50E1E81FB92EB800948FBC = {
+						CreatedOnToolsVersion = 9.1;
+						ProvisioningStyle = Automatic;
+					};
+					BE50E1FC1FB92EB800948FBC = {
+						CreatedOnToolsVersion = 9.1;
+						ProvisioningStyle = Automatic;
+						TestTargetID = BE50E1E81FB92EB800948FBC;
+					};
+					BE50E2071FB92EB800948FBC = {
+						CreatedOnToolsVersion = 9.1;
+						ProvisioningStyle = Automatic;
+						TestTargetID = BE50E1E81FB92EB800948FBC;
+					};
+				};
+			};
+			buildConfigurationList = BE50E1E41FB92EB800948FBC /* Build configuration list for PBXProject "SnowKangaroo" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = BE50E1E01FB92EB800948FBC;
+			productRefGroup = BE50E1EA1FB92EB800948FBC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BE50E1E81FB92EB800948FBC /* SnowKangaroo */,
+				BE50E1FC1FB92EB800948FBC /* SnowKangarooTests */,
+				BE50E2071FB92EB800948FBC /* SnowKangarooUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BE50E1E71FB92EB800948FBC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BE50E1F71FB92EB800948FBC /* LaunchScreen.storyboard in Resources */,
+				BE50E1F41FB92EB800948FBC /* Assets.xcassets in Resources */,
+				BE50E1F21FB92EB800948FBC /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BE50E1FB1FB92EB800948FBC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BE50E2061FB92EB800948FBC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BE50E1E51FB92EB800948FBC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BE50E1EF1FB92EB800948FBC /* ViewController.swift in Sources */,
+				BE50E1ED1FB92EB800948FBC /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BE50E1F91FB92EB800948FBC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BE50E2021FB92EB800948FBC /* SnowKangarooTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BE50E2041FB92EB800948FBC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BE50E20D1FB92EB800948FBC /* SnowKangarooUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BE50E1FF1FB92EB800948FBC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BE50E1E81FB92EB800948FBC /* SnowKangaroo */;
+			targetProxy = BE50E1FE1FB92EB800948FBC /* PBXContainerItemProxy */;
+		};
+		BE50E20A1FB92EB800948FBC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BE50E1E81FB92EB800948FBC /* SnowKangaroo */;
+			targetProxy = BE50E2091FB92EB800948FBC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		BE50E1F01FB92EB800948FBC /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BE50E1F11FB92EB800948FBC /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		BE50E1F51FB92EB800948FBC /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BE50E1F61FB92EB800948FBC /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		BE50E20F1FB92EB800948FBC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BE50E2101FB92EB800948FBC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BE50E2121FB92EB800948FBC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				INFOPLIST_FILE = SnowKangaroo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowKangaroo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BE50E2131FB92EB800948FBC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				INFOPLIST_FILE = SnowKangaroo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowKangaroo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		BE50E2151FB92EB800948FBC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				INFOPLIST_FILE = SnowKangarooTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowKangarooTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SnowKangaroo.app/SnowKangaroo";
+			};
+			name = Debug;
+		};
+		BE50E2161FB92EB800948FBC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				INFOPLIST_FILE = SnowKangarooTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowKangarooTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SnowKangaroo.app/SnowKangaroo";
+			};
+			name = Release;
+		};
+		BE50E2181FB92EB800948FBC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				INFOPLIST_FILE = SnowKangarooUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowKangarooUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SnowKangaroo;
+			};
+			name = Debug;
+		};
+		BE50E2191FB92EB800948FBC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				INFOPLIST_FILE = SnowKangarooUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowKangarooUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SnowKangaroo;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BE50E1E41FB92EB800948FBC /* Build configuration list for PBXProject "SnowKangaroo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BE50E20F1FB92EB800948FBC /* Debug */,
+				BE50E2101FB92EB800948FBC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BE50E2111FB92EB800948FBC /* Build configuration list for PBXNativeTarget "SnowKangaroo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BE50E2121FB92EB800948FBC /* Debug */,
+				BE50E2131FB92EB800948FBC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BE50E2141FB92EB800948FBC /* Build configuration list for PBXNativeTarget "SnowKangarooTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BE50E2151FB92EB800948FBC /* Debug */,
+				BE50E2161FB92EB800948FBC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BE50E2171FB92EB800948FBC /* Build configuration list for PBXNativeTarget "SnowKangarooUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BE50E2181FB92EB800948FBC /* Debug */,
+				BE50E2191FB92EB800948FBC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BE50E1E11FB92EB800948FBC /* Project object */;
+}
