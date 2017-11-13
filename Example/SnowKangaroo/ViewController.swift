@@ -7,11 +7,14 @@
 //
 
 import UIKit
+import SnowChat
 
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        RemoveMe.test()
         // Do any additional setup after loading the view, typically from a nib.
     }
 

@@ -14,6 +14,7 @@
 		BE50E1F71FB92EB800948FBC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE50E1F51FB92EB800948FBC /* LaunchScreen.storyboard */; };
 		BE50E2021FB92EB800948FBC /* SnowKangarooTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E2011FB92EB800948FBC /* SnowKangarooTests.swift */; };
 		BE50E20D1FB92EB800948FBC /* SnowKangarooUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E20C1FB92EB800948FBC /* SnowKangarooUITests.swift */; };
+		BE50E22D1FB9385800948FBC /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E22E1FB9385800948FBC /* SnowChat.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,8 @@
 		BE50E2081FB92EB800948FBC /* SnowKangarooUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnowKangarooUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE50E20C1FB92EB800948FBC /* SnowKangarooUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowKangarooUITests.swift; sourceTree = "<group>"; };
 		BE50E20E1FB92EB800948FBC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BE50E22C1FB934FF00948FBC /* SnowChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SnowChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE50E22E1FB9385800948FBC /* SnowChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SnowChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE50E22D1FB9385800948FBC /* SnowChat.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,6 +85,7 @@
 				BE50E2001FB92EB800948FBC /* SnowKangarooTests */,
 				BE50E20B1FB92EB800948FBC /* SnowKangarooUITests */,
 				BE50E1EA1FB92EB800948FBC /* Products */,
+				BE50E22A1FB934FF00948FBC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -123,6 +128,15 @@
 				BE50E20E1FB92EB800948FBC /* Info.plist */,
 			);
 			path = SnowKangarooUITests;
+			sourceTree = "<group>";
+		};
+		BE50E22A1FB934FF00948FBC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BE50E22E1FB9385800948FBC /* SnowChat.framework */,
+				BE50E22C1FB934FF00948FBC /* SnowChat.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
