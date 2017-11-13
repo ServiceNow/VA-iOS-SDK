@@ -14,14 +14,22 @@ public class RemoveMe {
     public static func test() {
         debugPrint("Testing")
         
-        Alamofire.request("https://httpbin.org/get").responseData { response in
+        self.testAsync { (msg) in
+            debugPrint(msg)
+        }
+    }
+    
+    public static func testAsync( responseHandler: @escaping (String) -> Void ) {
+        debugPrint("Testing Async")
+        
+        let dataRequest = Alamofire.request("https://httpbin.org/get")
+        dataRequest.responseData { response in
             debugPrint("All Response Info: \(response)")
             
             if let data = response.result.value, let utf8Text = String(data: data, encoding: .utf8) {
-                print("Data: \(utf8Text)")
+                responseHandler(utf8Text)
             }
         }
-        
     }
     
 }

@@ -477,7 +477,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				DEVELOPMENT_TEAM = 8YYMBDTT4Z;
 				INFOPLIST_FILE = SnowKangaroo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowKangaroo;
@@ -492,7 +492,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				DEVELOPMENT_TEAM = 8YYMBDTT4Z;
 				INFOPLIST_FILE = SnowKangaroo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowKangaroo;

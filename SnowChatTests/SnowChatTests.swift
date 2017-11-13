@@ -21,9 +21,17 @@ class SnowChatTests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func testRemoveMe() {
+        let exp = expectation(description: "Expect testAsync to call us with a string")
+        
+        RemoveMe.testAsync { msg in
+            XCTAssertNotNil(msg)
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 1) { error in
+            XCTAssert(error == nil)
+        }
     }
     
     func testPerformanceExample() {

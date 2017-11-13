@@ -11,11 +11,17 @@ import SnowChat
 
 class ViewController: UIViewController {
 
+    @IBOutlet weak var testMessage: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         RemoveMe.test()
-        // Do any additional setup after loading the view, typically from a nib.
+
+        RemoveMe.testAsync { msg in
+            self.testMessage.text = msg
+            
+        }
     }
 
     override func didReceiveMemoryWarning() {
