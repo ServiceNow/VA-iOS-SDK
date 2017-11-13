@@ -6,6 +6,20 @@
 	objectVersion = 48;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		BE50E4321FB9FAB700948FBC /* Bootstrap */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = BE50E4331FB9FAB700948FBC /* Build configuration list for PBXAggregateTarget "Bootstrap" */;
+			buildPhases = (
+				BE50E4361FB9FABC00948FBC /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Bootstrap;
+			productName = Bootstrap;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		BE50E2241FB9305C00948FBC /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = BE50E2231FB9305C00948FBC /* Cartfile */; };
 		BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
@@ -173,6 +187,10 @@
 				LastUpgradeCheck = 0910;
 				ORGANIZATIONNAME = ServiceNow;
 				TargetAttributes = {
+					BE50E4321FB9FAB700948FBC = {
+						CreatedOnToolsVersion = 9.1;
+						ProvisioningStyle = Automatic;
+					};
 					BEB6C8561FB92CD700B1D497 = {
 						CreatedOnToolsVersion = 9.1;
 						LastSwiftMigration = 0910;
@@ -198,6 +216,7 @@
 			targets = (
 				BEB6C8561FB92CD700B1D497 /* SnowChat */,
 				BEB6C85F1FB92CD700B1D497 /* SnowChatTests */,
+				BE50E4321FB9FAB700948FBC /* Bootstrap */,
 			);
 		};
 /* End PBXProject section */
@@ -237,6 +256,19 @@
 			shellPath = /bin/sh;
 			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
 		};
+		BE50E4361FB9FABC00948FBC /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "carthage bootstrap --platform iOS";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -267,6 +299,24 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		BE50E4341FB9FAB700948FBC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		BE50E4351FB9FAB700948FBC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		BEB6C8691FB92CD700B1D497 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -466,6 +516,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		BE50E4331FB9FAB700948FBC /* Build configuration list for PBXAggregateTarget "Bootstrap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BE50E4341FB9FAB700948FBC /* Debug */,
+				BE50E4351FB9FAB700948FBC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		BEB6C8511FB92CD600B1D497 /* Build configuration list for PBXProject "SnowChat" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
