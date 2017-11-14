@@ -166,6 +166,7 @@
 				BE50E1E71FB92EB800948FBC /* Resources */,
 				BE3BCB8D1FBA00270019A21A /* Embed Frameworks */,
 				BE3BCB8E1FBA00590019A21A /* Copy Carthage Frameworks */,
+				BE49A5801FBA9029001BA567 /* Swift Lint Script */,
 			);
 			buildRules = (
 			);
@@ -301,6 +302,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
+		};
+		BE49A5801FBA9029001BA567 /* Swift Lint Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Swift Lint Script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/../Vendor/Private/SwiftLint/swiftlint\" lint --config \"${SRCROOT}/../.swiftlint.yml\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 

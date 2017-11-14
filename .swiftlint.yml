@@ -1,0 +1,31 @@
+disabled_rules:
+  - trailing_whitespace
+  - todo
+  - variable_name
+  - type_name
+  - valid_docs
+  - type_body_length
+  - file_length
+  - line_length
+  - force_cast
+  - unused_closure_parameter
+
+opt_in_rules:
+  - force_unwrapping
+  - closure_spacing
+  - explicit_init
+  - operator_usage_whitespace
+  - overridden_super_call
+  - prohibited_super_call
+  - redundant_nil_coalescing
+  - switch_case_on_newline
+  - sorted_first_last
+  - override_in_extension
+  - fallthrough
+  - contains_over_first_not_nil
+  - first_where
+  - literal_expression_end_indentation
+
+excluded:
+  - Pods
+  - Carthage
