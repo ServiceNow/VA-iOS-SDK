@@ -315,7 +315,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/../Vendor/Private/SwiftLint/swiftlint\" lint --config \"${SRCROOT}/../.swiftlint.yml\"";
+			shellScript = "\"${SRCROOT}/../Vendor/Private/SwiftLint/swiftlint\" --path \"${SRCROOT}/../\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
