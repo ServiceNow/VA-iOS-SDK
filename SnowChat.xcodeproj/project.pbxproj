@@ -27,6 +27,10 @@
 		BEB6C8611FB92CD700B1D497 /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEB6C8571FB92CD700B1D497 /* SnowChat.framework */; };
 		BEB6C8661FB92CD700B1D497 /* SnowChatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB6C8651FB92CD700B1D497 /* SnowChatTests.swift */; };
 		BEB6C8681FB92CD700B1D497 /* SnowChat.h in Headers */ = {isa = PBXBuildFile; fileRef = BEB6C85A1FB92CD700B1D497 /* SnowChat.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C4CAFEA11FBCF0C9007007F5 /* ChatEventDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA01FBCF0C9007007F5 /* ChatEventDelegate.swift */; };
+		C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA21FBCF2F8007007F5 /* CBData.swift */; };
+		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
+		C4CAFEA81FBD0912007007F5 /* CBDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +53,10 @@
 		BEB6C8601FB92CD700B1D497 /* SnowChatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnowChatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BEB6C8651FB92CD700B1D497 /* SnowChatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowChatTests.swift; sourceTree = "<group>"; };
 		BEB6C8671FB92CD700B1D497 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C4CAFEA01FBCF0C9007007F5 /* ChatEventDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEventDelegate.swift; sourceTree = "<group>"; };
+		C4CAFEA21FBCF2F8007007F5 /* CBData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBData.swift; sourceTree = "<group>"; };
+		C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataTests.swift; sourceTree = "<group>"; };
+		C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +118,7 @@
 		BEB6C8591FB92CD700B1D497 /* SnowChat */ = {
 			isa = PBXGroup;
 			children = (
+				C4CAFE9C1FBCF018007007F5 /* Chatterbox */,
 				BEB6C85A1FB92CD700B1D497 /* SnowChat.h */,
 				BEB6C85B1FB92CD700B1D497 /* Info.plist */,
 				BE50E2281FB933C600948FBC /* RemoveMe.swift */,
@@ -120,10 +129,53 @@
 		BEB6C8641FB92CD700B1D497 /* SnowChatTests */ = {
 			isa = PBXGroup;
 			children = (
+				C4CAFEA41FBCF485007007F5 /* Chatterbox */,
 				BEB6C8651FB92CD700B1D497 /* SnowChatTests.swift */,
 				BEB6C8671FB92CD700B1D497 /* Info.plist */,
 			);
 			path = SnowChatTests;
+			sourceTree = "<group>";
+		};
+		C4CAFE9C1FBCF018007007F5 /* Chatterbox */ = {
+			isa = PBXGroup;
+			children = (
+				C4CAFE9F1FBCF057007007F5 /* Data */,
+				C4CAFE9E1FBCF047007007F5 /* State */,
+				C4CAFE9D1FBCF039007007F5 /* Session */,
+			);
+			path = Chatterbox;
+			sourceTree = "<group>";
+		};
+		C4CAFE9D1FBCF039007007F5 /* Session */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Session;
+			sourceTree = "<group>";
+		};
+		C4CAFE9E1FBCF047007007F5 /* State */ = {
+			isa = PBXGroup;
+			children = (
+				C4CAFEA01FBCF0C9007007F5 /* ChatEventDelegate.swift */,
+			);
+			path = State;
+			sourceTree = "<group>";
+		};
+		C4CAFE9F1FBCF057007007F5 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				C4CAFEA21FBCF2F8007007F5 /* CBData.swift */,
+				C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		C4CAFEA41FBCF485007007F5 /* Chatterbox */ = {
+			isa = PBXGroup;
+			children = (
+				C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */,
+			);
+			path = Chatterbox;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -276,7 +328,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */,
+				C4CAFEA81FBD0912007007F5 /* CBDataFactory.swift in Sources */,
 				BE50E2291FB933C600948FBC /* RemoveMe.swift in Sources */,
+				C4CAFEA11FBCF0C9007007F5 /* ChatEventDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -284,6 +339,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */,
 				BEB6C8661FB92CD700B1D497 /* SnowChatTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
