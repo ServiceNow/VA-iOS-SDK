@@ -1,0 +1,27 @@
+{
+    "richControl": {
+                "uiType": "Picker",
+                "uiMetadata": {
+                    "openByDefault": true,
+                    "itemType": "ID",
+                    "options": [{
+                        "label": "High",
+                        "value": "1"
+                    }, {
+                        "label": "Medium",
+                        "value": "2"
+                    }, {
+                        "label": "Low",
+                        "value": "3"
+                    }],
+                    "style": "list",
+                    "label": "What is the urgency: low, medium or high?",
+                    "required": true,
+                    "multiSelect": false
+                },
+                "model": {
+                    "name": "urgency",
+                    "type": "field"
+                }
+            }
+}

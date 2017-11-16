@@ -1,0 +1,13 @@
+{
+    "richControl": {
+        "uiType": "Boolean",
+        "uiMetadata": {
+            "label": "Would you like to create an incident?",
+            "required": true
+        },
+        "model": {
+            "name": "init_create_incident",
+            "type": "field"
+        }
+    }
+}
