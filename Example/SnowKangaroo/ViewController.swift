@@ -10,6 +10,8 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    let debugStoryboard = UIStoryboard(name: "Debug", bundle: nil)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -17,7 +19,6 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        let debugStoryboard = UIStoryboard(name: "Debug", bundle: nil)
         if let debugViewController = debugStoryboard.instantiateInitialViewController() {
             present(debugViewController, animated: false, completion: nil)
         }
