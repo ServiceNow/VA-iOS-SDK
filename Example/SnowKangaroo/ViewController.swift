@@ -7,20 +7,20 @@
 //
 
 import UIKit
-import SnowChat
 
 class ViewController: UIViewController {
-
-    @IBOutlet weak var testMessage: UILabel!
+    
+    let debugStoryboard = UIStoryboard(name: "Debug", bundle: nil)
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
-        RemoveMe.test()
-
-        RemoveMe.testAsync { msg in
-            self.testMessage.text = msg
-            
+        if let debugViewController = debugStoryboard.instantiateInitialViewController() {
+            present(debugViewController, animated: false, completion: nil)
         }
     }
 
