@@ -31,11 +31,20 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let booleanPicker = BooleanPickerControl()
-        guard let pickerViewController = booleanPicker.viewController else {
+        let bubbleViewController = MockBubbleViewController()
+        bubbleViewController.willMove(toParentViewController: self)
+        addChildViewController(bubbleViewController)
+        bubbleViewController.didMove(toParentViewController: self)
+        
+        guard let bubbleView = bubbleViewController.view else {
             return
         }
         
-        controlContainerView.addSubview(pickerViewController.view)
+        bubbleView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(bubbleView)
+        NSLayoutConstraint.activate([bubbleView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                                     bubbleView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+                                     bubbleView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7),
+                                     bubbleView.heightAnchor.constraint(equalToConstant: 150)])
     }
 }

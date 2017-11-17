@@ -8,17 +8,13 @@
 
 struct BooleanControlViewModel: PickerControlViewModel {
     
-    var displayValues: [String?]?
-    
     var isRequired: Bool?
     
     var items: [SelectableItemViewModel]?
     
-    var selectedItems: [SelectableItemViewModel]?
-    
     var title: String?
     
     init() {
-        self.items = [SelectableItemViewModel(displayValue: "YES"), SelectableItemViewModel(displayValue: "NO")]
+        self.items = [SelectableItemViewModel(displayValue: "Yes"), SelectableItemViewModel(displayValue: "No")]
     }
 }

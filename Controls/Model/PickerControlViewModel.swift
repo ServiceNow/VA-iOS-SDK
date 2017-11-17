@@ -26,9 +26,9 @@ protocol PickerControlViewModel: ControlViewModel {
     var items: [SelectableItemViewModel]? { get set }
     
     // represents items as a string
-    var displayValues: [String?]? { get set }
+    var displayValues: [String?]? { get }
     
-    var selectedItems: [SelectableItemViewModel]? { get set }
+    var selectedItems: [SelectableItemViewModel]? { get }
 }
 
 // Provides default implementation for displayValues and selectedItems

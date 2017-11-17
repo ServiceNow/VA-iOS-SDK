@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		5760C8CE1FBF4C920055B73D /* PickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760C8CD1FBF4C920055B73D /* PickerViewController.swift */; };
 		5786320B1FBB571E00FA0282 /* MockBubbleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578632071FBB571D00FA0282 /* MockBubbleViewController.swift */; };
 		578632131FBB779800FA0282 /* sampleBooleanPicker.json in Resources */ = {isa = PBXBuildFile; fileRef = 578632111FBB779800FA0282 /* sampleBooleanPicker.json */; };
 		578632141FBB779800FA0282 /* samplePicker.json in Resources */ = {isa = PBXBuildFile; fileRef = 578632121FBB779800FA0282 /* samplePicker.json */; };
@@ -53,6 +54,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5760C8CD1FBF4C920055B73D /* PickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerViewController.swift; sourceTree = "<group>"; };
 		578632071FBB571D00FA0282 /* MockBubbleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockBubbleViewController.swift; sourceTree = "<group>"; };
 		578632111FBB779800FA0282 /* sampleBooleanPicker.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = sampleBooleanPicker.json; sourceTree = "<group>"; };
 		578632121FBB779800FA0282 /* samplePicker.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = samplePicker.json; sourceTree = "<group>"; };
@@ -132,7 +134,7 @@
 			children = (
 				578632151FBB9E0300FA0282 /* ControlProtocol.swift */,
 				57B7E2BB1FBA25A200196BA9 /* BooleanPickerControl.swift */,
-				57B7E2BE1FBA25A200196BA9 /* SelectableViewCell.swift */,
+				5760C8CD1FBF4C920055B73D /* PickerViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -140,6 +142,7 @@
 		57B7E2BF1FBA25A200196BA9 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				57B7E2BE1FBA25A200196BA9 /* SelectableViewCell.swift */,
 				57B7E2C11FBA25A200196BA9 /* SelectableView.swift */,
 				57B7E2C21FBA25A200196BA9 /* SelectableView.xib */,
 			);
@@ -150,8 +153,8 @@
 			isa = PBXGroup;
 			children = (
 				5788B2A61FBB38FD00846F33 /* ControlViewModel.swift */,
-				57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */,
 				57B7E2CF1FBA6DA500196BA9 /* BooleanControlViewModel.swift */,
+				57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -380,6 +383,7 @@
 				578632161FBB9E0300FA0282 /* ControlProtocol.swift in Sources */,
 				57B7E2C81FBA25A200196BA9 /* SelectableView.swift in Sources */,
 				57B7E2C31FBA25A200196BA9 /* BooleanPickerControl.swift in Sources */,
+				5760C8CE1FBF4C920055B73D /* PickerViewController.swift in Sources */,
 				57B7E2C61FBA25A200196BA9 /* SelectableViewCell.swift in Sources */,
 				5786320B1FBB571E00FA0282 /* MockBubbleViewController.swift in Sources */,
 				57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */,

@@ -11,12 +11,16 @@ import UIKit
 public class BooleanPickerControl: ControlProtocol {
     
     public init() {
-        self.model = BooleanControlViewModel()
+        model = BooleanControlViewModel()
     }
     
     var model: ControlViewModel?
     
-    public var viewController: UIViewController?
+    public lazy var viewController: UIViewController? = {
+        let vc = PickerViewController()
+        vc.model = model as? PickerControlViewModel
+        return vc
+    }()
     
     weak var delegate: ControlDelegate?
     
