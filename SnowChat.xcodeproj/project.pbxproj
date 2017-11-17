@@ -24,6 +24,7 @@
 		BE50E2241FB9305C00948FBC /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = BE50E2231FB9305C00948FBC /* Cartfile */; };
 		BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
 		BE50E2291FB933C600948FBC /* RemoveMe.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E2281FB933C600948FBC /* RemoveMe.swift */; };
+		BE9E8B631FBF5AEC00499960 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9E8B621FBF5AEC00499960 /* AMBClient.framework */; };
 		BEB6C8611FB92CD700B1D497 /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEB6C8571FB92CD700B1D497 /* SnowChat.framework */; };
 		BEB6C8661FB92CD700B1D497 /* SnowChatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB6C8651FB92CD700B1D497 /* SnowChatTests.swift */; };
 		BEB6C8681FB92CD700B1D497 /* SnowChat.h in Headers */ = {isa = PBXBuildFile; fileRef = BEB6C85A1FB92CD700B1D497 /* SnowChat.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -43,6 +44,7 @@
 		BE50E2231FB9305C00948FBC /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		BE50E2261FB9337D00948FBC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
 		BE50E2281FB933C600948FBC /* RemoveMe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveMe.swift; sourceTree = "<group>"; };
+		BE9E8B621FBF5AEC00499960 /* AMBClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AMBClient.framework; path = Carthage/Build/iOS/AMBClient.framework; sourceTree = "<group>"; };
 		BEB6C8571FB92CD700B1D497 /* SnowChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SnowChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BEB6C85A1FB92CD700B1D497 /* SnowChat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SnowChat.h; sourceTree = "<group>"; };
 		BEB6C85B1FB92CD700B1D497 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -57,6 +59,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */,
+				BE9E8B631FBF5AEC00499960 /* AMBClient.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +85,7 @@
 		BE50E2251FB9337D00948FBC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BE9E8B621FBF5AEC00499960 /* AMBClient.framework */,
 				BE50E2261FB9337D00948FBC /* Alamofire.framework */,
 			);
 			name = Frameworks;
@@ -247,10 +251,12 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/AMBClient.framework",
 			);
 			name = "Copy Carthage Frameworks";
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Alamofire.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/AMBClient.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

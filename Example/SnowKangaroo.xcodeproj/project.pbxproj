@@ -304,10 +304,12 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/../Carthage/Build/iOS/Alamofire.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/AMBClient.framework",
 			);
 			name = "Copy Carthage Frameworks";
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/../$(FRAMEWORKS_FOLDER_PATH)/Alamofire.framework",
+				"$(BUILT_PRODUCTS_DIR)/../$(FRAMEWORKS_FOLDER_PATH)/AMBClient.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
