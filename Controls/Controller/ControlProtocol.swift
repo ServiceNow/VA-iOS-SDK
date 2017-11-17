@@ -6,6 +6,10 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
+protocol ControlDelegate: class {
+    
+}
+
 protocol ControlProtocol: class {
     
     // representation of ui control state
@@ -14,7 +18,7 @@ protocol ControlProtocol: class {
     // UIViewController of ui control
     var viewController: UIViewController? { get }
     
-    weak var delegate: AnyObject? { get set }
+    weak var delegate: ControlDelegate? { get set }
     
     func submit()
 }

@@ -6,21 +6,8 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-// base model for all UIControl models
+// base model for all ui control models
 protocol ControlViewModel {
-    
-//    enum CodingKeys: String, CodingKey {
-//        case title = "label"
-//        case required
-//        case richControl
-//        
-//    }
-//    
-//    required init(from decoder: Decoder) throws {
-//        let values = try! decoder.container(keyedBy: CodingKeys.self)
-//        title = try values.decode(String.self, forKey: .title)
-//        isRequired = try values.decode(Bool.self, forKey: .required)
-//    }
     
     // title of the control
     var title: String? { get set }

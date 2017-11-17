@@ -8,20 +8,19 @@
 
 import UIKit
 
-class BooleanPickerControl: ControlProtocol {
+public class BooleanPickerControl: ControlProtocol {
+    
+    public init() {
+        self.model = BooleanControlViewModel()
+    }
     
     var model: ControlViewModel?
     
-    var viewController: UIViewController?
+    public var viewController: UIViewController?
     
-    weak var delegate: AnyObject?
-    
-    init() {
-        
-    }
+    weak var delegate: ControlDelegate?
     
     func submit() {
         
     }
-    
 }
