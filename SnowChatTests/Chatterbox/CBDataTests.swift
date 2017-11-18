@@ -67,7 +67,7 @@ class CBDataTests: XCTestCase {
         XCTAssert(data.status == 100)
     }
     
-    func testFromJSON() {
+    func testBooleanFromJSON() {
         let json = "{\"type\":\"booleanControl\",\"value\":0}"
         let obj = CBDataFactory.controlFromJSON(json)
         XCTAssertNotNil(obj)
@@ -75,4 +75,42 @@ class CBDataTests: XCTestCase {
         let boolObj = obj as! CBBooleanData
         XCTAssert(boolObj.value == false)
     }
+    
+    func testDateFromJSON() {
+        let date = Date()
+        let json = "{\"type\":\"dateControl\",\"value\":\(date.timeIntervalSinceReferenceDate)}"
+        let obj = CBDataFactory.controlFromJSON(json)
+        XCTAssertNotNil(obj)
+        XCTAssert(obj.controlType == .controlDate)
+        let dateObj = obj as! CBDateData
+        XCTAssert(dateObj.value == date)
+    }
+    
+    func testInputFromJSON() {
+        let val = "Are we not men?"
+        let json = "{\"type\":\"inputControl\",\"value\":\"\(val)\"}"
+        var obj = CBDataFactory.controlFromJSON(json)
+        XCTAssertNotNil(obj)
+        XCTAssert(obj.controlType == .controlInput)
+        let inputObj = obj as! CBInputData
+        XCTAssert(inputObj.value == val)
+        
+        let badJson = "{\"type\":\"inputControl\",\"value(*&\":false}"
+        obj = CBDataFactory.controlFromJSON(badJson)
+        XCTAssertNotNil(obj)
+        XCTAssert(obj.controlType == .controlTypeUnknown)
+        let unknownObj = obj as? CBControlDataUnknown
+        XCTAssert(unknownObj != nil)
+    }
+    
+    func testInvalidTypeFromJSON() {
+        let val = "WTF?"
+        let json = "{\"typo\":\"unknownControl\",\"value\":\"\(val)\"}"
+        let obj = CBDataFactory.controlFromJSON(json)
+        XCTAssertNotNil(obj)
+        XCTAssert(obj.controlType == .controlTypeUnknown)
+        let inputObj = obj as? CBControlDataUnknown
+        XCTAssertNotNil(inputObj)
+    }
+    
 }

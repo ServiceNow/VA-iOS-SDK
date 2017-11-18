@@ -8,13 +8,49 @@
 
 import Foundation
 
-struct CBChannel {
+struct CBUser {
+    let id: String
+    let token: String
     let name: String
+    let consumerId: String
+    let consummerAccountId: String
+}
+
+struct CBVendor {
+    let name: String
+    let vendiorId: String
+    let consumerId: String
+    let consummerAccountId: String
+}
+
+struct CBSession {
+    let id: String
+    let channel: String
+    let user: CBUser
+    let vendor: CBVendor
+}
+
+struct CBChannel : Hashable {
+    let name: String
+    
+    var hashValue: Int {
+        return name.hashValue
+    }
+    
+    static func == (lhs: CBChannel, rhs: CBChannel) -> Bool {
+        return lhs.name == rhs.name
+    }
+    
+}
+
+protocol CBStorable {
+    // anything storable in the DataStore must conform to this
+    // TODO: serialization methods?
 }
 
 // MARK: - Channel events
 
-protocol CBChannelEventData {
+protocol CBChannelEventData : CBStorable {
     var eventType: CBChannelEvent { get }
     var error: Int { get }
 }
@@ -42,24 +78,25 @@ struct CBChannelRefreshData: CBChannelEventData {
 
 }
 
-enum CBChannelEvent {
-    case channelOpen
-    case channelClose
-    case channelRefresh
-    case channelEventUnknown
+enum CBChannelEvent: String {
+    case channelOpen = "openChannel"
+    case channelClose = "closeChannel"
+    case channelRefresh = "refreshChannel"
+    
+    case channelEventUnknown = "unknownChannelEvent"
 }
 
 // MARK: - Control Data
 
-enum CBControlType {
-    case controlBoolean
-    case controlDate
-    case controlInput
+enum CBControlType: String {
+    case controlBoolean = "booleanControl"
+    case controlDate = "dateControl"
+    case controlInput = "inputControl"
     
-    case controlTypeUnknown
+    case controlTypeUnknown = "unknownControl"
 }
 
-protocol CBControlData {
+protocol CBControlData : CBStorable {
     var id: String { get }
     var controlType: CBControlType { get }
 }
