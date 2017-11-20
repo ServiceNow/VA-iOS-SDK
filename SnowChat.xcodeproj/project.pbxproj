@@ -35,6 +35,7 @@
 		57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2CF1FBA6DA500196BA9 /* BooleanControlViewModel.swift */; };
 		57B7E2D21FBA75B100196BA9 /* PickerControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */; };
 		57B8B8C21FBCE24C008E0C64 /* ControlModelAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B8B8C11FBCE24C008E0C64 /* ControlModelAdapter.swift */; };
+		57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1EA321FC33D1C009FC76D /* RoundedView.swift */; };
 		BE50E2241FB9305C00948FBC /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = BE50E2231FB9305C00948FBC /* Cartfile */; };
 		BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
 		BE50E2291FB933C600948FBC /* RemoveMe.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E2281FB933C600948FBC /* RemoveMe.swift */; };
@@ -68,6 +69,7 @@
 		57B7E2CF1FBA6DA500196BA9 /* BooleanControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooleanControlViewModel.swift; sourceTree = "<group>"; };
 		57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControlViewModel.swift; sourceTree = "<group>"; };
 		57B8B8C11FBCE24C008E0C64 /* ControlModelAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlModelAdapter.swift; sourceTree = "<group>"; };
+		57E1EA321FC33D1C009FC76D /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
 		BE50E2231FB9305C00948FBC /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		BE50E2261FB9337D00948FBC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
 		BE50E2281FB933C600948FBC /* RemoveMe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveMe.swift; sourceTree = "<group>"; };
@@ -120,23 +122,23 @@
 		57B7E2B91FBA24A600196BA9 /* Controls */ = {
 			isa = PBXGroup;
 			children = (
+				578632151FBB9E0300FA0282 /* ControlProtocol.swift */,
+				57B7E2BB1FBA25A200196BA9 /* BooleanPickerControl.swift */,
 				578632061FBB570300FA0282 /* Sample */,
 				578632031FBB543500FA0282 /* Resources */,
 				57B7E2CE1FBA6B1300196BA9 /* Model */,
-				57B7E2BA1FBA25A200196BA9 /* Controller */,
+				57B7E2BA1FBA25A200196BA9 /* ViewController */,
 				57B7E2BF1FBA25A200196BA9 /* View */,
 			);
 			path = Controls;
 			sourceTree = "<group>";
 		};
-		57B7E2BA1FBA25A200196BA9 /* Controller */ = {
+		57B7E2BA1FBA25A200196BA9 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				578632151FBB9E0300FA0282 /* ControlProtocol.swift */,
-				57B7E2BB1FBA25A200196BA9 /* BooleanPickerControl.swift */,
 				5760C8CD1FBF4C920055B73D /* PickerViewController.swift */,
 			);
-			path = Controller;
+			path = ViewController;
 			sourceTree = "<group>";
 		};
 		57B7E2BF1FBA25A200196BA9 /* View */ = {
@@ -163,6 +165,7 @@
 			isa = PBXGroup;
 			children = (
 				57B7E2CB1FBA3C8400196BA9 /* UIView+Additions.swift */,
+				57E1EA321FC33D1C009FC76D /* RoundedView.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -384,6 +387,7 @@
 				57B7E2C81FBA25A200196BA9 /* SelectableView.swift in Sources */,
 				57B7E2C31FBA25A200196BA9 /* BooleanPickerControl.swift in Sources */,
 				5760C8CE1FBF4C920055B73D /* PickerViewController.swift in Sources */,
+				57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */,
 				57B7E2C61FBA25A200196BA9 /* SelectableViewCell.swift in Sources */,
 				5786320B1FBB571E00FA0282 /* MockBubbleViewController.swift in Sources */,
 				57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */,

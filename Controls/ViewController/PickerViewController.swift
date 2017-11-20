@@ -24,20 +24,27 @@ class PickerViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     private func setupTableView() {
+        
+        let roundedView = RoundedView(frame: CGRect.zero)
+        roundedView.roundedCorners = [.bottomLeft, .bottomRight]
+        roundedView.cornerRadius = 10
+        roundedView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(roundedView)
+        NSLayoutConstraint.activate([roundedView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                                     roundedView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                                     roundedView.topAnchor.constraint(equalTo: view.topAnchor),
+                                     roundedView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
+        
         let tableView = UITableView()
         tableView.tableFooterView = UIView()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
-        
-        tableView.layer.borderWidth = 1
-        tableView.layer.borderColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1).cgColor
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(tableView)
-        
-        NSLayoutConstraint.activate([tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                     tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     tableView.topAnchor.constraint(equalTo: view.topAnchor),
-                                     tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
+        roundedView.addSubview(tableView)
+        NSLayoutConstraint.activate([tableView.leadingAnchor.constraint(equalTo: roundedView.leadingAnchor),
+                                     tableView.trailingAnchor.constraint(equalTo: roundedView.trailingAnchor),
+                                     tableView.topAnchor.constraint(equalTo: roundedView.topAnchor),
+                                     tableView.bottomAnchor.constraint(equalTo: roundedView.bottomAnchor)])
         
         tableView.delegate = self
         tableView.dataSource = self
