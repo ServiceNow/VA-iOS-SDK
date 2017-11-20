@@ -1,1 +1,2 @@
 github "Alamofire/Alamofire" "4.5.1"
+github "https://gitlab-deo.devsnc.com/mobile/AMB-Client-iOS" "24b002d0c512a28708a1331abbe5c320efbfada9"

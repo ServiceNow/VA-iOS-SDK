@@ -70,7 +70,6 @@
 		BE50E20C1FB92EB800948FBC /* SnowKangarooUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowKangarooUITests.swift; sourceTree = "<group>"; };
 		BE50E20E1FB92EB800948FBC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BE50E22C1FB934FF00948FBC /* SnowChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SnowChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		BE50E22E1FB9385800948FBC /* SnowChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SnowChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,15 +122,15 @@
 		BE50E1EB1FB92EB800948FBC /* SnowKangaroo */ = {
 			isa = PBXGroup;
 			children = (
-				BE50E1EC1FB92EB800948FBC /* AppDelegate.swift */,
-				BE50E1EE1FB92EB800948FBC /* ViewController.swift */,
 				5760C8CB1FBE09370055B73D /* AlamofireTestViewController.swift */,
+				BE50E1EC1FB92EB800948FBC /* AppDelegate.swift */,
+				BE50E1F31FB92EB800948FBC /* Assets.xcassets */,
 				5760C8C91FBE070C0055B73D /* ControlsViewController.swift */,
 				5760C8C51FBE01D30055B73D /* Debug.storyboard */,
-				BE50E1F01FB92EB800948FBC /* Main.storyboard */,
-				BE50E1F31FB92EB800948FBC /* Assets.xcassets */,
-				BE50E1F51FB92EB800948FBC /* LaunchScreen.storyboard */,
 				BE50E1F81FB92EB800948FBC /* Info.plist */,
+				BE50E1F51FB92EB800948FBC /* LaunchScreen.storyboard */,
+				BE50E1F01FB92EB800948FBC /* Main.storyboard */,
+				BE50E1EE1FB92EB800948FBC /* ViewController.swift */,
 			);
 			path = SnowKangaroo;
 			sourceTree = "<group>";
@@ -157,7 +156,6 @@
 		BE50E22A1FB934FF00948FBC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BE50E22E1FB9385800948FBC /* SnowChat.framework */,
 				BE50E22C1FB934FF00948FBC /* SnowChat.framework */,
 			);
 			name = Frameworks;
@@ -304,10 +302,12 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/../Carthage/Build/iOS/Alamofire.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/AMBClient.framework",
 			);
 			name = "Copy Carthage Frameworks";
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/../$(FRAMEWORKS_FOLDER_PATH)/Alamofire.framework",
+				"$(BUILT_PRODUCTS_DIR)/../$(FRAMEWORKS_FOLDER_PATH)/AMBClient.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -505,6 +505,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = SnowKangaroo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowKangaroo;
@@ -520,6 +524,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = SnowKangaroo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowKangaroo;
