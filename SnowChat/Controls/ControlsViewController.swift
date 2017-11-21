@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SnowChat
 
 class ControlsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
