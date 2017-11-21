@@ -26,6 +26,8 @@ public class AMBTestViewController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = .white
+        
         manager.logIn(username: "admin", password: "snow2004") { [weak self] success in
             if success {
                 self?.setupAMBSubscription()

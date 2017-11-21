@@ -24,7 +24,9 @@
 		BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = BE2925A01FC3391D005E55CA /* .swiftlint.yml */; };
 		BE50E2241FB9305C00948FBC /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = BE50E2231FB9305C00948FBC /* Cartfile */; };
 		BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
-		BE50E2291FB933C600948FBC /* RemoveMe.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E2281FB933C600948FBC /* RemoveMe.swift */; };
+		BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE5974BE1FC38ECB00959406 /* Debug.storyboard */; };
+		BE5974C41FC392FB00959406 /* ControlsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5974C31FC392FB00959406 /* ControlsViewController.swift */; };
+		BE6B9D911FC38AD400B9F47A /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6B9D8F1FC38AD400B9F47A /* DebugViewController.swift */; };
 		BE6FBE401FBFB3060062A0EB /* AMBHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6FBE3F1FBFB3060062A0EB /* AMBHTTPClient.swift */; };
 		BE6FBE461FBFBC350062A0EB /* AMBTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6FBE451FBFBC350062A0EB /* AMBTestViewController.swift */; };
 		BE9E8B631FBF5AEC00499960 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9E8B621FBF5AEC00499960 /* AMBClient.framework */; };
@@ -51,7 +53,9 @@
 		BE2925A01FC3391D005E55CA /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .swiftlint.yml; sourceTree = SOURCE_ROOT; };
 		BE50E2231FB9305C00948FBC /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		BE50E2261FB9337D00948FBC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
-		BE50E2281FB933C600948FBC /* RemoveMe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveMe.swift; sourceTree = "<group>"; };
+		BE5974BE1FC38ECB00959406 /* Debug.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Debug.storyboard; sourceTree = "<group>"; };
+		BE5974C31FC392FB00959406 /* ControlsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlsViewController.swift; sourceTree = "<group>"; };
+		BE6B9D8F1FC38AD400B9F47A /* DebugViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugViewController.swift; sourceTree = "<group>"; };
 		BE6FBE3F1FBFB3060062A0EB /* AMBHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBHTTPClient.swift; sourceTree = "<group>"; };
 		BE6FBE451FBFBC350062A0EB /* AMBTestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBTestViewController.swift; sourceTree = "<group>"; };
 		BE9E8B621FBF5AEC00499960 /* AMBClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AMBClient.framework; path = Carthage/Build/iOS/AMBClient.framework; sourceTree = "<group>"; };
@@ -115,6 +119,23 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		BE5974C01FC392A300959406 /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+				BE5974C31FC392FB00959406 /* ControlsViewController.swift */,
+			);
+			path = Controls;
+			sourceTree = "<group>";
+		};
+		BE6B9D8E1FC38ABF00B9F47A /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				BE6B9D8F1FC38AD400B9F47A /* DebugViewController.swift */,
+				BE5974BE1FC38ECB00959406 /* Debug.storyboard */,
+			);
+			path = Debug;
+			sourceTree = "<group>";
+		};
 		BE6FBE411FBFBAD10062A0EB /* AMB */ = {
 			isa = PBXGroup;
 			children = (
@@ -167,8 +188,9 @@
 			isa = PBXGroup;
 			children = (
 				BE6FBE441FBFBC210062A0EB /* AMB Test */,
+				BE5974C01FC392A300959406 /* Controls */,
+				BE6B9D8E1FC38ABF00B9F47A /* Debug */,
 				BE9E8B9B1FBF7F1700499960 /* Networking */,
-				BE50E2281FB933C600948FBC /* RemoveMe.swift */,
 				BE29259F1FC33889005E55CA /* Supporting Files */,
 			);
 			path = SnowChat;
@@ -284,6 +306,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */,
+				BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */,
 				BE50E2241FB9305C00948FBC /* Cartfile in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -338,7 +361,8 @@
 			files = (
 				BE6FBE461FBFBC350062A0EB /* AMBTestViewController.swift in Sources */,
 				BE9E8BA91FBF826300499960 /* APIManager.swift in Sources */,
-				BE50E2291FB933C600948FBC /* RemoveMe.swift in Sources */,
+				BE5974C41FC392FB00959406 /* ControlsViewController.swift in Sources */,
+				BE6B9D911FC38AD400B9F47A /* DebugViewController.swift in Sources */,
 				BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */,
 				BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */,
 				BE6FBE401FBFB3060062A0EB /* AMBHTTPClient.swift in Sources */,
