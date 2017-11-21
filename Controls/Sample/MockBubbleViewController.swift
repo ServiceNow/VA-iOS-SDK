@@ -10,12 +10,13 @@ import UIKit
 
 public class MockBubbleViewController: UIViewController {
     
-    let bubbleView = UIView()
+    let bubbleView = RoundedView()
     
     override public func viewDidLoad() {
         super.viewDidLoad()
         
-        bubbleView.layer.cornerRadius = 12
+        bubbleView.cornerRadius = 12
+        bubbleView.corners = [.topLeft, .topRight]
         bubbleView.backgroundColor = UIColor(red: 59.0 / 255, green: 167.0 / 255, blue: 246.0 / 255, alpha: 1)
         
         bubbleView.translatesAutoresizingMaskIntoConstraints = false
