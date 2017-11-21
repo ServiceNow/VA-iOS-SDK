@@ -37,6 +37,8 @@
 		BEB6C8611FB92CD700B1D497 /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEB6C8571FB92CD700B1D497 /* SnowChat.framework */; };
 		BEB6C8661FB92CD700B1D497 /* SnowChatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB6C8651FB92CD700B1D497 /* SnowChatTests.swift */; };
 		BEB6C8681FB92CD700B1D497 /* SnowChat.h in Headers */ = {isa = PBXBuildFile; fileRef = BEB6C85A1FB92CD700B1D497 /* SnowChat.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C40565EA1FC38FF0004BD28C /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565E91FC38FF0004BD28C /* Logger.swift */; };
+		C40565EC1FC3900B004BD28C /* LoggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565EB1FC3900A004BD28C /* LoggerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +71,8 @@
 		BEB6C8601FB92CD700B1D497 /* SnowChatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnowChatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BEB6C8651FB92CD700B1D497 /* SnowChatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowChatTests.swift; sourceTree = "<group>"; };
 		BEB6C8671FB92CD700B1D497 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C40565E91FC38FF0004BD28C /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		C40565EB1FC3900A004BD28C /* LoggerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoggerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -187,6 +191,7 @@
 		BEB6C8591FB92CD700B1D497 /* SnowChat */ = {
 			isa = PBXGroup;
 			children = (
+				C40565E81FC38FA5004BD28C /* Logger */,
 				BE6FBE441FBFBC210062A0EB /* AMB Test */,
 				BE5974C01FC392A300959406 /* Controls */,
 				BE6B9D8E1FC38ABF00B9F47A /* Debug */,
@@ -199,10 +204,19 @@
 		BEB6C8641FB92CD700B1D497 /* SnowChatTests */ = {
 			isa = PBXGroup;
 			children = (
+				C40565EB1FC3900A004BD28C /* LoggerTests.swift */,
 				BEB6C8651FB92CD700B1D497 /* SnowChatTests.swift */,
 				BEB6C8671FB92CD700B1D497 /* Info.plist */,
 			);
 			path = SnowChatTests;
+			sourceTree = "<group>";
+		};
+		C40565E81FC38FA5004BD28C /* Logger */ = {
+			isa = PBXGroup;
+			children = (
+				C40565E91FC38FF0004BD28C /* Logger.swift */,
+			);
+			path = Logger;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -367,6 +381,7 @@
 				BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */,
 				BE6FBE401FBFB3060062A0EB /* AMBHTTPClient.swift in Sources */,
 				BE9E8BA11FBF7F3600499960 /* AMBClient.swift in Sources */,
+				C40565EA1FC38FF0004BD28C /* Logger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -375,6 +390,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BEB6C8661FB92CD700B1D497 /* SnowChatTests.swift in Sources */,
+				C40565EC1FC3900B004BD28C /* LoggerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
