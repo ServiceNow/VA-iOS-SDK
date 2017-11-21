@@ -8,7 +8,7 @@
 
 import Foundation
 
-class ChatDataStore : ChatEventControlNotification {
+class ChatDataStore: ChatEventControlNotification {
     
     init(storeId: String) {
         id = storeId
@@ -37,21 +37,21 @@ class ChatDataStore : ChatEventControlNotification {
     }
     
     fileprivate func publishBooleanControlNotification(_ channel: CBChannel, _ data: CBBooleanData ) {
-        let info: [String:Any] = ["state":data]
+        let info: [String: Any] = ["state": data]
         NotificationCenter.default.post(name: ChatNotification.name(forKind: .booleanControl),
                                         object: self,
                                         userInfo: info)
     }
     
     fileprivate func publishDateControlNotification(_ channel: CBChannel, _ data: CBDateData ) {
-        let info: [String:Any] = ["state":data]
+        let info: [String: Any] = ["state": data]
         NotificationCenter.default.post(name: ChatNotification.name(forKind: .dateControl),
                                         object: self,
                                         userInfo: info)
     }
     
     fileprivate func publishInputControlNotification(_ channel: CBChannel, _ data: CBInputData ) {
-        let info: [String:Any] = ["state":data]
+        let info: [String: Any] = ["state": data]
         NotificationCenter.default.post(name: ChatNotification.name(forKind: .inputControl),
                                         object: self,
                                         userInfo: info)

@@ -6,10 +6,12 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
+// swiftlint:disable force_unwrapping function_body_length
+
 import XCTest
 @testable import SnowChat
 
-class MockState : ChatState {
+class MockState: ChatState {
     var state = CBChannelEvent.channelEventUnknown
     
     override func onChannelInit(forChannel: CBChannel, withEventData data: InitMessage) {
@@ -29,12 +31,12 @@ class MockState : ChatState {
     }
 }
 
-class TestMessageHandler : XCTestCase {
+class TestMessageHandler: XCTestCase {
     
-    var ambClient: AMBClient? = nil
-    var chatStore: ChatDataStore? = nil
-    var chatState: MockState? = nil
-    var messageHandler: ChatMessageHandler? = nil
+    var ambClient: AMBClient?
+    var chatStore: ChatDataStore?
+    var chatState: MockState?
+    var messageHandler: ChatMessageHandler?
     
     override func setUp() {
         super.setUp()
@@ -49,8 +51,6 @@ class TestMessageHandler : XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
-    
-    
     
     func testBooleanControlMessagePumpedToHandler() {
         let expect = expectation(description: "Expect Notification for Boolean Control")
@@ -75,9 +75,8 @@ class TestMessageHandler : XCTestCase {
     
         fileprivate func observeControlChangesAndSucceed(_ expect: XCTestExpectation) -> NSObjectProtocol {
             return NotificationCenter.default.addObserver(forName: ChatNotification.name(forKind: .booleanControl),
-                                                          object: nil, queue: nil)
-            { notification in
-                let info = notification.userInfo as! Dictionary<String, Any>
+                                                          object: nil, queue: nil) { notification in
+                let info = notification.userInfo as! [String: Any]
                 let notificationData = info["state"] as! CBBooleanData
                 
                 XCTAssert(notificationData.controlType == .controlBoolean)
@@ -89,8 +88,7 @@ class TestMessageHandler : XCTestCase {
     
         fileprivate func observeDateControlChangesAndFail() -> NSObjectProtocol {
             return NotificationCenter.default.addObserver(forName: ChatNotification.name(forKind: .dateControl),
-                                                          object: nil, queue: nil)
-            { notification in
+                                                          object: nil, queue: nil) { notification in
                 XCTAssert(false) // boolean control should not be delivered here!
             }
         }

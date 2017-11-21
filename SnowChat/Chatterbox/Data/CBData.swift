@@ -30,7 +30,7 @@ struct CBSession: Codable {
     let vendor: CBVendor
 }
 
-struct CBChannel : Hashable, Codable {
+struct CBChannel: Hashable, Codable {
     let name: String
     
     var hashValue: Int {
@@ -50,7 +50,7 @@ protocol CBStorable {
 
 // MARK: - Channel events
 
-protocol CBChannelEventData : CBStorable, Codable {
+protocol CBChannelEventData: CBStorable, Codable {
     var eventType: CBChannelEvent { get }
 }
 
@@ -93,7 +93,7 @@ enum CBControlType: String {
     case controlTypeUnknown = "unknownControl"
 }
 
-protocol CBControlData : CBStorable {
+protocol CBControlData: CBStorable {
     var id: String { get }
     var controlType: CBControlType { get }
 }

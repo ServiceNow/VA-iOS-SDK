@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum ChatNotification : String {
+enum ChatNotification: String {
     
     case booleanControl = "com.servicenow.SnowChat.BooleanControl"
     case dateControl = "com.servicenow.SnowChat.DateControl"
@@ -20,5 +20,3 @@ enum ChatNotification : String {
     
     static func name(forKind: ChatNotification) -> Notification.Name { return Notification.Name(forKind.rawValue) }
 }
-
-

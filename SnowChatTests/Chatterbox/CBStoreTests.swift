@@ -11,10 +11,9 @@ import XCTest
 
 @testable import SnowChat
 
-
 class CBStoreTests: XCTestCase {
 
-    var store: ChatDataStore? = nil
+    var store: ChatDataStore?
     let channel = CBChannel(name: "CBStoreTestChannel")
     
     override func setUp() {
@@ -32,10 +31,9 @@ class CBStoreTests: XCTestCase {
         let booleanData = CBBooleanData(withId: "a", withValue: true)
         let expect = expectation(description: "Expect Notification for Boolean Control")
         
-        NotificationCenter.default.addObserver(forName: ChatNotification.name(forKind: .booleanControl),
-                                               object: nil, queue: nil)
-        { notification in
-            let info = notification.userInfo as! Dictionary<String, Any>
+        _ = NotificationCenter.default.addObserver(forName: ChatNotification.name(forKind: .booleanControl),
+                                               object: nil, queue: nil) { notification in
+            let info = notification.userInfo as! [String: Any]
             let notificationData = info["state"] as! CBBooleanData
         
             XCTAssert(notificationData.controlType == .controlBoolean)

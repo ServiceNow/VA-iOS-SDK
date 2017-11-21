@@ -17,6 +17,7 @@ protocol ChatEventNotification {
     func onChannelClose(forChannel: CBChannel, withEventData: CBChannelCloseData)
     func onChannelRefresh(forChannel: CBChannel, withEventData: CBChannelRefreshData)
     
+    func onChannelInit(forChannel: CBChannel, withEventData data: InitMessage)
 }
 
 protocol ChatEventControlNotification {

@@ -37,6 +37,7 @@
 		C40565D71FBF4B71004BD28C /* ChatState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565D61FBF4B71004BD28C /* ChatState.swift */; };
 		C40565F01FC491DA004BD28C /* ActionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565EF1FC491DA004BD28C /* ActionMessage.swift */; };
 		C40565F21FC49CD8004BD28C /* InitMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565F11FC49CD8004BD28C /* InitMessage.swift */; };
+		C40565F41FC4B88D004BD28C /* ConsumerTextMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565F31FC4B88D004BD28C /* ConsumerTextMessage.swift */; };
 		C4CAFEA11FBCF0C9007007F5 /* ChatEventDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA01FBCF0C9007007F5 /* ChatEventDelegate.swift */; };
 		C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA21FBCF2F8007007F5 /* CBData.swift */; };
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
@@ -73,6 +74,7 @@
 		C40565D61FBF4B71004BD28C /* ChatState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatState.swift; sourceTree = "<group>"; };
 		C40565EF1FC491DA004BD28C /* ActionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionMessage.swift; sourceTree = "<group>"; };
 		C40565F11FC49CD8004BD28C /* InitMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitMessage.swift; sourceTree = "<group>"; };
+		C40565F31FC4B88D004BD28C /* ConsumerTextMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumerTextMessage.swift; sourceTree = "<group>"; };
 		C4CAFEA01FBCF0C9007007F5 /* ChatEventDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEventDelegate.swift; sourceTree = "<group>"; };
 		C4CAFEA21FBCF2F8007007F5 /* CBData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBData.swift; sourceTree = "<group>"; };
 		C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataTests.swift; sourceTree = "<group>"; };
@@ -202,6 +204,7 @@
 				C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */,
 				C40565EF1FC491DA004BD28C /* ActionMessage.swift */,
 				C40565F11FC49CD8004BD28C /* InitMessage.swift */,
+				C40565F31FC4B88D004BD28C /* ConsumerTextMessage.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -366,6 +369,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C40565F41FC4B88D004BD28C /* ConsumerTextMessage.swift in Sources */,
 				C40565C81FBE2454004BD28C /* ChatMessageHandler.swift in Sources */,
 				C40565F21FC49CD8004BD28C /* InitMessage.swift in Sources */,
 				C40565D71FBF4B71004BD28C /* ChatState.swift in Sources */,

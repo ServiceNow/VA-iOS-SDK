@@ -52,6 +52,7 @@ class CBDataFactory {
         if let jsonData = json.data(using: .utf8) {
             do {
                 let decoder = JSONDecoder()
+                decoder.dateDecodingStrategy = .millisecondsSince1970
                 let actionMessage = try decoder.decode(ActionMessage.self, from: jsonData)
                 let t = actionMessage.data.actionMessage.type
                 

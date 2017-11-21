@@ -19,7 +19,7 @@ enum ChatStates {
     case UserSession
 }
 
-class ChatState : ChatEventNotification {
+class ChatState: ChatEventNotification {
     
     var currentState: ChatStates
     

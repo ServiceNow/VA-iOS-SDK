@@ -13,9 +13,9 @@
 
 import Foundation
 
-class ChatMessageHandler : AMBListener {
+class ChatMessageHandler: AMBListener {
     
-    var id: String  = UUID().uuidString
+    var id: String = UUID().uuidString
     
     let ambClient: AMBClient
     let dataStore: ChatDataStore

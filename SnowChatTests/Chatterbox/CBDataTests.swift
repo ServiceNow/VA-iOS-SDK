@@ -6,6 +6,8 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
+// swiftlint:disable force_unwrapping
+
 import XCTest
 @testable import SnowChat
 
@@ -112,8 +114,36 @@ class CBDataTests: XCTestCase {
         XCTAssertNotNil(inputObj)
     }
     
-    func testInitEventFromJSON() {
-        let json = """
+    func testConsumerTextMessage() {
+        let ctm = ConsumerTextMessage(withData: ConsumerTextMessage.TextMessageData(sessionId: 1, uiType: "TopicPicker", model: "topic", value: "system"))
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .millisecondsSince1970
+
+        do {
+            let jsonData = try encoder.encode(ctm)
+            let jsonString = String(data: jsonData, encoding: .utf8)
+            debugPrint("JSON: \(jsonString!)")
+            
+            XCTAssertTrue(jsonString!.contains("\"type\":\"consumerTextMessage\""))
+            XCTAssertTrue(jsonString!.contains("\"value\":\"system\""))
+            XCTAssertTrue(jsonString!.contains("\"uiType\":\"TopicPicker\""))
+            XCTAssertTrue(jsonString!.contains("\"type\":\"topic\""))
+
+            // make a new instance from the JSON, then decode that and compare to the original
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .millisecondsSince1970
+            
+            let clone = try decoder.decode(ConsumerTextMessage.self, from: jsonData)
+            let cloneData = try encoder.encode(clone)
+            let cloneString = String(data: cloneData, encoding: .utf8)
+            XCTAssertEqual(jsonString, cloneString)
+        } catch let error {
+            debugPrint(error)
+        }
+        
+    }
+
+    let jsonInitStart = """
         {
           "type": "actionMessage",
           "data": {
@@ -168,7 +198,10 @@ class CBDataTests: XCTestCase {
           }
         }
         """
-        let obj = CBDataFactory.channelEventFromJSON(json)
+    
+    func testInitEventFromJSON() {
+        
+        let obj = CBDataFactory.channelEventFromJSON(jsonInitStart)
         XCTAssertNotNil(obj)
         XCTAssert(obj.eventType == .channelInit)
         
@@ -180,72 +213,15 @@ class CBDataTests: XCTestCase {
     }
     
     func testActionMessage() {
-        let json = """
-        {
-          "type": "actionMessage",
-          "data": {
-            "@class": ".ActionMessageDto",
-            "messageId": "687e15f4-ffa9-497e-9d7b- 83a0c714100a",
-            "topicId": 1,
-            "taskId": 1,
-            "sessionId": 1,
-            "direction": "outbound",
-            "sendTime": 0,
-            "receiveTime": 0,
-            "actionMessage": {
-              "type": "Init",
-              "loginStage": "Start",
-              "systemActionName": "init",
-              "contextHandshake": {
-                "deviceId": "+15109968676",
-                "ctxHandShakeId": 1,
-                "clientContextRes": {},
-                "serverContextReq": {
-                  "DeviceType": {
-                    "updateType": "push",
-                    "updateFrequency": "once"
-                  },
-                  "permissionToUsePhoto": {
-                    "updateType": "push",
-                    "updateFrequency": "once"
-                  },
-                  "MobileAppVersion": {
-                    "updateType": "push",
-                    "updateFrequency": "once"
-                  },
-                  "MobileOS": {
-                    "updateType": "push",
-                    "updateFrequency": "once"
-                  },
-                  "location": {
-                    "updateType": "push",
-                    "updateFrequency": "every minute"
-                  },
-                  "deviceTimeZone": {
-                    "updateType": "push",
-                    "updateFrequency": "once"
-                  },
-                  "permissionToUseCamera": {
-                    "updateType": "push",
-                    "updateFrequency": "once"
-                  }
-                }
-              }
-            }
-          }
-        }
-        """
-        let jsonData = json.data(using: .utf8)
+        
+        let jsonData = jsonInitStart.data(using: .utf8)
         let decoder = JSONDecoder()
         do {
             let actionMessage = try decoder.decode(ActionMessage.self, from: jsonData!) as ActionMessage
             XCTAssert(actionMessage.data.actionMessage.type == "Init")
-        }
-        catch let error {
+        } catch let error {
             debugPrint(error)
             XCTAssert(false)
         }
-        
-        
     }
 }

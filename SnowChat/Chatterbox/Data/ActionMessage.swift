@@ -8,21 +8,23 @@
 
 import Foundation
 
-struct ActionMessage : Codable {
+struct ActionMessage: Codable {
     let type: String
     let data: ActionMessageData
     
-    struct ActionMessageData : Codable {
+    struct ActionMessageData: Codable {
         let messageId: String
         let topicId: Int
         let taskId: Int
         let sessionId: Int
+        let direction: String
+        let sendTime: Date
+        let receiveTime: Date
+        
         let actionMessage: ActionMessageWrapper
     }
     
-    struct ActionMessageWrapper : Codable {
+    struct ActionMessageWrapper: Codable {
         let type: String
     }
 }
-
-

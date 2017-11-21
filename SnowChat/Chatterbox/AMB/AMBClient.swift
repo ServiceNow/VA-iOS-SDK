@@ -31,10 +31,8 @@ class AMBClient {
     
     // Force a publication to a channel
     func publish(onChannel channel: String, jsonMessage message: String) {
-        for subscriber in subscribers {
-            if (subscriber.channel == channel) {
-                subscriber.subscriber.onMessage(message, fromChannel: channel)
-            }
+        for subscriber in subscribers where subscriber.channel == channel {
+            subscriber.subscriber.onMessage(message, fromChannel: channel)
         }
     }
 }
