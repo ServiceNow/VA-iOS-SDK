@@ -44,17 +44,22 @@ extension Roundable {
 class RoundedView: UIView, Roundable {
     
     @IBInspectable var cornerRadius: CGFloat = 2
-    var roundedCorners: UIRectCorner = UIRectCorner.allCorners
-
-    var borderColor: UIColor = UIColor.clear {
-        didSet {
-            borderLayer.strokeColor = borderColor.cgColor
-        }
-    }
     
     @IBInspectable var borderLineWidth: CGFloat = 0 {
         didSet {
             borderLayer.lineWidth = borderLineWidth
+        }
+    }
+    
+    var corners = UIRectCorner.allCorners {
+        didSet {
+            setNeedsLayout()
+        }
+    }
+
+    var borderColor: UIColor = UIColor.clear {
+        didSet {
+            borderLayer.strokeColor = borderColor.cgColor
         }
     }
     
@@ -63,6 +68,9 @@ class RoundedView: UIView, Roundable {
         borderLayer.fillColor = nil
         borderLayer.strokeColor = borderColor.cgColor
         borderLayer.lineWidth = borderLineWidth
+        
+        // just to make sure border will be always presented despite adding other sublayers:
+        borderLayer.zPosition = 1000
         layer.addSublayer(borderLayer)
         return borderLayer
     }()
@@ -79,7 +87,7 @@ class RoundedView: UIView, Roundable {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        addRoundedCorners([.bottomLeft, .bottomRight], cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
+        addRoundedCorners(corners, cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
         borderLayer.path = roundedPath
     }
 }

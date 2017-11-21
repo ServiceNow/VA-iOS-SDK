@@ -24,10 +24,10 @@ class PickerViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     private func setupTableView() {
-        
         let roundedView = RoundedView(frame: CGRect.zero)
-        roundedView.roundedCorners = [.bottomLeft, .bottomRight]
+        roundedView.corners = [.bottomLeft, .bottomRight]
         roundedView.cornerRadius = 10
+        
         roundedView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(roundedView)
         NSLayoutConstraint.activate([roundedView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -45,15 +45,14 @@ class PickerViewController: UIViewController, UITableViewDelegate, UITableViewDa
                                      tableView.trailingAnchor.constraint(equalTo: roundedView.trailingAnchor),
                                      tableView.topAnchor.constraint(equalTo: roundedView.topAnchor),
                                      tableView.bottomAnchor.constraint(equalTo: roundedView.bottomAnchor)])
-        
+
         tableView.delegate = self
         tableView.dataSource = self
         tableView.showsVerticalScrollIndicator = false
         tableView.showsHorizontalScrollIndicator = false
-        
+
         // TODO: need to adjust based on the number of items etc
         tableView.isScrollEnabled = false
-        
         self.tableView = tableView
     }
     
@@ -64,7 +63,7 @@ class PickerViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         cell.selectionStyle = .none
-        
+
         if let displayValue = model?.displayValues?[indexPath.row] {
             cell.textLabel?.text = displayValue
             cell.textLabel?.textAlignment = .center
