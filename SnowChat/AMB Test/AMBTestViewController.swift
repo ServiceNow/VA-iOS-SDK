@@ -32,7 +32,7 @@ public class AMBTestViewController: UIViewController {
             if success {
                 self?.setupAMBSubscription()
             } else {
-                debugPrint("Failed to log in")
+                Logger.default.logError("Failed to log in")
             }
         }
     }
@@ -43,7 +43,7 @@ public class AMBTestViewController: UIViewController {
         let allIncidentsChannel = "/rw/default/incident/c3lzX2lkSVNOT1RFTVBUWQ--"
         
         subscription = manager.ambClient.subscribe(allIncidentsChannel) { (subscription, message) in
-            debugPrint(message ?? "welp!")
+            Logger.default.logInfo(message?.description ?? "welp!")
         }
     }
 
