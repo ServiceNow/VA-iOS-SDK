@@ -61,9 +61,8 @@ class CBDataTests: XCTestCase {
     }
     
     func testChannelEvent() {
-        let data = CBChannelRefreshData(error: 0, status: 100)
+        let data = CBChannelRefreshData(status: 100)
         XCTAssert(data.eventType == .channelRefresh)
-        XCTAssert(data.error == 0)
         XCTAssert(data.status == 100)
     }
     
@@ -113,4 +112,140 @@ class CBDataTests: XCTestCase {
         XCTAssertNotNil(inputObj)
     }
     
+    func testInitEventFromJSON() {
+        let json = """
+        {
+          "type": "actionMessage",
+          "data": {
+            "@class": ".ActionMessageDto",
+            "messageId": "687e15f4-ffa9-497e-9d7b- 83a0c714100a",
+            "topicId": 1,
+            "taskId": 1,
+            "sessionId": 1,
+            "direction": "outbound",
+            "sendTime": 0,
+            "receiveTime": 0,
+            "actionMessage": {
+              "type": "Init",
+              "loginStage": "Start",
+              "systemActionName": "init",
+              "contextHandshake": {
+                "deviceId": "+15109968676",
+                "ctxHandShakeId": 1,
+                "clientContextRes": {},
+                "serverContextReq": {
+                  "DeviceType": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  },
+                  "permissionToUsePhoto": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  },
+                  "MobileAppVersion": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  },
+                  "MobileOS": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  },
+                  "location": {
+                    "updateType": "push",
+                    "updateFrequency": "every minute"
+                  },
+                  "deviceTimeZone": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  },
+                  "permissionToUseCamera": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  }
+                }
+              }
+            }
+          }
+        }
+        """
+        let obj = CBDataFactory.channelEventFromJSON(json)
+        XCTAssertNotNil(obj)
+        XCTAssert(obj.eventType == .channelInit)
+        
+        let initObj = obj as? InitMessage
+        XCTAssert(initObj != nil)
+        XCTAssert(initObj?.data.actionMessage.systemActionName == "init")
+        XCTAssert(initObj?.data.actionMessage.loginStage == "Start")
+        XCTAssert(initObj?.data.actionMessage.contextHandshake.serverContextRequest.count == 7)
+    }
+    
+    func testActionMessage() {
+        let json = """
+        {
+          "type": "actionMessage",
+          "data": {
+            "@class": ".ActionMessageDto",
+            "messageId": "687e15f4-ffa9-497e-9d7b- 83a0c714100a",
+            "topicId": 1,
+            "taskId": 1,
+            "sessionId": 1,
+            "direction": "outbound",
+            "sendTime": 0,
+            "receiveTime": 0,
+            "actionMessage": {
+              "type": "Init",
+              "loginStage": "Start",
+              "systemActionName": "init",
+              "contextHandshake": {
+                "deviceId": "+15109968676",
+                "ctxHandShakeId": 1,
+                "clientContextRes": {},
+                "serverContextReq": {
+                  "DeviceType": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  },
+                  "permissionToUsePhoto": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  },
+                  "MobileAppVersion": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  },
+                  "MobileOS": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  },
+                  "location": {
+                    "updateType": "push",
+                    "updateFrequency": "every minute"
+                  },
+                  "deviceTimeZone": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  },
+                  "permissionToUseCamera": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  }
+                }
+              }
+            }
+          }
+        }
+        """
+        let jsonData = json.data(using: .utf8)
+        let decoder = JSONDecoder()
+        do {
+            let actionMessage = try decoder.decode(ActionMessage.self, from: jsonData!) as ActionMessage
+            XCTAssert(actionMessage.data.actionMessage.type == "Init")
+        }
+        catch let error {
+            debugPrint(error)
+            XCTAssert(false)
+        }
+        
+        
+    }
 }

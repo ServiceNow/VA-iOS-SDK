@@ -77,9 +77,9 @@ class ChatMessageHandler : AMBListener {
         let event = CBDataFactory.channelEventFromJSON(message)
         
         switch event.eventType {
-        case .channelOpen:
-            if let openEvent = event as? CBChannelOpenData {
-                chatState.onChannelOpen(forChannel: CBChannel(name: fromChannel), withEventData: openEvent)
+        case .channelInit:
+            if let initEvent = event as? InitMessage {
+                chatState.onChannelInit(forChannel: CBChannel(name: fromChannel), withEventData: initEvent)
             }
         default:
             success = false

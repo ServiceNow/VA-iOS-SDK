@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct CBUser {
+struct CBUser: Codable {
     let id: String
     let token: String
     let name: String
@@ -16,21 +16,21 @@ struct CBUser {
     let consummerAccountId: String
 }
 
-struct CBVendor {
+struct CBVendor: Codable {
     let name: String
     let vendiorId: String
     let consumerId: String
     let consummerAccountId: String
 }
 
-struct CBSession {
+struct CBSession: Codable {
     let id: String
     let channel: String
     let user: CBUser
     let vendor: CBVendor
 }
 
-struct CBChannel : Hashable {
+struct CBChannel : Hashable, Codable {
     let name: String
     
     var hashValue: Int {
@@ -50,38 +50,34 @@ protocol CBStorable {
 
 // MARK: - Channel events
 
-protocol CBChannelEventData : CBStorable {
+protocol CBChannelEventData : CBStorable, Codable {
     var eventType: CBChannelEvent { get }
-    var error: Int { get }
 }
 
 struct CBChannelEventUnknownData: CBChannelEventData {
     let eventType: CBChannelEvent = .channelEventUnknown
-    let error: Int = 0
 }
 
 struct CBChannelOpenData: CBChannelEventData {
     let eventType: CBChannelEvent = .channelOpen
-    let error: Int
 }
 
 struct CBChannelCloseData: CBChannelEventData {
     let eventType: CBChannelEvent = .channelClose
-    let error: Int
 }
 
 struct CBChannelRefreshData: CBChannelEventData {
     let eventType: CBChannelEvent = .channelRefresh
-    let error: Int
-    
     var status: Int
-
 }
 
-enum CBChannelEvent: String {
+enum CBChannelEvent: String, Codable, CodingKey {
     case channelOpen = "openChannel"
     case channelClose = "closeChannel"
     case channelRefresh = "refreshChannel"
+    
+    // from Qlue protocol
+    case channelInit = "Init"
     
     case channelEventUnknown = "unknownChannelEvent"
 }
@@ -89,6 +85,7 @@ enum CBChannelEvent: String {
 // MARK: - Control Data
 
 enum CBControlType: String {
+    case controlTopicPicker = "topicPickerControl"
     case controlBoolean = "booleanControl"
     case controlDate = "dateControl"
     case controlInput = "inputControl"
@@ -104,6 +101,18 @@ protocol CBControlData : CBStorable {
 struct CBControlDataUnknown: CBControlData {
     var id: String = "UNKNOWN"
     var controlType: CBControlType = .controlTypeUnknown
+}
+
+struct CBControlDataTopicPicker: CBControlData {
+    var id: String
+    var controlType: CBControlType
+    var value: String
+    
+    init(withId: String, withValue: String) {
+        id = withId
+        controlType = .controlTopicPicker
+        value = withValue
+    }
 }
 
 struct CBBooleanData: CBControlData {

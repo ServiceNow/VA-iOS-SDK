@@ -12,6 +12,10 @@ import XCTest
 class MockState : ChatState {
     var state = CBChannelEvent.channelEventUnknown
     
+    override func onChannelInit(forChannel: CBChannel, withEventData data: InitMessage) {
+        state = .channelInit
+    }
+    
     override func onChannelOpen(forChannel: CBChannel, withEventData: CBChannelOpenData) {
         state = .channelOpen
     }
@@ -95,11 +99,65 @@ class TestMessageHandler : XCTestCase {
         let channel = CBChannel(name: "testChannel")
         messageHandler?.attach(toChannel: channel)
         
-        // pretend a message came in via AMB for a channel open event
-        let json = "{\"type\":\"openChannel\",\"error\":404}"
+        // pretend a message came in via AMB for an Init
+        let json = """
+        {
+          "type": "actionMessage",
+          "data": {
+            "@class": ".ActionMessageDto",
+            "messageId": "687e15f4-ffa9-497e-9d7b- 83a0c714100a",
+            "topicId": 1,
+            "taskId": 1,
+            "sessionId": 1,
+            "direction": "outbound",
+            "sendTime": 0,
+            "receiveTime": 0,
+            "actionMessage": {
+              "type": "Init",
+              "loginStage": "Start",
+              "systemActionName": "init",
+              "contextHandshake": {
+                "deviceId": "+15109968676",
+                "ctxHandShakeId": 1,
+                "clientContextRes": {},
+                "serverContextReq": {
+                  "DeviceType": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  },
+                  "permissionToUsePhoto": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  },
+                  "MobileAppVersion": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  },
+                  "MobileOS": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  },
+                  "location": {
+                    "updateType": "push",
+                    "updateFrequency": "every minute"
+                  },
+                  "deviceTimeZone": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  },
+                  "permissionToUseCamera": {
+                    "updateType": "push",
+                    "updateFrequency": "once"
+                  }
+                }
+              }
+            }
+          }
+        }
+        """
         messageHandler?.onMessage(json, fromChannel: channel.name)
 
-        XCTAssert(chatState!.state == .channelOpen)
+        XCTAssert(chatState!.state == .channelInit)
         
     }
     

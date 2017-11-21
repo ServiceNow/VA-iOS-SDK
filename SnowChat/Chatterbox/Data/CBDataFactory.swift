@@ -48,33 +48,25 @@ class CBDataFactory {
     }
     
     static func channelEventFromJSON(_ json: String) -> CBChannelEventData {
-        var data: CBChannelEventData = CBChannelEventUnknownData()
-        
+         
         if let jsonData = json.data(using: .utf8) {
             do {
-                if let dict = try JSONSerialization.jsonObject(with: jsonData, options: JSONSerialization.ReadingOptions.mutableContainers) as? NSDictionary {
-                    guard let t = dict["type"] as? String else {
-                        return data
-                    }
-                    
-                    if let err = dict["error"] as? Int {
-                        switch t {
-                        case CBChannelEvent.channelOpen.rawValue:
-                            data = CBChannelOpenData(error: err)
-                        case CBChannelEvent.channelClose.rawValue:
-                            data = CBChannelOpenData(error: err)
-                        case CBChannelEvent.channelRefresh.rawValue:
-                            data = CBChannelOpenData(error: err)
-                        default:
-                            break
-                        }
-                    }
+                let decoder = JSONDecoder()
+                let actionMessage = try decoder.decode(ActionMessage.self, from: jsonData)
+                let t = actionMessage.data.actionMessage.type
+                
+                switch t {
+                case CBChannelEvent.channelInit.rawValue:
+                    return try decoder.decode(InitMessage.self, from: jsonData)
+                default:
+                    debugPrint("Unrecognized ActionMessage type: \(t)")
                 }
-            } catch let parseError {
-                print(parseError)
+                
+            } catch let decodeError {
+                print(decodeError)
             }
         }
         
-        return data
+        return CBChannelEventUnknownData()
     }
 }

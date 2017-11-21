@@ -42,6 +42,10 @@ class ChatState : ChatEventNotification {
     
     // MARK: ChatEventNotification protocol methods
     
+    func onChannelInit(forChannel: CBChannel, withEventData data: InitMessage) {
+        
+    }
+    
     func onChannelOpen(forChannel: CBChannel, withEventData data: CBChannelOpenData) {
     
     }
