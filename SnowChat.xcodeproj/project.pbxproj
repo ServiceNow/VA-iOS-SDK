@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = BE2925A01FC3391D005E55CA /* .swiftlint.yml */; };
 		5760C8CE1FBF4C920055B73D /* PickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760C8CD1FBF4C920055B73D /* PickerViewController.swift */; };
 		5786320B1FBB571E00FA0282 /* MockBubbleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578632071FBB571D00FA0282 /* MockBubbleViewController.swift */; };
 		578632131FBB779800FA0282 /* sampleBooleanPicker.json in Resources */ = {isa = PBXBuildFile; fileRef = 578632111FBB779800FA0282 /* sampleBooleanPicker.json */; };
@@ -38,7 +39,16 @@
 		57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1EA321FC33D1C009FC76D /* RoundedView.swift */; };
 		BE50E2241FB9305C00948FBC /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = BE50E2231FB9305C00948FBC /* Cartfile */; };
 		BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
-		BE50E2291FB933C600948FBC /* RemoveMe.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E2281FB933C600948FBC /* RemoveMe.swift */; };
+		BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE5974BE1FC38ECB00959406 /* Debug.storyboard */; };
+		BE5974C41FC392FB00959406 /* ControlsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5974C31FC392FB00959406 /* ControlsViewController.swift */; };
+		BE6B9D911FC38AD400B9F47A /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6B9D8F1FC38AD400B9F47A /* DebugViewController.swift */; };
+		BE6FBE401FBFB3060062A0EB /* AMBHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6FBE3F1FBFB3060062A0EB /* AMBHTTPClient.swift */; };
+		BE6FBE461FBFBC350062A0EB /* AMBTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6FBE451FBFBC350062A0EB /* AMBTestViewController.swift */; };
+		BE9E8B631FBF5AEC00499960 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9E8B621FBF5AEC00499960 /* AMBClient.framework */; };
+		BE9E8BA11FBF7F3600499960 /* AMBClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8B9E1FBF7F3500499960 /* AMBClient.swift */; };
+		BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */; };
+		BE9E8BA91FBF826300499960 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8BA81FBF826300499960 /* APIManager.swift */; };
+		BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8BAA1FBF828E00499960 /* ServerInstance.swift */; };
 		BEB6C8611FB92CD700B1D497 /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEB6C8571FB92CD700B1D497 /* SnowChat.framework */; };
 		BEB6C8661FB92CD700B1D497 /* SnowChatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB6C8651FB92CD700B1D497 /* SnowChatTests.swift */; };
 		BEB6C8681FB92CD700B1D497 /* SnowChat.h in Headers */ = {isa = PBXBuildFile; fileRef = BEB6C85A1FB92CD700B1D497 /* SnowChat.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -55,6 +65,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BE2925A01FC3391D005E55CA /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .swiftlint.yml; sourceTree = SOURCE_ROOT; };
 		5760C8CD1FBF4C920055B73D /* PickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerViewController.swift; sourceTree = "<group>"; };
 		578632071FBB571D00FA0282 /* MockBubbleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockBubbleViewController.swift; sourceTree = "<group>"; };
 		578632111FBB779800FA0282 /* sampleBooleanPicker.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = sampleBooleanPicker.json; sourceTree = "<group>"; };
@@ -72,7 +83,16 @@
 		57E1EA321FC33D1C009FC76D /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
 		BE50E2231FB9305C00948FBC /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		BE50E2261FB9337D00948FBC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
-		BE50E2281FB933C600948FBC /* RemoveMe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveMe.swift; sourceTree = "<group>"; };
+		BE5974BE1FC38ECB00959406 /* Debug.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Debug.storyboard; sourceTree = "<group>"; };
+		BE5974C31FC392FB00959406 /* ControlsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlsViewController.swift; sourceTree = "<group>"; };
+		BE6B9D8F1FC38AD400B9F47A /* DebugViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugViewController.swift; sourceTree = "<group>"; };
+		BE6FBE3F1FBFB3060062A0EB /* AMBHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBHTTPClient.swift; sourceTree = "<group>"; };
+		BE6FBE451FBFBC350062A0EB /* AMBTestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBTestViewController.swift; sourceTree = "<group>"; };
+		BE9E8B621FBF5AEC00499960 /* AMBClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AMBClient.framework; path = Carthage/Build/iOS/AMBClient.framework; sourceTree = "<group>"; };
+		BE9E8B9E1FBF7F3500499960 /* AMBClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AMBClient.swift; sourceTree = "<group>"; };
+		BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthHeadersAdapter.swift; sourceTree = "<group>"; };
+		BE9E8BA81FBF826300499960 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
+		BE9E8BAA1FBF828E00499960 /* ServerInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerInstance.swift; sourceTree = "<group>"; };
 		BEB6C8571FB92CD700B1D497 /* SnowChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SnowChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BEB6C85A1FB92CD700B1D497 /* SnowChat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SnowChat.h; sourceTree = "<group>"; };
 		BEB6C85B1FB92CD700B1D497 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -87,6 +107,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */,
+				BE9E8B631FBF5AEC00499960 /* AMBClient.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,6 +122,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BE29259F1FC33889005E55CA /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BE2925A01FC3391D005E55CA /* .swiftlint.yml */,
+				BEB6C85B1FB92CD700B1D497 /* Info.plist */,
+				BEB6C85A1FB92CD700B1D497 /* SnowChat.h */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		578632031FBB543500FA0282 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -181,9 +212,55 @@
 		BE50E2251FB9337D00948FBC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BE9E8B621FBF5AEC00499960 /* AMBClient.framework */,
 				BE50E2261FB9337D00948FBC /* Alamofire.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BE5974C01FC392A300959406 /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+				BE5974C31FC392FB00959406 /* ControlsViewController.swift */,
+			);
+			path = Controls;
+			sourceTree = "<group>";
+		};
+		BE6B9D8E1FC38ABF00B9F47A /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				BE6B9D8F1FC38AD400B9F47A /* DebugViewController.swift */,
+				BE5974BE1FC38ECB00959406 /* Debug.storyboard */,
+			);
+			path = Debug;
+			sourceTree = "<group>";
+		};
+		BE6FBE411FBFBAD10062A0EB /* AMB */ = {
+			isa = PBXGroup;
+			children = (
+				BE9E8B9E1FBF7F3500499960 /* AMBClient.swift */,
+				BE6FBE3F1FBFB3060062A0EB /* AMBHTTPClient.swift */,
+			);
+			path = AMB;
+			sourceTree = "<group>";
+		};
+		BE6FBE441FBFBC210062A0EB /* AMB Test */ = {
+			isa = PBXGroup;
+			children = (
+				BE6FBE451FBFBC350062A0EB /* AMBTestViewController.swift */,
+			);
+			path = "AMB Test";
+			sourceTree = "<group>";
+		};
+		BE9E8B9B1FBF7F1700499960 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				BE6FBE411FBFBAD10062A0EB /* AMB */,
+				BE9E8BA81FBF826300499960 /* APIManager.swift */,
+				BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */,
+				BE9E8BAA1FBF828E00499960 /* ServerInstance.swift */,
+			);
+			path = Networking;
 			sourceTree = "<group>";
 		};
 		BEB6C84D1FB92CD600B1D497 = {
@@ -211,9 +288,11 @@
 		BEB6C8591FB92CD700B1D497 /* SnowChat */ = {
 			isa = PBXGroup;
 			children = (
-				BEB6C85A1FB92CD700B1D497 /* SnowChat.h */,
-				BEB6C85B1FB92CD700B1D497 /* Info.plist */,
-				BE50E2281FB933C600948FBC /* RemoveMe.swift */,
+				BE6FBE441FBFBC210062A0EB /* AMB Test */,
+				BE5974C01FC392A300959406 /* Controls */,
+				BE6B9D8E1FC38ABF00B9F47A /* Debug */,
+				BE9E8B9B1FBF7F1700499960 /* Networking */,
+				BE29259F1FC33889005E55CA /* Supporting Files */,
 			);
 			path = SnowChat;
 			sourceTree = "<group>";
@@ -327,6 +406,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */,
+				BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */,
 				57B7E2C91FBA25A200196BA9 /* SelectableView.xib in Resources */,
 				578632131FBB779800FA0282 /* sampleBooleanPicker.json in Resources */,
 				BE50E2241FB9305C00948FBC /* Cartfile in Resources */,
@@ -351,10 +432,12 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/AMBClient.framework",
 			);
 			name = "Copy Carthage Frameworks";
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Alamofire.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/AMBClient.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -380,6 +463,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE6FBE461FBFBC350062A0EB /* AMBTestViewController.swift in Sources */,
+				BE9E8BA91FBF826300499960 /* APIManager.swift in Sources */,
+				BE5974C41FC392FB00959406 /* ControlsViewController.swift in Sources */,
+				BE6B9D911FC38AD400B9F47A /* DebugViewController.swift in Sources */,
+				BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */,
+				BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */,
+				BE6FBE401FBFB3060062A0EB /* AMBHTTPClient.swift in Sources */,
+				BE9E8BA11FBF7F3600499960 /* AMBClient.swift in Sources */,
 				57B7E2D21FBA75B100196BA9 /* PickerControlViewModel.swift in Sources */,
 				57B7E2CD1FBA3C8400196BA9 /* UIView+Additions.swift in Sources */,
 				57B8B8C21FBCE24C008E0C64 /* ControlModelAdapter.swift in Sources */,
