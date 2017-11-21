@@ -12,10 +12,11 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var controlContainerView: UIView!
+    private var controls = ["Boolean Picker"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         tableView.tableFooterView = UIView()
     }
     
@@ -25,11 +26,11 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        cell.textLabel?.text = controls[indexPath.row]
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         let bubbleViewController = MockBubbleViewController()
         bubbleViewController.willMove(toParentViewController: self)
         addChildViewController(bubbleViewController)

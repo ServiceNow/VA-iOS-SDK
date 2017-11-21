@@ -52,7 +52,7 @@ public class DebugViewController: UITableViewController {
     }
     
     private func pushControlsViewController() {
-        let controller = ControlsViewController()
+        let controller = ControlsViewController(nibName: "ControlsViewController", bundle: Bundle(for: ControlsViewController.self))
         navigationController?.pushViewController(controller, animated: true)
     }
     

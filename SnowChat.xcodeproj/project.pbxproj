@@ -21,7 +21,6 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = BE2925A01FC3391D005E55CA /* .swiftlint.yml */; };
 		5760C8CE1FBF4C920055B73D /* PickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760C8CD1FBF4C920055B73D /* PickerViewController.swift */; };
 		5786320B1FBB571E00FA0282 /* MockBubbleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578632071FBB571D00FA0282 /* MockBubbleViewController.swift */; };
 		578632131FBB779800FA0282 /* sampleBooleanPicker.json in Resources */ = {isa = PBXBuildFile; fileRef = 578632111FBB779800FA0282 /* sampleBooleanPicker.json */; };
@@ -37,6 +36,8 @@
 		57B7E2D21FBA75B100196BA9 /* PickerControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */; };
 		57B8B8C21FBCE24C008E0C64 /* ControlModelAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B8B8C11FBCE24C008E0C64 /* ControlModelAdapter.swift */; };
 		57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1EA321FC33D1C009FC76D /* RoundedView.swift */; };
+		57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */; };
+		BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = BE2925A01FC3391D005E55CA /* .swiftlint.yml */; };
 		BE50E2241FB9305C00948FBC /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = BE50E2231FB9305C00948FBC /* Cartfile */; };
 		BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
 		BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE5974BE1FC38ECB00959406 /* Debug.storyboard */; };
@@ -65,7 +66,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		BE2925A01FC3391D005E55CA /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .swiftlint.yml; sourceTree = SOURCE_ROOT; };
 		5760C8CD1FBF4C920055B73D /* PickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerViewController.swift; sourceTree = "<group>"; };
 		578632071FBB571D00FA0282 /* MockBubbleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockBubbleViewController.swift; sourceTree = "<group>"; };
 		578632111FBB779800FA0282 /* sampleBooleanPicker.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = sampleBooleanPicker.json; sourceTree = "<group>"; };
@@ -81,6 +81,8 @@
 		57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControlViewModel.swift; sourceTree = "<group>"; };
 		57B8B8C11FBCE24C008E0C64 /* ControlModelAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlModelAdapter.swift; sourceTree = "<group>"; };
 		57E1EA321FC33D1C009FC76D /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
+		57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ControlsViewController.xib; sourceTree = "<group>"; };
+		BE2925A01FC3391D005E55CA /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .swiftlint.yml; sourceTree = SOURCE_ROOT; };
 		BE50E2231FB9305C00948FBC /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		BE50E2261FB9337D00948FBC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
 		BE5974BE1FC38ECB00959406 /* Debug.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Debug.storyboard; sourceTree = "<group>"; };
@@ -122,16 +124,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		BE29259F1FC33889005E55CA /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				BE2925A01FC3391D005E55CA /* .swiftlint.yml */,
-				BEB6C85B1FB92CD700B1D497 /* Info.plist */,
-				BEB6C85A1FB92CD700B1D497 /* SnowChat.h */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 		578632031FBB543500FA0282 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -201,6 +193,16 @@
 			path = Foundation;
 			sourceTree = "<group>";
 		};
+		BE29259F1FC33889005E55CA /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BE2925A01FC3391D005E55CA /* .swiftlint.yml */,
+				BEB6C85B1FB92CD700B1D497 /* Info.plist */,
+				BEB6C85A1FB92CD700B1D497 /* SnowChat.h */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		BE50E2221FB9305300948FBC /* Deployment */ = {
 			isa = PBXGroup;
 			children = (
@@ -222,6 +224,7 @@
 			isa = PBXGroup;
 			children = (
 				BE5974C31FC392FB00959406 /* ControlsViewController.swift */,
+				57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */,
 			);
 			path = Controls;
 			sourceTree = "<group>";
@@ -407,6 +410,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */,
+				57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */,
 				BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */,
 				57B7E2C91FBA25A200196BA9 /* SelectableView.xib in Resources */,
 				578632131FBB779800FA0282 /* sampleBooleanPicker.json in Resources */,
@@ -482,7 +486,6 @@
 				57B7E2C61FBA25A200196BA9 /* SelectableViewCell.swift in Sources */,
 				5786320B1FBB571E00FA0282 /* MockBubbleViewController.swift in Sources */,
 				57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */,
-				BE50E2291FB933C600948FBC /* RemoveMe.swift in Sources */,
 				5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
