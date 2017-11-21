@@ -7,7 +7,7 @@
 //
 
 // base class for item model
-struct SelectableItemViewModel: ControlViewModel {
+class SelectableItemViewModel: ControlViewModel {
     
     var title: String?
     var isRequired: Bool?

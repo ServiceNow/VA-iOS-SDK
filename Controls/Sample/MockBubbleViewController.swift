@@ -11,6 +11,7 @@ import UIKit
 public class MockBubbleViewController: UIViewController {
     
     let bubbleView = RoundedView()
+    var currentUIControl: ControlProtocol?
     
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -25,26 +26,36 @@ public class MockBubbleViewController: UIViewController {
                                     bubbleView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                                     bubbleView.topAnchor.constraint(equalTo: view.topAnchor),
                                     bubbleView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.4)])
-        
-        let booleanPicker = BooleanPickerControl()
-        guard let pickerViewController = booleanPicker.viewController else {
+    }
+    
+    private func removeCurrentUIControl() {
+        guard let currentUIControl = currentUIControl else {
             return
         }
         
-        pickerViewController.willMove(toParentViewController: self)
-        addChildViewController(pickerViewController)
-        pickerViewController.didMove(toParentViewController: self)
+        currentUIControl.viewController.removeFromParentViewController()
+        currentUIControl.viewController.view.removeFromSuperview()
+    }
+    
+    func addUIControl(_ control: ControlProtocol) {
+        removeCurrentUIControl()
+        currentUIControl = control
         
-        guard let pickerBooleanView = pickerViewController.view else {
+        let viewController = control.viewController
+        viewController.willMove(toParentViewController: self)
+        addChildViewController(viewController)
+        viewController.didMove(toParentViewController: self)
+        
+        guard let controlView = viewController.view else {
             return
         }
         
-        pickerBooleanView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(pickerBooleanView)
+        controlView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(controlView)
         
-        NSLayoutConstraint.activate([pickerBooleanView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                     pickerBooleanView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     pickerBooleanView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-                                     pickerBooleanView.topAnchor.constraint(equalTo: bubbleView.bottomAnchor)])
+        NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                                     controlView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                                     controlView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                                     controlView.topAnchor.constraint(equalTo: bubbleView.bottomAnchor)])
     }
 }

@@ -16,7 +16,7 @@ protocol ControlProtocol: class {
     var model: ControlViewModel? { get set }
     
     // UIViewController of ui control
-    var viewController: UIViewController? { get }
+    var viewController: UIViewController { get }
     
     weak var delegate: ControlDelegate? { get set }
     

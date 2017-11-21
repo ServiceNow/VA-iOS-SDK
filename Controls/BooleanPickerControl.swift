@@ -10,19 +10,19 @@ import UIKit
 
 public class BooleanPickerControl: ControlProtocol {
     
-    public init() {
-        model = BooleanControlViewModel()
-    }
-    
     var model: ControlViewModel?
     
-    public lazy var viewController: UIViewController? = {
-        let vc = PickerViewController()
-        vc.model = model as? PickerControlViewModel
-        return vc
-    }()
+    public var viewController: UIViewController
     
     weak var delegate: ControlDelegate?
+    
+    public init() {
+        model = BooleanControlViewModel()
+        
+        let vc = PickerViewController()
+        vc.model = model as? PickerControlViewModel
+        viewController = vc
+    }
     
     func submit() {
         

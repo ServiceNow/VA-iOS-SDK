@@ -11,17 +11,41 @@ import UIKit
 class ControlsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var tableView: UITableView!
+    
     @IBOutlet weak var controlContainerView: UIView!
-    private var controls = ["Boolean Picker"]
+    
+    private var controls = ["Boolean Picker", "Multiselect Picker"]
+    
+    private var bubbleViewController: MockBubbleViewController?
     
     override func viewDidLoad() {
+        addBubbleViewController()
         super.viewDidLoad()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         tableView.tableFooterView = UIView()
     }
     
+    private func addBubbleViewController() {
+        let bubbleViewController = MockBubbleViewController()
+        bubbleViewController.willMove(toParentViewController: self)
+        addChildViewController(bubbleViewController)
+        bubbleViewController.didMove(toParentViewController: self)
+        
+        guard let bubbleView = bubbleViewController.view else {
+            fatalError("ooops, where's Bubble view?!")
+        }
+        
+        bubbleView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(bubbleView)
+        NSLayoutConstraint.activate([bubbleView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                                     bubbleView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+                                     bubbleView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7),
+                                     bubbleView.heightAnchor.constraint(equalToConstant: 150)])
+        self.bubbleViewController = bubbleViewController
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return controls.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -31,20 +55,23 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let bubbleViewController = MockBubbleViewController()
-        bubbleViewController.willMove(toParentViewController: self)
-        addChildViewController(bubbleViewController)
-        bubbleViewController.didMove(toParentViewController: self)
+        let controlName = controls[indexPath.row]
+        let uiControl: ControlProtocol?
         
-        guard let bubbleView = bubbleViewController.view else {
+        switch controlName {
+        case "Boolean Picker":
+            uiControl = BooleanPickerControl()
+        case "Multiselect Picker":
+            uiControl = MultiselectPickerControl()
+        default:
+            uiControl = nil
+        }
+        
+        guard let selectedControl = uiControl else {
             return
         }
         
-        bubbleView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(bubbleView)
-        NSLayoutConstraint.activate([bubbleView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                                     bubbleView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-                                     bubbleView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7),
-                                     bubbleView.heightAnchor.constraint(equalToConstant: 150)])
+        bubbleViewController?.addUIControl(selectedControl)
     }
+    
 }

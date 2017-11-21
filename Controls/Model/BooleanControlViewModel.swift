@@ -6,7 +6,7 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-struct BooleanControlViewModel: PickerControlViewModel {
+class BooleanControlViewModel: PickerControlViewModel {
     
     var isRequired: Bool?
     
