@@ -17,6 +17,7 @@ enum ChatStates {
     case AMBInitializing
     case AMBInitialized
     case StartSystemTopic
+    case StartUserSession
     case UserSession
 }
 
@@ -37,7 +38,11 @@ class ChatState: ChatEventNotification {
     }
     
     func initializeAMB() {
-        // TODO: integrate with AMB and sign the user in
+        currentState = .AMBInitializing
+
+        // TODO: integrate with AMB (and sign the user in?)
+        
+        currentState = .AMBInitializing
     }
     
     func subscribeToChatEvents() {
@@ -46,14 +51,27 @@ class ChatState: ChatEventNotification {
     
     func establishSystemTopic() {
         
-        let systemTopicPicker = TopicPickerMessage(forSession: session.id, withValue: "system")
+        // TODO: publish TopicPicker message to AMB
         
+        //let systemTopicPicker = TopicPickerMessage(forSession: session.id, withValue: "system")
+        
+        currentState = .StartSystemTopic
     }
     
     // MARK: ChatEventNotification protocol methods
     
     func onChannelInit(forChannel: CBChannel, withEventData data: InitMessage) {
-        
+        switch currentState {
+        case .StartSystemTopic:
+            // get the session from SessionManagement
+            // publish InitMessage / UserSession stage
+            currentState = .StartUserSession
+        case .StartUserSession:
+            // get the Init / finish message data and move on to user-session state
+            currentState = .UserSession
+        default:
+            debugPrint("Unexpected state in onChannelInit: \(currentState)")
+        }
     }
     
     func onChannelOpen(forChannel: CBChannel, withEventData data: CBChannelOpenData) {

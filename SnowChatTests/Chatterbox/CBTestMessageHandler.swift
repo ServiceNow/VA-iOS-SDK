@@ -15,9 +15,10 @@ class MockState: ChatState {
     var state = CBChannelEvent.channelEventUnknown
     
     init() {
-        let user = CBUser(id: "9927", token: "90749wjhgf", name: "marc", consumerId: "marc.attinasi", consummerAccountId: "marc.attinasi@servicenow.com")
-        let vendor = CBVendor(name: "ServiceNow", vendiorId: "001", consumerId: "marc.attinasi", consummerAccountId: "marc.attinasi@servicenow.com")
-        let session = CBSession(id: 1, channel: "mock", user: user, vendor: vendor)
+        let user = CBUser(id: "9927", token: "938457hge98", name: "marc", consumerId: "marc.attinasi", consumerAccountId: "marc.attinasi@servicenow.com")
+        let vendor = CBVendor(name: "ServiceNow", vendorId: "001", consumerId: "marc.attinasi", consumerAccountId: "marc.attinasi@servicenow.com")
+        let session = CBSession(id: 1, user: user, vendor: vendor)
+        
         super.init(forSession: session, initialState: ChatStates.Disconnected)
     }
     

@@ -28,21 +28,85 @@ struct CBUser: Codable {
     let token: String
     let name: String
     let consumerId: String
-    let consummerAccountId: String
+    let consumerAccountId: String
+}
+
+extension CBUser {
+    init(clone src: CBUser) {
+        self.id = src.id
+        self.token = src.token
+        self.name = src.name
+        self.consumerId = src.consumerId
+        self.consumerAccountId = src.consumerAccountId
+    }
 }
 
 struct CBVendor: Codable {
     let name: String
-    let vendiorId: String
+    let vendorId: String
     let consumerId: String
-    let consummerAccountId: String
+    let consumerAccountId: String
+}
+
+extension CBVendor {
+    init(clone src: CBVendor) {
+        self.name = src.name
+        self.vendorId = src.vendorId
+        self.consumerId = src.consumerId
+        self.consumerAccountId = src.consumerAccountId
+    }
+}
+
+func getDeviceIdentifier() -> String {
+    return "DEVICE-ID-PLACEHOLDER"
 }
 
 struct CBSession: Codable {
     let id: Int
-    let channel: String
     let user: CBUser
     let vendor: CBVendor
+    var sessionState: SessionState = .closed
+    
+    var deviceId: String {
+        get{ return getDeviceIdentifier() }
+    }
+
+    var extId: String {
+        get { return "\(deviceId)\(vendor.consumerAccountId)"}
+    }
+    var contextId: String {
+        // NOTE: unknown what this should be - reference impl had it hard-coded and commented as 'what?'
+        get { return "context" }
+    }
+    
+    init(id: Int, user: CBUser, vendor: CBVendor) {
+        self.id = id
+        self.user = user
+        self.vendor = vendor
+        self.sessionState = .closed
+    }
+    
+    // define the properties that we decode / encode
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case user
+        case vendor
+    }
+    
+    enum SessionState {
+        case closed
+        case opened
+        case error
+    }
+}
+
+extension CBSession {
+    init(clone src: CBSession) {
+        self.id = src.id
+        self.user = CBUser(clone: src.user)
+        self.vendor = CBVendor(clone: src.vendor)
+        self.sessionState = src.sessionState
+    }
 }
 
 struct CBChannel: Hashable, Codable {
@@ -55,7 +119,11 @@ struct CBChannel: Hashable, Codable {
     static func == (lhs: CBChannel, rhs: CBChannel) -> Bool {
         return lhs.name == rhs.name
     }
-    
+}
+
+struct CBTopic: Codable {
+    let type: String
+    let name: String
 }
 
 protocol CBStorable {

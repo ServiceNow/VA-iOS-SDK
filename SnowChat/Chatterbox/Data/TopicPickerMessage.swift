@@ -16,7 +16,7 @@ struct TopicPickerMessage: Codable, CBChannelEventData {
     let data: RichControlData<ControlWrapper>
     
     struct ControlWrapper: Codable {
-        let uiType: String = "TopicPicker"
+        let uiType: String = CBChannelEvent.topicPicker.rawValue
         let model: SystemTextMessage.ModelType
         let value: String
     }

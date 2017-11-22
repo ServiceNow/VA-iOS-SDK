@@ -42,6 +42,7 @@
 		C40565F81FC4F4D3004BD28C /* BooleanControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565F71FC4F4D3004BD28C /* BooleanControlMessage.swift */; };
 		C40565FA1FC4F71D004BD28C /* SystemTextMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565F91FC4F71D004BD28C /* SystemTextMessage.swift */; };
 		C40565FF1FC508D3004BD28C /* RichControlData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565FE1FC508D3004BD28C /* RichControlData.swift */; };
+		C420ED771FC5DB9F002476C0 /* SessionAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C420ED761FC5DB9F002476C0 /* SessionAPI.swift */; };
 		C4CAFEA11FBCF0C9007007F5 /* ChatEventDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA01FBCF0C9007007F5 /* ChatEventDelegate.swift */; };
 		C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA21FBCF2F8007007F5 /* CBData.swift */; };
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
@@ -83,6 +84,7 @@
 		C40565F71FC4F4D3004BD28C /* BooleanControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooleanControlMessage.swift; sourceTree = "<group>"; };
 		C40565F91FC4F71D004BD28C /* SystemTextMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemTextMessage.swift; sourceTree = "<group>"; };
 		C40565FE1FC508D3004BD28C /* RichControlData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RichControlData.swift; sourceTree = "<group>"; };
+		C420ED761FC5DB9F002476C0 /* SessionAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionAPI.swift; sourceTree = "<group>"; };
 		C4CAFEA01FBCF0C9007007F5 /* ChatEventDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEventDelegate.swift; sourceTree = "<group>"; };
 		C4CAFEA21FBCF2F8007007F5 /* CBData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBData.swift; sourceTree = "<group>"; };
 		C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataTests.swift; sourceTree = "<group>"; };
@@ -200,6 +202,7 @@
 			isa = PBXGroup;
 			children = (
 				C40565C51FBE1539004BD28C /* SessionProtocol.swift */,
+				C420ED761FC5DB9F002476C0 /* SessionAPI.swift */,
 			);
 			path = Session;
 			sourceTree = "<group>";
@@ -396,6 +399,7 @@
 				C40565D71FBF4B71004BD28C /* ChatState.swift in Sources */,
 				C40565F01FC491DA004BD28C /* ActionMessage.swift in Sources */,
 				C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */,
+				C420ED771FC5DB9F002476C0 /* SessionAPI.swift in Sources */,
 				C40565CB1FBE283C004BD28C /* AMBClient.swift in Sources */,
 				C40565F81FC4F4D3004BD28C /* BooleanControlMessage.swift in Sources */,
 				C40565F61FC4D85B004BD28C /* TopicPickerMessage.swift in Sources */,
