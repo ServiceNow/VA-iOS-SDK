@@ -39,7 +39,7 @@
 		BEB6C8681FB92CD700B1D497 /* SnowChat.h in Headers */ = {isa = PBXBuildFile; fileRef = BEB6C85A1FB92CD700B1D497 /* SnowChat.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C40565C61FBE1539004BD28C /* SessionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565C51FBE1539004BD28C /* SessionProtocol.swift */; };
 		C40565C81FBE2454004BD28C /* ChatMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565C71FBE2454004BD28C /* ChatMessageHandler.swift */; };
-		C40565CB1FBE283C004BD28C /* CBAMBClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565CA1FBE283C004BD28C /* CBAMBClient.swift */; };
+		C40565CB1FBE283C004BD28C /* AMBChatClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565CA1FBE283C004BD28C /* AMBChatClient.swift */; };
 		C40565CD1FBE292B004BD28C /* ChatDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565CC1FBE292B004BD28C /* ChatDataStore.swift */; };
 		C40565CF1FBE2FC4004BD28C /* ChatNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565CE1FBE2FC4004BD28C /* ChatNotifications.swift */; };
 		C40565D11FBE32F3004BD28C /* CBStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565D01FBE32F3004BD28C /* CBStoreTests.swift */; };
@@ -55,6 +55,8 @@
 		C420ED771FC5DB9F002476C0 /* SessionAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C420ED761FC5DB9F002476C0 /* SessionAPI.swift */; };
 		C420ED7D1FC5F473002476C0 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C420ED7C1FC5F473002476C0 /* Logger.swift */; };
 		C420ED7F1FC5F488002476C0 /* LoggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C420ED7E1FC5F488002476C0 /* LoggerTests.swift */; };
+		C420ED821FC6031C002476C0 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
+		C420ED831FC6031C002476C0 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9E8B621FBF5AEC00499960 /* AMBClient.framework */; };
 		C4CAFEA11FBCF0C9007007F5 /* ChatEventDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA01FBCF0C9007007F5 /* ChatEventDelegate.swift */; };
 		C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA21FBCF2F8007007F5 /* CBData.swift */; };
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
@@ -93,7 +95,7 @@
 		BEB6C8671FB92CD700B1D497 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C40565C51FBE1539004BD28C /* SessionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionProtocol.swift; sourceTree = "<group>"; };
 		C40565C71FBE2454004BD28C /* ChatMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageHandler.swift; sourceTree = "<group>"; };
-		C40565CA1FBE283C004BD28C /* CBAMBClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBAMBClient.swift; sourceTree = "<group>"; };
+		C40565CA1FBE283C004BD28C /* AMBChatClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBChatClient.swift; sourceTree = "<group>"; };
 		C40565CC1FBE292B004BD28C /* ChatDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataStore.swift; sourceTree = "<group>"; };
 		C40565CE1FBE2FC4004BD28C /* ChatNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatNotifications.swift; sourceTree = "<group>"; };
 		C40565D01FBE32F3004BD28C /* CBStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBStoreTests.swift; sourceTree = "<group>"; };
@@ -130,6 +132,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				BEB6C8611FB92CD700B1D497 /* SnowChat.framework in Frameworks */,
+				C420ED821FC6031C002476C0 /* Alamofire.framework in Frameworks */,
+				C420ED831FC6031C002476C0 /* AMBClient.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,7 +260,7 @@
 		C40565C91FBE2822004BD28C /* AMB */ = {
 			isa = PBXGroup;
 			children = (
-				C40565CA1FBE283C004BD28C /* CBAMBClient.swift */,
+				C40565CA1FBE283C004BD28C /* AMBChatClient.swift */,
 			);
 			path = AMB;
 			sourceTree = "<group>";
@@ -375,6 +379,7 @@
 				BEB6C85C1FB92CD700B1D497 /* Sources */,
 				BEB6C85D1FB92CD700B1D497 /* Frameworks */,
 				BEB6C85E1FB92CD700B1D497 /* Resources */,
+				C420ED811FC60250002476C0 /* Copy Carthage Frameworks */,
 			);
 			buildRules = (
 			);
@@ -482,6 +487,24 @@
 			shellPath = /bin/sh;
 			shellScript = "carthage bootstrap --platform iOS";
 		};
+		C420ED811FC60250002476C0 /* Copy Carthage Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/AMBClient.framework",
+			);
+			name = "Copy Carthage Frameworks";
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Alamofire.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/AMBClient.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -506,7 +529,7 @@
 				C40565F01FC491DA004BD28C /* ActionMessage.swift in Sources */,
 				C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */,
 				C420ED771FC5DB9F002476C0 /* SessionAPI.swift in Sources */,
-				C40565CB1FBE283C004BD28C /* CBAMBClient.swift in Sources */,
+				C40565CB1FBE283C004BD28C /* AMBChatClient.swift in Sources */,
 				C40565F81FC4F4D3004BD28C /* BooleanControlMessage.swift in Sources */,
 				C40565F61FC4D85B004BD28C /* TopicPickerMessage.swift in Sources */,
 				C40565CD1FBE292B004BD28C /* ChatDataStore.swift in Sources */,
@@ -731,6 +754,10 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = SnowChatTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowChatTests;
@@ -746,6 +773,10 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = SnowChatTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowChatTests;

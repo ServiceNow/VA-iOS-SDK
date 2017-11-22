@@ -21,7 +21,7 @@ class CBDataFactory {
                 case CBControlType.controlBoolean.rawValue:
                     return try CBData.jsonDecoder.decode(BooleanControlMessage.self, from: jsonData)
                 default:
-                    debugPrint("Unrecognized UI Control: \(t)")
+                    Logger.default.logError("Unrecognized UI Control: \(t)")
                 }
                 
 //                if let dict = try JSONSerialization.jsonObject(with: jsonData, options: JSONSerialization.ReadingOptions.mutableContainers) as? NSDictionary {
@@ -67,7 +67,7 @@ class CBDataFactory {
                 case CBChannelEvent.channelInit.rawValue:
                     return try CBData.jsonDecoder.decode(InitMessage.self, from: jsonData)
                 default:
-                    debugPrint("Unrecognized ActionMessage type: \(t)")
+                    Logger.default.logError("Unrecognized ActionMessage type: \(t)")
                 }
                 
             } catch let decodeError {

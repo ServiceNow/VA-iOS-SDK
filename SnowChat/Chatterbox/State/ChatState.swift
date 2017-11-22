@@ -12,7 +12,6 @@
 import Foundation
 
 enum ChatStates {
-
     case Disconnected
     case AMBInitializing
     case AMBInitialized
@@ -70,7 +69,7 @@ class ChatState: ChatEventNotification {
             // get the Init / finish message data and move on to user-session state
             currentState = .UserSession
         default:
-            debugPrint("Unexpected state in onChannelInit: \(currentState)")
+            Logger.default.logError("Unexpected state in onChannelInit: \(currentState)")
         }
     }
     

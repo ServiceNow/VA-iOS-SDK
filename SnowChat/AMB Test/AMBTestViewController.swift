@@ -9,18 +9,20 @@
 import UIKit
 import AMBClient
 
-public class AMBTestViewController: UIViewController {
-    
-    private lazy var manager: APIManager = {
-        // swiftlint:disable:next force_unwrapping
-        let url = URL(string: "https://snowchat.service-now.com")!
-        let instance = ServerInstance(instanceURL: url)
-        let manager = APIManager(instance: instance)
-        return manager
-    }()
-    
+public class AMBTestViewController: UIViewController, AMBListener {
+    var id: String = UUID().uuidString
     var subscription: NOWAMBSubscription?
-
+    var ambClient: AMBChatClient?
+    var chatChannel: String = { return "/cs/messages/\(AMBTestViewController.chatId)" }()
+    
+    static var chatId: String = "e804260e8073e0e80ce70e80b700e808" // ENTER VALID CHAT-ID HERE!!!
+    
+    // MARK: AMBListener protocol
+    
+    func onMessage(_ message: String, fromChannel: String) {
+        Logger.default.logInfo("AMB Test-> \(message)")
+    }
+    
     // MARK: - View Life Cycle
     
     public override func viewDidLoad() {
@@ -28,23 +30,29 @@ public class AMBTestViewController: UIViewController {
         
         view.backgroundColor = .white
         
-        manager.logIn(username: "admin", password: "snow2004") { [weak self] success in
+        initializeAMBChatClient()
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if subscription != nil {
+            ambClient?.unsubscribe(fromChannel: chatChannel, receiver: self)
+        }
+    }
+    
+    private func initializeAMBChatClient() {
+        // swiftlint:disable:next force_unwrapping
+        ambClient = AMBChatClient(withEndpoint: URL(string: "https://snowchat.service-now.com")!)
+        ambClient?.login(userName: "admin", password: "snow2004", completionHandler: { [weak self] (success) in
             if success {
-                self?.setupAMBSubscription()
+                if let me = self {
+                    me.ambClient?.subscribe(forChannel: me.chatChannel, receiver: me)
+                } else {
+                    Logger.default.logDebug("AMBTestViewController went away...")
+                }
             } else {
-                Logger.default.logError("Failed to log in")
+                Logger.default.logDebug("Login failed")
             }
-        }
+        })
     }
-    
-    // MARK: - Setup
-    
-    private func setupAMBSubscription() {
-        let allIncidentsChannel = "/rw/default/incident/c3lzX2lkSVNOT1RFTVBUWQ--"
-        
-        subscription = manager.ambClient.subscribe(allIncidentsChannel) { (subscription, message) in
-            Logger.default.logInfo(message?.description ?? "welp!")
-        }
-    }
-
 }

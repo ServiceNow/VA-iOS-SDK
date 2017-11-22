@@ -6,8 +6,6 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-// swiftlint:disable force_unwrapping
-
 import XCTest
 @testable import SnowChat
 
@@ -125,7 +123,7 @@ class CBDataTests: XCTestCase {
         do {
             let jsonData = try encoder!.encode(ctm)
             let jsonString = String(data: jsonData, encoding: .utf8)
-            debugPrint("JSON: \(jsonString!)")
+            Logger.default.logInfo("JSON: \(jsonString!)")
             
             XCTAssertTrue(jsonString!.contains("\"type\":\"consumerTextMessage\""))
             XCTAssertTrue(jsonString!.contains("\"uiType\":\"TopicPicker\""))
@@ -136,7 +134,7 @@ class CBDataTests: XCTestCase {
             let cloneString = String(data: cloneData, encoding: .utf8)
             XCTAssertEqual(jsonString, cloneString)
         } catch let error {
-            debugPrint(error)
+            Logger.default.logInfo(error.localizedDescription)
         }
         
     }
@@ -218,7 +216,7 @@ class CBDataTests: XCTestCase {
             let actionMessage = try decoder.decode(ActionMessage.self, from: jsonData!) as ActionMessage
             XCTAssert(actionMessage.data.actionMessage.type == "Init")
         } catch let error {
-            debugPrint(error)
+            Logger.default.logInfo(error.localizedDescription)
             XCTAssert(false)
         }
     }
@@ -229,7 +227,8 @@ class CBDataTests: XCTestCase {
         do {
             let jsonData = try encoder!.encode(topicPicker)
             let jsonString: String = String(data: jsonData, encoding: .utf8)!
-            debugPrint(jsonString)
+            Logger.default.logInfo(jsonString)
+            
             XCTAssert(jsonString.contains("\"type\":\"consumerTextMessage\""))
             XCTAssert(jsonString.contains("\"type\":\"topic\""))
             XCTAssert(jsonString.contains("\"uiType\":\"TopicPicker\""))
@@ -240,7 +239,7 @@ class CBDataTests: XCTestCase {
             let cloneString = String(data: cloneData, encoding: .utf8)
             XCTAssertEqual(cloneString, jsonString)
         } catch let error {
-            debugPrint(error)
+            Logger.default.logInfo(error.localizedDescription)
         }
     }
 }

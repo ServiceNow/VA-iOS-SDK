@@ -6,8 +6,6 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-// swiftlint:disable force_unwrapping function_body_length
-
 import XCTest
 @testable import SnowChat
 
@@ -39,11 +37,21 @@ class MockState: ChatState {
     }
 }
 
+class MockAMBClient: AMBChatClient {
+    override func login(userName: String, password: String, completionHandler: @escaping (Bool) -> Void) {
+        completionHandler(true)
+    }
+    
+    override func publish(onChannel channel: String, jsonMessage message: String) {
+        super.publish(onChannel: channel, jsonMessage: message)
+    }
+}
+
 class TestMessageHandler: XCTestCase {
     
-    var ambClient: CBAMBClient?
-    var chatStore: ChatDataStore?
+    var ambClient: MockAMBClient?
     var chatState: MockState?
+    var chatStore: ChatDataStore?
     var messageHandler: ChatMessageHandler?
     
     override func setUp() {
@@ -51,8 +59,13 @@ class TestMessageHandler: XCTestCase {
 
         chatState = MockState()
         chatStore = ChatDataStore(storeId: "TEST001")
-        ambClient = CBAMBClient()
-        messageHandler = ChatMessageHandler(withAmb: ambClient!, withDataStore: chatStore!, withState: chatState!)
+        ambClient = MockAMBClient(withEndpoint: URL(string: "https://snowchat.service-now.com")!)
+        ambClient?.login(userName: "admin", password: "snow2004", completionHandler: { (success) in
+            Logger.default.logInfo("AMB Login Completed {\(success ? "success" : "failure")}")
+            if success {
+                self.messageHandler = ChatMessageHandler(withAmb: self.ambClient!, withDataStore: self.chatStore!, withState: self.chatState!)
+            }
+        })
     }
     
     override func tearDown() {
@@ -122,6 +135,7 @@ class TestMessageHandler: XCTestCase {
             }
         }
     
+    // swiftlint:disable:next function_body_length
     func testEventMessagePumpedToStateHandler() {
         let channel = CBChannel(name: "testChannel")
         messageHandler?.attach(toChannel: channel)

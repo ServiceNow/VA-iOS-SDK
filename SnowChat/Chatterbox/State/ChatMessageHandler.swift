@@ -17,11 +17,11 @@ class ChatMessageHandler: AMBListener {
     
     var id: String = UUID().uuidString
     
-    let ambClient: CBAMBClient
+    let ambClient: AMBChatClient
     let dataStore: ChatDataStore
     let chatState: ChatState
     
-    init(withAmb amb: CBAMBClient, withDataStore store: ChatDataStore, withState state: ChatState) {
+    init(withAmb amb: AMBChatClient, withDataStore store: ChatDataStore, withState state: ChatState) {
         ambClient = amb
         dataStore = store
         chatState = state
