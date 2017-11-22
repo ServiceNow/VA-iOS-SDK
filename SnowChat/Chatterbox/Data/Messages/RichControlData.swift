@@ -41,4 +41,3 @@ struct RichControlData<T: Codable>: Codable {
         self.richControl = controlData
     }
 }
-

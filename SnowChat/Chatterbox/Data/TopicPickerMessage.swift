@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 struct TopicPickerMessage: Codable, CBChannelEventData {
     var eventType: CBChannelEvent = .topicPicker
     

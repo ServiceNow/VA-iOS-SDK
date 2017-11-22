@@ -67,18 +67,13 @@ struct CBSession: Codable {
     let vendor: CBVendor
     var sessionState: SessionState = .closed
     
-    var deviceId: String {
-        get{ return getDeviceIdentifier() }
-    }
+    var deviceId: String { return getDeviceIdentifier() }
 
-    var extId: String {
-        get { return "\(deviceId)\(vendor.consumerAccountId)"}
-    }
-    var contextId: String {
+    var extId: String { return "\(deviceId)\(vendor.consumerAccountId)" }
+
+    var contextId: String { return "context" }
         // NOTE: unknown what this should be - reference impl had it hard-coded and commented as 'what?'
-        get { return "context" }
-    }
-    
+
     init(id: Int, user: CBUser, vendor: CBVendor) {
         self.id = id
         self.user = user

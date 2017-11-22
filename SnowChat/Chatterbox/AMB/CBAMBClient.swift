@@ -13,7 +13,7 @@ protocol AMBListener {
     func onMessage(_ message: String, fromChannel: String)
 }
 
-class AMBClient {
+class CBAMBClient {
     // TODO: REPLACE WITH A REAL AMBClient
     
     var subscribers = [(channel: String, subscriber: AMBListener)]()

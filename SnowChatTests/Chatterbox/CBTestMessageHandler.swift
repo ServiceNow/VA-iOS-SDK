@@ -41,7 +41,7 @@ class MockState: ChatState {
 
 class TestMessageHandler: XCTestCase {
     
-    var ambClient: AMBClient?
+    var ambClient: CBAMBClient?
     var chatStore: ChatDataStore?
     var chatState: MockState?
     var messageHandler: ChatMessageHandler?
@@ -51,7 +51,7 @@ class TestMessageHandler: XCTestCase {
 
         chatState = MockState()
         chatStore = ChatDataStore(storeId: "TEST001")
-        ambClient = AMBClient()
+        ambClient = CBAMBClient()
         messageHandler = ChatMessageHandler(withAmb: ambClient!, withDataStore: chatStore!, withState: chatState!)
     }
     

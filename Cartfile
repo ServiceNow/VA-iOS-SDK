@@ -1,1 +1,2 @@
 github "Alamofire/Alamofire" ~> 4.5
+github "https://gitlab-deo.devsnc.com/mobile/AMB-Client-iOS.git" "master"
