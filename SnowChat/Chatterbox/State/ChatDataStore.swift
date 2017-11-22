@@ -14,7 +14,7 @@ class ChatDataStore: ChatEventControlNotification {
         id = storeId
     }
     
-    func onBooleanControl(forChannel: CBChannel, withControlData data: CBBooleanData) {
+    func onBooleanControl(forChannel: CBChannel, withControlData data: BooleanControlMessage) {
         push(data)
         publishBooleanControlNotification(forChannel, data)
     }
@@ -36,7 +36,7 @@ class ChatDataStore: ChatEventControlNotification {
        dataSink.append(chatItem)
     }
     
-    fileprivate func publishBooleanControlNotification(_ channel: CBChannel, _ data: CBBooleanData ) {
+    fileprivate func publishBooleanControlNotification(_ channel: CBChannel, _ data: BooleanControlMessage ) {
         let info: [String: Any] = ["state": data]
         NotificationCenter.default.post(name: ChatNotification.name(forKind: .booleanControl),
                                         object: self,

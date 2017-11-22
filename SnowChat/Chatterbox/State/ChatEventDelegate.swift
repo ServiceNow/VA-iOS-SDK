@@ -22,8 +22,7 @@ protocol ChatEventNotification {
 
 protocol ChatEventControlNotification {
     
-    func onBooleanControl(forChannel: CBChannel, withControlData: CBBooleanData)
+    func onBooleanControl(forChannel: CBChannel, withControlData: BooleanControlMessage)
     func onDateControl(forChannel: CBChannel, withControlData: CBDateData)
     func onInputControl(forChannel: CBChannel, withControlData: CBInputData)
-    
 }

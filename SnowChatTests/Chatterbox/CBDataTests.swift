@@ -23,9 +23,17 @@ class TestControlData: CBControlData {
 
 class CBDataTests: XCTestCase {
     
+    var encoder: JSONEncoder?
+    var decoder: JSONDecoder?
+    
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+
+        encoder = JSONEncoder()
+        encoder?.dateEncodingStrategy = .millisecondsSince1970
+
+        decoder = JSONDecoder()
+        decoder?.dateDecodingStrategy = .millisecondsSince1970
     }
     
     override func tearDown() {
@@ -69,39 +77,36 @@ class CBDataTests: XCTestCase {
     }
     
     func testBooleanFromJSON() {
-        let json = "{\"type\":\"booleanControl\",\"value\":0}"
+        let json = """
+        {
+          "type": "systemTextMessage",
+          "data": {
+            "sessionId": 1,
+            "sendTime": 0,
+            "receiveTime": 0,
+            "richControl": {
+              "uiType": "Boolean",
+              "uiMetadata": {
+                "label": "Would you like to create an incident?",
+                "required": true
+              },
+              "model": {
+                "name": "init_create_incident",
+                "type": "field"
+              }
+            },
+            "messageId": "d30c8342-1e78-47aa-886e-d6627c092691"
+          }
+        }
+        """
         let obj = CBDataFactory.controlFromJSON(json)
         XCTAssertNotNil(obj)
         XCTAssert(obj.controlType == .controlBoolean)
-        let boolObj = obj as! CBBooleanData
-        XCTAssert(boolObj.value == false)
-    }
-    
-    func testDateFromJSON() {
-        let date = Date()
-        let json = "{\"type\":\"dateControl\",\"value\":\(date.timeIntervalSinceReferenceDate)}"
-        let obj = CBDataFactory.controlFromJSON(json)
-        XCTAssertNotNil(obj)
-        XCTAssert(obj.controlType == .controlDate)
-        let dateObj = obj as! CBDateData
-        XCTAssert(dateObj.value == date)
-    }
-    
-    func testInputFromJSON() {
-        let val = "Are we not men?"
-        let json = "{\"type\":\"inputControl\",\"value\":\"\(val)\"}"
-        var obj = CBDataFactory.controlFromJSON(json)
-        XCTAssertNotNil(obj)
-        XCTAssert(obj.controlType == .controlInput)
-        let inputObj = obj as! CBInputData
-        XCTAssert(inputObj.value == val)
-        
-        let badJson = "{\"type\":\"inputControl\",\"value(*&\":false}"
-        obj = CBDataFactory.controlFromJSON(badJson)
-        XCTAssertNotNil(obj)
-        XCTAssert(obj.controlType == .controlTypeUnknown)
-        let unknownObj = obj as? CBControlDataUnknown
-        XCTAssert(unknownObj != nil)
+        let boolObj = obj as! BooleanControlMessage
+        XCTAssert(boolObj.data.richControl.uiType == "Boolean")
+        XCTAssert(boolObj.data.richControl.model.type == "field")
+        XCTAssert(boolObj.data.richControl.uiMetadata.label == "Would you like to create an incident?")
+        XCTAssert(boolObj.data.richControl.uiMetadata.required == true)
     }
     
     func testInvalidTypeFromJSON() {
@@ -115,26 +120,19 @@ class CBDataTests: XCTestCase {
     }
     
     func testConsumerTextMessage() {
-        let ctm = ConsumerTextMessage(withData: ConsumerTextMessage.TextMessageData(sessionId: 1, uiType: "TopicPicker", model: "topic", value: "system"))
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .millisecondsSince1970
-
+        let ctm = ConsumerTextMessage(withData: RichControlData(sessionId: 1,
+                                                                controlData: ConsumerTextMessage.ControlWrapper(uiType: "TopicPicker")))
         do {
-            let jsonData = try encoder.encode(ctm)
+            let jsonData = try encoder!.encode(ctm)
             let jsonString = String(data: jsonData, encoding: .utf8)
             debugPrint("JSON: \(jsonString!)")
             
             XCTAssertTrue(jsonString!.contains("\"type\":\"consumerTextMessage\""))
-            XCTAssertTrue(jsonString!.contains("\"value\":\"system\""))
             XCTAssertTrue(jsonString!.contains("\"uiType\":\"TopicPicker\""))
-            XCTAssertTrue(jsonString!.contains("\"type\":\"topic\""))
 
             // make a new instance from the JSON, then decode that and compare to the original
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .millisecondsSince1970
-            
-            let clone = try decoder.decode(ConsumerTextMessage.self, from: jsonData)
-            let cloneData = try encoder.encode(clone)
+            let clone = try decoder!.decode(ConsumerTextMessage.self, from: jsonData)
+            let cloneData = try encoder!.encode(clone)
             let cloneString = String(data: cloneData, encoding: .utf8)
             XCTAssertEqual(jsonString, cloneString)
         } catch let error {
@@ -222,6 +220,27 @@ class CBDataTests: XCTestCase {
         } catch let error {
             debugPrint(error)
             XCTAssert(false)
+        }
+    }
+    
+    func testTopicPickerMessage() {
+        let topicPicker = TopicPickerMessage(forSession: 1, withValue: "system")
+        
+        do {
+            let jsonData = try encoder!.encode(topicPicker)
+            let jsonString: String = String(data: jsonData, encoding: .utf8)!
+            debugPrint(jsonString)
+            XCTAssert(jsonString.contains("\"type\":\"consumerTextMessage\""))
+            XCTAssert(jsonString.contains("\"type\":\"topic\""))
+            XCTAssert(jsonString.contains("\"uiType\":\"TopicPicker\""))
+            XCTAssert(jsonString.contains("\"value\":\"system\""))
+            
+            let clone = try decoder!.decode(TopicPickerMessage.self, from: jsonData)
+            let cloneData = try encoder!.encode(clone)
+            let cloneString = String(data: cloneData, encoding: .utf8)
+            XCTAssertEqual(cloneString, jsonString)
+        } catch let error {
+            debugPrint(error)
         }
     }
 }

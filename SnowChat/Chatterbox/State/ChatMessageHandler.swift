@@ -37,11 +37,18 @@ class ChatMessageHandler: AMBListener {
         ambClient.unsubscribe(fromChannel: channel.name, receiver: self)
     }
     
+    func publish(onChannel channel: CBChannel, jsonMessage: Data) -> Bool {
+        if let jsonString = String(data: jsonMessage, encoding: .utf8) {
+            ambClient.publish(onChannel: channel.name, jsonMessage: jsonString)
+            return true
+        }
+        return false
+    }
+    
     func onMessage(_ message: String, fromChannel: String) {
         print("ChatMessageHandler received message on channel \(fromChannel): \(message)")
         
         if handleControlMessage(message: message, fromChannel: fromChannel) != true {
-            
             if handleEventMessage(message: message, fromChannel: fromChannel) != true {
                 print("Unhandled message: \(message)")
             }
@@ -54,16 +61,8 @@ class ChatMessageHandler: AMBListener {
         
         switch control.controlType {
         case .controlBoolean:
-            if let booleanData = control as? CBBooleanData {
+            if let booleanData = control as? BooleanControlMessage {
                 dataStore.onBooleanControl(forChannel: CBChannel(name: fromChannel), withControlData: booleanData)
-            }
-        case .controlDate:
-            if let dateData = control as? CBDateData {
-                dataStore.onDateControl(forChannel: CBChannel(name: fromChannel), withControlData: dateData)
-            }
-        case .controlInput:
-            if let inputData = control as? CBInputData {
-                dataStore.onInputControl(forChannel: CBChannel(name: fromChannel), withControlData: inputData)
             }
         default:
             print("Unsupported control type in onMessage: \(control.controlType)")

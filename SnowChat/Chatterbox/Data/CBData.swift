@@ -8,6 +8,21 @@
 
 import Foundation
 
+class CBData {
+
+    static var jsonDecoder: JSONDecoder = {
+        var decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .millisecondsSince1970
+        return decoder
+    }()
+    
+    static var jsonEncoder: JSONEncoder = {
+        var encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .millisecondsSince1970
+        return encoder
+    }()
+}
+
 struct CBUser: Codable {
     let id: String
     let token: String
@@ -24,7 +39,7 @@ struct CBVendor: Codable {
 }
 
 struct CBSession: Codable {
-    let id: String
+    let id: Int
     let channel: String
     let user: CBUser
     let vendor: CBVendor
@@ -78,22 +93,23 @@ enum CBChannelEvent: String, Codable, CodingKey {
     
     // from Qlue protocol
     case channelInit = "Init"
+    case topicPicker = "TopicPicker"
     
     case channelEventUnknown = "unknownChannelEvent"
 }
 
 // MARK: - Control Data
 
-enum CBControlType: String {
-    case controlTopicPicker = "topicPickerControl"
-    case controlBoolean = "booleanControl"
-    case controlDate = "dateControl"
-    case controlInput = "inputControl"
+enum CBControlType: String, Codable {
+    case controlTopicPicker = "TopicPicker"
+    case controlBoolean = "Boolean"
+    case controlDate = "Date"
+    case controlInput = "Input"
     
     case controlTypeUnknown = "unknownControl"
 }
 
-protocol CBControlData: CBStorable {
+protocol CBControlData: CBStorable, Codable {
     var id: String { get }
     var controlType: CBControlType { get }
 }

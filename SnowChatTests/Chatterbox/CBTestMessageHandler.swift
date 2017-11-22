@@ -14,6 +14,13 @@ import XCTest
 class MockState: ChatState {
     var state = CBChannelEvent.channelEventUnknown
     
+    init() {
+        let user = CBUser(id: "9927", token: "90749wjhgf", name: "marc", consumerId: "marc.attinasi", consummerAccountId: "marc.attinasi@servicenow.com")
+        let vendor = CBVendor(name: "ServiceNow", vendiorId: "001", consumerId: "marc.attinasi", consummerAccountId: "marc.attinasi@servicenow.com")
+        let session = CBSession(id: 1, channel: "mock", user: user, vendor: vendor)
+        super.init(forSession: session, initialState: ChatStates.Disconnected)
+    }
+    
     override func onChannelInit(forChannel: CBChannel, withEventData data: InitMessage) {
         state = .channelInit
     }
@@ -62,7 +69,28 @@ class TestMessageHandler: XCTestCase {
         let observer2 = observeDateControlChangesAndFail()
         
         // pretend a message came in via AMB for a booleanControl
-        let json = "{\"type\":\"booleanControl\",\"value\":1}"
+        let json = """
+        {
+          "type": "systemTextMessage",
+          "data": {
+            "sessionId": 1,
+            "sendTime": 0,
+            "receiveTime": 0,
+            "richControl": {
+              "uiType": "Boolean",
+              "uiMetadata": {
+                "label": "Would you like to create an incident?",
+                "required": true
+              },
+              "model": {
+                "name": "init_create_incident",
+                "type": "field"
+              }
+            },
+            "messageId": "d30c8342-1e78-47aa-886e-d6627c092691"
+          }
+        }
+        """
         ambClient?.publish(onChannel: channel.name, jsonMessage: json)
         
         waitForExpectations(timeout: 1) { error in
@@ -77,10 +105,10 @@ class TestMessageHandler: XCTestCase {
             return NotificationCenter.default.addObserver(forName: ChatNotification.name(forKind: .booleanControl),
                                                           object: nil, queue: nil) { notification in
                 let info = notification.userInfo as! [String: Any]
-                let notificationData = info["state"] as! CBBooleanData
+                let notificationData = info["state"] as! BooleanControlMessage
                 
                 XCTAssert(notificationData.controlType == .controlBoolean)
-                XCTAssertEqual(notificationData.value, true)
+                XCTAssertEqual(notificationData.data.messageId, "d30c8342-1e78-47aa-886e-d6627c092691")
                 
                 expect.fulfill()
             }

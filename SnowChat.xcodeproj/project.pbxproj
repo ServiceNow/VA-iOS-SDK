@@ -38,6 +38,10 @@
 		C40565F01FC491DA004BD28C /* ActionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565EF1FC491DA004BD28C /* ActionMessage.swift */; };
 		C40565F21FC49CD8004BD28C /* InitMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565F11FC49CD8004BD28C /* InitMessage.swift */; };
 		C40565F41FC4B88D004BD28C /* ConsumerTextMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565F31FC4B88D004BD28C /* ConsumerTextMessage.swift */; };
+		C40565F61FC4D85B004BD28C /* TopicPickerMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565F51FC4D85B004BD28C /* TopicPickerMessage.swift */; };
+		C40565F81FC4F4D3004BD28C /* BooleanControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565F71FC4F4D3004BD28C /* BooleanControlMessage.swift */; };
+		C40565FA1FC4F71D004BD28C /* SystemTextMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565F91FC4F71D004BD28C /* SystemTextMessage.swift */; };
+		C40565FF1FC508D3004BD28C /* RichControlData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565FE1FC508D3004BD28C /* RichControlData.swift */; };
 		C4CAFEA11FBCF0C9007007F5 /* ChatEventDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA01FBCF0C9007007F5 /* ChatEventDelegate.swift */; };
 		C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA21FBCF2F8007007F5 /* CBData.swift */; };
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
@@ -75,6 +79,10 @@
 		C40565EF1FC491DA004BD28C /* ActionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionMessage.swift; sourceTree = "<group>"; };
 		C40565F11FC49CD8004BD28C /* InitMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitMessage.swift; sourceTree = "<group>"; };
 		C40565F31FC4B88D004BD28C /* ConsumerTextMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumerTextMessage.swift; sourceTree = "<group>"; };
+		C40565F51FC4D85B004BD28C /* TopicPickerMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicPickerMessage.swift; sourceTree = "<group>"; };
+		C40565F71FC4F4D3004BD28C /* BooleanControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooleanControlMessage.swift; sourceTree = "<group>"; };
+		C40565F91FC4F71D004BD28C /* SystemTextMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemTextMessage.swift; sourceTree = "<group>"; };
+		C40565FE1FC508D3004BD28C /* RichControlData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RichControlData.swift; sourceTree = "<group>"; };
 		C4CAFEA01FBCF0C9007007F5 /* ChatEventDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEventDelegate.swift; sourceTree = "<group>"; };
 		C4CAFEA21FBCF2F8007007F5 /* CBData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBData.swift; sourceTree = "<group>"; };
 		C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataTests.swift; sourceTree = "<group>"; };
@@ -166,6 +174,17 @@
 			path = AMB;
 			sourceTree = "<group>";
 		};
+		C40565FD1FC4FF15004BD28C /* Messages */ = {
+			isa = PBXGroup;
+			children = (
+				C40565FE1FC508D3004BD28C /* RichControlData.swift */,
+				C40565F91FC4F71D004BD28C /* SystemTextMessage.swift */,
+				C40565F31FC4B88D004BD28C /* ConsumerTextMessage.swift */,
+				C40565EF1FC491DA004BD28C /* ActionMessage.swift */,
+			);
+			path = Messages;
+			sourceTree = "<group>";
+		};
 		C4CAFE9C1FBCF018007007F5 /* Chatterbox */ = {
 			isa = PBXGroup;
 			children = (
@@ -200,11 +219,12 @@
 		C4CAFE9F1FBCF057007007F5 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				C40565FD1FC4FF15004BD28C /* Messages */,
 				C4CAFEA21FBCF2F8007007F5 /* CBData.swift */,
 				C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */,
-				C40565EF1FC491DA004BD28C /* ActionMessage.swift */,
 				C40565F11FC49CD8004BD28C /* InitMessage.swift */,
-				C40565F31FC4B88D004BD28C /* ConsumerTextMessage.swift */,
+				C40565F51FC4D85B004BD28C /* TopicPickerMessage.swift */,
+				C40565F71FC4F4D3004BD28C /* BooleanControlMessage.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -370,17 +390,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				C40565F41FC4B88D004BD28C /* ConsumerTextMessage.swift in Sources */,
+				C40565FA1FC4F71D004BD28C /* SystemTextMessage.swift in Sources */,
 				C40565C81FBE2454004BD28C /* ChatMessageHandler.swift in Sources */,
 				C40565F21FC49CD8004BD28C /* InitMessage.swift in Sources */,
 				C40565D71FBF4B71004BD28C /* ChatState.swift in Sources */,
 				C40565F01FC491DA004BD28C /* ActionMessage.swift in Sources */,
 				C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */,
 				C40565CB1FBE283C004BD28C /* AMBClient.swift in Sources */,
+				C40565F81FC4F4D3004BD28C /* BooleanControlMessage.swift in Sources */,
+				C40565F61FC4D85B004BD28C /* TopicPickerMessage.swift in Sources */,
 				C40565CD1FBE292B004BD28C /* ChatDataStore.swift in Sources */,
 				C40565CF1FBE2FC4004BD28C /* ChatNotifications.swift in Sources */,
 				C4CAFEA81FBD0912007007F5 /* CBDataFactory.swift in Sources */,
 				C40565C61FBE1539004BD28C /* SessionProtocol.swift in Sources */,
 				BE50E2291FB933C600948FBC /* RemoveMe.swift in Sources */,
+				C40565FF1FC508D3004BD28C /* RichControlData.swift in Sources */,
 				C4CAFEA11FBCF0C9007007F5 /* ChatEventDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -15,6 +15,7 @@ enum ChatStates {
 
     case Disconnected
     case AMBInitializing
+    case AMBInitialized
     case StartSystemTopic
     case UserSession
 }
@@ -22,9 +23,11 @@ enum ChatStates {
 class ChatState: ChatEventNotification {
     
     var currentState: ChatStates
+    var session: CBSession
     
-    init(initialState: ChatStates = .Disconnected) {
+    init(forSession: CBSession, initialState: ChatStates = .Disconnected) {
         currentState = initialState
+        session = forSession
     }
     
     func reset() {
@@ -33,10 +36,17 @@ class ChatState: ChatEventNotification {
         currentState = .Disconnected
     }
     
-    func subscribeToChatEvents() {
+    func initializeAMB() {
+        // TODO: integrate with AMB and sign the user in
     }
     
-    func establishSystemTopic(forUser id: String, withToken token: String) {
+    func subscribeToChatEvents() {
+        // TODO: integrate with AMB and subscribe to the session channel
+    }
+    
+    func establishSystemTopic() {
+        
+        let systemTopicPicker = TopicPickerMessage(forSession: session.id, withValue: "system")
         
     }
     
