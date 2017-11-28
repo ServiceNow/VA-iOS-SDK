@@ -10,7 +10,7 @@ import UIKit
 
 class MultiselectPickerControl: ControlProtocol {
     
-    var model: ControlViewModel?
+    var model: ControlViewModel
     
     var viewController: UIViewController
     
@@ -19,7 +19,7 @@ class MultiselectPickerControl: ControlProtocol {
     public init() {
         model = MultiselectControlViewModel()
         
-        let multiViewController = PickerViewController()
+        let multiViewController = PickerTableViewController()
         multiViewController.model = model as? PickerControlViewModel
         viewController = multiViewController
     }

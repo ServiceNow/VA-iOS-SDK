@@ -18,14 +18,14 @@ public class MockBubbleViewController: UIViewController {
         
         bubbleView.cornerRadius = 12
         bubbleView.corners = [.topLeft, .topRight]
-        bubbleView.backgroundColor = UIColor(red: 59.0 / 255, green: 167.0 / 255, blue: 246.0 / 255, alpha: 1)
+//        bubbleView.backgroundColor = UIColor(red: 59.0 / 255, green: 167.0 / 255, blue: 246.0 / 255, alpha: 1)
         
         bubbleView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(bubbleView)
         NSLayoutConstraint.activate([bubbleView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                                     bubbleView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                                     bubbleView.topAnchor.constraint(equalTo: view.topAnchor),
-                                    bubbleView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.4)])
+                                    bubbleView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.7)])
     }
     
     private func removeCurrentUIControl() {
@@ -51,11 +51,11 @@ public class MockBubbleViewController: UIViewController {
         }
         
         controlView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(controlView)
+        bubbleView.addSubview(controlView)
         
-        NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                     controlView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     controlView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-                                     controlView.topAnchor.constraint(equalTo: bubbleView.bottomAnchor)])
+        NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor),
+                                     controlView.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor),
+                                     controlView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor),
+                                     controlView.topAnchor.constraint(equalTo: bubbleView.topAnchor)])
     }
 }

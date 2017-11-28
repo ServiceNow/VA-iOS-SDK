@@ -8,6 +8,8 @@
 
 class MultiselectControlViewModel: PickerControlViewModel {
     
+    var isMultiselect: Bool
+    
     var isRequired: Bool?
     
     var items: [SelectableItemViewModel]?
@@ -15,6 +17,7 @@ class MultiselectControlViewModel: PickerControlViewModel {
     var title: String?
     
     init() {
+        self.isMultiselect = true
         self.items = [SelectableItemViewModel(displayValue: "Item 1"), SelectableItemViewModel(displayValue: "Item 2"), SelectableItemViewModel(displayValue: "Item 3"), SelectableItemViewModel(displayValue: "Item 4")]
     }
 }

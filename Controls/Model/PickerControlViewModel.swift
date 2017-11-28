@@ -10,9 +10,11 @@
 class SelectableItemViewModel: ControlViewModel {
     
     var title: String?
+    
     var isRequired: Bool?
     
     var isSelected: Bool = false
+    
     var displayValue: String?
     
     init(displayValue: String) {
@@ -21,6 +23,8 @@ class SelectableItemViewModel: ControlViewModel {
 }
 
 protocol PickerControlViewModel: ControlViewModel {
+    
+    var isMultiselect: Bool { get set }
     
     // collection of item models
     var items: [SelectableItemViewModel]? { get set }

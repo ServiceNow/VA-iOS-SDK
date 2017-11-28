@@ -13,7 +13,7 @@ protocol ControlDelegate: class {
 protocol ControlProtocol: class {
     
     // representation of ui control state
-    var model: ControlViewModel? { get set }
+    var model: ControlViewModel { get set }
     
     // UIViewController of ui control
     var viewController: UIViewController { get }
@@ -21,4 +21,16 @@ protocol ControlProtocol: class {
     weak var delegate: ControlDelegate? { get set }
     
     func submit()
+}
+
+enum PickerControlStyle: Int {
+    
+    case inline
+    
+    case actionSheet
+}
+
+protocol PickerControlProtocol: ControlProtocol {
+    
+    var style: PickerControlStyle { get set }
 }

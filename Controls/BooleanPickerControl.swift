@@ -8,20 +8,34 @@
 
 import UIKit
 
-public class BooleanPickerControl: ControlProtocol {
+public class BooleanPickerControl: PickerControlProtocol {
     
-    var model: ControlViewModel?
+    var style: PickerControlStyle
     
-    public var viewController: UIViewController
+    var model: ControlViewModel
     
     weak var delegate: ControlDelegate?
     
+    public lazy var viewController: UIViewController = {
+        let vc = self.viewController(forStyle: style, model: model)
+        return vc
+    }()
+    
     public init() {
         model = BooleanControlViewModel()
-        
-        let vc = PickerViewController()
-        vc.model = model as? PickerControlViewModel
-        viewController = vc
+        style = .inline
+    }
+    
+    func viewController(forStyle style: PickerControlStyle, model: ControlViewModel?) -> UIViewController {
+        switch style {
+        case .inline:
+            let tableViewController = PickerTableViewController()
+            tableViewController.model = model as? PickerControlViewModel
+            return tableViewController
+        case .actionSheet:
+            let actionSheet = UIAlertController()
+            return actionSheet
+        }
     }
     
     func submit() {

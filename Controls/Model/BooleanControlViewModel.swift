@@ -8,6 +8,8 @@
 
 class BooleanControlViewModel: PickerControlViewModel {
     
+    var isMultiselect: Bool
+    
     var isRequired: Bool?
     
     var items: [SelectableItemViewModel]?
@@ -15,6 +17,8 @@ class BooleanControlViewModel: PickerControlViewModel {
     var title: String?
     
     init() {
+        self.isMultiselect = false
+        self.title = "Would you like to create incident?"
         self.items = [SelectableItemViewModel(displayValue: "Yes"), SelectableItemViewModel(displayValue: "No")]
     }
 }
