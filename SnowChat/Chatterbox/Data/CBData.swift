@@ -24,11 +24,11 @@ class CBData {
 }
 
 struct CBUser: Codable {
-    let id: String
-    let token: String
-    let name: String
-    let consumerId: String
-    let consumerAccountId: String
+    var id: String
+    var token: String
+    var name: String
+    var consumerId: String
+    var consumerAccountId: String
 }
 
 extension CBUser {
@@ -42,10 +42,10 @@ extension CBUser {
 }
 
 struct CBVendor: Codable {
-    let name: String
-    let vendorId: String
-    let consumerId: String
-    let consumerAccountId: String
+    var name: String
+    var vendorId: String
+    var consumerId: String
+    var consumerAccountId: String
 }
 
 extension CBVendor {
@@ -58,13 +58,13 @@ extension CBVendor {
 }
 
 func getDeviceIdentifier() -> String {
-    return "DEVICE-ID-PLACEHOLDER"
+    return "1234"
 }
 
 struct CBSession: Codable {
-    let id: Int
-    let user: CBUser
-    let vendor: CBVendor
+    var id: String
+    var user: CBUser
+    var vendor: CBVendor
     var sessionState: SessionState = .closed
     
     var deviceId: String { return getDeviceIdentifier() }
@@ -74,7 +74,7 @@ struct CBSession: Codable {
     var contextId: String { return "context" }
         // NOTE: unknown what this should be - reference impl had it hard-coded and commented as 'what?'
 
-    init(id: Int, user: CBUser, vendor: CBVendor) {
+    init(id: String, user: CBUser, vendor: CBVendor) {
         self.id = id
         self.user = user
         self.vendor = vendor
