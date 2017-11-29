@@ -8,8 +8,8 @@
 
 import UIKit
 
-class SelectableViewCell: UITableViewCell {
-    
+class SelectableViewCell: UITableViewCell, ConfigurablePickerCell {
+
     static let cellIdentifier = "SelectableViewCellIdentifier"
     
     private var selectableView: SelectableView!
@@ -22,6 +22,10 @@ class SelectableViewCell: UITableViewCell {
         } else {
             fatalError("Couldn't load SelectableView from nib")
         }
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     private func setupSelectableView() {
@@ -37,11 +41,10 @@ class SelectableViewCell: UITableViewCell {
         super.updateConstraints()
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    // MARK: - ConfigurablePickerCell Protocol
     
-    func configureWithTitle(_ title: String) {
-        selectableView.titleLabel.text = title
+    func configure(withModel model: SelectableItemViewModel) {
+//        titleLabel.text = model.displayValue
+//        titleLabel.textColor = itemTextColor
     }
 }

@@ -18,6 +18,7 @@ class MultiselectControlViewModel: PickerControlViewModel {
     
     init() {
         self.isMultiselect = true
+        self.title = "What is your issue?"
         self.items = [SelectableItemViewModel(displayValue: "Item 1"), SelectableItemViewModel(displayValue: "Item 2"), SelectableItemViewModel(displayValue: "Item 3"), SelectableItemViewModel(displayValue: "Item 4")]
     }
 }

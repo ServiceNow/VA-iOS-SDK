@@ -8,20 +8,22 @@
 
 import UIKit
 
-class MultiselectPickerControl: ControlProtocol {
+class MultiselectPickerControl: PickerControlProtocol {
     
     var model: ControlViewModel
+    
+    var style: PickerControlStyle
     
     var viewController: UIViewController
     
     weak var delegate: ControlDelegate?
     
     public init() {
-        model = MultiselectControlViewModel()
-        
-        let multiViewController = PickerTableViewController()
-        multiViewController.model = model as? PickerControlViewModel
+        style = .inline
+        let model = MultiselectControlViewModel()
+        let multiViewController = PickerTableViewController(model: model)
         viewController = multiViewController
+        self.model = model
     }
     
     func submit() {
