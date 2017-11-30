@@ -70,4 +70,7 @@ internal class AMBClient: NSObject {
         fayeClient.unsubscribe(subscription)
     }
     
+    func send(message: [String: Any], toChannel channel: String ) {
+        fayeClient.sendMessage(message, toChannel: channel)
+    }
 }

@@ -27,11 +27,9 @@ class CBDataTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        encoder = JSONEncoder()
-        encoder?.dateEncodingStrategy = .millisecondsSince1970
+        encoder = CBData.jsonEncoder
 
-        decoder = JSONDecoder()
-        decoder?.dateDecodingStrategy = .millisecondsSince1970
+        decoder = CBData.jsonDecoder
     }
     
     override func tearDown() {
@@ -79,9 +77,10 @@ class CBDataTests: XCTestCase {
         {
           "type": "systemTextMessage",
           "data": {
-            "sessionId": 1,
+            "sessionId": "1",
             "sendTime": 0,
             "receiveTime": 0,
+            "direction": "outbound",
             "richControl": {
               "uiType": "Boolean",
               "uiMetadata": {
@@ -102,9 +101,9 @@ class CBDataTests: XCTestCase {
         XCTAssert(obj.controlType == .controlBoolean)
         let boolObj = obj as! BooleanControlMessage
         XCTAssert(boolObj.data.richControl.uiType == "Boolean")
-        XCTAssert(boolObj.data.richControl.model.type == "field")
-        XCTAssert(boolObj.data.richControl.uiMetadata.label == "Would you like to create an incident?")
-        XCTAssert(boolObj.data.richControl.uiMetadata.required == true)
+        XCTAssert(boolObj.data.richControl.model?.type == "field")
+        XCTAssert(boolObj.data.richControl.uiMetadata?.label == "Would you like to create an incident?")
+        XCTAssert(boolObj.data.richControl.uiMetadata?.required == true)
     }
     
     func testInvalidTypeFromJSON() {
@@ -118,7 +117,7 @@ class CBDataTests: XCTestCase {
     }
     
     func testConsumerTextMessage() {
-        let ctm = ConsumerTextMessage(withData: RichControlData(sessionId: 1,
+        let ctm = ConsumerTextMessage(withData: RichControlData(sessionId: "1",
                                                                 controlData: ConsumerTextMessage.ControlWrapper(uiType: "TopicPicker")))
         do {
             let jsonData = try encoder!.encode(ctm)
@@ -141,57 +140,60 @@ class CBDataTests: XCTestCase {
 
     let jsonInitStart = """
         {
-          "type": "actionMessage",
-          "data": {
-            "@class": ".ActionMessageDto",
-            "messageId": "687e15f4-ffa9-497e-9d7b- 83a0c714100a",
-            "topicId": 1,
-            "taskId": 1,
-            "sessionId": 1,
-            "direction": "outbound",
-            "sendTime": 0,
-            "receiveTime": 0,
-            "actionMessage": {
-              "type": "Init",
-              "loginStage": "Start",
-              "systemActionName": "init",
-              "contextHandshake": {
-                "deviceId": "+15109968676",
-                "ctxHandShakeId": 1,
-                "clientContextRes": {},
-                "serverContextReq": {
-                  "DeviceType": {
-                    "updateType": "push",
-                    "updateFrequency": "once"
+          "type" : "actionMessage",
+          "data" : {
+            "@class" : ".ActionMessageDto",
+            "messageId" : "fd6cc69073320300d63a566a4cf6a727",
+            "taskId" : "796cc69073320300d63a566a4cf6a725",
+            "sessionId" : "b93c861073320300d63a566a4cf6a7f7",
+            "conversationId" : "f16cc69073320300d63a566a4cf6a725",
+            "actionMessage" : {
+              "contextHandshake" : {
+                "serverContextReq" : {
+                  "location" : {
+                    "updateFrequency" : "every minute",
+                    "updateType" : "push"
                   },
-                  "permissionToUsePhoto": {
-                    "updateType": "push",
-                    "updateFrequency": "once"
+                  "MobileAppVersion" : {
+                    "updateFrequency" : "once",
+                    "updateType" : "push"
                   },
-                  "MobileAppVersion": {
-                    "updateType": "push",
-                    "updateFrequency": "once"
+                  "deviceTimeZone" : {
+                    "updateFrequency" : "once",
+                    "updateType" : "push"
                   },
-                  "MobileOS": {
-                    "updateType": "push",
-                    "updateFrequency": "once"
+                  "DeviceType" : {
+                    "updateFrequency" : "once",
+                    "updateType" : "push"
                   },
-                  "location": {
-                    "updateType": "push",
-                    "updateFrequency": "every minute"
+                  "permissionToUseCamera" : {
+                    "updateFrequency" : "once",
+                    "updateType" : "push"
                   },
-                  "deviceTimeZone": {
-                    "updateType": "push",
-                    "updateFrequency": "once"
+                  "permissionToUsePhoto" : {
+                    "updateFrequency" : "once",
+                    "updateType" : "push"
                   },
-                  "permissionToUseCamera": {
-                    "updateType": "push",
-                    "updateFrequency": "once"
+                  "MobileOS" : {
+                    "updateFrequency" : "once",
+                    "updateType" : "push"
                   }
-                }
-              }
-            }
-          }
+                },
+                "vendorId" : "c2f0b8f187033200246ddd4c97cb0bb9"
+              },
+              "loginStage" : "Start",
+              "type" : "Init",
+              "systemActionName" : "init"
+            },
+            "links" : [
+
+            ],
+            "direction" : "outbound",
+            "isAgent" : false,
+            "receiveTime" : 0,
+            "sendTime" : 1512067038216
+          },
+          "source" : "server"
         }
         """
     
@@ -205,7 +207,7 @@ class CBDataTests: XCTestCase {
         XCTAssert(initObj != nil)
         XCTAssert(initObj?.data.actionMessage.systemActionName == "init")
         XCTAssert(initObj?.data.actionMessage.loginStage == "Start")
-        XCTAssert(initObj?.data.actionMessage.contextHandshake.serverContextRequest.count == 7)
+        XCTAssert(initObj?.data.actionMessage.contextHandshake.serverContextRequest?.count == 7)
     }
     
     func testActionMessage() {
@@ -222,7 +224,7 @@ class CBDataTests: XCTestCase {
     }
     
     func testTopicPickerMessage() {
-        let topicPicker = TopicPickerMessage(forSession: 1, withValue: "system")
+        let topicPicker = TopicPickerMessage(forSession: "1", withValue: "system")
         
         do {
             let jsonData = try encoder!.encode(topicPicker)
@@ -240,6 +242,131 @@ class CBDataTests: XCTestCase {
             XCTAssertEqual(cloneString, jsonString)
         } catch let error {
             Logger.default.logInfo(error.localizedDescription)
+        }
+    }
+    
+    func testSystemErrorMessage() {
+        let json = """
+        {
+          "type" : "systemTextMessage",
+          "data" : {
+            "@class" : ".MessageDto",
+            "messageId" : "d5b33f3073320300d63a566a4cf6a74d",
+            "richControl" : {
+              "uiType" : "SystemError",
+              "uiMetadata" : {
+                "error" : {
+                  "handler" : {
+                    "type" : "Hmode",
+                    "instruction" : "This conversation has been transferred to the Live Agent queue, and someone will be with you momentarily."
+                  },
+                  "message" : "An unrecoverable error has occurred.",
+                  "code" : "system_error"
+                }
+              }
+            },
+            "taskId" : "ccb33f3073320300d63a566a4cf6a715",
+            "sessionId" : "88a3f33073320300d63a566a4cf6a724",
+            "conversationId" : "48b33f3073320300d63a566a4cf6a715",
+            "links" : [
+
+            ],
+            "sendTime" : 1512074803616,
+            "direction" : "outbound",
+            "isAgent" : false,
+            "receiveTime" : 0
+          },
+          "source" : "server"
+        }
+        """
+        let jsonData = json.data(using: .utf8)
+        let decoder = JSONDecoder()
+        do {
+            let systemMessage = try decoder.decode(SystemTextMessage.self, from: jsonData!) as SystemTextMessage
+            XCTAssert(systemMessage.data.richControl.uiType == "SystemError")
+            XCTAssert(systemMessage.data.richControl.uiMetadata?.error?.message == "An unrecoverable error has occurred.")
+        } catch let error {
+            Logger.default.logInfo(error.localizedDescription)
+            XCTAssert(false)
+        }
+        
+    }
+    
+    func testContextualActionMessage() {
+        
+        let json = """
+            {
+            "type": "systemTextMessage",
+            "data": {
+                "@class": ".MessageDto",
+                "messageId": "9807448173320300d63a566a4cf6a7ed",
+                "richControl": {
+                    "model": {
+                        "type": "task"
+                    },
+                    "uiType": "ContextualAction",
+                    "uiMetadata": {
+                        "inputControls": [
+                            {
+                                "model": {
+                                    "type": "task"
+                                },
+                                "uiType": "Picker",
+                                "uiMetadata": {
+                                    "options": [
+                                        {
+                                            "label": "Show Conversation",
+                                            "value": "showTopic"
+                                        },
+                                        {
+                                            "label": "Start a new conversation",
+                                            "value": "startTopic"
+                                        },
+                                        {
+                                            "label": "Chat with agent",
+                                            "value": "brb"
+                                        }
+                                    ],
+                                    "multiSelect": false,
+                                    "openByDefault": false
+                                }
+                            },
+                            {
+                                "model": {
+                                    "type": "task"
+                                },
+                                "uiType": "TextSearch"
+                            },
+                            {
+                                "model": {
+                                    "type": "task"
+                                },
+                                "uiType": "VoiceSearch"
+                            }
+                        ]
+                    }
+                },
+                "sessionId": "eef6844173320300d63a566a4cf6a758",
+                "conversationId": "5407c08173320300d63a566a4cf6a7f1",
+                "links": [
+
+                ],
+                "sendTime": 1512079862721,
+                "direction": "outbound",
+                "isAgent": false,
+                "receiveTime": 0
+            },
+            "source": "server"
+        }
+        """
+        let jsonData = json.data(using: .utf8)
+        let decoder = JSONDecoder()
+        do {
+            let systemMessage = try decoder.decode(ContextualActionMessage.self, from: jsonData!) as ContextualActionMessage
+            XCTAssert(systemMessage.data.richControl.uiType == "ContextualAction")
+        } catch let error {
+            Logger.default.logInfo(error.localizedDescription)
+            XCTAssert(false)
         }
     }
 }

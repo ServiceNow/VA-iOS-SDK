@@ -10,8 +10,8 @@ import Foundation
 
 protocol ManageSessions {
     
-    func createSession(userId: String, userToken: String) -> CBSession
-    func getSession(sessionId: String) -> CBSession
-    func refreshSession(_ session: CBSession) -> CBSession
-    func destroySession(sessionId: String) -> Bool
+    func createSession(userId: String, userToken: String, completionHandler: @escaping (CBSession?) -> Void)
+    func getSession(sessionInfo: CBSession, completionHandler: @escaping (CBSession?) -> Void)
+    func refreshSession(_ session: CBSession, completionHandler: @escaping (CBSession?) -> Void)
+    func destroySession(sessionId: String, completionHandler: @escaping (Bool) -> Void)
 }

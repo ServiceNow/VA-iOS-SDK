@@ -12,15 +12,34 @@ class CBData {
 
     static var jsonDecoder: JSONDecoder = {
         var decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .millisecondsSince1970
+        
+        // custom decoder: service wants milliseconds-since-1970 as an integer
+        decoder.dateDecodingStrategy = .custom({ (decoder) -> Date in
+            let container = try decoder.singleValueContainer()
+            let dateVal = try container.decode(Int.self)
+            let since1970 = TimeInterval(dateVal) / 1000
+            return Date(timeIntervalSince1970: since1970)
+        })
         return decoder
     }()
     
     static var jsonEncoder: JSONEncoder = {
         var encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .millisecondsSince1970
+        
+        // custom encoder: service sends milliseconds-since-1970 as an integer
+        encoder.dateEncodingStrategy = .custom({ (date, encoder) in
+            let val = Int((date.timeIntervalSince1970 * 1000).rounded())
+            var encoder = encoder.singleValueContainer()
+            try encoder.encode(val)
+        })
         return encoder
     }()
+    
+    static var config: ChatBoxConfig = ChatBoxConfig(url: "http://localhost:8080") //ChatBoxConfig(url: "https://demonightlychatbot.service-now.com")
+    
+    struct ChatBoxConfig {
+        var url: String
+    }
 }
 
 struct CBUser: Codable {
@@ -66,7 +85,7 @@ struct CBSession: Codable {
     var user: CBUser
     var vendor: CBVendor
     var sessionState: SessionState = .closed
-    
+    var welcomeMessage: String?
     var deviceId: String { return getDeviceIdentifier() }
 
     var extId: String { return "\(deviceId)\(vendor.consumerAccountId)" }
@@ -86,6 +105,7 @@ struct CBSession: Codable {
         case id
         case user
         case vendor
+        case welcomeMessage
     }
     
     enum SessionState {
@@ -168,6 +188,9 @@ enum CBControlType: String, Codable {
     case controlBoolean = "Boolean"
     case controlDate = "Date"
     case controlInput = "Input"
+    case contextualActionMessage = "ContextualAction"
+    
+    case systemMessage = "systemTextMessage"
     
     case controlTypeUnknown = "unknownControl"
 }

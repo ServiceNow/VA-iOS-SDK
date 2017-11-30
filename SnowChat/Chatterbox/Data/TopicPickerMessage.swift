@@ -20,9 +20,9 @@ struct TopicPickerMessage: Codable, CBChannelEventData {
         let value: String
     }
     
-    init(forSession sessionId: Int, withValue value: String) {
+    init(forSession sessionId: String, withValue value: String) {
         type = "consumerTextMessage"
-        data = RichControlData<ControlWrapper>(sessionId: 1,
+        data = RichControlData<ControlWrapper>(sessionId: sessionId,
                                                controlData: ControlWrapper(model: SystemTextMessage.ModelType(type: "topic"), value: value))
     }
     

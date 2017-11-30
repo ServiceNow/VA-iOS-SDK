@@ -15,7 +15,7 @@ class MockState: ChatState {
     init() {
         let user = CBUser(id: "9927", token: "938457hge98", name: "marc", consumerId: "marc.attinasi", consumerAccountId: "marc.attinasi@servicenow.com")
         let vendor = CBVendor(name: "ServiceNow", vendorId: "001", consumerId: "marc.attinasi", consumerAccountId: "marc.attinasi@servicenow.com")
-        let session = CBSession(id: 1, user: user, vendor: vendor)
+        let session = CBSession(id: "1", user: user, vendor: vendor)
         
         super.init(forSession: session, initialState: ChatStates.Disconnected)
     }
@@ -59,7 +59,7 @@ class TestMessageHandler: XCTestCase {
 
         chatState = MockState()
         chatStore = ChatDataStore(storeId: "TEST001")
-        ambClient = MockAMBClient(withEndpoint: URL(string: "https://snowchat.service-now.com")!)
+        ambClient = MockAMBClient(withEndpoint: URL(string: CBData.config.url)!)
         ambClient?.login(userName: "admin", password: "snow2004", completionHandler: { (success) in
             Logger.default.logInfo("AMB Login Completed {\(success ? "success" : "failure")}")
             if success {
@@ -87,9 +87,10 @@ class TestMessageHandler: XCTestCase {
         {
           "type": "systemTextMessage",
           "data": {
-            "sessionId": 1,
+            "sessionId": "1",
             "sendTime": 0,
             "receiveTime": 0,
+            "direction": "outbound",
             "richControl": {
               "uiType": "Boolean",
               "uiMetadata": {
@@ -149,7 +150,7 @@ class TestMessageHandler: XCTestCase {
             "messageId": "687e15f4-ffa9-497e-9d7b- 83a0c714100a",
             "topicId": 1,
             "taskId": 1,
-            "sessionId": 1,
+            "sessionId": "1",
             "direction": "outbound",
             "sendTime": 0,
             "receiveTime": 0,

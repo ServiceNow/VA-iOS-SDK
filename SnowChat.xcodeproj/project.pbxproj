@@ -56,6 +56,8 @@
 		C420ED7F1FC5F488002476C0 /* LoggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C420ED7E1FC5F488002476C0 /* LoggerTests.swift */; };
 		C420ED821FC6031C002476C0 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
 		C420ED831FC6031C002476C0 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9E8B621FBF5AEC00499960 /* AMBClient.framework */; };
+		C46A7D881FCE23D300DC12AC /* ActionMessageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46A7D871FCE23D300DC12AC /* ActionMessageData.swift */; };
+		C46A7D8A1FD0BD8900DC12AC /* ContextualActionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46A7D891FD0BD8900DC12AC /* ContextualActionMessage.swift */; };
 		C489073D1FCC8209008D9521 /* AMBTestPanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C489073B1FCC8209008D9521 /* AMBTestPanelViewController.swift */; };
 		C489073E1FCC8209008D9521 /* AMBTestPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C489073C1FCC8209008D9521 /* AMBTestPanelViewController.xib */; };
 		C4CAFEA11FBCF0C9007007F5 /* ChatEventDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA01FBCF0C9007007F5 /* ChatEventDelegate.swift */; };
@@ -111,6 +113,8 @@
 		C420ED761FC5DB9F002476C0 /* SessionAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionAPI.swift; sourceTree = "<group>"; };
 		C420ED7C1FC5F473002476C0 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Logger.swift; path = Logger/Logger.swift; sourceTree = "<group>"; };
 		C420ED7E1FC5F488002476C0 /* LoggerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoggerTests.swift; sourceTree = "<group>"; };
+		C46A7D871FCE23D300DC12AC /* ActionMessageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionMessageData.swift; sourceTree = "<group>"; };
+		C46A7D891FD0BD8900DC12AC /* ContextualActionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextualActionMessage.swift; sourceTree = "<group>"; };
 		C489073B1FCC8209008D9521 /* AMBTestPanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBTestPanelViewController.swift; sourceTree = "<group>"; };
 		C489073C1FCC8209008D9521 /* AMBTestPanelViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AMBTestPanelViewController.xib; sourceTree = "<group>"; };
 		C4CAFEA01FBCF0C9007007F5 /* ChatEventDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEventDelegate.swift; sourceTree = "<group>"; };
@@ -271,6 +275,7 @@
 		C40565FD1FC4FF15004BD28C /* Messages */ = {
 			isa = PBXGroup;
 			children = (
+				C46A7D871FCE23D300DC12AC /* ActionMessageData.swift */,
 				C40565FE1FC508D3004BD28C /* RichControlData.swift */,
 				C40565F91FC4F71D004BD28C /* SystemTextMessage.swift */,
 				C40565F31FC4B88D004BD28C /* ConsumerTextMessage.swift */,
@@ -328,6 +333,7 @@
 				C40565F11FC49CD8004BD28C /* InitMessage.swift */,
 				C40565F51FC4D85B004BD28C /* TopicPickerMessage.swift */,
 				C40565F71FC4F4D3004BD28C /* BooleanControlMessage.swift */,
+				C46A7D891FD0BD8900DC12AC /* ContextualActionMessage.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -522,6 +528,7 @@
 				BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */,
 				BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */,
 				BE6FBE401FBFB3060062A0EB /* AMBHTTPClient.swift in Sources */,
+				C46A7D881FCE23D300DC12AC /* ActionMessageData.swift in Sources */,
 				BE9E8BA11FBF7F3600499960 /* AMBClient.swift in Sources */,
 				C40565F41FC4B88D004BD28C /* ConsumerTextMessage.swift in Sources */,
 				C420ED7D1FC5F473002476C0 /* Logger.swift in Sources */,
@@ -537,6 +544,7 @@
 				C40565F81FC4F4D3004BD28C /* BooleanControlMessage.swift in Sources */,
 				C40565F61FC4D85B004BD28C /* TopicPickerMessage.swift in Sources */,
 				C40565CD1FBE292B004BD28C /* ChatDataStore.swift in Sources */,
+				C46A7D8A1FD0BD8900DC12AC /* ContextualActionMessage.swift in Sources */,
 				C40565CF1FBE2FC4004BD28C /* ChatNotifications.swift in Sources */,
 				C4CAFEA81FBD0912007007F5 /* CBDataFactory.swift in Sources */,
 				C40565C61FBE1539004BD28C /* SessionProtocol.swift in Sources */,

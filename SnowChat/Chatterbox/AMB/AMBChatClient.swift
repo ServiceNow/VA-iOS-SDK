@@ -14,8 +14,9 @@ protocol AMBListener {
     func onMessage(_ message: String, fromChannel: String)
 }
 
+private func logger() -> Logger { return Logger.logger(for: "AMBClient") }
+
 class AMBChatClient {
-    var endpoint: URL
     
     private lazy var ambManager: APIManager = {
         let url = endpoint
@@ -24,7 +25,9 @@ class AMBChatClient {
         return manager
     }()
     
-    var  currentState: AMBState = .signedOut
+    private var endpoint: URL
+    private var currentState: AMBState = .signedOut
+    private var subscribers = [(channel: String, subscriber: AMBListener, subscription: NOWAMBSubscription)]()
     
     enum AMBState {
         case signedOut
@@ -37,44 +40,71 @@ class AMBChatClient {
     
     func login(userName: String, password: String, completionHandler: @escaping (Bool) -> Void) {
         ambManager.logIn(username: userName, password: password) { [weak self] success in
+            guard let me = self else {
+                logger().logError("AMBChatClient went away while processing login")
+                return
+            }
+            
             if success {
-                self?.currentState = .signedIn
-                Logger.default.logInfo("User \(userName) logged in")
+                me.currentState = .signedIn
+                logger().logInfo("User \(userName) logged in")
             } else {
-                self?.currentState = .signedOut
-                Logger.default.logError("Failed to log in")
+                me.currentState = .signedOut
+                logger().logError("Failed to log in")
             }
             
             completionHandler(success)
         }
     }
     
-    var subscribers = [(channel: String, subscriber: AMBListener, subscription: NOWAMBSubscription)]()
-    
     func subscribe(forChannel channel: String, receiver: AMBListener) {
-        var subscription: NOWAMBSubscription?
-        
-        subscription = ambManager.ambClient.subscribe(channel) { (subscription, message) in
+        let subscription = ambManager.ambClient.subscribe(channel) { [weak self] (subscription, message) in
             guard let msg = message else {
-                Logger.default.logError("Nil-message received on channel \(channel)")
+                logger().logError("Nil-message received on channel \(channel)")
                 return
             }
             
-            if let msgString = AMBChatClient.messageToJSON(message: msg) {
-                receiver.onMessage(msgString, fromChannel: channel)
+            guard let me = self else {
+                logger().logError("AMBChatClient no longer valid while processing message from AMB")
+                return
             }
+            
+            me.handleMessage(subscription, channel, msg, receiver)
         }
         
-        if let subscription = subscription {
-            subscribers.append((channel: channel, subscriber: receiver, subscription: subscription))
-        }
+        subscribers.append((channel: channel, subscriber: receiver, subscription: subscription))
     }
     
     func unsubscribe(fromChannel channel: String, receiver: AMBListener) {
-        for subscriber in subscribers {
-            if subscriber.channel == channel && subscriber.subscriber.id == receiver.id {
-                unsubscribe(subscription: subscriber.subscription)
+        for subscription in subscribers {
+            if subscription.channel == channel && subscription.subscriber.id == receiver.id {
+                unsubscribe(subscription: subscription.subscription)
             }
+        }
+    }
+    
+    func publish<T>(channel: String, message: T) where T: Encodable {
+        let encoder = CBData.jsonEncoder
+        do {
+            let jsonData = try encoder.encode(message)
+            if let dict = try JSONSerialization.jsonObject(with: jsonData, options: .allowFragments) as? [String: Any] {
+                if let jsonString = String(data: jsonData, encoding: .utf8) {
+                    logger().logInfo("AMB Channel: \(channel)\nAMB Message \(jsonString)")
+                }
+                ambManager.ambClient.send(message: dict, toChannel: channel)
+            }
+        } catch let err {
+            logger().logError("Error publishing: \(err)")
+        }
+        
+    }
+    
+    internal func handleMessage(_ subscription: NOWAMBSubscription?, _ channel: String, _ message: [AnyHashable : Any], _ receiver: AMBListener ) {
+        if let msgString = AMBChatClient.messageToJSON(message: message) {
+            logger().logInfo("Incoming Message: \(msgString)")
+            receiver.onMessage(msgString, fromChannel: channel)
+        } else {
+            logger().logError("Error getting JSON from message: \(message)")
         }
     }
     
@@ -99,7 +129,7 @@ class AMBChatClient {
                 return msgString
             }
         } catch let err {
-            Logger.default.logError("Error \(err) decoding message: \(msg)")
+            logger().logError("Error \(err) decoding message: \(msg)")
         }
         return nil
     }

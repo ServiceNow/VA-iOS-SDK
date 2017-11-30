@@ -11,24 +11,37 @@ import Foundation
 struct SystemTextMessage: Codable {
     
     let type: String
-    let data: RichControlData<ControlWrapper>
+    let data: RichControlData<ControlWrapper<UIMetadata>>
     
-    struct ControlWrapper: Codable {
-        let uiType: String = "Boolean"
-        let uiMetadata: UIMetadata
-        let model: ModelType
+    struct ControlWrapper<MetadataType: Codable>: Codable {
+        let model: ModelType?
+        let uiType: String
+        let uiMetadata: MetadataType?
     }
     
     struct UIMetadata: Codable {
-        let label: String
-        let required: Bool
+        var label: String?
+        var required: Bool?
+        
+        var error: UIError?
     }
     
     struct ModelType: Codable {
         let type: String
     }
     
-    init(withData: RichControlData<ControlWrapper>) {
+    struct UIError: Codable {
+        var handler: UIHandler?
+        var message: String
+        var code: String
+    }
+    
+    struct UIHandler: Codable {
+        var type: String
+        var instruction: String
+    }
+    
+    init(withData: RichControlData<ControlWrapper<UIMetadata>>) {
         type = "systemTextMessage"
         data = withData
     }

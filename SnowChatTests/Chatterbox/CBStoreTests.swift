@@ -28,7 +28,7 @@ class CBStoreTests: XCTestCase {
     }
     
     func testStoreBooleanControl() {
-        let controlData = RichControlData<SystemTextMessage.ControlWrapper>(sessionId: 100, controlData: SystemTextMessage.ControlWrapper(uiMetadata: SystemTextMessage.UIMetadata(label:"Test", required: false), model: SystemTextMessage.ModelType(type: "Boolean")))
+        let controlData = RichControlData<SystemTextMessage.ControlWrapper>(sessionId: "100", controlData: SystemTextMessage.ControlWrapper(model: SystemTextMessage.ModelType(type: "Boolean"), uiType: "BooleanControl", uiMetadata: SystemTextMessage.UIMetadata(label:"Test", required: false, error: nil)))
         let booleanData = BooleanControlMessage(id: "foo", controlType: .controlBoolean, type: "Boolean", data: controlData)
         let expect = expectation(description: "Expect Notification for Boolean Control")
         
@@ -39,7 +39,7 @@ class CBStoreTests: XCTestCase {
         
             XCTAssert(notificationData.controlType == .controlBoolean)
             XCTAssertEqual(notificationData.id, booleanData.id)
-            XCTAssertEqual(notificationData.data.richControl.model.type, booleanData.data.richControl.model.type)
+            XCTAssertEqual(notificationData.data.richControl.model?.type, booleanData.data.richControl.model?.type)
             
             expect.fulfill()
         }

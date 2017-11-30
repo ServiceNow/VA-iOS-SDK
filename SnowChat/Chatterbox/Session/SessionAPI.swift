@@ -11,13 +11,13 @@ import Alamofire
 
 class SessionAPI {
     
-    var chatId: String = UUID().uuidString
+    var chatId: String = UUID().uuidString.replacingOccurrences(of: "-", with: "")
     
-    func getSession(sessionInfo: CBSession) -> CBSession {
+    func getSession(sessionInfo: CBSession, completionHandler: @escaping (CBSession?) -> Void) {
         var resultSession = CBSession(clone: sessionInfo)
         
         let parameters: Parameters = ["deviceId" : sessionInfo.deviceId,
-                                      "channelId": chatId,
+                                      "channelId": "/cs/messages/\(chatId)",
                                       "vendorId" : sessionInfo.vendor.vendorId,
                                       "consumerId": sessionInfo.user.consumerId,
                                       "consumerAccountId": sessionInfo.user.consumerAccountId,
@@ -28,7 +28,7 @@ class SessionAPI {
             "Accept": "application/json"
         ]
         
-        Alamofire.request("https://snowchat.service-now.com/api/now/v1/cs/session",
+        Alamofire.request("\(CBData.config.url)/api/now/v1/cs/session",
                           method: .post,
                           parameters: parameters,
                           encoding: JSONEncoding.default,
@@ -36,6 +36,8 @@ class SessionAPI {
             if response.error != nil {
                 // swiftlint:disable:next force_unwrapping
                 Logger.default.logError("Error from response: \(response.error!)")
+                
+                completionHandler(nil)
                 return
             }
             
@@ -43,29 +45,30 @@ class SessionAPI {
                 Logger.default.logInfo("value: \(value)")
                 
                 if let data = value as? NSDictionary {
+                    resultSession.welcomeMessage = data.object(forKey: "welcomeMessage") as? String
+
                     if let sessionData = data.object(forKey: "session") as? NSDictionary {
                         resultSession.id = sessionData.object(forKey: "sessionId") as! String
                         resultSession.user.consumerId = sessionData.object(forKey: "consumerId") as! String
                         resultSession.user.consumerAccountId = sessionData.object(forKey: "consumerAccountId") as! String
+                        resultSession.sessionState = .opened
+                        
+                        completionHandler(resultSession)
                     }
                 } else {
                     Logger.default.logError("Error getting respons data from session request")
+                    completionHandler(nil)
                 }
-                
             }
         }
         
-        resultSession.sessionState = .opened
-        
-        return resultSession
     }
     
-    func suggestTopics(searchText: String) -> [CBTopic] {
-        
-        return [CBTopic]()
+    func suggestTopics(searchText: String, completionHandler: ([CBTopic]) -> Void) {
+        completionHandler([CBTopic]())
     }
     
-    func allTopics() -> [CBTopic] {
-        return suggestTopics(searchText: "")
+    func allTopics(completionHandler: ([CBTopic]) -> Void) {
+        suggestTopics(searchText: "", completionHandler: completionHandler)
     }
 }
