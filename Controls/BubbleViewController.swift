@@ -1,5 +1,5 @@
 //
-//  MockBubbleViewController.swift
+//  BubbleViewController.swift
 //  Controls
 //
 //  Created by Michael Borowiec on 11/10/17.
@@ -8,23 +8,20 @@
 
 import UIKit
 
-public class MockBubbleViewController: UIViewController {
+public class BubbleViewController: UIViewController {
     
     let bubbleView = BubbleView()
     var currentUIControl: ControlProtocol?
+    
+    override public func loadView() {
+        self.view = bubbleView
+    }
     
     override public func viewDidLoad() {
         super.viewDidLoad()
 
         bubbleView.backgroundColor = UIColor(red: 190 / 255, green: 221 / 255, blue: 239 / 255, alpha: 1)
         bubbleView.borderColor = UIColor(red: 220 / 255, green: 225 / 255, blue: 231 / 255, alpha: 1)
-        
-        bubbleView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(bubbleView)
-        NSLayoutConstraint.activate([bubbleView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                    bubbleView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                    bubbleView.topAnchor.constraint(equalTo: view.topAnchor),
-                                    bubbleView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.9)])
     }
     
     private func removeCurrentUIControl() {

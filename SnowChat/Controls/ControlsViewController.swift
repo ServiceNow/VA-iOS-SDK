@@ -16,7 +16,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     
     private var controls = ["Boolean Picker", "Multiselect Picker"]
     
-    private var bubbleViewController: MockBubbleViewController?
+    private var bubbleViewController: BubbleViewController?
     
     override func viewDidLoad() {
         addBubbleViewController()
@@ -26,13 +26,13 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     private func addBubbleViewController() {
-        let bubbleViewController = MockBubbleViewController()
+        let bubbleViewController = BubbleViewController()
         bubbleViewController.willMove(toParentViewController: self)
         addChildViewController(bubbleViewController)
         bubbleViewController.didMove(toParentViewController: self)
         
         guard let bubbleView = bubbleViewController.view else {
-            fatalError("ooops, where's Bubble view?!")
+            fatalError("ooops, where's the Bubble view?!")
         }
         
         bubbleView.translatesAutoresizingMaskIntoConstraints = false

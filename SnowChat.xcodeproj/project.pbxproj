@@ -28,7 +28,7 @@
 		572FAC181FC47A9C00B0B956 /* MultiselectPickerControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC171FC47A9C00B0B956 /* MultiselectPickerControl.swift */; };
 		572FAC1A1FC47B5600B0B956 /* MultiselectControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC191FC47B5600B0B956 /* MultiselectControlViewModel.swift */; };
 		5760C8CE1FBF4C920055B73D /* PickerTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760C8CD1FBF4C920055B73D /* PickerTableViewController.swift */; };
-		5786320B1FBB571E00FA0282 /* MockBubbleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578632071FBB571D00FA0282 /* MockBubbleViewController.swift */; };
+		5786320B1FBB571E00FA0282 /* BubbleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578632071FBB571D00FA0282 /* BubbleViewController.swift */; };
 		578632131FBB779800FA0282 /* sampleBooleanPicker.json in Resources */ = {isa = PBXBuildFile; fileRef = 578632111FBB779800FA0282 /* sampleBooleanPicker.json */; };
 		578632141FBB779800FA0282 /* samplePicker.json in Resources */ = {isa = PBXBuildFile; fileRef = 578632121FBB779800FA0282 /* samplePicker.json */; };
 		578632161FBB9E0300FA0282 /* ControlProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578632151FBB9E0300FA0282 /* ControlProtocol.swift */; };
@@ -79,7 +79,7 @@
 		572FAC171FC47A9C00B0B956 /* MultiselectPickerControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiselectPickerControl.swift; sourceTree = "<group>"; };
 		572FAC191FC47B5600B0B956 /* MultiselectControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiselectControlViewModel.swift; sourceTree = "<group>"; };
 		5760C8CD1FBF4C920055B73D /* PickerTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerTableViewController.swift; sourceTree = "<group>"; };
-		578632071FBB571D00FA0282 /* MockBubbleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockBubbleViewController.swift; sourceTree = "<group>"; };
+		578632071FBB571D00FA0282 /* BubbleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BubbleViewController.swift; sourceTree = "<group>"; };
 		578632111FBB779800FA0282 /* sampleBooleanPicker.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = sampleBooleanPicker.json; sourceTree = "<group>"; };
 		578632121FBB779800FA0282 /* samplePicker.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = samplePicker.json; sourceTree = "<group>"; };
 		578632151FBB9E0300FA0282 /* ControlProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlProtocol.swift; sourceTree = "<group>"; };
@@ -145,22 +145,14 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		578632061FBB570300FA0282 /* Sample */ = {
-			isa = PBXGroup;
-			children = (
-				578632071FBB571D00FA0282 /* MockBubbleViewController.swift */,
-			);
-			path = Sample;
-			sourceTree = "<group>";
-		};
 		57B7E2B91FBA24A600196BA9 /* Controls */ = {
 			isa = PBXGroup;
 			children = (
 				578632151FBB9E0300FA0282 /* ControlProtocol.swift */,
 				57B7E2BB1FBA25A200196BA9 /* BooleanPickerControl.swift */,
 				572FAC171FC47A9C00B0B956 /* MultiselectPickerControl.swift */,
+				578632071FBB571D00FA0282 /* BubbleViewController.swift */,
 				572A4E431FCF70070081318D /* BubbleView.swift */,
-				578632061FBB570300FA0282 /* Sample */,
 				578632031FBB543500FA0282 /* Resources */,
 				57B7E2CE1FBA6B1300196BA9 /* Model */,
 				57B7E2BA1FBA25A200196BA9 /* ViewController */,
@@ -506,7 +498,7 @@
 				57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */,
 				572A4E441FCF70070081318D /* BubbleView.swift in Sources */,
 				57B7E2C61FBA25A200196BA9 /* SelectableViewCell.swift in Sources */,
-				5786320B1FBB571E00FA0282 /* MockBubbleViewController.swift in Sources */,
+				5786320B1FBB571E00FA0282 /* BubbleViewController.swift in Sources */,
 				5796E4481FD0B3E0009D2035 /* CGPathUtils.swift in Sources */,
 				57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */,
 				572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */,
