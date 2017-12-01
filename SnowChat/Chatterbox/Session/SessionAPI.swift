@@ -9,9 +9,17 @@
 import Foundation
 import Alamofire
 
+enum SessionState {
+    case NoSession
+    case SessionActive
+    case SessionError
+}
+
 class SessionAPI {
     
+    var sessionState: SessionState = .NoSession
     var chatId: String = UUID().uuidString.replacingOccurrences(of: "-", with: "")
+    var topics: [CBTopic]?
     
     func getSession(sessionInfo: CBSession, completionHandler: @escaping (CBSession?) -> Void) {
         var resultSession = CBSession(clone: sessionInfo)
@@ -37,10 +45,14 @@ class SessionAPI {
                 // swiftlint:disable:next force_unwrapping
                 Logger.default.logError("Error from response: \(response.error!)")
                 
+                self.sessionState = .SessionError
+                
                 completionHandler(nil)
                 return
             }
             
+            self.sessionState = .SessionActive
+
             if let value = response.result.value {
                 Logger.default.logInfo("value: \(value)")
                 
@@ -64,11 +76,52 @@ class SessionAPI {
         
     }
     
-    func suggestTopics(searchText: String, completionHandler: ([CBTopic]) -> Void) {
-        completionHandler([CBTopic]())
+    fileprivate func topicsFromResult(_ result: Any) -> [CBTopic] {
+        var listOfTopics: [CBTopic] = []
+
+        if let dict = result as? NSDictionary {
+            let value = dict["root"]
+            if value != nil {
+                if let topics = value as? NSArray {
+                    for topic in topics {
+                        if let topic = topic as? NSDictionary {
+                            Logger.default.logDebug("Topic: \(topic)")
+                            if let title = topic.object(forKey: "title") as? String, let name = topic.object(forKey: "topicName") as? String {
+                                listOfTopics.append(CBTopic(title: title, name: name))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return listOfTopics
     }
     
-    func allTopics(completionHandler: ([CBTopic]) -> Void) {
-        suggestTopics(searchText: "", completionHandler: completionHandler)
+    func suggestTopics(searchText: String, completionHandler: @escaping([CBTopic]) -> Void) {
+        self.allTopics { (topics) in
+            let filteredTopics = topics.filter({ (topic) -> Bool in
+                return topic.name.contains(searchText)
+            })
+            completionHandler(filteredTopics)
+        }
+    }
+    
+    func allTopics(completionHandler: @escaping ([CBTopic]) -> Void) {
+        if topics == nil {
+            Alamofire.request("\(CBData.config.url)/api/now/v1/cs/topics/tree",
+                method: .get,
+                encoding: JSONEncoding.default).responseJSON { response in
+                    
+                    if response.error == nil {
+                        
+                        if let result = response.result.value {
+                            Logger.default.logInfo("result: \(result)")
+                            
+                            self.topics = self.topicsFromResult(result)
+                        }
+                    }
+                    completionHandler(self.topics ?? [CBTopic]())
+            }
+        }
     }
 }

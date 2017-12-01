@@ -14,66 +14,77 @@ let consumerId = "marc.attinasi"
 class AMBTestPanelViewController: UIViewController, AMBListener {
 
     static private var count: Int = 0
+    private var chatId = "999"
+    
     let user = CBUser(id: "9927", token: "938457hge98", name: "marc", consumerId: consumerId, consumerAccountId: consumerAccountId)
     let vendor = CBVendor(name: "ServiceNow", vendorId: "c2f0b8f187033200246ddd4c97cb0bb9", consumerId: consumerId, consumerAccountId: consumerAccountId)
-
-    @IBOutlet weak var chatId: UITextField!
+    
     @IBOutlet weak var chatContent: UITextView!
+    @IBOutlet weak var startTopicBtn: UIButton!
     
-    @IBAction func onChangeChatId(_ sender: Any) {
-        if subscribed {
-            unsubscribe()
-        }
-        subscribe()
-    }
-    
-    @IBAction func onSignInAMB(_ sender: Any) {
-        initializeAMBChatClient()
-    }
-    
-    @IBAction func onGetSession(_ sender: Any) {
-        initializeSessionAPI()
-    }
-
-    @IBAction func onTopicPicker(_ sender: Any) {
-        if let sessionId = session?.id {
-            let topicPickerMsg = TopicPickerMessage(forSession: sessionId, withValue: "system")
-            
-            nextHandler = { [weak self] message in
-                let event = CBDataFactory.channelEventFromJSON(message)
-                if event.eventType == .channelInit {
-                    if let initEvent = event as? InitMessage {
-                        let loginStage = initEvent.data.actionMessage.loginStage
-                        self?.appendContent(message: "Init message received from ChatBot: loginStage = \(loginStage)")
-                        if loginStage == "Start" {
-                            self?.initUserSession(withInitEvent: initEvent)
-                        } else if loginStage == "Finish" {
-                            self?.chatContent.textColor = .green
-                            self?.appendContent(message: "User Session initiated - handshake complete")
-                            
-                            // handshake done, setup handler for the topic selection
-                            self?.nextHandler = { [weak self] message in
-                                let choices: CBControlData = CBDataFactory.controlFromJSON(message)
-                                if choices.controlType == .contextualActionMessage {
-                                    if let topicChoices = choices as? ContextualActionMessage {
-                                        if let options = topicChoices.data.richControl.uiMetadata?.inputControls[0].uiMetadata?.options {
-                                            self?.appendContent(message: "What would you like to do?")
-                                            for option in options {
-                                                self?.appendContent(message: option.label)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+    @IBAction func onInitiateHandshake(_ sender: Any) {
+        initializeAMBChatClient { [weak self] success in
+            if success {
+                self?.initializeSessionAPI { [weak self] session in
+                    if session != nil {
+                        self?.subscribe()
+                        self?.onTopicPicker()
                     }
                 }
             }
+        }
+    }
+    
+    @IBAction func onStartTopic(_ sender: Any) {
+        sessionAPI?.allTopics(completionHandler: { (topics) in
+            for t in topics {
+                self.appendContent(message: "Topic: \(t.title) [\(t.name)]")
+            }
+        })
+    }
+    
+    func onTopicPicker() {
+        if let sessionId = session?.id {
+            nextHandler = self.handshakeHandler
             
-            ambClient?.publish(channel: chatChannel(), message: topicPickerMsg)
+            ambClient?.publish(channel: chatChannel(),
+                               message: TopicPickerMessage(forSession: sessionId, withValue: "system"))
         }
     }
 
+    func handshakeHandler(_ message: String) {
+        let event = CBDataFactory.channelEventFromJSON(message)
+        if event.eventType == .channelInit {
+            if let initEvent = event as? InitMessage {
+                let loginStage = initEvent.data.actionMessage.loginStage
+                self.appendContent(message: "Init message received from ChatBot: loginStage = \(loginStage)")
+                if loginStage == "Start" {
+                    self.initUserSession(withInitEvent: initEvent)
+                } else if loginStage == "Finish" {
+                    self.appendContent(message: "User Session initiated - handshake complete")
+                    
+                    // handshake done, setup handler for the topic selection
+                    self.nextHandler = self.topicSelectionHandler
+                }
+            }
+        }
+    }
+    
+    func topicSelectionHandler(_ message: String) {
+        let choices: CBControlData = CBDataFactory.controlFromJSON(message)
+        if choices.controlType == .contextualActionMessage {
+            if let topicChoices = choices as? ContextualActionMessage {
+                if let options = topicChoices.data.richControl.uiMetadata?.inputControls[0].uiMetadata?.options {
+                    self.appendContent(message: "What would you like to do?")
+                    for option in options {
+                        self.appendContent(message: option.label)
+                    }
+                    self.startTopicBtn.isEnabled = true
+                }
+            }
+        }
+    }
+    
     func initUserSession(withInitEvent initEvent: InitMessage) {
         var initUserEvent = InitMessage(clone: initEvent)
         
@@ -103,7 +114,7 @@ class AMBTestPanelViewController: UIViewController, AMBListener {
     var ambClient: AMBChatClient?
     var sessionAPI: SessionAPI?
     
-    var nextHandler: ((_: String) -> Void)?
+    var nextHandler: ((String) -> Void)?
     
     var id: String = UUID().uuidString
     var subscribed: Bool = false
@@ -114,17 +125,15 @@ class AMBTestPanelViewController: UIViewController, AMBListener {
     let url = CBData.config.url
 
     func chatChannel() -> String {
-        if let chid = chatId.text {
-            return "/cs/messages/\(chid)"
-        } else {
-            return "/cs/messages/"
-        }
+        return "/cs/messages/\(chatId)"
     }
     
     // MARK: LIFECYCLE METHODS
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        startTopicBtn.isEnabled = sessionAPI != nil
     }
 
     public override func viewDidDisappear(_ animated: Bool) {
@@ -136,6 +145,9 @@ class AMBTestPanelViewController: UIViewController, AMBListener {
             subscribed = false
             subscribedChannel = nil
         }
+        
+        ambClient = nil
+        sessionAPI = nil
     }
     
     override func didReceiveMemoryWarning() {
@@ -145,24 +157,25 @@ class AMBTestPanelViewController: UIViewController, AMBListener {
 
     // MARK: - AMB / Session stuff
     
-    private func initializeSessionAPI() {
+    private func initializeSessionAPI(onCompletion: @escaping (CBSession?) -> Void) {
         sessionAPI = SessionAPI()
         
-        let session = CBSession(id: UUID().uuidString, user: user, vendor: vendor)
-        
-        sessionAPI?.getSession(sessionInfo: session) { [weak self] session in
-            if session == nil {
-                Logger.default.logError("No session obtained in getSession!")
-            } else {
-                self?.session = session
-                self?.appendContent(message: "Session created: \(session?.welcomeMessage ?? "no message")")
+        if let sessionService = sessionAPI {
+            let session = CBSession(id: UUID().uuidString, user: user, vendor: vendor)
+            sessionService.getSession(sessionInfo: session) { [weak self] session in
+                if session == nil {
+                    Logger.default.logError("No session obtained in getSession!")
+                } else {
+                    self?.session = session
+                    self?.appendContent(message: "Session created: \(session?.welcomeMessage ?? "no message")")
+                }
+                onCompletion(session)
             }
+            chatId = sessionService.chatId
         }
-        
-        chatId.text = sessionAPI?.chatId
     }
     
-    private func initializeAMBChatClient() {
+    private func initializeAMBChatClient(onCompletion: @escaping (Bool) -> Void) {
         // swiftlint:disable:next force_unwrapping
         ambClient = AMBChatClient(withEndpoint: URL(string: url)!)
         ambClient?.login(userName: "admin", password: "admin", completionHandler: { [weak self] (success) in
@@ -171,6 +184,7 @@ class AMBTestPanelViewController: UIViewController, AMBListener {
             } else {
                 self?.appendContent(message: "Login failed")
             }
+            onCompletion(success)
         })
     }
     

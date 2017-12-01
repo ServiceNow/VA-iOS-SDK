@@ -137,7 +137,7 @@ struct CBChannel: Hashable, Codable {
 }
 
 struct CBTopic: Codable {
-    let type: String
+    let title: String
     let name: String
 }
 
