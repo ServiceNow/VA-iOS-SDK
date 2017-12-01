@@ -35,7 +35,6 @@ class BubbleView: UIView {
     private func setupContentView() {
         contentView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(contentView)
-        contentView.backgroundColor = UIColor.red
         updateContentViewConstraints()
     }
     

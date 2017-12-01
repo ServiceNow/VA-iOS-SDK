@@ -47,11 +47,11 @@ public class BubbleViewController: UIViewController {
         }
         
         controlView.translatesAutoresizingMaskIntoConstraints = false
-        bubbleView.addSubview(controlView)
+        bubbleView.contentView.addSubview(controlView)
         
-        NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor),
-                                     controlView.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor),
-                                     controlView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor),
-                                     controlView.topAnchor.constraint(equalTo: bubbleView.topAnchor)])
+        NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: bubbleView.contentView.leadingAnchor),
+                                     controlView.trailingAnchor.constraint(equalTo: bubbleView.contentView.trailingAnchor),
+                                     controlView.bottomAnchor.constraint(equalTo: bubbleView.contentView.bottomAnchor),
+                                     controlView.topAnchor.constraint(equalTo: bubbleView.contentView.topAnchor)])
     }
 }
