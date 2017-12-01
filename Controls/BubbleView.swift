@@ -20,11 +20,28 @@ class BubbleView: UIView {
     
     var contentView = UIView()
     
-    var borderColor: UIColor = UIColor.red
+    var borderColor: UIColor? {
+        didSet {
+            borderLayer.isHidden = false
+            borderLayer.strokeColor = borderColor?.cgColor
+        }
+    }
+    
+    private lazy var borderLayer: CAShapeLayer = {
+        let borderLayer = CAShapeLayer()
+        borderLayer.fillColor = nil
+        borderLayer.lineWidth = 2
+        
+        // just to make sure border will be always presented despite adding other sublayers:
+        borderLayer.zPosition = 1000
+        borderLayer.isHidden = true
+        layer.addSublayer(borderLayer)
+        return borderLayer
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        addShapeLayer()
+        setupShapeLayer()
         setupContentView()
     }
     
@@ -49,14 +66,22 @@ class BubbleView: UIView {
         NSLayoutConstraint.activate(insetConstraints)
     }
     
-    func addShapeLayer() {
+    func setupShapeLayer() {
         let maskLayer = CAShapeLayer()
-        maskLayer.frame = bounds
-        maskLayer.path = chatBubblePath(forBounds: bounds)
         layer.mask = maskLayer
     }
     
-    override func layoutSubviews() {
-        (layer.mask as? CAShapeLayer)?.path = chatBubblePath(forBounds: bounds)
+    override func layoutSublayers(of layer: CALayer) {
+        super.layoutSublayers(of: layer)
+        
+        guard layer == self.layer else {
+            return
+        }
+        
+        let bubblePath = chatBubblePath(forBounds: bounds)
+        (layer.mask as? CAShapeLayer)?.path = bubblePath
+        layer.mask?.frame = bounds
+        borderLayer.frame = bounds
+        borderLayer.path = bubblePath
     }
 }

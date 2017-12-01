@@ -20,7 +20,7 @@ public class BubbleViewController: UIViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        bubbleView.backgroundColor = UIColor(red: 190 / 255, green: 221 / 255, blue: 239 / 255, alpha: 1)
+        bubbleView.backgroundColor = UIColor.white //UIColor(red: 190 / 255, green: 221 / 255, blue: 239 / 255, alpha: 1)
         bubbleView.borderColor = UIColor(red: 220 / 255, green: 225 / 255, blue: 231 / 255, alpha: 1)
     }
     
