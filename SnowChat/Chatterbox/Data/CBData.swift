@@ -48,6 +48,8 @@ struct CBUser: Codable {
     var name: String
     var consumerId: String
     var consumerAccountId: String
+    
+    var password: String?   // NOTE: will not be used once token is correctly allowed by service
 }
 
 extension CBUser {
@@ -146,39 +148,22 @@ protocol CBStorable {
     // TODO: serialization methods?
 }
 
-// MARK: - Channel events
+// MARK: - Action events
 
-protocol CBChannelEventData: CBStorable, Codable {
-    var eventType: CBChannelEvent { get }
+protocol CBActionMessageData: CBStorable, Codable {
+    var eventType: CBActionEventType { get }
 }
 
-struct CBChannelEventUnknownData: CBChannelEventData {
-    let eventType: CBChannelEvent = .channelEventUnknown
+struct CBActionMessageUnknownData: CBActionMessageData {
+    let eventType: CBActionEventType = .actionEventUnknown
 }
 
-struct CBChannelOpenData: CBChannelEventData {
-    let eventType: CBChannelEvent = .channelOpen
-}
-
-struct CBChannelCloseData: CBChannelEventData {
-    let eventType: CBChannelEvent = .channelClose
-}
-
-struct CBChannelRefreshData: CBChannelEventData {
-    let eventType: CBChannelEvent = .channelRefresh
-    var status: Int
-}
-
-enum CBChannelEvent: String, Codable, CodingKey {
-    case channelOpen = "openChannel"
-    case channelClose = "closeChannel"
-    case channelRefresh = "refreshChannel"
-    
+enum CBActionEventType: String, Codable, CodingKey {
     // from Qlue protocol
     case channelInit = "Init"
     case topicPicker = "TopicPicker"
     
-    case channelEventUnknown = "unknownChannelEvent"
+    case actionEventUnknown = "unknownActionEvent"
 }
 
 // MARK: - Control Data
@@ -189,9 +174,7 @@ enum CBControlType: String, Codable {
     case controlDate = "Date"
     case controlInput = "Input"
     case contextualActionMessage = "ContextualAction"
-    
-    case systemMessage = "systemTextMessage"
-    
+        
     case controlTypeUnknown = "unknownControl"
 }
 
@@ -203,52 +186,4 @@ protocol CBControlData: CBStorable, Codable {
 struct CBControlDataUnknown: CBControlData {
     var id: String = "UNKNOWN"
     var controlType: CBControlType = .controlTypeUnknown
-}
-
-struct CBControlDataTopicPicker: CBControlData {
-    var id: String
-    var controlType: CBControlType
-    var value: String
-    
-    init(withId: String, withValue: String) {
-        id = withId
-        controlType = .controlTopicPicker
-        value = withValue
-    }
-}
-
-struct CBBooleanData: CBControlData {
-    var id: String
-    var controlType: CBControlType
-    let value: Bool
-    
-    init(withId: String, withValue: Bool) {
-        id = withId
-        controlType = .controlBoolean
-        value = withValue
-    }
-}
-
-struct CBDateData: CBControlData {
-    var id: String
-    var controlType: CBControlType
-    let value: Date
-    
-    init(withId: String, withValue: Date) {
-        id = withId
-        controlType = .controlDate
-        value = withValue
-    }
-}
-
-struct CBInputData: CBControlData {
-    var id: String
-    var controlType: CBControlType
-    var value: String
-    
-    init(withId: String, withValue: String) {
-        id = withId
-        controlType = .controlInput
-        value = withValue
-    }
 }

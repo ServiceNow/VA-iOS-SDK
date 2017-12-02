@@ -10,10 +10,10 @@ import XCTest
 @testable import SnowChat
 
 class MockState: ChatState {
-    var state = CBChannelEvent.channelEventUnknown
+    var state = CBActionEventType.actionEventUnknown
     
     init() {
-        let user = CBUser(id: "9927", token: "938457hge98", name: "marc", consumerId: "marc.attinasi", consumerAccountId: "marc.attinasi@servicenow.com")
+        let user = CBUser(id: "9927", token: "938457hge98", name: "marc", consumerId: "marc.attinasi", consumerAccountId: "marc.attinasi@servicenow.com", password: "foobar")
         let vendor = CBVendor(name: "ServiceNow", vendorId: "001", consumerId: "marc.attinasi", consumerAccountId: "marc.attinasi@servicenow.com")
         let session = CBSession(id: "1", user: user, vendor: vendor)
         
@@ -23,23 +23,11 @@ class MockState: ChatState {
     override func onChannelInit(forChannel: CBChannel, withEventData data: InitMessage) {
         state = .channelInit
     }
-    
-    override func onChannelOpen(forChannel: CBChannel, withEventData: CBChannelOpenData) {
-        state = .channelOpen
-    }
-    
-    override func onChannelClose(forChannel: CBChannel, withEventData: CBChannelCloseData) {
-        state = .channelClose
-    }
-    
-    override func onChannelRefresh(forChannel: CBChannel, withEventData: CBChannelRefreshData) {
-        state = .channelRefresh
-    }
 }
 
 class MockAMBClient: AMBChatClient {
-    override func login(userName: String, password: String, completionHandler: @escaping (Bool) -> Void) {
-        completionHandler(true)
+    override func login(userName: String, password: String, completionHandler: @escaping (Error?) -> Void) {
+        completionHandler(nil)
     }
     
     override func publish(onChannel channel: String, jsonMessage message: String) {
@@ -60,9 +48,9 @@ class TestMessageHandler: XCTestCase {
         chatState = MockState()
         chatStore = ChatDataStore(storeId: "TEST001")
         ambClient = MockAMBClient(withEndpoint: URL(string: CBData.config.url)!)
-        ambClient?.login(userName: "admin", password: "snow2004", completionHandler: { (success) in
-            Logger.default.logInfo("AMB Login Completed {\(success ? "success" : "failure")}")
-            if success {
+        ambClient?.login(userName: "admin", password: "snow2004", completionHandler: { (error) in
+            Logger.default.logInfo("AMB Login Completed {\(error == nil ? "success" : "failure")}")
+            if error == nil {
                 self.messageHandler = ChatMessageHandler(withAmb: self.ambClient!, withDataStore: self.chatStore!, withState: self.chatState!)
             }
         })
@@ -148,8 +136,8 @@ class TestMessageHandler: XCTestCase {
           "data": {
             "@class": ".ActionMessageDto",
             "messageId": "687e15f4-ffa9-497e-9d7b- 83a0c714100a",
-            "topicId": 1,
-            "taskId": 1,
+            "topicId": "1",
+            "taskId": "1",
             "sessionId": "1",
             "direction": "outbound",
             "sendTime": 0,

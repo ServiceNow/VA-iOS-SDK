@@ -18,8 +18,9 @@ enum SessionState {
 class SessionAPI {
     
     var sessionState: SessionState = .NoSession
+    var lastError: Error?
+    
     var chatId: String = UUID().uuidString.replacingOccurrences(of: "-", with: "")
-    var topics: [CBTopic]?
     
     func getSession(sessionInfo: CBSession, completionHandler: @escaping (CBSession?) -> Void) {
         var resultSession = CBSession(clone: sessionInfo)
@@ -46,6 +47,7 @@ class SessionAPI {
                 Logger.default.logError("Error from response: \(response.error!)")
                 
                 self.sessionState = .SessionError
+                self.lastError = response.error
                 
                 completionHandler(nil)
                 return
@@ -64,6 +66,8 @@ class SessionAPI {
                         resultSession.user.consumerId = sessionData.object(forKey: "consumerId") as! String
                         resultSession.user.consumerAccountId = sessionData.object(forKey: "consumerAccountId") as! String
                         resultSession.sessionState = .opened
+                        
+                        self.lastError = nil
                         
                         completionHandler(resultSession)
                     }
@@ -98,30 +102,37 @@ class SessionAPI {
     }
     
     func suggestTopics(searchText: String, completionHandler: @escaping([CBTopic]) -> Void) {
-        self.allTopics { (topics) in
-            let filteredTopics = topics.filter({ (topic) -> Bool in
-                return topic.name.contains(searchText)
-            })
-            completionHandler(filteredTopics)
+        let urlString = "\(CBData.config.url)/api/now/v1/cs/topics/suggest?sysparm_message=\(searchText)"
+        
+        Alamofire.request(urlString,
+            method: .get,
+            encoding: JSONEncoding.default).responseJSON { response in
+                var topics = [CBTopic]()
+
+                if response.error == nil {
+                    if let result = response.result.value {
+                        Logger.default.logInfo("result: \(result)")
+                        
+                        topics = self.topicsFromResult(result)
+                    }
+                }
+                completionHandler(topics)
         }
     }
     
     func allTopics(completionHandler: @escaping ([CBTopic]) -> Void) {
-        if topics == nil {
-            Alamofire.request("\(CBData.config.url)/api/now/v1/cs/topics/tree",
-                method: .get,
-                encoding: JSONEncoding.default).responseJSON { response in
-                    
-                    if response.error == nil {
+        Alamofire.request("\(CBData.config.url)/api/now/v1/cs/topics/tree",
+            method: .get,
+            encoding: JSONEncoding.default).responseJSON { response in
+                var topics = [CBTopic]()
+                if response.error == nil {
+                    if let result = response.result.value {
+                        Logger.default.logInfo("result: \(result)")
                         
-                        if let result = response.result.value {
-                            Logger.default.logInfo("result: \(result)")
-                            
-                            self.topics = self.topicsFromResult(result)
-                        }
+                        topics = self.topicsFromResult(result)
                     }
-                    completionHandler(self.topics ?? [CBTopic]())
-            }
+                }
+                completionHandler(topics)
         }
     }
 }

@@ -12,17 +12,9 @@
 import Foundation
 
 protocol ChatEventNotification {
-
-    func onChannelOpen(forChannel: CBChannel, withEventData: CBChannelOpenData)
-    func onChannelClose(forChannel: CBChannel, withEventData: CBChannelCloseData)
-    func onChannelRefresh(forChannel: CBChannel, withEventData: CBChannelRefreshData)
-    
     func onChannelInit(forChannel: CBChannel, withEventData data: InitMessage)
 }
 
 protocol ChatEventControlNotification {
-    
     func onBooleanControl(forChannel: CBChannel, withControlData: BooleanControlMessage)
-    func onDateControl(forChannel: CBChannel, withControlData: CBDateData)
-    func onInputControl(forChannel: CBChannel, withControlData: CBInputData)
 }

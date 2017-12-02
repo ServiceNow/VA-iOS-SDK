@@ -9,8 +9,9 @@
 import Foundation
 
 struct ActionMessageData<T: Codable>: Codable {
-    let conversationId: String
-    let taskId: String
+    let conversationId: String?
+    let taskId: String?
+    
     let messageId: String
     let sessionId: String
     

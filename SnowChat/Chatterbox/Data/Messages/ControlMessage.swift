@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct SystemTextMessage: Codable {
+struct ControlMessage: Codable {
     
     let type: String
     let data: RichControlData<ControlWrapper<UIMetadata>>

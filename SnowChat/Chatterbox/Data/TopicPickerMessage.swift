@@ -8,22 +8,22 @@
 
 import Foundation
 
-struct TopicPickerMessage: Codable, CBChannelEventData {
-    var eventType: CBChannelEvent = .topicPicker
+struct TopicPickerMessage: Codable, CBActionMessageData {
+    var eventType: CBActionEventType = .topicPicker
     
     let type: String
     let data: RichControlData<ControlWrapper>
     
     struct ControlWrapper: Codable {
-        let uiType: String = CBChannelEvent.topicPicker.rawValue
-        let model: SystemTextMessage.ModelType
+        let uiType: String = CBActionEventType.topicPicker.rawValue
+        let model: ControlMessage.ModelType
         let value: String
     }
     
     init(forSession sessionId: String, withValue value: String) {
         type = "consumerTextMessage"
         data = RichControlData<ControlWrapper>(sessionId: sessionId,
-                                               controlData: ControlWrapper(model: SystemTextMessage.ModelType(type: "topic"), value: value))
+                                               controlData: ControlWrapper(model: ControlMessage.ModelType(type: "topic"), value: value))
     }
     
     // define the properties that we decode / encode

@@ -14,7 +14,7 @@ class CBDataFactory {
         
         if let jsonData = json.data(using: .utf8) {
             do {
-                let uiMessage = try CBData.jsonDecoder.decode(SystemTextMessage.self, from: jsonData)
+                let uiMessage = try CBData.jsonDecoder.decode(ControlMessage.self, from: jsonData)
                 let t = uiMessage.data.richControl.uiType
                 
                 switch t {
@@ -32,7 +32,7 @@ class CBDataFactory {
         return CBControlDataUnknown()
     }
     
-    static func channelEventFromJSON(_ json: String) -> CBChannelEventData {
+    static func channelEventFromJSON(_ json: String) -> CBActionMessageData {
          
         if let jsonData = json.data(using: .utf8) {
             do {
@@ -40,7 +40,7 @@ class CBDataFactory {
                 let t = actionMessage.data.actionMessage.type
                 
                 switch t {
-                case CBChannelEvent.channelInit.rawValue:
+                case CBActionEventType.channelInit.rawValue:
                     return try CBData.jsonDecoder.decode(InitMessage.self, from: jsonData)
                 default:
                     Logger.default.logError("Unrecognized ActionMessage type: \(t)")
@@ -51,6 +51,6 @@ class CBDataFactory {
             }
         }
         
-        return CBChannelEventUnknownData()
+        return CBActionMessageUnknownData()
     }
 }

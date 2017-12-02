@@ -38,22 +38,20 @@ class AMBChatClient {
         endpoint = url
     }
     
-    func login(userName: String, password: String, completionHandler: @escaping (Bool) -> Void) {
-        ambManager.logIn(username: userName, password: password) { [weak self] success in
+    func login(userName: String, password: String, completionHandler: @escaping (Error?) -> Void) {
+        ambManager.logIn(username: userName, password: password) { [weak self] error in
             guard let me = self else {
                 logger().logError("AMBChatClient went away while processing login")
                 return
             }
             
-            if success {
+            if error == nil {
                 me.currentState = .signedIn
-                logger().logInfo("User \(userName) logged in")
             } else {
                 me.currentState = .signedOut
-                logger().logError("Failed to log in")
             }
             
-            completionHandler(success)
+            completionHandler(error)
         }
     }
     

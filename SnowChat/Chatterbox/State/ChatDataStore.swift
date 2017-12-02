@@ -19,16 +19,6 @@ class ChatDataStore: ChatEventControlNotification {
         publishBooleanControlNotification(forChannel, data)
     }
     
-    func onDateControl(forChannel: CBChannel, withControlData data: CBDateData) {
-        push(data)
-        publishDateControlNotification(forChannel, data)
-    }
-    
-    func onInputControl(forChannel: CBChannel, withControlData data: CBInputData) {
-        push(data)
-        publishInputControlNotification(forChannel, data)
-    }
-    
     fileprivate let id: String
     fileprivate var dataSink: [CBStorable] = []
     
@@ -43,17 +33,17 @@ class ChatDataStore: ChatEventControlNotification {
                                         userInfo: info)
     }
     
-    fileprivate func publishDateControlNotification(_ channel: CBChannel, _ data: CBDateData ) {
-        let info: [String: Any] = ["state": data]
-        NotificationCenter.default.post(name: ChatNotification.name(forKind: .dateControl),
-                                        object: self,
-                                        userInfo: info)
-    }
-    
-    fileprivate func publishInputControlNotification(_ channel: CBChannel, _ data: CBInputData ) {
-        let info: [String: Any] = ["state": data]
-        NotificationCenter.default.post(name: ChatNotification.name(forKind: .inputControl),
-                                        object: self,
-                                        userInfo: info)
-    }
+//    fileprivate func publishDateControlNotification(_ channel: CBChannel, _ data: CBDateData ) {
+//        let info: [String: Any] = ["state": data]
+//        NotificationCenter.default.post(name: ChatNotification.name(forKind: .dateControl),
+//                                        object: self,
+//                                        userInfo: info)
+//    }
+//    
+//    fileprivate func publishInputControlNotification(_ channel: CBChannel, _ data: CBInputData ) {
+//        let info: [String: Any] = ["state": data]
+//        NotificationCenter.default.post(name: ChatNotification.name(forKind: .inputControl),
+//                                        object: self,
+//                                        userInfo: info)
+//    }
 }

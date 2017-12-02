@@ -72,16 +72,4 @@ class ChatState: ChatEventNotification {
             Logger.default.logError("Unexpected state in onChannelInit: \(currentState)")
         }
     }
-    
-    func onChannelOpen(forChannel: CBChannel, withEventData data: CBChannelOpenData) {
-    
-    }
-    
-    func onChannelClose(forChannel: CBChannel, withEventData data: CBChannelCloseData) {
-    
-    }
-    
-    func onChannelRefresh(forChannel: CBChannel, withEventData data: CBChannelRefreshData) {
-    
-    }
 }

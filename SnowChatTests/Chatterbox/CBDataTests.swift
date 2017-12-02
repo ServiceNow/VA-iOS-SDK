@@ -43,35 +43,6 @@ class CBDataTests: XCTestCase {
         XCTAssert(cd.controlType == .controlTypeUnknown)
     }
     
-    func testBooleanDataInit() {
-        let bc = CBBooleanData(withId: "123", withValue: true)
-        XCTAssert(bc.id == "123")
-        XCTAssert(bc.controlType == .controlBoolean)
-        XCTAssert(bc.value == true)
-    }
-    
-    func testDateDataInit() {
-        let date = Date()
-        let bc = CBDateData(withId: "123", withValue: date)
-        XCTAssert(bc.id == "123")
-        XCTAssert(bc.controlType == .controlDate)
-        XCTAssert(bc.value == date)
-    }
-    
-    func testInputDataInit() {
-        let input = "Where is my money?"
-        let bc = CBInputData(withId: "123", withValue: input)
-        XCTAssert(bc.id == "123")
-        XCTAssert(bc.controlType == .controlInput)
-        XCTAssert(bc.value == input)
-    }
-    
-    func testChannelEvent() {
-        let data = CBChannelRefreshData(status: 100)
-        XCTAssert(data.eventType == .channelRefresh)
-        XCTAssert(data.status == 100)
-    }
-    
     func testBooleanFromJSON() {
         let json = """
         {
@@ -114,28 +85,6 @@ class CBDataTests: XCTestCase {
         XCTAssert(obj.controlType == .controlTypeUnknown)
         let inputObj = obj as? CBControlDataUnknown
         XCTAssertNotNil(inputObj)
-    }
-    
-    func testConsumerTextMessage() {
-        let ctm = ConsumerTextMessage(withData: RichControlData(sessionId: "1",
-                                                                controlData: ConsumerTextMessage.ControlWrapper(uiType: "TopicPicker")))
-        do {
-            let jsonData = try encoder!.encode(ctm)
-            let jsonString = String(data: jsonData, encoding: .utf8)
-            Logger.default.logInfo("JSON: \(jsonString!)")
-            
-            XCTAssertTrue(jsonString!.contains("\"type\":\"consumerTextMessage\""))
-            XCTAssertTrue(jsonString!.contains("\"uiType\":\"TopicPicker\""))
-
-            // make a new instance from the JSON, then decode that and compare to the original
-            let clone = try decoder!.decode(ConsumerTextMessage.self, from: jsonData)
-            let cloneData = try encoder!.encode(clone)
-            let cloneString = String(data: cloneData, encoding: .utf8)
-            XCTAssertEqual(jsonString, cloneString)
-        } catch let error {
-            Logger.default.logInfo(error.localizedDescription)
-        }
-        
     }
 
     let jsonInitStart = """
@@ -282,7 +231,7 @@ class CBDataTests: XCTestCase {
         let jsonData = json.data(using: .utf8)
         let decoder = JSONDecoder()
         do {
-            let systemMessage = try decoder.decode(SystemTextMessage.self, from: jsonData!) as SystemTextMessage
+            let systemMessage = try decoder.decode(ControlMessage.self, from: jsonData!) as ControlMessage
             XCTAssert(systemMessage.data.richControl.uiType == "SystemError")
             XCTAssert(systemMessage.data.richControl.uiMetadata?.error?.message == "An unrecoverable error has occurred.")
         } catch let error {

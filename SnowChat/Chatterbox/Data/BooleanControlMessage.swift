@@ -13,7 +13,7 @@ struct BooleanControlMessage: Codable, CBControlData {
     var controlType: CBControlType = .controlBoolean
     
     let type: String
-    let data: RichControlData<SystemTextMessage.ControlWrapper<SystemTextMessage.UIMetadata>>
+    let data: RichControlData<ControlMessage.ControlWrapper<ControlMessage.UIMetadata>>
  
     // define the properties that we decode / encode
     private enum CodingKeys: String, CodingKey {
