@@ -107,7 +107,8 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let selectedItemModel = model.items?[indexPath.row] {
-            selectedItemModel.isSelected = true
+            selectedItemModel.isSelected = !selectedItemModel.isSelected
+            tableView.reloadRows(at: [indexPath], with: .none)
         }
     }
     

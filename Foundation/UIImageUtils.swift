@@ -22,7 +22,7 @@ func circleImage(withDiamater diameter: CGFloat, color: UIColor, borderWidth bor
     if let borderColor = borderColor, border > 0 {
         context.setLineWidth(border)
         context.setStrokeColor(borderColor.cgColor)
-        context.strokeEllipse(in: rect)
+        context.strokeEllipse(in: rect.insetBy(dx: 1, dy: 1))
     }
     
     let image = UIGraphicsGetImageFromCurrentImageContext()

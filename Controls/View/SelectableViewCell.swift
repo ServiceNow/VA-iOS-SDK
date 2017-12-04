@@ -23,6 +23,7 @@ class SelectableViewCell: UITableViewCell, ConfigurablePickerCell {
             fatalError("Couldn't load SelectableView from nib")
         }
         
+        selectableView.isUserInteractionEnabled = false
         self.selectableView = selectableView
         setupSelectableView()
     }
@@ -46,5 +47,6 @@ class SelectableViewCell: UITableViewCell, ConfigurablePickerCell {
     func configure(withModel model: SelectableItemViewModel) {
         selectableView.titleLabel.text = model.displayValue
         selectableView.titleLabel.textColor = itemTextColor
+        selectableView.isSelected = model.isSelected
     }
 }
