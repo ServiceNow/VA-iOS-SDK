@@ -39,6 +39,7 @@ enum PickerControlStyle: Int {
 }
 
 // MARK: - PickerControlProtocol
+
 protocol PickerControlProtocol: ControlProtocol {
     
     var style: PickerControlStyle { get set }

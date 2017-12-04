@@ -35,19 +35,21 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
     
     // MARK: - View Life Cycle
     
+    override func loadView() {
+        let fullSizeContainer = FullSizeScrollViewContainerView(frame: CGRect.zero)
+        self.view = fullSizeContainer
+        self.fullSizeContainer = fullSizeContainer
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
     }
     
     private func setupTableView() {
-        let fullSizeContainer = FullSizeScrollViewContainerView(frame: CGRect.zero)
-        fullSizeContainer.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(fullSizeContainer)
-        NSLayoutConstraint.activate([fullSizeContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                     fullSizeContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     fullSizeContainer.topAnchor.constraint(equalTo: view.topAnchor),
-                                     fullSizeContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
+        guard let fullSizeContainer = fullSizeContainer else {
+            return
+        }
         
         let tableView = UITableView()
         tableView.tableFooterView = UIView()
@@ -66,6 +68,7 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
                                      tableView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
                                      tableView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor)])
         
+        // FIXME: upcoming lots of changes here
         tableView.delegate = self
         tableView.dataSource = self
         tableView.showsVerticalScrollIndicator = false

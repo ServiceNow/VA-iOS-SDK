@@ -34,6 +34,10 @@ class BubbleView: UIView {
         }
     }
     
+    override var intrinsicContentSize: CGSize {
+        return contentView.intrinsicContentSize
+    }
+    
     private lazy var borderLayer: CAShapeLayer = {
         let borderLayer = CAShapeLayer()
         borderLayer.fillColor = nil

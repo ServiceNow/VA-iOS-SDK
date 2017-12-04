@@ -51,7 +51,7 @@ public class BubbleViewController: UIViewController {
         
         NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: bubbleView.contentView.leadingAnchor),
                                      controlView.trailingAnchor.constraint(equalTo: bubbleView.contentView.trailingAnchor),
-                                     controlView.bottomAnchor.constraint(equalTo: bubbleView.contentView.bottomAnchor),
-                                     controlView.topAnchor.constraint(equalTo: bubbleView.contentView.topAnchor)])
+                                     bubbleView.contentView.heightAnchor.constraint(equalTo: controlView.heightAnchor),
+                                     bubbleView.contentView.centerYAnchor.constraint(equalTo: controlView.centerYAnchor)])
     }
 }
