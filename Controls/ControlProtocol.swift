@@ -38,7 +38,31 @@ enum PickerControlStyle: Int {
     case actionSheet
 }
 
+// MARK: - PickerControlProtocol
 protocol PickerControlProtocol: ControlProtocol {
     
     var style: PickerControlStyle { get set }
+    
+    func viewController(forStyle style: PickerControlStyle, model: ControlViewModel) -> UIViewController
+}
+
+extension PickerControlProtocol {
+    
+    // default implementation of protocol method. returns viewController based on provided style of the picker
+    func viewController(forStyle style: PickerControlStyle, model: ControlViewModel) -> UIViewController {
+        guard let model = model as? PickerControlViewModel else {
+            fatalError("Wrong model class")
+        }
+        
+        switch style {
+        case .inline:
+            let tableViewController = PickerTableViewController(model: model)
+            return tableViewController
+            
+        // FIXME: need to add proper stuff in here
+        case .bottom, .actionSheet:
+            let actionSheet = UIAlertController()
+            return actionSheet
+        }
+    }
 }

@@ -25,21 +25,6 @@ public class BooleanPickerControl: PickerControlProtocol {
         self.model = model
     }
     
-    func viewController(forStyle style: PickerControlStyle, model: ControlViewModel) -> UIViewController {
-        guard let model = model as? PickerControlViewModel else {
-            fatalError("Wrong model class")
-        }
-        
-        switch style {
-        case .inline:
-            let tableViewController = PickerTableViewController(model: model)
-            return tableViewController
-        case .bottom, .actionSheet:
-            let actionSheet = UIAlertController()
-            return actionSheet
-        }
-    }
-    
     func submit() {
         
     }
