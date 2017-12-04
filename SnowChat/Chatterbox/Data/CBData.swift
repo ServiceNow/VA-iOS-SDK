@@ -9,7 +9,6 @@
 import Foundation
 
 class CBData {
-
     static var jsonDecoder: JSONDecoder = {
         var decoder = JSONDecoder()
         
@@ -52,34 +51,11 @@ struct CBUser: Codable {
     var password: String?   // NOTE: will not be used once token is correctly allowed by service
 }
 
-extension CBUser {
-    init(clone src: CBUser) {
-        self.id = src.id
-        self.token = src.token
-        self.name = src.name
-        self.consumerId = src.consumerId
-        self.consumerAccountId = src.consumerAccountId
-    }
-}
-
 struct CBVendor: Codable {
     var name: String
     var vendorId: String
     var consumerId: String
     var consumerAccountId: String
-}
-
-extension CBVendor {
-    init(clone src: CBVendor) {
-        self.name = src.name
-        self.vendorId = src.vendorId
-        self.consumerId = src.consumerId
-        self.consumerAccountId = src.consumerAccountId
-    }
-}
-
-func getDeviceIdentifier() -> String {
-    return "1234"
 }
 
 struct CBSession: Codable {
@@ -88,7 +64,7 @@ struct CBSession: Codable {
     var vendor: CBVendor
     var sessionState: SessionState = .closed
     var welcomeMessage: String?
-    var deviceId: String { return getDeviceIdentifier() }
+    var deviceId: String { return getDeviceId() }
 
     var extId: String { return "\(deviceId)\(vendor.consumerAccountId)" }
 
@@ -114,15 +90,6 @@ struct CBSession: Codable {
         case closed
         case opened
         case error
-    }
-}
-
-extension CBSession {
-    init(clone src: CBSession) {
-        self.id = src.id
-        self.user = CBUser(clone: src.user)
-        self.vendor = CBVendor(clone: src.vendor)
-        self.sessionState = src.sessionState
     }
 }
 

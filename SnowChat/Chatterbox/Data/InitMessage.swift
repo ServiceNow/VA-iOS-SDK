@@ -66,10 +66,3 @@ struct ContextHandshake: Codable {
         case vendorId
     }
 }
-
-extension InitMessage {
-    init(clone src: InitMessage) {
-        type = src.type
-        data = src.data
-    }
-}

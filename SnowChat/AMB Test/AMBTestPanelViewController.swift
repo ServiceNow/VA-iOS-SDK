@@ -44,14 +44,12 @@ class AMBTestPanelViewController: UIViewController {
     }
 
     @IBAction func onTopicSearchChanged(_ sender: Any) {
-        if let field = sender as? UITextField {
-            if let val = field.text {
-                chatterbox.sessionAPI?.suggestTopics(searchText: val, completionHandler: { (topics) in
-                    for t in topics {
-                        self.appendContent(message: "Topic: \(t.title) [\(t.name)]")
-                    }
-                })
-            }
+        if let field = sender as? UITextField, let val = field.text {
+            chatterbox.sessionAPI?.suggestTopics(searchText: val, completionHandler: { (topics) in
+                for t in topics {
+                    self.appendContent(message: "Topic: \(t.title) [\(t.name)]")
+                }
+            })
         }
     }
 

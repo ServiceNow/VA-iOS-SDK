@@ -63,6 +63,7 @@
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
 		C4CAFEA81FBD0912007007F5 /* CBDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */; };
 		C4F3AF2F1FD235D100B27B0D /* Chatterbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4F3AF2E1FD235D100B27B0D /* Chatterbox.swift */; };
+		C4F3AF321FD601FE00B27B0D /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4F3AF311FD601FE00B27B0D /* Util.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -119,6 +120,7 @@
 		C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataTests.swift; sourceTree = "<group>"; };
 		C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataFactory.swift; sourceTree = "<group>"; };
 		C4F3AF2E1FD235D100B27B0D /* Chatterbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chatterbox.swift; sourceTree = "<group>"; };
+		C4F3AF311FD601FE00B27B0D /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -238,6 +240,7 @@
 		BEB6C8591FB92CD700B1D497 /* SnowChat */ = {
 			isa = PBXGroup;
 			children = (
+				C4F3AF301FD601EA00B27B0D /* Util */,
 				C420ED7B1FC5F467002476C0 /* Logger */,
 				BE6FBE441FBFBC210062A0EB /* AMB Test */,
 				BE5974C01FC392A300959406 /* Controls */,
@@ -343,6 +346,14 @@
 				C40565D21FBE478C004BD28C /* CBTestMessageHandler.swift */,
 			);
 			path = Chatterbox;
+			sourceTree = "<group>";
+		};
+		C4F3AF301FD601EA00B27B0D /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				C4F3AF311FD601FE00B27B0D /* Util.swift */,
+			);
+			path = Util;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -530,6 +541,7 @@
 				BE9E8BA11FBF7F3600499960 /* AMBClient.swift in Sources */,
 				C420ED7D1FC5F473002476C0 /* Logger.swift in Sources */,
 				C40565FA1FC4F71D004BD28C /* ControlMessage.swift in Sources */,
+				C4F3AF321FD601FE00B27B0D /* Util.swift in Sources */,
 				C40565C81FBE2454004BD28C /* ChatMessageHandler.swift in Sources */,
 				C40565F21FC49CD8004BD28C /* InitMessage.swift in Sources */,
 				C40565D71FBF4B71004BD28C /* ChatState.swift in Sources */,

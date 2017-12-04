@@ -23,7 +23,7 @@ class SessionAPI {
     var chatId: String = UUID().uuidString.replacingOccurrences(of: "-", with: "")
     
     func getSession(sessionInfo: CBSession, completionHandler: @escaping (CBSession?) -> Void) {
-        var resultSession = CBSession(clone: sessionInfo)
+        var resultSession = sessionInfo
         
         let parameters: Parameters = ["deviceId" : sessionInfo.deviceId,
                                       "channelId": "/cs/messages/\(chatId)",

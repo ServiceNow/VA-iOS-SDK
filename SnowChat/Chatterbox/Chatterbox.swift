@@ -9,9 +9,9 @@
 import Foundation
 
 enum ChatterboxError: Error {
-    case InvalidParameterError(details: String)
-    case InvalidCredentialsError
-    case UnknownChatterboxError
+    case invalidParameter(details: String)
+    case invalidCredentials
+    case unknown
 }
 
 class Chatterbox: AMBListener {
@@ -21,12 +21,7 @@ class Chatterbox: AMBListener {
     var vendor: CBVendor?
     
     var chatId: String {
-        // get the chatId from the session-manager
-        if let sid = sessionAPI?.chatId {
-            return sid
-        } else {
-            return "0"
-        }
+        return sessionAPI?.chatId ?? "0"
     }
     
     // allow access to the session-manager for now (do we want to reflect relevant API's here?)
@@ -62,6 +57,8 @@ class Chatterbox: AMBListener {
         logger.logDebug("initializeAMB returning")
     }
     
+    // MARK: internal proerties and methods
+    
     private var session: CBSession?
     private var _ambClient: AMBChatClient?
     private var _sessionAPI: SessionAPI?
@@ -75,9 +72,9 @@ class Chatterbox: AMBListener {
 
     private let logger = Logger(forCategory: "Chatterbox", atLevel: .Info)
     
-    private func initializeAMB( _ completion: @escaping (Error?) -> Void) {
+    private func initializeAMB(_ completion: @escaping (Error?) -> Void) {
         guard  let user = user, vendor != nil else {
-            let err = ChatterboxError.InvalidParameterError(details: "User and Vendor must be initialized first")
+            let err = ChatterboxError.invalidParameter(details: "User and Vendor must be initialized first")
             logger.logError(err.localizedDescription)
             completion(err)
             return
@@ -97,7 +94,7 @@ class Chatterbox: AMBListener {
         })
     }
     
-    private func createChatSession( _ completion: @escaping (Error?) -> Void) {
+    private func createChatSession(_ completion: @escaping (Error?) -> Void) {
         guard let user = user, let vendor = vendor else {
             logger.logError("User and Vendor must be initialized to create a chat session")
             return
@@ -134,6 +131,7 @@ class Chatterbox: AMBListener {
     
     private func handshakeHandler(_ message: String) {
         let event = CBDataFactory.channelEventFromJSON(message)
+        
         if event.eventType == .channelInit {
             if let initEvent = event as? InitMessage {
                 let loginStage = initEvent.data.actionMessage.loginStage
@@ -149,13 +147,12 @@ class Chatterbox: AMBListener {
     
     func userSessionHandler(_ message: String) {
         let choices: CBControlData = CBDataFactory.controlFromJSON(message)
+        
         if choices.controlType == .contextualActionMessage {
-            if let topicChoices = choices as? ContextualActionMessage {
-                if let completion = handshakeCompletedHandler {
-                    completion(topicChoices)
-                } else {
-                    logger.logFatal("No handshake completion handler set!")
-                }
+            if let topicChoices = choices as? ContextualActionMessage, let completion = handshakeCompletedHandler {
+                completion(topicChoices)
+            } else {
+                logger.logFatal("Could not call user session completion handler: invalid message or not handler provided")
             }
         }
     }
@@ -167,8 +164,8 @@ class Chatterbox: AMBListener {
         initUserEvent.data.direction = "inbound"
         initUserEvent.data.actionMessage.userId = user?.id
         initUserEvent.data.actionMessage.contextHandshake.consumerAccountId = user?.consumerAccountId
-        initUserEvent.data.actionMessage.contextHandshake.deviceId = "1234567890"
         initUserEvent.data.actionMessage.contextHandshake.vendorId = vendor?.vendorId
+        initUserEvent.data.actionMessage.contextHandshake.deviceId = getDeviceId()
         initUserEvent.data.sendTime = Date()
         
         if let req = initUserEvent.data.actionMessage.contextHandshake.serverContextRequest {
