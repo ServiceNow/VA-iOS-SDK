@@ -45,6 +45,8 @@ class Chatterbox: AMBListener {
                             return
                         }
                         // TODO: how do we detect an error here? timeout?
+                        // if the ChatServer doesn't send back anything to complete
+                        // the handhake we will just sit here waiting...
                         
                     } else {
                         onError(error)
@@ -139,13 +141,13 @@ class Chatterbox: AMBListener {
                     self.initUserSession(withInitEvent: initEvent)
                 } else if loginStage == "Finish" {
                     // handshake done, setup handler for the topic selection
-                    self.messageHandler = self.userSessionHandler
+                    self.messageHandler = self.topicSelectionHandler
                 }
             }
         }
     }
     
-    func userSessionHandler(_ message: String) {
+    func topicSelectionHandler(_ message: String) {
         let choices: CBControlData = CBDataFactory.controlFromJSON(message)
         
         if choices.controlType == .contextualActionMessage {
