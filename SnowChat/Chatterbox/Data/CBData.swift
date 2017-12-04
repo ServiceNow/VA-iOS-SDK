@@ -122,7 +122,7 @@ protocol CBActionMessageData: CBStorable, Codable {
 }
 
 struct CBActionMessageUnknownData: CBActionMessageData {
-    let eventType: CBActionEventType = .actionEventUnknown
+    let eventType: CBActionEventType = .unknown
 }
 
 enum CBActionEventType: String, Codable, CodingKey {
@@ -130,19 +130,19 @@ enum CBActionEventType: String, Codable, CodingKey {
     case channelInit = "Init"
     case topicPicker = "TopicPicker"
     
-    case actionEventUnknown = "unknownActionEvent"
+    case unknown = "unknownActionEvent"
 }
 
 // MARK: - Control Data
 
 enum CBControlType: String, Codable {
-    case controlTopicPicker = "TopicPicker"
-    case controlBoolean = "Boolean"
-    case controlDate = "Date"
-    case controlInput = "Input"
+    case topicPicker = "TopicPicker"
+    case boolean = "Boolean"
+    case date = "Date"
+    case input = "Input"
     case contextualActionMessage = "ContextualAction"
         
-    case controlTypeUnknown = "unknownControl"
+    case unknown = "unknownControl"
 }
 
 protocol CBControlData: CBStorable, Codable {
@@ -152,5 +152,5 @@ protocol CBControlData: CBStorable, Codable {
 
 struct CBControlDataUnknown: CBControlData {
     var id: String = "UNKNOWN"
-    var controlType: CBControlType = .controlTypeUnknown
+    var controlType: CBControlType = .unknown
 }

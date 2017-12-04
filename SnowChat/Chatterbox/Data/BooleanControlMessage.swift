@@ -10,7 +10,7 @@ import Foundation
 
 struct BooleanControlMessage: Codable, CBControlData {
     var id: String = UUID().uuidString
-    var controlType: CBControlType = .controlBoolean
+    var controlType: CBControlType = .boolean
     
     let type: String
     let data: RichControlData<ControlMessage.ControlWrapper<ControlMessage.UIMetadata>>

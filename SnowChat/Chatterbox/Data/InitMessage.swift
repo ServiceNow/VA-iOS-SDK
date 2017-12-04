@@ -39,8 +39,8 @@ struct ContextItem: Codable {
     }
     
     enum ContextItemFrequency: String, Codable, CodingKey {
-        case Once = "once"
-        case Minute = "every minute"
+        case once = "once"
+        case everyMinute = "every minute"
     }
     
     // define the properties that we decode / encode (note JSON name mapping)

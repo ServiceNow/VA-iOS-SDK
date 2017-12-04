@@ -20,7 +20,7 @@ class CBDataFactory {
                 switch t {
                 case CBControlType.contextualActionMessage.rawValue:
                     return try CBData.jsonDecoder.decode(ContextualActionMessage.self, from: jsonData)
-                case CBControlType.controlBoolean.rawValue:
+                case CBControlType.boolean.rawValue:
                     return try CBData.jsonDecoder.decode(BooleanControlMessage.self, from: jsonData)
                 default:
                     Logger.default.logError("Unrecognized UI Control: \(t)")

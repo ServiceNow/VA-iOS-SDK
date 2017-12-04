@@ -15,7 +15,7 @@ class TestControlData: CBControlData {
     
     init() {
         id = "123"
-        controlType = .controlTypeUnknown
+        controlType = .unknown
     }
 }
 
@@ -40,7 +40,7 @@ class CBDataTests: XCTestCase {
     func testControlDataInit() {
         let cd = TestControlData()
         XCTAssert(cd.id == "123")
-        XCTAssert(cd.controlType == .controlTypeUnknown)
+        XCTAssert(cd.controlType == .unknown)
     }
     
     func testBooleanFromJSON() {
@@ -69,7 +69,7 @@ class CBDataTests: XCTestCase {
         """
         let obj = CBDataFactory.controlFromJSON(json)
         XCTAssertNotNil(obj)
-        XCTAssert(obj.controlType == .controlBoolean)
+        XCTAssert(obj.controlType == .boolean)
         let boolObj = obj as! BooleanControlMessage
         XCTAssert(boolObj.data.richControl.uiType == "Boolean")
         XCTAssert(boolObj.data.richControl.model?.type == "field")
@@ -82,7 +82,7 @@ class CBDataTests: XCTestCase {
         let json = "{\"typo\":\"unknownControl\",\"value\":\"\(val)\"}"
         let obj = CBDataFactory.controlFromJSON(json)
         XCTAssertNotNil(obj)
-        XCTAssert(obj.controlType == .controlTypeUnknown)
+        XCTAssert(obj.controlType == .unknown)
         let inputObj = obj as? CBControlDataUnknown
         XCTAssertNotNil(inputObj)
     }
