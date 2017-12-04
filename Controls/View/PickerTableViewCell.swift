@@ -17,14 +17,12 @@ class PickerTableViewCell: UITableViewCell, ConfigurablePickerCell {
     
     static let cellIdentifier = "PickerTableViewCellIdentifier"
     
-    let itemTextColor = UIColor(red: 72 / 255, green: 159 / 255, blue: 250 / 255, alpha: 1)
-    
     @IBOutlet weak var titleLabel: UILabel!
     
     // MARK: - ConfigurablePickerCell Protocol
     
     func configure(withModel model: SelectableItemViewModel) {
         titleLabel.text = model.displayValue
-        titleLabel.textColor = itemTextColor
+        titleLabel.textColor = UIColor.controlTextColor
     }
 }

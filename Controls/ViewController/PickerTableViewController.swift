@@ -10,7 +10,7 @@ import UIKit
 
 class PickerTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    let headerTextColor = UIColor(red: 73 / 255, green: 96 / 255, blue: 116 / 255, alpha: 1)
+    let headerTextColor = UIColor.controlHeaderTextColor
     
     var fullSizeContainer: FullSizeScrollViewContainerView?
     
@@ -118,7 +118,7 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.text = model.title
         titleLabel.textColor = headerTextColor
-        headerView.backgroundColor = UIColor(red: 0.97, green: 0.97, blue: 0.97, alpha: 1)
+        headerView.backgroundColor = UIColor.controlHeaderBackgroundColor
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(titleLabel)
         

@@ -42,6 +42,7 @@
 		57B7E2D21FBA75B100196BA9 /* PickerControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */; };
 		57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1EA321FC33D1C009FC76D /* RoundedView.swift */; };
 		57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */; };
+		57EDCEA41FD5DA7A009A9A35 /* UIColor+Control.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EDCEA31FD5DA7A009A9A35 /* UIColor+Control.swift */; };
 		57F41D431FD1F69300532834 /* Controls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F41D421FD1F69300532834 /* Controls.swift */; };
 		BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = BE2925A01FC3391D005E55CA /* .swiftlint.yml */; };
 		BE50E2241FB9305C00948FBC /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = BE50E2231FB9305C00948FBC /* Cartfile */; };
@@ -93,6 +94,7 @@
 		57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControlViewModel.swift; sourceTree = "<group>"; };
 		57E1EA321FC33D1C009FC76D /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
 		57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ControlsViewController.xib; sourceTree = "<group>"; };
+		57EDCEA31FD5DA7A009A9A35 /* UIColor+Control.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Control.swift"; sourceTree = "<group>"; };
 		57F41D421FD1F69300532834 /* Controls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls.swift; sourceTree = "<group>"; };
 		BE2925A01FC3391D005E55CA /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .swiftlint.yml; sourceTree = SOURCE_ROOT; };
 		BE50E2231FB9305C00948FBC /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
@@ -199,6 +201,7 @@
 				5796E4471FD0B3E0009D2035 /* CGPathUtils.swift */,
 				57E1EA321FC33D1C009FC76D /* RoundedView.swift */,
 				572A4E3B1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift */,
+				57EDCEA31FD5DA7A009A9A35 /* UIColor+Control.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -501,6 +504,7 @@
 				5796E4481FD0B3E0009D2035 /* CGPathUtils.swift in Sources */,
 				57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */,
 				57F41D431FD1F69300532834 /* Controls.swift in Sources */,
+				57EDCEA41FD5DA7A009A9A35 /* UIColor+Control.swift in Sources */,
 				572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */,
 				5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */,
 			);
