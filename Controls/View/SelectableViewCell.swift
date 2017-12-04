@@ -9,6 +9,8 @@
 import UIKit
 
 class SelectableViewCell: UITableViewCell, ConfigurablePickerCell {
+    
+    let itemTextColor = UIColor(red: 72 / 255, green: 159 / 255, blue: 250 / 255, alpha: 1)
 
     static let cellIdentifier = "SelectableViewCellIdentifier"
     
@@ -16,12 +18,13 @@ class SelectableViewCell: UITableViewCell, ConfigurablePickerCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        if let selectableView = SelectableView.fromNib() as? SelectableView {
-            self.selectableView = selectableView
-            setupSelectableView()
-        } else {
+        
+        guard let selectableView = SelectableView.fromNib() as? SelectableView else {
             fatalError("Couldn't load SelectableView from nib")
         }
+        
+        self.selectableView = selectableView
+        setupSelectableView()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -31,20 +34,17 @@ class SelectableViewCell: UITableViewCell, ConfigurablePickerCell {
     private func setupSelectableView() {
         selectableView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(selectableView)
-    }
-    
-    override func updateConstraints() {
-        selectableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
-        selectableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
-        selectableView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
-        selectableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
-        super.updateConstraints()
+        
+        NSLayoutConstraint.activate([selectableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                                     selectableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                                     selectableView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
+                                     selectableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5)])
     }
     
     // MARK: - ConfigurablePickerCell Protocol
     
     func configure(withModel model: SelectableItemViewModel) {
-//        titleLabel.text = model.displayValue
-//        titleLabel.textColor = itemTextColor
+        selectableView.titleLabel.text = model.displayValue
+        selectableView.titleLabel.textColor = itemTextColor
     }
 }

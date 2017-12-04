@@ -11,15 +11,15 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="62" id="bNj-Vd-M4a" customClass="PickerTableViewCell" customModule="SnowChat" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="414" height="62"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="74" id="bNj-Vd-M4a" customClass="PickerTableViewCell" customModule="SnowChat" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="387" height="74"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="bNj-Vd-M4a" id="Y1p-I2-2Iz">
-                <rect key="frame" x="0.0" y="0.0" width="414" height="61.5"/>
+                <rect key="frame" x="0.0" y="0.0" width="387" height="73.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cqn-48-goP">
-                        <rect key="frame" x="20" y="5" width="374" height="51.5"/>
+                        <rect key="frame" x="20" y="5" width="347" height="63.5"/>
                         <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -29,14 +29,13 @@
                     <constraint firstAttribute="bottom" secondItem="Cqn-48-goP" secondAttribute="bottom" constant="5" id="JRo-e3-skl"/>
                     <constraint firstItem="Cqn-48-goP" firstAttribute="leading" secondItem="Y1p-I2-2Iz" secondAttribute="leading" constant="20" id="Rem-P7-pxK"/>
                     <constraint firstAttribute="trailing" secondItem="Cqn-48-goP" secondAttribute="trailing" constant="20" id="WkK-OA-N4o"/>
-                    <constraint firstItem="Cqn-48-goP" firstAttribute="centerY" secondItem="Y1p-I2-2Iz" secondAttribute="centerY" id="f49-jm-3kv"/>
                     <constraint firstItem="Cqn-48-goP" firstAttribute="top" secondItem="Y1p-I2-2Iz" secondAttribute="top" constant="5" id="r0L-e9-9zd"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
                 <outlet property="titleLabel" destination="Cqn-48-goP" id="4hh-bt-wjM"/>
             </connections>
-            <point key="canvasLocation" x="-17" y="-148"/>
+            <point key="canvasLocation" x="-30.5" y="-142"/>
         </tableViewCell>
     </objects>
 </document>

@@ -9,6 +9,8 @@
 import UIKit
 
 class SelectableView: UIControl {
+    
     @IBOutlet weak var selectionIndicatorView: UIImageView!
+    
     @IBOutlet weak var titleLabel: UILabel!
 }

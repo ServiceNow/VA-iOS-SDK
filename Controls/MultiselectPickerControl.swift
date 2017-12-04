@@ -18,10 +18,9 @@ class MultiselectPickerControl: PickerControlProtocol {
     
     weak var delegate: ControlDelegate?
     
-    public init() {
+    required init(model: ControlViewModel) {
         style = .inline
-        let model = MultiselectControlViewModel()
-        let multiViewController = PickerTableViewController(model: model)
+        let multiViewController = PickerTableViewController(model: model as! MultiselectControlViewModel)
         viewController = multiViewController
         self.model = model
     }

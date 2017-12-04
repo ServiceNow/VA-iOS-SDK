@@ -41,6 +41,7 @@
 		57B7E2D21FBA75B100196BA9 /* PickerControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */; };
 		57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1EA321FC33D1C009FC76D /* RoundedView.swift */; };
 		57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */; };
+		57F41D431FD1F69300532834 /* Controls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F41D421FD1F69300532834 /* Controls.swift */; };
 		BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = BE2925A01FC3391D005E55CA /* .swiftlint.yml */; };
 		BE50E2241FB9305C00948FBC /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = BE50E2231FB9305C00948FBC /* Cartfile */; };
 		BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
@@ -90,6 +91,7 @@
 		57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControlViewModel.swift; sourceTree = "<group>"; };
 		57E1EA321FC33D1C009FC76D /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
 		57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ControlsViewController.xib; sourceTree = "<group>"; };
+		57F41D421FD1F69300532834 /* Controls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls.swift; sourceTree = "<group>"; };
 		BE2925A01FC3391D005E55CA /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .swiftlint.yml; sourceTree = SOURCE_ROOT; };
 		BE50E2231FB9305C00948FBC /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		BE50E2261FB9337D00948FBC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
@@ -132,17 +134,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		57860EA51FD1C51800612E34 /* ChatBubble */ = {
+			isa = PBXGroup;
+			children = (
+				578632071FBB571D00FA0282 /* BubbleViewController.swift */,
+				572A4E431FCF70070081318D /* BubbleView.swift */,
+			);
+			path = ChatBubble;
+			sourceTree = "<group>";
+		};
 		57B7E2B91FBA24A600196BA9 /* Controls */ = {
 			isa = PBXGroup;
 			children = (
+				57F41D421FD1F69300532834 /* Controls.swift */,
 				578632151FBB9E0300FA0282 /* ControlProtocol.swift */,
 				57B7E2BB1FBA25A200196BA9 /* BooleanPickerControl.swift */,
 				572FAC171FC47A9C00B0B956 /* MultiselectPickerControl.swift */,
-				578632071FBB571D00FA0282 /* BubbleViewController.swift */,
-				572A4E431FCF70070081318D /* BubbleView.swift */,
 				57B7E2CE1FBA6B1300196BA9 /* Model */,
 				57B7E2BA1FBA25A200196BA9 /* ViewController */,
 				57B7E2BF1FBA25A200196BA9 /* View */,
+				57860EA51FD1C51800612E34 /* ChatBubble */,
 			);
 			path = Controls;
 			sourceTree = "<group>";
@@ -159,8 +170,8 @@
 			isa = PBXGroup;
 			children = (
 				57B7E2BE1FBA25A200196BA9 /* SelectableViewCell.swift */,
-				57B7E2C11FBA25A200196BA9 /* SelectableView.swift */,
 				57B7E2C21FBA25A200196BA9 /* SelectableView.xib */,
+				57B7E2C11FBA25A200196BA9 /* SelectableView.swift */,
 				572A4E3F1FCF06320081318D /* PickerTableViewCell.xib */,
 				572A4E411FCF07150081318D /* PickerTableViewCell.swift */,
 			);
@@ -485,6 +496,7 @@
 				5786320B1FBB571E00FA0282 /* BubbleViewController.swift in Sources */,
 				5796E4481FD0B3E0009D2035 /* CGPathUtils.swift in Sources */,
 				57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */,
+				57F41D431FD1F69300532834 /* Controls.swift in Sources */,
 				572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */,
 				5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */,
 			);

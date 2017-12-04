@@ -7,7 +7,7 @@
 //
 
 // base model for all ui control models
-protocol ControlViewModel {
+public protocol ControlViewModel {
     
     // title of the control
     var title: String? { get set }

@@ -8,9 +8,12 @@
 
 protocol ControlDelegate: class {
     
+    func controlDidSubmitData(_ control: ControlProtocol)
 }
 
 protocol ControlProtocol: class {
+    
+    init(model: ControlViewModel)
     
     // representation of ui control state
     var model: ControlViewModel { get set }
@@ -25,8 +28,13 @@ protocol ControlProtocol: class {
 
 enum PickerControlStyle: Int {
     
+    // can be embedded anywhere in parent view
     case inline
     
+    // is presented at the bottom of the screen
+    case bottom
+    
+    // classic actionSheet
     case actionSheet
 }
 

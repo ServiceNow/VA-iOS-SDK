@@ -75,7 +75,7 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.estimatedRowHeight = 30
         tableView.rowHeight = UITableViewAutomaticDimension
         
-        // TODO: need to adjust based on the number of items etc
+        // TODO: need to adjust based on the number of items, display style etc
         tableView.isScrollEnabled = false
         self.tableView = tableView
         
@@ -106,8 +106,8 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let selectedItem = model.items?[indexPath.row] {
-            selectedItem.isSelected = true
+        if let selectedItemModel = model.items?[indexPath.row] {
+            selectedItemModel.isSelected = true
         }
     }
     

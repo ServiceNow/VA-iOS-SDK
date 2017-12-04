@@ -10,7 +10,7 @@ import UIKit
 
 public class BooleanPickerControl: PickerControlProtocol {
     
-    var style: PickerControlStyle
+    var style: PickerControlStyle = .inline
     
     var model: ControlViewModel
     
@@ -21,13 +21,11 @@ public class BooleanPickerControl: PickerControlProtocol {
         return vc
     }()
     
-    public init() {
-        model = BooleanControlViewModel()
-        style = .inline
+    required public init(model: ControlViewModel) {
+        self.model = model
     }
     
     func viewController(forStyle style: PickerControlStyle, model: ControlViewModel) -> UIViewController {
-        
         guard let model = model as? PickerControlViewModel else {
             fatalError("Wrong model class")
         }
@@ -36,7 +34,7 @@ public class BooleanPickerControl: PickerControlProtocol {
         case .inline:
             let tableViewController = PickerTableViewController(model: model)
             return tableViewController
-        case .actionSheet:
+        case .bottom, .actionSheet:
             let actionSheet = UIAlertController()
             return actionSheet
         }

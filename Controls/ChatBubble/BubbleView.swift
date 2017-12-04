@@ -10,6 +10,13 @@ import UIKit
 
 class BubbleView: UIView {
     
+    enum ArrowDirection : Int {
+        case left
+        case  dright
+    }
+    
+    var arrowDirection: ArrowDirection = .left
+    
     var insetConstraints = [NSLayoutConstraint]()
     
     var contentViewInsets: UIEdgeInsets = UIEdgeInsets.zero {

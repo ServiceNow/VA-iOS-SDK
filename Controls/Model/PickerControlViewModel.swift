@@ -24,6 +24,7 @@ class SelectableItemViewModel: ControlViewModel {
 
 protocol PickerControlViewModel: ControlViewModel {
     
+    // can user select mutliple items?
     var isMultiselect: Bool { get set }
     
     // collection of item models
