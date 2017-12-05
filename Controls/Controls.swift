@@ -8,9 +8,12 @@
 
 import Foundation
 
-enum Control {
+public enum Control {
     
     case boolean
     
     case multiselect
+    
+    // for internal use
+    case selectableItem
 }

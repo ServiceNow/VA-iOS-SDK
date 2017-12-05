@@ -17,5 +17,7 @@ public protocol ControlViewModel {
     
     var id: String { get }
     
+    var type: Control { get }
+    
     init(id: String, title: String, required: Bool)
 }

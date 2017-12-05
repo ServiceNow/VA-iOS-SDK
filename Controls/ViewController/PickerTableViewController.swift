@@ -8,7 +8,18 @@
 
 import UIKit
 
+protocol PickerTableDelegate: AnyObject {
+    
+    // pickerTable:didSelectItemWithModel: is called when touch comes down on an item
+    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: SelectableItemViewModel, forPickerModel pickerModel: PickerControlViewModel)
+    
+    // pickerTable:didFinishWithModel: is called when touch comes down on Done button if one exists
+    func pickerTable(_ pickerTable: PickerTableViewController, didFinishWithModel model: PickerControlViewModel)
+}
+
 class PickerTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    
+    weak var delegate: PickerTableDelegate?
     
     let headerTextColor = UIColor.controlHeaderTextColor
     
@@ -112,6 +123,8 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
         if let selectedItemModel = model.items?[indexPath.row] {
             selectedItemModel.isSelected = !selectedItemModel.isSelected
             tableView.reloadRows(at: [indexPath], with: .none)
+            
+            delegate?.pickerTable(self, didSelectItem: selectedItemModel, forPickerModel: model)
         }
     }
     

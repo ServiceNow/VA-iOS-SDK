@@ -18,6 +18,10 @@ class MultiselectControlViewModel: PickerControlViewModel {
     
     let id: String
     
+    var type: Control {
+        return .multiselect
+    }
+    
     required init(id: String, title: String, required: Bool = true) {
         self.id = id
         self.title = title

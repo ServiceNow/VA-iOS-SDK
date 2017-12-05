@@ -21,6 +21,10 @@ class SelectableItemViewModel: ControlViewModel {
         return title
     }
     
+    var type: Control {
+        return .selectableItem
+    }
+    
     required init(id: String = "selectable_item", title: String, required: Bool = true) {
         self.title = title
         self.id = id

@@ -18,6 +18,10 @@ class BooleanControlViewModel: PickerControlViewModel {
     
     var items: [SelectableItemViewModel]?
     
+    var type: Control {
+        return .boolean
+    }
+    
     required init(id: String, title: String, required: Bool = true) {
         self.id = id
         self.title = title

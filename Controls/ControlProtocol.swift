@@ -8,7 +8,7 @@
 
 protocol ControlDelegate: AnyObject {
     
-    func controlDidSubmitData(_ control: ControlProtocol)
+    func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel)
 }
 
 protocol ControlProtocol: AnyObject {
