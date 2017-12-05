@@ -86,8 +86,7 @@ class BubbleView: UIView {
     }
     
     func setupShapeLayer() {
-        let maskLayer = CAShapeLayer()
-        layer.mask = maskLayer
+        layer.mask = CAShapeLayer()
     }
     
     override func layoutSublayers(of layer: CALayer) {
