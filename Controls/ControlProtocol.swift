@@ -38,9 +38,21 @@ enum PickerControlStyle: Int {
     case actionSheet
 }
 
+// MARK: - PickerViewControllerDelegate
+// Common interface for all picker view controller (either Table style or Carousel)
+
+protocol PickerViewControllerDelegate: AnyObject {
+    
+    // pickerTable:didSelectItemWithModel: is called when touch comes down on an item
+    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: SelectableItemViewModel, forPickerModel pickerModel: PickerControlViewModel)
+    
+    // pickerTable:didFinishWithModel: is called when touch comes down on Done button if one exists
+    func pickerTable(_ pickerTable: PickerTableViewController, didFinishWithModel model: PickerControlViewModel)
+}
+
 // MARK: - PickerControlProtocol
 
-protocol PickerControlProtocol: ControlProtocol {
+protocol PickerControlProtocol: ControlProtocol, PickerViewControllerDelegate {
     
     var style: PickerControlStyle { get set }
     
@@ -58,6 +70,7 @@ extension PickerControlProtocol {
         switch style {
         case .inline:
             let tableViewController = PickerTableViewController(model: model)
+            tableViewController.delegate = self
             return tableViewController
             
         // FIXME: need to add proper stuff in here
@@ -65,5 +78,11 @@ extension PickerControlProtocol {
             let actionSheet = UIAlertController()
             return actionSheet
         }
+    }
+    
+    // MARK: - PickerTableDelegate
+    
+    func pickerTable(_ pickerTable: PickerTableViewController, didFinishWithModel model: PickerControlViewModel) {
+        delegate?.control(self, didFinishWithModel: model)
     }
 }

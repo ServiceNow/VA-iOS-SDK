@@ -28,4 +28,10 @@ public class BooleanPickerControl: PickerControlProtocol {
     func submit() {
         
     }
+    
+    // MARK: - PickerTableDelegate
+    
+    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: SelectableItemViewModel, forPickerModel pickerModel: PickerControlViewModel) {
+        // FIXME: Add something in here
+    }
 }

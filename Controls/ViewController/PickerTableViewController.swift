@@ -8,18 +8,9 @@
 
 import UIKit
 
-protocol PickerTableDelegate: AnyObject {
-    
-    // pickerTable:didSelectItemWithModel: is called when touch comes down on an item
-    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: SelectableItemViewModel, forPickerModel pickerModel: PickerControlViewModel)
-    
-    // pickerTable:didFinishWithModel: is called when touch comes down on Done button if one exists
-    func pickerTable(_ pickerTable: PickerTableViewController, didFinishWithModel model: PickerControlViewModel)
-}
-
 class PickerTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    weak var delegate: PickerTableDelegate?
+    weak var delegate: PickerViewControllerDelegate?
     
     let headerTextColor = UIColor.controlHeaderTextColor
     

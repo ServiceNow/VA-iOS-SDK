@@ -14,19 +14,25 @@ class MultiselectPickerControl: PickerControlProtocol {
     
     var style: PickerControlStyle
     
-    var viewController: UIViewController
+    lazy var viewController: UIViewController = {
+        let vc = self.viewController(forStyle: style, model: model)
+        return vc
+    }()
     
     weak var delegate: ControlDelegate?
     
     required init(model: ControlViewModel) {
-        style = .inline
-        let multiViewController = PickerTableViewController(model: model as! MultiselectControlViewModel)
-        viewController = multiViewController
         self.model = model
+        style = .inline
     }
     
     func submit() {
         
     }
     
+    // MARK: - PickerTableDelegate
+    
+    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: SelectableItemViewModel, forPickerModel pickerModel: PickerControlViewModel) {
+        // FIXME: Add something in here
+    }
 }
