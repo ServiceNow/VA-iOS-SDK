@@ -6,6 +6,15 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
+enum BooleanControlOption: String {
+    case yes = "Yes"
+    case no = "No"
+    
+    func selectableItemModel() -> SelectableItemViewModel {
+        return SelectableItemViewModel(title: self.rawValue)
+    }
+}
+
 class BooleanControlViewModel: PickerControlViewModel {
     
     let id: String
@@ -26,6 +35,6 @@ class BooleanControlViewModel: PickerControlViewModel {
         self.id = id
         self.title = title
         self.isRequired = required
-        self.items = [SelectableItemViewModel(title: "Yes"), SelectableItemViewModel(title: "No")]
+        self.items = [BooleanControlOption.yes.selectableItemModel(), BooleanControlOption.no.selectableItemModel()]
     }
 }
