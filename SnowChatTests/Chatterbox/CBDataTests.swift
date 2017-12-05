@@ -10,6 +10,10 @@ import XCTest
 @testable import SnowChat
 
 class TestControlData: CBControlData {
+    func uniqueId() -> String {
+        return id
+    }
+    
     let id: String
     let controlType: CBControlType
     
@@ -71,10 +75,10 @@ class CBDataTests: XCTestCase {
         XCTAssertNotNil(obj)
         XCTAssert(obj.controlType == .boolean)
         let boolObj = obj as! BooleanControlMessage
-        XCTAssert(boolObj.data.richControl.uiType == "Boolean")
-        XCTAssert(boolObj.data.richControl.model?.type == "field")
-        XCTAssert(boolObj.data.richControl.uiMetadata?.label == "Would you like to create an incident?")
-        XCTAssert(boolObj.data.richControl.uiMetadata?.required == true)
+        XCTAssert(boolObj.data.richControl?.uiType == "Boolean")
+        XCTAssert(boolObj.data.richControl?.model?.type == "field")
+        XCTAssert(boolObj.data.richControl?.uiMetadata?.label == "Would you like to create an incident?")
+        XCTAssert(boolObj.data.richControl?.uiMetadata?.required == true)
     }
     
     func testInvalidTypeFromJSON() {
@@ -173,7 +177,7 @@ class CBDataTests: XCTestCase {
     }
     
     func testTopicPickerMessage() {
-        let topicPicker = TopicPickerMessage(forSession: "1", withValue: "system")
+        let topicPicker = SystemTopicPickerMessage(forSession: "1", withValue: "system")
         
         do {
             let jsonData = try encoder!.encode(topicPicker)
@@ -185,7 +189,7 @@ class CBDataTests: XCTestCase {
             XCTAssert(jsonString.contains("\"uiType\":\"TopicPicker\""))
             XCTAssert(jsonString.contains("\"value\":\"system\""))
             
-            let clone = try decoder!.decode(TopicPickerMessage.self, from: jsonData)
+            let clone = try decoder!.decode(SystemTopicPickerMessage.self, from: jsonData)
             let cloneData = try encoder!.encode(clone)
             let cloneString = String(data: cloneData, encoding: .utf8)
             XCTAssertEqual(cloneString, jsonString)
@@ -232,8 +236,8 @@ class CBDataTests: XCTestCase {
         let decoder = JSONDecoder()
         do {
             let systemMessage = try decoder.decode(ControlMessage.self, from: jsonData!) as ControlMessage
-            XCTAssert(systemMessage.data.richControl.uiType == "SystemError")
-            XCTAssert(systemMessage.data.richControl.uiMetadata?.error?.message == "An unrecoverable error has occurred.")
+            XCTAssert(systemMessage.data.richControl?.uiType == "SystemError")
+            XCTAssert(systemMessage.data.richControl?.uiMetadata?.error?.message == "An unrecoverable error has occurred.")
         } catch let error {
             Logger.default.logInfo(error.localizedDescription)
             XCTAssert(false)
@@ -312,10 +316,26 @@ class CBDataTests: XCTestCase {
         let decoder = JSONDecoder()
         do {
             let systemMessage = try decoder.decode(ContextualActionMessage.self, from: jsonData!) as ContextualActionMessage
-            XCTAssert(systemMessage.data.richControl.uiType == "ContextualAction")
+            XCTAssert(systemMessage.data.richControl?.uiType == "ContextualAction")
         } catch let error {
             Logger.default.logInfo(error.localizedDescription)
             XCTAssert(false)
+        }
+    }
+    
+    func testStartTopic() {
+        do {
+            var startTopic = StartTopicMessage(withSessionId: "session_id", withConversationId: "conversation_id")
+            let jsonData = try CBData.jsonEncoder.encode(startTopic)
+            let jsonString: String = String(data: jsonData, encoding: .utf8)!
+            Logger.default.logInfo(jsonString)
+            
+            XCTAssert(jsonString.contains("\"type\":\"consumerTextMessage\""))
+            XCTAssert(jsonString.contains("\"type\":\"task\""))
+            XCTAssert(jsonString.contains("\"uiType\":\"ContextualAction\""))
+            XCTAssert(jsonString.contains("\"value\":\"startTopic\""))
+        } catch let err {
+            Logger.default.logError(err.localizedDescription)
         }
     }
 }

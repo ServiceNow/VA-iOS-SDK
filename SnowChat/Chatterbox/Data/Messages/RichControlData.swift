@@ -28,19 +28,21 @@ import Foundation
 struct RichControlData<T: Codable>: Codable {
     let messageId: String
     let sessionId: String
-    let sendTime: Date
+    var sendTime: Date
     let receiveTime: Date
-    let direction: String
+    var direction: String
     var conversationId: String?
+    var taskId: String?
 
-    let richControl: T
+    var richControl: T?
     
-    init(sessionId: String, controlData: T) {
+    init(sessionId: String, conversationId: String?, controlData: T?) {
         self.messageId = UUID().uuidString
         self.sessionId = sessionId
+        self.conversationId = conversationId
         self.sendTime = Date()
         self.receiveTime = self.sendTime
-        self.richControl = controlData
         self.direction = "inbound"
+        self.richControl = controlData
     }
 }

@@ -34,6 +34,10 @@ class CBData {
         return encoder
     }()
     
+    static func uuidString() -> String {
+        return UUID().uuidString.replacingOccurrences(of: "-", with: "")
+    }
+    
     static var config: ChatBoxConfig = ChatBoxConfig(url: "http://localhost:8080") //ChatBoxConfig(url: "https://demonightlychatbot.service-now.com")
     
     struct ChatBoxConfig {
@@ -112,12 +116,13 @@ struct CBTopic: Codable {
 
 protocol CBStorable {
     // anything storable in the DataStore must conform to this
-    // TODO: serialization methods?
+    
+    func uniqueId() -> String
 }
 
 // MARK: - Action events
 
-protocol CBActionMessageData: CBStorable, Codable {
+protocol CBActionMessageData: Codable {
     var eventType: CBActionEventType { get }
 }
 
@@ -129,6 +134,8 @@ enum CBActionEventType: String, Codable, CodingKey {
     // from Qlue protocol
     case channelInit = "Init"
     case topicPicker = "TopicPicker"
+    case startUserTopic = "StartTopic"
+    case startedUserTopic = "StartedVendorTopic"
     
     case unknown = "unknownActionEvent"
 }
@@ -137,11 +144,13 @@ enum CBActionEventType: String, Codable, CodingKey {
 
 enum CBControlType: String, Codable {
     case topicPicker = "TopicPicker"
+    case startTopicMessage = "StartTopic"
     case boolean = "Boolean"
     case date = "Date"
     case input = "Input"
+    
     case contextualActionMessage = "ContextualAction"
-        
+    
     case unknown = "unknownControl"
 }
 
@@ -153,4 +162,8 @@ protocol CBControlData: CBStorable, Codable {
 struct CBControlDataUnknown: CBControlData {
     var id: String = "UNKNOWN"
     var controlType: CBControlType = .unknown
+    
+    func uniqueId() -> String {
+        return "CBControlDataUnknown-UNKNOWN"
+    }
 }

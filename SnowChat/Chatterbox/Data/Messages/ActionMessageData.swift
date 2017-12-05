@@ -12,7 +12,7 @@ struct ActionMessageData<T: Codable>: Codable {
     let conversationId: String?
     let taskId: String?
     
-    let messageId: String
+    var messageId: String
     let sessionId: String
     
     var direction: String

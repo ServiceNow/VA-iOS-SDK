@@ -9,6 +9,11 @@
 import Foundation
 
 struct BooleanControlMessage: Codable, CBControlData {
+    
+    func uniqueId() -> String {
+        return id
+    }
+    
     var id: String = UUID().uuidString
     var controlType: CBControlType = .boolean
     

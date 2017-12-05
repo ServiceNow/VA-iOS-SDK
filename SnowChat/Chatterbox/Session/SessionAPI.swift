@@ -20,7 +20,7 @@ class SessionAPI {
     var sessionState: SessionState = .NoSession
     var lastError: Error?
     
-    var chatId: String = UUID().uuidString.replacingOccurrences(of: "-", with: "")
+    var chatId: String = CBData.uuidString()
     
     func getSession(sessionInfo: CBSession, completionHandler: @escaping (CBSession?) -> Void) {
         var resultSession = sessionInfo
@@ -42,63 +42,50 @@ class SessionAPI {
                           parameters: parameters,
                           encoding: JSONEncoding.default,
                           headers: headers).responseJSON { response in
-            if response.error != nil {
-                // swiftlint:disable:next force_unwrapping
-                Logger.default.logError("Error from response: \(response.error!)")
+                            
+            if let error = response.error {
+                Logger.default.logError("Error from response: \(error)")
                 
                 self.sessionState = .SessionError
-                self.lastError = response.error
+                self.lastError = error
                 
                 completionHandler(nil)
                 return
             }
             
-            self.sessionState = .SessionActive
-
-            if let value = response.result.value {
+            if let value = response.result.value,
+               let data = value as? NSDictionary,
+               let sessionData = data.object(forKey: "session") as? NSDictionary {
+                
                 Logger.default.logInfo("value: \(value)")
                 
-                if let data = value as? NSDictionary {
-                    resultSession.welcomeMessage = data.object(forKey: "welcomeMessage") as? String
-
-                    if let sessionData = data.object(forKey: "session") as? NSDictionary {
-                        resultSession.id = sessionData.object(forKey: "sessionId") as! String
-                        resultSession.user.consumerId = sessionData.object(forKey: "consumerId") as! String
-                        resultSession.user.consumerAccountId = sessionData.object(forKey: "consumerAccountId") as! String
-                        resultSession.sessionState = .opened
-                        
-                        self.lastError = nil
-                        
-                        completionHandler(resultSession)
-                    }
-                } else {
-                    Logger.default.logError("Error getting respons data from session request")
-                    completionHandler(nil)
-                }
+                resultSession.welcomeMessage = data.object(forKey: "welcomeMessage") as? String
+                resultSession.id = sessionData.object(forKey: "sessionId") as! String
+                resultSession.user.consumerId = sessionData.object(forKey: "consumerId") as! String
+                resultSession.user.consumerAccountId = sessionData.object(forKey: "consumerAccountId") as! String
+                resultSession.sessionState = .opened
+                
+                self.lastError = nil
+                self.sessionState = .SessionActive
+                
+                completionHandler(resultSession)
+            } else {
+                Logger.default.logError("Error getting respons data from session request: malformed server response")
+                completionHandler(nil)
             }
         }
-        
     }
     
-    fileprivate func topicsFromResult(_ result: Any) -> [CBTopic] {
-        var listOfTopics: [CBTopic] = []
-
-        if let dict = result as? NSDictionary {
-            let value = dict["root"]
-            if value != nil {
-                if let topics = value as? NSArray {
-                    for topic in topics {
-                        if let topic = topic as? NSDictionary {
-                            Logger.default.logDebug("Topic: \(topic)")
-                            if let title = topic.object(forKey: "title") as? String, let name = topic.object(forKey: "topicName") as? String {
-                                listOfTopics.append(CBTopic(title: title, name: name))
-                            }
-                        }
-                    }
-                }
-            }
+    static func topicsFromResult(_ result: Any) -> [CBTopic] {
+        guard let dictionary = result as? NSDictionary,
+              let topicDictionaries = dictionary["root"] as? [NSDictionary] else { return [] }
+        
+        let topics: [CBTopic] = topicDictionaries.flatMap { topic in
+            guard let title = topic["title"] as? String, let name = topic["topicName"] as? String else { return nil }
+            return CBTopic(title: title, name: name)
         }
-        return listOfTopics
+        
+        return topics
     }
     
     func suggestTopics(searchText: String, completionHandler: @escaping([CBTopic]) -> Void) {
@@ -113,7 +100,7 @@ class SessionAPI {
                     if let result = response.result.value {
                         Logger.default.logInfo("result: \(result)")
                         
-                        topics = self.topicsFromResult(result)
+                        topics = SessionAPI.topicsFromResult(result)
                     }
                 }
                 completionHandler(topics)
@@ -129,7 +116,7 @@ class SessionAPI {
                     if let result = response.result.value {
                         Logger.default.logInfo("result: \(result)")
                         
-                        topics = self.topicsFromResult(result)
+                        topics = SessionAPI.topicsFromResult(result)
                     }
                 }
                 completionHandler(topics)

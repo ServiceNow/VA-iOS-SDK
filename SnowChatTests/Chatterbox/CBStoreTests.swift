@@ -28,7 +28,7 @@ class CBStoreTests: XCTestCase {
     }
     
     func testStoreBooleanControl() {
-        let controlData = RichControlData<ControlMessage.ControlWrapper>(sessionId: "100", controlData: ControlMessage.ControlWrapper(model: ControlMessage.ModelType(type: "Boolean"), uiType: "BooleanControl", uiMetadata: ControlMessage.UIMetadata(label:"Test", required: false, error: nil)))
+        let controlData = RichControlData<ControlMessage.ControlWrapper>(sessionId: "100", conversationId: nil, controlData: ControlMessage.ControlWrapper(model: ControlMessage.ModelType(type: "Boolean", name: "Boolean"), uiType: "BooleanControl", value: nil, uiMetadata: ControlMessage.UIMetadata(label:"Test", required: false, error: nil)))
         let booleanData = BooleanControlMessage(id: "foo", controlType: .boolean, type: "Boolean", data: controlData)
         let expect = expectation(description: "Expect Notification for Boolean Control")
         
@@ -39,12 +39,12 @@ class CBStoreTests: XCTestCase {
         
             XCTAssert(notificationData.controlType == .boolean)
             XCTAssertEqual(notificationData.id, booleanData.id)
-            XCTAssertEqual(notificationData.data.richControl.model?.type, booleanData.data.richControl.model?.type)
+            XCTAssertEqual(notificationData.data.richControl?.model?.type, booleanData.data.richControl?.model?.type)
             
             expect.fulfill()
         }
         
-        store?.onBooleanControl(forChannel: channel, withControlData: booleanData)
+        store?.controlEvent(didReceiveBooleanControl: booleanData)
 
         waitForExpectations(timeout: 1) { error in
             XCTAssertNil(error)

@@ -12,9 +12,7 @@
 import Foundation
 
 protocol ChatEventNotification {
-    func onChannelInit(forChannel: CBChannel, withEventData data: InitMessage)
+    func topicEvent(didReceiveStartedTopic: StartedUserTopicMessage)
+    func controlEvent(didReceiveBooleanControl: BooleanControlMessage)
 }
 
-protocol ChatEventControlNotification {
-    func onBooleanControl(forChannel: CBChannel, withControlData: BooleanControlMessage)
-}

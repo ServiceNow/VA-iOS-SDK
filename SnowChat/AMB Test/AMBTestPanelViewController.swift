@@ -27,8 +27,8 @@ class AMBTestPanelViewController: UIViewController {
     @IBAction func onInitiateHandshake(_ sender: Any) {
         
         chatterbox.initializeSession(forUser: user, ofVendor: vendor,
-                             onSuccess: { [weak self] (topicChoices) in
-                                if let options = topicChoices.data.richControl.uiMetadata?.inputControls[0].uiMetadata?.options {
+                             whenSuccess: { [weak self] (topicChoices) in
+                                if let options = topicChoices.data.richControl?.uiMetadata?.inputControls[0].uiMetadata?.options {
                                     self?.appendContent(message: "What would you like to do?")
                                     for option in options {
                                         self?.appendContent(message: option.label)
@@ -36,7 +36,7 @@ class AMBTestPanelViewController: UIViewController {
                                     self?.startTopicBtn.isEnabled = true
                                 }
                              },
-                             onError: { [weak self] (error) in
+                             whenError: { [weak self] (error) in
                                 if let error = error {
                                     self?.appendContent(message: "Error initializing Chatterbox: \(error)")
                                 }
@@ -54,11 +54,22 @@ class AMBTestPanelViewController: UIViewController {
     }
 
     @IBAction func onStartTopic(_ sender: Any) {
+        var topicName: String?
+        
         chatterbox.sessionAPI?.allTopics(completionHandler: { (topics) in
             for t in topics {
                 self.appendContent(message: "Topic: \(t.title) [\(t.name)]")
+                topicName = t.name
             }
         })
+        
+        chatterbox.startTopic(name: topicName ?? "Create Incident") { [weak self] topic in
+            if let topic = topic {
+                self?.appendContent(message: "Successfully started User Topic \(topic.data.actionMessage.topicName)")
+            } else {
+                self?.appendContent(message: "Failed to start topic")
+            }
+        }
     }
     
     private func appendContent(message: String) {

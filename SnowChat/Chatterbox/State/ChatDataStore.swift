@@ -8,25 +8,33 @@
 
 import Foundation
 
-class ChatDataStore: ChatEventControlNotification {
+class ChatDataStore: ChatEventNotification {
+    
+    func topicEvent(didReceiveStartedTopic event: StartedUserTopicMessage) {
+        ignore(action: event)
+    }
     
     init(storeId: String) {
         id = storeId
     }
     
-    func onBooleanControl(forChannel: CBChannel, withControlData data: BooleanControlMessage) {
-        push(data)
-        publishBooleanControlNotification(forChannel, data)
+    func controlEvent(didReceiveBooleanControl data: BooleanControlMessage) {
+        addOrUpdate(data)
+        publishBooleanControlNotification(data)
     }
     
     fileprivate let id: String
     fileprivate var dataSink: [CBStorable] = []
     
-    fileprivate func push(_ chatItem: CBStorable) {
-       dataSink.append(chatItem)
+    fileprivate func addOrUpdate(_ chatItem: CBStorable) {
+        if let index = dataSink.index(where: { $0.uniqueId() == chatItem.uniqueId() }) {
+            dataSink[index] = chatItem
+        } else {
+            dataSink.append(chatItem)
+        }
     }
     
-    fileprivate func publishBooleanControlNotification(_ channel: CBChannel, _ data: BooleanControlMessage ) {
+    fileprivate func publishBooleanControlNotification(_ data: BooleanControlMessage ) {
         let info: [String: Any] = ["state": data]
         NotificationCenter.default.post(name: ChatNotification.name(forKind: .booleanControl),
                                         object: self,
@@ -46,4 +54,8 @@ class ChatDataStore: ChatEventControlNotification {
 //                                        object: self,
 //                                        userInfo: info)
 //    }
+    
+    private func ignore(action: CBActionMessageData) {
+        Logger.default.logInfo("ChatDataStore ignoring action message: \(action)")
+    }
 }
