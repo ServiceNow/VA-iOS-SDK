@@ -40,15 +40,15 @@ class AMBChatClient {
     
     func login(userName: String, password: String, completionHandler: @escaping (Error?) -> Void) {
         ambManager.logIn(username: userName, password: password) { [weak self] error in
-            guard let me = self else {
+            guard let strongSelf = self else {
                 logger().logError("AMBChatClient went away while processing login")
                 return
             }
             
             if error == nil {
-                me.currentState = .signedIn
+                strongSelf.currentState = .signedIn
             } else {
-                me.currentState = .signedOut
+                strongSelf.currentState = .signedOut
             }
             
             completionHandler(error)
