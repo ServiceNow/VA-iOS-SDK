@@ -16,7 +16,7 @@ struct ControlMessage: Codable {
     struct ControlWrapper<MetadataType: Codable>: Codable {
         let model: ModelType?
         let uiType: String
-        let value: String?
+        var value: String?
         let uiMetadata: MetadataType?
     }
     

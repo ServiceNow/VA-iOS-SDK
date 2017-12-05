@@ -10,10 +10,6 @@ import Foundation
 
 class ChatDataStore: ChatEventNotification {
     
-    func topicEvent(didReceiveStartedTopic event: StartedUserTopicMessage) {
-        ignore(action: event)
-    }
-    
     init(storeId: String) {
         id = storeId
     }
@@ -23,8 +19,12 @@ class ChatDataStore: ChatEventNotification {
         publishBooleanControlNotification(data)
     }
     
-    fileprivate let id: String
-    fileprivate var dataSink: [CBStorable] = []
+    func topicEvent(didReceiveStartedTopic event: StartedUserTopicMessage) {
+        ignore(action: event)
+    }
+    
+    internal let id: String
+    internal var dataSink: [CBStorable] = []
     
     fileprivate func addOrUpdate(_ chatItem: CBStorable) {
         if let index = dataSink.index(where: { $0.uniqueId() == chatItem.uniqueId() }) {

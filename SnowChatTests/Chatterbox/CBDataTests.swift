@@ -325,7 +325,7 @@ class CBDataTests: XCTestCase {
     
     func testStartTopic() {
         do {
-            var startTopic = StartTopicMessage(withSessionId: "session_id", withConversationId: "conversation_id")
+            let startTopic = StartTopicMessage(withSessionId: "session_id", withConversationId: "conversation_id")
             let jsonData = try CBData.jsonEncoder.encode(startTopic)
             let jsonString: String = String(data: jsonData, encoding: .utf8)!
             Logger.default.logInfo(jsonString)

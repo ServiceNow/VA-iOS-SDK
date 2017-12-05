@@ -15,4 +15,3 @@ protocol ChatEventNotification {
     func topicEvent(didReceiveStartedTopic: StartedUserTopicMessage)
     func controlEvent(didReceiveBooleanControl: BooleanControlMessage)
 }
-
