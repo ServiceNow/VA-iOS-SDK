@@ -39,8 +39,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         view.addSubview(bubbleView)
         NSLayoutConstraint.activate([bubbleView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
                                      bubbleView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-                                     bubbleView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7),
-                                     bubbleView.heightAnchor.constraint(equalToConstant: 150)])
+                                     bubbleView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7)])
         self.bubbleViewController = bubbleViewController
     }
     

@@ -35,7 +35,15 @@ class BubbleView: UIView {
     }
     
     override var intrinsicContentSize: CGSize {
-        return contentView.intrinsicContentSize
+        // if bubble view has some control - calculate its intrinsicContentSize and size Bubble accordingly
+        var contentSize = super.intrinsicContentSize
+        guard let subview = contentView.subviews.first else {
+            return contentSize
+        }
+        
+        subview.invalidateIntrinsicContentSize()
+        contentSize.height = subview.intrinsicContentSize.height
+        return contentSize
     }
     
     private lazy var borderLayer: CAShapeLayer = {

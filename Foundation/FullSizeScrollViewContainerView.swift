@@ -24,7 +24,7 @@ class FullSizeScrollViewContainerView: UIView {
     
     override var intrinsicContentSize: CGSize {
         guard let scrollView = scrollView,
-            let height = [scrollView.bounds.height, maxHeight].min() else {
+            let height = [scrollView.contentSize.height, maxHeight].min() else {
                 return super.intrinsicContentSize
         }
         

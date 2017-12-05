@@ -85,8 +85,10 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
         self.tableView = tableView
         
         fullSizeContainer.scrollView = tableView
-        fullSizeContainer.maxHeight = 150
+        fullSizeContainer.maxHeight = 200
         self.fullSizeContainer = fullSizeContainer
+        
+        tableView.reloadData()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
