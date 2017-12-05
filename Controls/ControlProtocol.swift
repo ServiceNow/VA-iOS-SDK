@@ -6,12 +6,12 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-protocol ControlDelegate: class {
+protocol ControlDelegate: AnyObject {
     
     func controlDidSubmitData(_ control: ControlProtocol)
 }
 
-protocol ControlProtocol: class {
+protocol ControlProtocol: AnyObject {
     
     init(model: ControlViewModel)
     

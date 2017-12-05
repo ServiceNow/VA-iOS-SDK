@@ -8,17 +8,20 @@
 
 class MultiselectControlViewModel: PickerControlViewModel {
     
-    var isMultiselect: Bool
+    var isMultiselect: Bool = true
     
-    var isRequired: Bool?
+    let isRequired: Bool
     
     var items: [SelectableItemViewModel]?
     
-    var title: String?
+    let title: String
     
-    init() {
-        self.isMultiselect = true
-        self.title = "What is your issue?"
-        self.items = [SelectableItemViewModel(displayValue: "Item 1"), SelectableItemViewModel(displayValue: "Item 2"), SelectableItemViewModel(displayValue: "Item 3"), SelectableItemViewModel(displayValue: "Item 4")]
+    let id: String
+    
+    required init(id: String, title: String, required: Bool = true) {
+        self.id = id
+        self.title = title
+        self.isRequired = required
+        self.items = [SelectableItemViewModel(title: "Item 1"), SelectableItemViewModel(title: "Item 2"), SelectableItemViewModel(title: "Item 3"), SelectableItemViewModel(title: "Item 4")]
     }
 }

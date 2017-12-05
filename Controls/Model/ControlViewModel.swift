@@ -10,8 +10,12 @@
 public protocol ControlViewModel {
     
     // title of the control
-    var title: String? { get set }
+    var title: String { get }
     
     // indicates whether uicontrol is required or not (i.e if input control has it set to false, "Skip" button is presented)
-    var isRequired: Bool? { get set }
+    var isRequired: Bool { get }
+    
+    var id: String { get }
+    
+    init(id: String, title: String, required: Bool)
 }

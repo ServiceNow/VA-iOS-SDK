@@ -60,10 +60,10 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         
         switch controlName {
         case "Boolean Picker":
-            let booleanModel = BooleanControlViewModel()
+            let booleanModel = BooleanControlViewModel(id: "boolean_1234", title: "Would you like to create incident?")
             uiControl = BooleanPickerControl(model: booleanModel)
         case "Multiselect Picker":
-            let multiselectModel = MultiselectControlViewModel()
+            let multiselectModel = MultiselectControlViewModel(id: "boolean_1234", title: "What is your issue?")
             uiControl = MultiselectPickerControl(model: multiselectModel)
         default:
             uiControl = nil

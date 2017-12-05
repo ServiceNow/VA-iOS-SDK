@@ -9,16 +9,22 @@
 // base class for item model
 class SelectableItemViewModel: ControlViewModel {
     
-    var title: String?
+    let id: String
     
-    var isRequired: Bool?
+    let title: String
+    
+    let isRequired: Bool
     
     var isSelected: Bool = false
     
-    var displayValue: String?
+    var displayValue: String? {
+        return title
+    }
     
-    init(displayValue: String) {
-        self.displayValue = displayValue
+    required init(id: String = "selectable_item", title: String, required: Bool = true) {
+        self.title = title
+        self.id = id
+        self.isRequired = required
     }
 }
 
