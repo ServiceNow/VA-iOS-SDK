@@ -38,7 +38,7 @@ protocol PickerControlViewModel: ControlViewModel {
     var isMultiselect: Bool { get set }
     
     // collection of item models
-    var items: [SelectableItemViewModel]? { get set }
+    var items: [SelectableItemViewModel]? { get }
     
     // represents items as a string
     var displayValues: [String?]? { get }

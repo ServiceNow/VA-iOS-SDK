@@ -25,7 +25,7 @@ class BooleanControlViewModel: PickerControlViewModel {
     
     var isMultiselect: Bool = false
     
-    var items: [SelectableItemViewModel]?
+    let items: [SelectableItemViewModel]?
     
     var type: Control {
         return .boolean
