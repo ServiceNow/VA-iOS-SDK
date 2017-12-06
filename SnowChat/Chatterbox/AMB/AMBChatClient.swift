@@ -14,7 +14,7 @@ protocol AMBListener {
     func onMessage(_ message: String, fromChannel: String)
 }
 
-private func logger() -> Logger { return Logger.logger(for: "AMBClient") }
+private let logger: Logger = Logger.logger(for: "AMBClient")
 
 class AMBChatClient {
     
@@ -41,7 +41,7 @@ class AMBChatClient {
     func login(userName: String, password: String, completionHandler: @escaping (Error?) -> Void) {
         ambManager.logIn(username: userName, password: password) { [weak self] error in
             guard let strongSelf = self else {
-                logger().logError("AMBChatClient went away while processing login")
+                logger.logError("AMBChatClient went away while processing login")
                 return
             }
             
@@ -57,17 +57,17 @@ class AMBChatClient {
     
     func subscribe(forChannel channel: String, receiver: AMBListener) {
         let subscription = ambManager.ambClient.subscribe(channel) { [weak self] (subscription, message) in
-            guard let msg = message else {
-                logger().logError("Nil-message received on channel \(channel)")
+            guard let message = message else {
+                logger.logError("Nil-message received on channel \(channel)")
                 return
             }
             
-            guard let me = self else {
-                logger().logError("AMBChatClient no longer valid while processing message from AMB")
+            guard let strongSelf = self else {
+                logger.logError("AMBChatClient no longer valid while processing message from AMB")
                 return
             }
             
-            me.handleMessage(subscription, channel, msg, receiver)
+            strongSelf.handleMessage(subscription, channel, message, receiver)
         }
         
         subscribers.append((channel: channel, subscriber: receiver, subscription: subscription))
@@ -87,22 +87,23 @@ class AMBChatClient {
             let jsonData = try encoder.encode(message)
             if let dict = try JSONSerialization.jsonObject(with: jsonData, options: .allowFragments) as? [String: Any] {
                 if let jsonString = String(data: jsonData, encoding: .utf8) {
-                    logger().logInfo("AMB Channel: \(channel)\nAMB Message \(jsonString)")
+                    logger.logInfo("Publishing to AMB Channel: \(channel)\nAMB Message \(jsonString)")
                 }
                 ambManager.ambClient.send(message: dict, toChannel: channel)
             }
         } catch let err {
-            logger().logError("Error publishing: \(err)")
+            logger.logError("Error publishing: \(err)")
         }
         
     }
     
     internal func handleMessage(_ subscription: NOWAMBSubscription?, _ channel: String, _ message: [AnyHashable : Any], _ receiver: AMBListener ) {
         if let msgString = AMBChatClient.messageToJSON(message: message) {
-            logger().logInfo("Incoming Message: \(msgString)")
+            logger.logInfo("Incoming Message: \(msgString)")
+            
             receiver.onMessage(msgString, fromChannel: channel)
         } else {
-            logger().logError("Error getting JSON from message: \(message)")
+            logger.logError("Error getting JSON from message: \(message)")
         }
     }
     
@@ -113,21 +114,14 @@ class AMBChatClient {
         ambManager.ambClient.unsubscribe(subs)
     }
     
-    // Force a publication to a channel
-    func publish(onChannel channel: String, jsonMessage message: String) {
-        for subscriber in subscribers where subscriber.channel == channel {
-            subscriber.subscriber.onMessage(message, fromChannel: channel)
-        }
-    }
-    
-    internal static func messageToJSON(message msg: [AnyHashable:Any]) -> String? {
+    internal static func messageToJSON(message: [AnyHashable:Any]) -> String? {
         do {
-            let msgData = try JSONSerialization.data(withJSONObject: msg, options: JSONSerialization.WritingOptions.prettyPrinted)
+            let msgData = try JSONSerialization.data(withJSONObject: message, options: JSONSerialization.WritingOptions.prettyPrinted)
             if let msgString = String(data: msgData, encoding: .utf8) {
                 return msgString
             }
         } catch let err {
-            logger().logError("Error \(err) decoding message: \(msg)")
+            logger.logError("Error \(err) decoding message: \(message)")
         }
         return nil
     }
