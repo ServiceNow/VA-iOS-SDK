@@ -21,3 +21,22 @@ public protocol ControlViewModel {
     
     init(id: String, title: String, required: Bool)
 }
+
+class TextViewModel: ControlViewModel {
+    
+    let title: String
+    
+    let isRequired: Bool
+    
+    let id: String
+    
+    var type: Control {
+        return .text
+    }
+    
+    required init(id: String = "text_control", title: String, required: Bool = true) {
+        self.title = title
+        self.isRequired = required
+        self.id = id
+    }
+}

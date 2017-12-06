@@ -14,6 +14,21 @@ public enum Control {
     
     case multiselect
     
+    case text
+    
     // for internal use
     case selectableItem
+    
+    func displayTitle() -> String {
+        switch self {
+        case .boolean:
+            return "Boolean Picker"
+        case .multiselect:
+            return "Multiselect Picker"
+        case .text:
+            return "Text Control"
+        case .selectableItem:
+            return "Selectable Item"
+        }
+    }
 }

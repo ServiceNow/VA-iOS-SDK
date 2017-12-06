@@ -66,4 +66,3 @@ extension PickerControlProtocol {
         delegate?.control(self, didFinishWithModel: model)
     }
 }
-

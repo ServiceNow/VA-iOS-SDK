@@ -14,7 +14,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     
     @IBOutlet weak var controlContainerView: UIView!
     
-    private var controls = ["Boolean Picker", "Multiselect Picker"]
+    private var controls = [Control.boolean, Control.multiselect, Control.text]
     
     private var bubbleViewController: BubbleViewController?
     
@@ -49,7 +49,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.textLabel?.text = controls[indexPath.row]
+        cell.textLabel?.text = controls[indexPath.row].displayTitle()
         return cell
     }
     
@@ -58,14 +58,17 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         let uiControl: ControlProtocol?
         
         switch controlName {
-        case "Boolean Picker":
+        case .boolean:
             let booleanModel = BooleanControlViewModel(id: "boolean_1234", title: "Would you like to create incident?")
             uiControl = BooleanPickerControl(model: booleanModel)
-        case "Multiselect Picker":
+        case .multiselect:
             let multiselectModel = MultiselectControlViewModel(id: "boolean_1234", title: "What is your issue?")
             uiControl = MultiselectPickerControl(model: multiselectModel)
+        case .text:
+            let textModel = TextViewModel(title: "Some random text that is longer than one line........")
+            uiControl = TextControl(model: textModel)
         default:
-            uiControl = nil
+            fatalError("This control doesnt exist!")
         }
         
         guard let selectedControl = uiControl else {
