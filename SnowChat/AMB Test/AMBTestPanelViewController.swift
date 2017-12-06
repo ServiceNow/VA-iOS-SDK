@@ -12,14 +12,12 @@ let consumerAccountId = UUID().uuidString
 let consumerId = "marc.attinasi"
 
 class AMBTestPanelViewController: UIViewController {
-
-    static private var count: Int = 0
-    private var chatId = "999"
     
     let user = CBUser(id: "9927", token: "938457hge98", name: "maint", consumerId: consumerId, consumerAccountId: consumerAccountId, password: "maint")
     let vendor = CBVendor(name: "ServiceNow", vendorId: "c2f0b8f187033200246ddd4c97cb0bb9", consumerId: consumerId, consumerAccountId: consumerAccountId)
     
     let chatterbox = Chatterbox()
+    private var notificationObserver: NSObjectProtocol?
     
     @IBOutlet weak var chatContent: UITextView!
     @IBOutlet weak var startTopicBtn: UIButton!
@@ -57,7 +55,7 @@ class AMBTestPanelViewController: UIViewController {
         var topicName: String?
         
         chatterbox.sessionAPI?.allTopics(completionHandler: { (topics) in
-            for t in topics {
+            if let t = topics.first {
                 self.appendContent(message: "Topic: \(t.title) [\(t.name)]")
                 topicName = t.name
             }
@@ -74,22 +72,44 @@ class AMBTestPanelViewController: UIViewController {
     
     private func appendContent(message: String) {
         if let text = chatContent.text {
-            chatContent.text = "\(text)\n***** \(AMBTestPanelViewController.count) *****\n\(message)"
+            chatContent.text = "\(text)\n\(message)"
         } else {
             chatContent.text = message
         }
-        AMBTestPanelViewController.count += 1
         chatContent.scrollRangeToVisible(NSRange(location: chatContent.text.lengthOfBytes(using: .utf8) - 1, length: 1))
     }
 
+    private func subscribeToControlNotifications() {
+        notificationObserver = NotificationCenter.default.addObserver(forName: ChatNotification.name(forKind: .booleanControl), object: nil, queue: nil) { notification in
+            let info = notification.userInfo as! [String: Any]
+            if let notificationData = info["state"] as? BooleanControlMessage {
+                let label = notificationData.data.richControl?.uiMetadata?.label ?? "[missing label]"
+                self.appendContent(message: "BooleanControl received: \(label)")
+            } else {
+                Logger.default.logError("Expected boolean control in notification, but got something else: \(notification.debugDescription)")
+            }
+        }
+    }
+    
+    private func unsubscribeFromAllNotifications() {
+        if let observer = notificationObserver {
+            NotificationCenter.default.removeObserver(observer)
+            notificationObserver = nil
+        }
+    }
+    
     // MARK: LIFECYCLE METHODS
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        subscribeToControlNotifications()
     }
 
     public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+        
+        unsubscribeFromAllNotifications()
     }
     
     override func didReceiveMemoryWarning() {

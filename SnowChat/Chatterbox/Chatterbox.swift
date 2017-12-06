@@ -15,7 +15,7 @@ enum ChatterboxError: Error {
 }
 
 class Chatterbox: AMBListener {
-    let id = UUID().uuidString
+    let id = CBData.uuidString()
     
     var user: CBUser?
     var vendor: CBVendor?
@@ -78,6 +78,7 @@ class Chatterbox: AMBListener {
     private var session: CBSession?
     private var ambClient: AMBChatClient?
     private(set) var sessionAPI: SessionAPI?
+    private let chatStore = ChatDataStore(storeId: "ChatterboxDataStore")
     
     private var chatChannel: String {
         return "/cs/messages/\(chatId)"
@@ -250,6 +251,18 @@ class Chatterbox: AMBListener {
         }
     }
     
+    private func userTopicMessageHandler(_ message: String) {
+        Logger.default.logDebug("startTopicHandler received: \(message)")
+        
+        let control: CBControlData = CBDataFactory.controlFromJSON(message)
+        
+        if control.controlType == .boolean {
+            if let booleanControl = control as? BooleanControlMessage {
+                chatStore.controlEvent(didReceiveBooleanControl: booleanControl)
+            }
+        }
+    }
+    
     private func clearMessageHandlers() {
         messageHandler = nil
         handshakeCompletedHandler = nil
@@ -259,6 +272,7 @@ class Chatterbox: AMBListener {
     private func installTopicMessageHandler() {
         clearMessageHandlers()
         
+        messageHandler = userTopicMessageHandler
     }
     
     private func unsubscribe() {

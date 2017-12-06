@@ -34,7 +34,6 @@
 		BE9E8BA91FBF826300499960 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8BA81FBF826300499960 /* APIManager.swift */; };
 		BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8BAA1FBF828E00499960 /* ServerInstance.swift */; };
 		BEB6C8611FB92CD700B1D497 /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEB6C8571FB92CD700B1D497 /* SnowChat.framework */; };
-		BEB6C8661FB92CD700B1D497 /* SnowChatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB6C8651FB92CD700B1D497 /* SnowChatTests.swift */; };
 		BEB6C8681FB92CD700B1D497 /* SnowChat.h in Headers */ = {isa = PBXBuildFile; fileRef = BEB6C85A1FB92CD700B1D497 /* SnowChat.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C40565CB1FBE283C004BD28C /* AMBChatClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565CA1FBE283C004BD28C /* AMBChatClient.swift */; };
 		C40565CD1FBE292B004BD28C /* ChatDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565CC1FBE292B004BD28C /* ChatDataStore.swift */; };
@@ -95,7 +94,6 @@
 		BEB6C85A1FB92CD700B1D497 /* SnowChat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SnowChat.h; sourceTree = "<group>"; };
 		BEB6C85B1FB92CD700B1D497 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BEB6C8601FB92CD700B1D497 /* SnowChatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnowChatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		BEB6C8651FB92CD700B1D497 /* SnowChatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowChatTests.swift; sourceTree = "<group>"; };
 		BEB6C8671FB92CD700B1D497 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C40565CA1FBE283C004BD28C /* AMBChatClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBChatClient.swift; sourceTree = "<group>"; };
 		C40565CC1FBE292B004BD28C /* ChatDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataStore.swift; sourceTree = "<group>"; };
@@ -263,7 +261,6 @@
 			children = (
 				C4CAFEA41FBCF485007007F5 /* Chatterbox */,
 				C420ED7E1FC5F488002476C0 /* LoggerTests.swift */,
-				BEB6C8651FB92CD700B1D497 /* SnowChatTests.swift */,
 				BEB6C8671FB92CD700B1D497 /* Info.plist */,
 			);
 			path = SnowChatTests;
@@ -299,12 +296,12 @@
 		C4CAFE9C1FBCF018007007F5 /* Chatterbox */ = {
 			isa = PBXGroup;
 			children = (
+				C4F3AF2E1FD235D100B27B0D /* Chatterbox.swift */,
+				C4CAFEA01FBCF0C9007007F5 /* ChatEventDelegate.swift */,
 				C40565C91FBE2822004BD28C /* AMB */,
 				C4CAFE9F1FBCF057007007F5 /* Data */,
 				C4CAFE9E1FBCF047007007F5 /* State */,
 				C4CAFE9D1FBCF039007007F5 /* Session */,
-				C4F3AF2E1FD235D100B27B0D /* Chatterbox.swift */,
-				C4CAFEA01FBCF0C9007007F5 /* ChatEventDelegate.swift */,
 			);
 			path = Chatterbox;
 			sourceTree = "<group>";
@@ -575,7 +572,6 @@
 			files = (
 				C420ED7F1FC5F488002476C0 /* LoggerTests.swift in Sources */,
 				C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */,
-				BEB6C8661FB92CD700B1D497 /* SnowChatTests.swift in Sources */,
 				C40565D11FBE32F3004BD28C /* CBStoreTests.swift in Sources */,
 				C4CED9401FD74479008E3E25 /* SessionAPITests.swift in Sources */,
 			);
