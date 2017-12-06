@@ -62,7 +62,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             let booleanModel = BooleanControlViewModel(id: "boolean_1234", title: "Would you like to create incident?")
             uiControl = BooleanPickerControl(model: booleanModel)
         case .multiselect:
-            let multiselectModel = MultiselectControlViewModel(id: "boolean_1234", title: "What is your issue?")
+            let multiselectModel = MultiselectControlViewModel(id: "multi_1234", title: "What is your issue?")
             uiControl = MultiselectPickerControl(model: multiselectModel)
         case .text:
             let textModel = TextViewModel(title: "Some random text that is longer than one line........")
