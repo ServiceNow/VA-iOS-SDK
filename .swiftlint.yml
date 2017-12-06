@@ -30,3 +30,4 @@ opt_in_rules:
 excluded:
   - Pods
   - Carthage
+  - SnowChatTests

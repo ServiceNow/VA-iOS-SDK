@@ -6,9 +6,6 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-// MARK: Mimic Marc's Message model
-struct BooleanControlMessage {}
-
 protocol ChatterboxBooleanAdapter {
     init(message: BooleanControlMessage)
 }
