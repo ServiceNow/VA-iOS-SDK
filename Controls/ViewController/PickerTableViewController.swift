@@ -54,7 +54,7 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
         }
         
         let tableView = UITableView()
-        tableView.tableFooterView = UIView()
+        tableView.estimatedSectionFooterHeight = model.isMultiselect ? 30 : 0
         
         let bundle = Bundle(for: PickerTableViewController.self)
         if model.isMultiselect {
@@ -113,10 +113,17 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let selectedItemModel = model.items?[indexPath.row] {
-            selectedItemModel.isSelected = !selectedItemModel.isSelected
-            tableView.reloadRows(at: [indexPath], with: .none)
-            
+        guard let selectedItemModel = model.items?[indexPath.row] else {
+            return
+        }
+        
+        selectedItemModel.isSelected = !selectedItemModel.isSelected
+        tableView.reloadRows(at: [indexPath], with: .none)
+        
+        // for non-multiselect control we are just done here. Otherwise we just send didSelectItem: callback
+        if !model.isMultiselect {
+            delegate?.pickerTable(self, didFinishWithModel: model)
+        } else {
             delegate?.pickerTable(self, didSelectItem: selectedItemModel, forPickerModel: model)
         }
     }
@@ -136,5 +143,36 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
                                      titleLabel.heightAnchor.constraint(equalTo: headerView.heightAnchor, multiplier: 0.8),
                                      titleLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 0)])
         return headerView
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let footerView = UIView()
+        guard model.isMultiselect else {
+            return footerView
+        }
+        
+        let doneButton = UIButton(type: .custom)
+        doneButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
+        doneButton.setTitle("Done", for: .normal)
+        doneButton.setTitleColor(headerTextColor, for: .normal)
+        doneButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        doneButton.backgroundColor = UIColor.controlHeaderBackgroundColor
+        doneButton.translatesAutoresizingMaskIntoConstraints = false
+        footerView.addSubview(doneButton)
+        
+        NSLayoutConstraint.activate([doneButton.leftAnchor.constraint(equalTo: footerView.leftAnchor),
+                                     doneButton.rightAnchor.constraint(equalTo: footerView.rightAnchor),
+                                     doneButton.heightAnchor.constraint(equalTo: footerView.heightAnchor),
+                                     doneButton.bottomAnchor.constraint(equalTo: footerView.bottomAnchor, constant: 0)])
+        return footerView
+    }
+    
+    @objc func doneButtonSelected(_ sender: UIButton) {
+        guard let selectedItemsCount = model.selectedItems?.count, selectedItemsCount != 0 else {
+            Logger.default.logDebug("Didn't select any item!")
+            return
+        }
+        
+        delegate?.pickerTable(self, didFinishWithModel: model)
     }
 }
