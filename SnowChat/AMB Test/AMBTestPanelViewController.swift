@@ -24,8 +24,8 @@ class AMBTestPanelViewController: UIViewController {
     
     @IBAction func onInitiateHandshake(_ sender: Any) {
         
-        chatterbox.initializeSession(forUser: user, ofVendor: vendor,
-                             whenSuccess: { [weak self] (topicChoices) in
+        chatterbox.initializeSession(forUser: user, vendor: vendor,
+                             success: { [weak self] (topicChoices) in
                                 if let options = topicChoices.data.richControl?.uiMetadata?.inputControls[0].uiMetadata?.options {
                                     self?.appendContent(message: "What would you like to do?")
                                     for option in options {
@@ -34,7 +34,7 @@ class AMBTestPanelViewController: UIViewController {
                                     self?.startTopicBtn.isEnabled = true
                                 }
                              },
-                             whenError: { [weak self] (error) in
+                             error: { [weak self] (error) in
                                 if let error = error {
                                     self?.appendContent(message: "Error initializing Chatterbox: \(error)")
                                 }
@@ -61,12 +61,16 @@ class AMBTestPanelViewController: UIViewController {
             }
         })
         
-        chatterbox.startTopic(name: topicName ?? "Create Incident") { [weak self] topic in
-            if let topic = topic {
-                self?.appendContent(message: "Successfully started User Topic \(topic.data.actionMessage.topicName)")
-            } else {
-                self?.appendContent(message: "Failed to start topic")
+        do {
+            try chatterbox.startTopic(withName: topicName ?? "Create Incident") { [weak self] topic in
+                if let topic = topic {
+                    self?.appendContent(message: "Successfully started User Topic \(topic.data.actionMessage.topicName)")
+                } else {
+                    self?.appendContent(message: "Failed to start topic")
+                }
             }
+        } catch let error {
+            self.appendContent(message: "Error thrown in startTopic: \(error.localizedDescription)")
         }
     }
     

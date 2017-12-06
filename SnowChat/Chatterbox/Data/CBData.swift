@@ -68,7 +68,7 @@ struct CBSession: Codable {
     var vendor: CBVendor
     var sessionState: SessionState = .closed
     var welcomeMessage: String?
-    var deviceId: String { return getDeviceId() }
+    var deviceId: String { return deviceIdentifier() }
 
     var extId: String { return "\(deviceId)\(vendor.consumerAccountId)" }
 
