@@ -47,7 +47,7 @@ public class DebugViewController: UITableViewController {
     // MARK: - Navigation
     
     private func pushAMBViewController() {
-        let controller = AMBTestViewController()
+        let controller = AMBTestPanelViewController(nibName: "AMBTestPanelViewController", bundle: Bundle(for: type(of: self)))
         navigationController?.pushViewController(controller, animated: true)
     }
     
