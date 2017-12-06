@@ -15,7 +15,7 @@ protocol ChatterboxBooleanAdapter {
 
 extension BooleanPickerControl {
     
-    convenience init(message: BooleanPickerControl) {
+    convenience init(message: BooleanControlMessage) {
         let booleanModel = BooleanControlViewModel(id: "1", title: "title")
         self.init(model: booleanModel)
     }
