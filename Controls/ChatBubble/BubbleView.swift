@@ -12,7 +12,7 @@ class BubbleView: UIView {
     
     enum ArrowDirection : Int {
         case left
-        case  dright
+        case right
     }
     
     var arrowDirection: ArrowDirection = .left

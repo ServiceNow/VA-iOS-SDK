@@ -16,25 +16,29 @@ enum BooleanControlOption: String {
 }
 
 class BooleanControlViewModel: PickerControlViewModel {
-    
+
     let id: String
     
     let title: String
     
     let isRequired: Bool
     
-    var isMultiselect: Bool = false
+    let isMultiSelect: Bool
     
     let items: [SelectableItemViewModel]?
     
-    var type: CBControlType {
-        return .boolean
+    let type: CBControlType = .boolean
+    
+    required convenience init(id: String, title: String, required: Bool) {
+        let items = [BooleanControlOption.yes.selectableItemModel(), BooleanControlOption.no.selectableItemModel()]
+        self.init(id: id, title: title, required: required, items: items)
     }
     
-    required init(id: String, title: String, required: Bool = true) {
+    required init(id: String, title: String, required: Bool, items: [SelectableItemViewModel], multiSelect: Bool = false) {
         self.id = id
         self.title = title
         self.isRequired = required
-        self.items = [BooleanControlOption.yes.selectableItemModel(), BooleanControlOption.no.selectableItemModel()]
+        self.isMultiSelect = multiSelect
+        self.items = items
     }
 }

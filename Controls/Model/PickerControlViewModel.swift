@@ -21,9 +21,7 @@ class SelectableItemViewModel: ControlViewModel {
         return title
     }
     
-    var type: CBControlType {
-        return .unknown
-    }
+    var type: CBControlType = .unknown
     
     required init(id: String = "selectable_item", title: String, required: Bool = true) {
         self.title = title
@@ -35,7 +33,7 @@ class SelectableItemViewModel: ControlViewModel {
 protocol PickerControlViewModel: ControlViewModel {
     
     // can user select mutliple items?
-    var isMultiselect: Bool { get set }
+    var isMultiSelect: Bool { get }
     
     // collection of item models
     var items: [SelectableItemViewModel]? { get }
@@ -44,10 +42,16 @@ protocol PickerControlViewModel: ControlViewModel {
     var displayValues: [String?]? { get }
     
     var selectedItems: [SelectableItemViewModel]? { get }
+    
+    init(id: String, title: String, required: Bool, items: [SelectableItemViewModel], multiSelect: Bool)
 }
 
 // Provides default implementation for displayValues and selectedItems
 extension PickerControlViewModel {
+    
+    init(id: String, title: String, required: Bool) {
+        self.init(id: id, title: title, required: required, items: [SelectableItemViewModel](), multiSelect: false)
+    }
     
     var displayValues: [String?]? {
         let values = items?.map({ $0.displayValue })

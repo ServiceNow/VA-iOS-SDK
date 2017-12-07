@@ -30,9 +30,7 @@ class TextViewModel: ControlViewModel {
     
     let id: String
     
-    var type: CBControlType {
-        return .text
-    }
+    var type: CBControlType = .text
     
     required init(id: String = "text_control", title: String, required: Bool = true) {
         self.title = title

@@ -54,10 +54,10 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
         }
         
         let tableView = UITableView()
-        tableView.estimatedSectionFooterHeight = model.isMultiselect ? 30 : 0
+        tableView.estimatedSectionFooterHeight = model.isMultiSelect ? 30 : 0
         
         let bundle = Bundle(for: PickerTableViewController.self)
-        if model.isMultiselect {
+        if model.isMultiSelect {
             tableView.register(SelectableViewCell.self, forCellReuseIdentifier: SelectableViewCell.cellIdentifier)
         } else {
             tableView.register(UINib(nibName: "PickerTableViewCell", bundle: bundle), forCellReuseIdentifier: PickerTableViewCell.cellIdentifier)
@@ -96,7 +96,7 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let identifier = model.isMultiselect ? SelectableViewCell.cellIdentifier : PickerTableViewCell.cellIdentifier
+        let identifier = model.isMultiSelect ? SelectableViewCell.cellIdentifier : PickerTableViewCell.cellIdentifier
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
         cell.contentView.backgroundColor = UIColor.white
         cell.selectionStyle = .none
@@ -121,7 +121,7 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.reloadRows(at: [indexPath], with: .none)
         
         // for non-multiselect control we are just done here. Otherwise we just send didSelectItem: callback
-        if !model.isMultiselect {
+        if !model.isMultiSelect {
             delegate?.pickerTable(self, didFinishWithModel: model)
         } else {
             delegate?.pickerTable(self, didSelectItem: selectedItemModel, forPickerModel: model)
@@ -147,7 +147,7 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let footerView = UIView()
-        guard model.isMultiselect else {
+        guard model.isMultiSelect else {
             return footerView
         }
         

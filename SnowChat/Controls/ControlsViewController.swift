@@ -14,7 +14,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     
     @IBOutlet weak var controlContainerView: UIView!
     
-    private var controls = [CBControlType.boolean, CBControlType.multiselect, CBControlType.text]
+    private var controls = [CBControlType.boolean, CBControlType.multiSelect, CBControlType.text]
     
     private var bubbleViewController: BubbleViewController?
     
@@ -65,8 +65,9 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             } else {
                 uiControl = nil
             }
-        case .multiselect:
-            let multiselectModel = MultiselectControlViewModel(id: "multi_1234", title: "What is your issue?")
+        case .multiSelect:
+            let items = [SelectableItemViewModel(title: "Item 1"), SelectableItemViewModel(title: "Item 2"), SelectableItemViewModel(title: "Item 3"), SelectableItemViewModel(title: "Item 4")]
+            let multiselectModel = MultiSelectControlViewModel(id: "multi_1234", title: "What is your issue?", required: true, items: items)
             uiControl = MultiselectPickerControl(model: multiselectModel)
         case .text:
             let textModel = TextViewModel(title: "Some random text that is longer than one line........")
