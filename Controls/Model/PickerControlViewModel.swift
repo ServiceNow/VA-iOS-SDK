@@ -21,8 +21,8 @@ class SelectableItemViewModel: ControlViewModel {
         return title
     }
     
-    var type: Control {
-        return .selectableItem
+    var type: CBControlType {
+        return .unknown
     }
     
     required init(id: String = "selectable_item", title: String, required: Bool = true) {

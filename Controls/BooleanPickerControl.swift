@@ -8,7 +8,7 @@
 
 import UIKit
 
-public class BooleanPickerControl: PickerControlProtocol {
+class BooleanPickerControl: PickerControlProtocol {
     
     var style: PickerControlStyle = .inline
     
@@ -21,7 +21,7 @@ public class BooleanPickerControl: PickerControlProtocol {
         return vc
     }()
     
-    required public init(model: ControlViewModel) {
+    required init(model: ControlViewModel) {
         self.model = model
     }
     

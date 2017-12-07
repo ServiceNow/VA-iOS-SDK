@@ -27,7 +27,7 @@ class BooleanControlViewModel: PickerControlViewModel {
     
     let items: [SelectableItemViewModel]?
     
-    var type: Control {
+    var type: CBControlType {
         return .boolean
     }
     

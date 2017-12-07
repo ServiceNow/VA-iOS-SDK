@@ -7,7 +7,7 @@
 //
 
 // base model for all ui control models
-public protocol ControlViewModel {
+protocol ControlViewModel {
     
     // title of the control
     var title: String { get }
@@ -17,7 +17,7 @@ public protocol ControlViewModel {
     
     var id: String { get }
     
-    var type: Control { get }
+    var type: CBControlType { get }
     
     init(id: String, title: String, required: Bool)
 }
@@ -30,7 +30,7 @@ class TextViewModel: ControlViewModel {
     
     let id: String
     
-    var type: Control {
+    var type: CBControlType {
         return .text
     }
     

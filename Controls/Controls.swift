@@ -8,27 +8,16 @@
 
 import Foundation
 
-public enum Control {
+extension ControlProtocol {
     
-    case boolean
-    
-    case multiselect
-    
-    case text
-    
-    // for internal use
-    case selectableItem
-    
-    func displayTitle() -> String {
-        switch self {
+    static func control(withMessage message: CBControlData) -> ControlProtocol? {
+        switch message.controlType {
         case .boolean:
-            return "Boolean Picker"
-        case .multiselect:
-            return "Multiselect Picker"
-        case .text:
-            return "Text Control"
-        case .selectableItem:
-            return "Selectable Item"
+            return BooleanPickerControl.control(withMessage: message as! BooleanControlMessage)
+        default:
+            fatalError("not ready yet")
         }
+        
+        return nil
     }
 }

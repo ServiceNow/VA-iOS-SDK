@@ -18,7 +18,7 @@ class MultiselectControlViewModel: PickerControlViewModel {
     
     let id: String
     
-    var type: Control {
+    var type: CBControlType {
         return .multiselect
     }
     

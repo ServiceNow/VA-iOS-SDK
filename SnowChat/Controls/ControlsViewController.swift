@@ -14,7 +14,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     
     @IBOutlet weak var controlContainerView: UIView!
     
-    private var controls = [Control.boolean, Control.multiselect, Control.text]
+    private var controls = [CBControlType.boolean, CBControlType.multiselect, CBControlType.text]
     
     private var bubbleViewController: BubbleViewController?
     
@@ -49,7 +49,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.textLabel?.text = controls[indexPath.row].displayTitle()
+        cell.textLabel?.text = controls[indexPath.row].rawValue
         return cell
     }
     
@@ -59,8 +59,8 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         
         switch controlName {
         case .boolean:
-            let booleanModel = BooleanControlViewModel(id: "boolean_1234", title: "Would you like to create incident?")
-            uiControl = BooleanPickerControl(model: booleanModel)
+            let booleanMessage = BooleanControlMessage(id: "foo", controlType: .boolean, type: "Boolean", data: newControlData())
+            uiControl = BooleanPickerControl.control(withMessage: booleanMessage)
         case .multiselect:
             let multiselectModel = MultiselectControlViewModel(id: "multi_1234", title: "What is your issue?")
             uiControl = MultiselectPickerControl(model: multiselectModel)
@@ -76,6 +76,17 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         }
         
         bubbleViewController?.addUIControl(selectedControl)
+    }
+    
+    fileprivate func newControlData() -> RichControlData<ControlMessage.ControlWrapper<ControlMessage.UIMetadata>> {
+        return RichControlData<ControlMessage.ControlWrapper>(sessionId: "100",
+                                                              conversationId: nil,
+                                                              controlData: ControlMessage.ControlWrapper(model: ControlMessage.ModelType(type: "Boolean", name: "Boolean"),
+                                                                                                         uiType: "BooleanControl",
+                                                                                                         value: nil,
+                                                                                                         uiMetadata: ControlMessage.UIMetadata(label:"Test",
+                                                                                                                                               required: false,
+                                                                                                                                               error: nil)))
     }
     
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class TextControl: ControlProtocol {
+class TextControl: ControlProtocol {
     
     var model: ControlViewModel
     
@@ -20,7 +20,7 @@ public class TextControl: ControlProtocol {
         
     }
     
-    required public init(model: ControlViewModel) {
+    required init(model: ControlViewModel) {
         self.model = model
         self.viewController = UIViewController()
         setupTextView()
