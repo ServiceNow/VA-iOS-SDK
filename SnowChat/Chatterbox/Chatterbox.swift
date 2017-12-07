@@ -26,7 +26,7 @@ class Chatterbox: AMBListener {
     
     func initializeSession(forUser: CBUser, vendor: CBVendor,
                            success: @escaping (ContextualActionMessage) -> Void,
-                           error: @escaping (Error?) -> Void ) {
+                           failure: @escaping (Error?) -> Void ) {
         self.user = forUser
         self.vendor = vendor
         
@@ -43,11 +43,11 @@ class Chatterbox: AMBListener {
                         // the handhake we will just sit here waiting...
                         
                     } else {
-                        error(errorIn)
+                        failure(errorIn)
                     }
                 }
             } else {
-                error(errorIn)
+                failure(errorIn)
             }
         }
         logger.logDebug("initializeAMB returning")
@@ -147,7 +147,7 @@ class Chatterbox: AMBListener {
         subscribeChatChannel()
 
         if let sessionId = session?.id {
-            ambClient?.publish(message: SystemTopicPickerMessage(forSession: sessionId, withValue: "system"),
+            ambClient?.publish(message: SystemTopicPickerMessage(forSession: sessionId),
                                toChannel: chatChannel)
         }
     }
@@ -156,11 +156,11 @@ class Chatterbox: AMBListener {
         let event = CBDataFactory.channelEventFromJSON(message)
         
         if event.eventType == .channelInit, let initEvent = event as? InitMessage {
-            let loginStage = initEvent.data.actionMessage.loginStage
-            if loginStage == "Start" {
+            if initEvent.data.actionMessage.loginStage == MessageConstants.loginStart.rawValue {
                 startUserSession(withInitEvent: initEvent)
-            } else if loginStage == "Finish" {
+            } else if initEvent.data.actionMessage.loginStage == MessageConstants.loginFinish.rawValue {
                 conversationContext.conversationId = initEvent.data.conversationId
+                
                 // handshake done, setup handler for the topic selection
                 messageHandler = self.topicSelectionHandler
             }
@@ -174,23 +174,22 @@ class Chatterbox: AMBListener {
             if let topicChoices = choices as? ContextualActionMessage, let completion = handshakeCompletedHandler {
                 completion(topicChoices)
             } else {
-                logger.logFatal("Could not call user session completion handler: invalid message or not handler provided")
+                logger.logFatal("Could not call user session completion handler: invalid message or no handler provided")
             }
         }
     }
     
     private func startUserSession(withInitEvent initEvent: InitMessage) {
         let initUserEvent = createUserSessionInitMessage(fromInitEvent: initEvent)
-        
         ambClient?.publish(message: initUserEvent, toChannel: chatChannel)
     }
     
     private func createUserSessionInitMessage(fromInitEvent initEvent: InitMessage) -> InitMessage {
         var initUserEvent = initEvent
         
-        initUserEvent.data.direction = "inbound"
+        initUserEvent.data.direction = MessageConstants.directionFromClient.rawValue
         initUserEvent.data.sendTime = Date()
-        initUserEvent.data.actionMessage.loginStage = "UserSession"
+        initUserEvent.data.actionMessage.loginStage = MessageConstants.loginUserSession.rawValue
         initUserEvent.data.actionMessage.userId = user?.id
         initUserEvent.data.actionMessage.contextHandshake.consumerAccountId = user?.consumerAccountId
         initUserEvent.data.actionMessage.contextHandshake.vendorId = vendor?.vendorId
@@ -211,12 +210,12 @@ class Chatterbox: AMBListener {
         
         if picker.controlType == .topicPicker {
             if let topicPicker = picker as? UserTopicPickerMessage {
-                if topicPicker.data.direction == "outbound" {
+                if topicPicker.data.direction == MessageConstants.directionFromServer.rawValue {
                     conversationContext.taskId = topicPicker.data.taskId
                     
                     var outgoingMessage = topicPicker
                     outgoingMessage.type = "consumerTextMessage"
-                    outgoingMessage.data.direction = "inbound"
+                    outgoingMessage.data.direction = MessageConstants.directionFromClient.rawValue
                     outgoingMessage.data.richControl?.model = ControlMessage.ModelType(type:"field", name: "Topic")
                     outgoingMessage.data.richControl?.value = conversationContext.topicName
                     
@@ -235,15 +234,10 @@ class Chatterbox: AMBListener {
         if actionMessage.eventType == .startUserTopic {
             if let startUserTopic = actionMessage as? StartUserTopicMessage {
                 
-                // client and server messages are the same, so only look at server responses
-                if startUserTopic.data.direction == "outbound" {
-                    // just turn the 'ready' property to true (and make it incoming) then publish it
-                    var response = startUserTopic
-                    response.data.messageId = UUID().uuidString
-                    response.data.sendTime = Date()
-                    response.data.direction = "inbound"
-                    response.data.actionMessage.ready = true
-                    ambClient?.publish(message: response, toChannel: chatChannel)
+                // client and server messages are the same, so only look at server responses!
+                if startUserTopic.data.direction == MessageConstants.directionFromServer.rawValue {
+                    let startUserTopicReadyMessage = createStartTopicReadyMessage(startUserTopic: startUserTopic)
+                    ambClient?.publish(message: startUserTopicReadyMessage, toChannel: chatChannel)
                 }
             }
         } else if actionMessage.eventType == .startedUserTopic {
@@ -258,10 +252,19 @@ class Chatterbox: AMBListener {
         }
     }
     
+    private func createStartTopicReadyMessage(startUserTopic: StartUserTopicMessage) -> StartUserTopicMessage {
+        var startUserTopicReady = startUserTopic
+        startUserTopicReady.data.messageId = CBData.uuidString()
+        startUserTopicReady.data.sendTime = Date()
+        startUserTopicReady.data.direction = MessageConstants.directionFromClient.rawValue
+        startUserTopicReady.data.actionMessage.ready = true
+        return startUserTopicReady
+    }
+    
     private func userTopicMessageHandler(_ message: String) {
-        Logger.default.logDebug("startTopicHandler received: \(message)")
+        Logger.default.logDebug("userTopicMessage received: \(message)")
         
-        let control: CBControlData = CBDataFactory.controlFromJSON(message)
+        let control = CBDataFactory.controlFromJSON(message)
         
         if control.controlType == .boolean {
             if let booleanControl = control as? BooleanControlMessage {

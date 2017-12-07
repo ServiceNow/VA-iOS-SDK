@@ -34,7 +34,7 @@ class AMBTestPanelViewController: UIViewController {
                                     self?.startTopicBtn.isEnabled = true
                                 }
                              },
-                             error: { [weak self] (error) in
+                             failure: { [weak self] (error) in
                                 if let error = error {
                                     self?.appendContent(message: "Error initializing Chatterbox: \(error)")
                                 }

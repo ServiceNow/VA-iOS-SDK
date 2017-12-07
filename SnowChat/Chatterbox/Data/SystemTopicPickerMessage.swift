@@ -20,7 +20,7 @@ struct SystemTopicPickerMessage: Codable, CBActionMessageData {
         let value: String
     }
     
-    init(forSession sessionId: String, withValue value: String) {
+    init(forSession sessionId: String, withValue value: String = "system") {
         type = "consumerTextMessage"
         data = RichControlData<ControlWrapper>(sessionId: sessionId,
                                                conversationId: nil,

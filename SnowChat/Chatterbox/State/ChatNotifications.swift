@@ -14,9 +14,5 @@ enum ChatNotification: String {
     case dateControl = "com.servicenow.SnowChat.DateControl"
     case inputControl = "com.servicenow.SnowChat.InputControl"
 
-    case openChannel = "com.servicenow.SnowChat.OpenChannel"
-    case closeChannel = "com.servicenow.SnowChat.CloseChannel"
-    case refreshChannel = "com.servicenow.SnowChat.RefreshChannel"
-    
     static func name(forKind: ChatNotification) -> Notification.Name { return Notification.Name(forKind.rawValue) }
 }

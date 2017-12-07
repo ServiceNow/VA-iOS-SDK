@@ -137,7 +137,7 @@ enum CBActionEventType: String, Codable, CodingKey {
     case startUserTopic = "StartTopic"
     case startedUserTopic = "StartedVendorTopic"
     
-    case unknown = "unknownActionEvent"
+    case unknown = "unknownAction"
 }
 
 // MARK: - Control Data
@@ -152,6 +152,15 @@ enum CBControlType: String, Codable {
     case contextualActionMessage = "ContextualAction"
     
     case unknown = "unknownControl"
+}
+
+enum MessageConstants: String, Codable {
+    case directionFromClient = "inbound"
+    case directionFromServer = "outbound"
+    
+    case loginStart = "LoginStart"
+    case loginFinish = "LoginFinish"
+    case loginUserSession = "UserSession"
 }
 
 protocol CBControlData: CBStorable, Codable {
