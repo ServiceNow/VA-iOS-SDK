@@ -158,8 +158,8 @@ enum MessageConstants: String, Codable {
     case directionFromClient = "inbound"
     case directionFromServer = "outbound"
     
-    case loginStart = "LoginStart"
-    case loginFinish = "LoginFinish"
+    case loginStart = "Start"
+    case loginFinish = "Finish"
     case loginUserSession = "UserSession"
 }
 

@@ -95,9 +95,9 @@ class Chatterbox: AMBListener {
     
     private func initializeAMB(_ completion: @escaping (Error?) -> Void) {
         guard  let user = user, vendor != nil else {
-            let err = ChatterboxError.invalidParameter(details: "User and Vendor must be initialized first")
-            logger.logError(err.localizedDescription)
-            completion(err)
+            let error = ChatterboxError.invalidParameter(details: "User and Vendor must be initialized first")
+            logger.logError(error.localizedDescription)
+            completion(error)
             return
         }
         
@@ -157,8 +157,11 @@ class Chatterbox: AMBListener {
         
         if event.eventType == .channelInit, let initEvent = event as? InitMessage {
             if initEvent.data.actionMessage.loginStage == MessageConstants.loginStart.rawValue {
+                logger.logInfo("Handshake START message received")
                 startUserSession(withInitEvent: initEvent)
             } else if initEvent.data.actionMessage.loginStage == MessageConstants.loginFinish.rawValue {
+                logger.logInfo("Handshake FINISH message received: conversationID=\(conversationContext.conversationId ?? "nil")")
+                
                 conversationContext.conversationId = initEvent.data.conversationId
                 
                 // handshake done, setup handler for the topic selection
