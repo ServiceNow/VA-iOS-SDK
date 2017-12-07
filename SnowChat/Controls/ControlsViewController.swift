@@ -59,9 +59,12 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         
         switch controlName {
         case .boolean:
-            // Sample use of UIControl creation
             let booleanMessage = BooleanControlMessage(id: "foo", controlType: .boolean, type: "Boolean", data: newControlData())
-            uiControl = BooleanPickerControl.control(withMessage: booleanMessage)
+            if let booleanModel = BooleanControlViewModel.model(withMessage: booleanMessage) {
+                uiControl = BooleanPickerControl(model: booleanModel)
+            } else {
+                uiControl = nil
+            }
         case .multiselect:
             let multiselectModel = MultiselectControlViewModel(id: "multi_1234", title: "What is your issue?")
             uiControl = MultiselectPickerControl(model: multiselectModel)

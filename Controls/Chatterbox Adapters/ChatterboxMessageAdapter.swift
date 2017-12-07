@@ -6,26 +6,6 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-// Builds UIControls based on a given Chatterbox model
-
-extension ControlProtocol {
-    
-    static func control(withMessage message: CBControlData) -> ControlProtocol? {
-        var uiControl: ControlProtocol?
-        switch message.controlType {
-        case .boolean:
-            if let booleanModel = BooleanControlViewModel.model(withMessage: message as! BooleanControlMessage) {
-                uiControl = BooleanPickerControl(model: booleanModel)
-            }
-            
-        default:
-            fatalError("control not ready yet")
-        }
-        
-        return uiControl
-    }
-}
-
 // MARK: - Chatterbox Adapter
 
 protocol ChatterboxMessageAdapter where Self: ControlViewModel {
