@@ -54,10 +54,10 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let controlName = controls[indexPath.row]
+        let controlType = controls[indexPath.row]
         let uiControl: ControlProtocol?
         
-        switch controlName {
+        switch controlType {
         case .boolean:
             let booleanMessage = BooleanControlMessage(id: "foo", controlType: .boolean, type: "Boolean", data: newControlData())
             if let booleanModel = BooleanControlViewModel.model(withMessage: booleanMessage) {
