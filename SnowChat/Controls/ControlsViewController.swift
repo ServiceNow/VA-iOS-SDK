@@ -59,6 +59,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         
         switch controlName {
         case .boolean:
+            // Sample use of UIControl creation
             let booleanMessage = BooleanControlMessage(id: "foo", controlType: .boolean, type: "Boolean", data: newControlData())
             uiControl = BooleanPickerControl.control(withMessage: booleanMessage)
         case .multiselect:
@@ -78,6 +79,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         bubbleViewController?.addUIControl(selectedControl)
     }
     
+    // Copy-pasted from Marc's code - needs to be removed
     fileprivate func newControlData() -> RichControlData<ControlMessage.ControlWrapper<ControlMessage.UIMetadata>> {
         return RichControlData<ControlMessage.ControlWrapper>(sessionId: "100",
                                                               conversationId: nil,

@@ -29,7 +29,7 @@
 		572FAC1A1FC47B5600B0B956 /* MultiselectControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC191FC47B5600B0B956 /* MultiselectControlViewModel.swift */; };
 		57532BAB1FD777AC001D674C /* PickerControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57532BAA1FD777AC001D674C /* PickerControl.swift */; };
 		57532BAD1FD777FA001D674C /* TextControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57532BAC1FD777FA001D674C /* TextControl.swift */; };
-		57532BAF1FD79F4D001D674C /* ChatterboxAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57532BAE1FD79F4D001D674C /* ChatterboxAdapter.swift */; };
+		57532BAF1FD79F4D001D674C /* ChatterboxMessageAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57532BAE1FD79F4D001D674C /* ChatterboxMessageAdapter.swift */; };
 		5760B91F1FD5C8C100591C06 /* UIImageUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760B91E1FD5C8C100591C06 /* UIImageUtils.swift */; };
 		5760C8CE1FBF4C920055B73D /* PickerTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760C8CD1FBF4C920055B73D /* PickerTableViewController.swift */; };
 		5786320B1FBB571E00FA0282 /* BubbleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578632071FBB571D00FA0282 /* BubbleViewController.swift */; };
@@ -46,7 +46,6 @@
 		57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1EA321FC33D1C009FC76D /* RoundedView.swift */; };
 		57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */; };
 		57EDCEA41FD5DA7A009A9A35 /* UIColor+Control.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EDCEA31FD5DA7A009A9A35 /* UIColor+Control.swift */; };
-		57F41D431FD1F69300532834 /* Controls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F41D421FD1F69300532834 /* Controls.swift */; };
 		BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = BE2925A01FC3391D005E55CA /* .swiftlint.yml */; };
 		BE50E2241FB9305C00948FBC /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = BE50E2231FB9305C00948FBC /* Cartfile */; };
 		BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
@@ -112,7 +111,7 @@
 		572FAC191FC47B5600B0B956 /* MultiselectControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiselectControlViewModel.swift; sourceTree = "<group>"; };
 		57532BAA1FD777AC001D674C /* PickerControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControl.swift; sourceTree = "<group>"; };
 		57532BAC1FD777FA001D674C /* TextControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControl.swift; sourceTree = "<group>"; };
-		57532BAE1FD79F4D001D674C /* ChatterboxAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatterboxAdapter.swift; sourceTree = "<group>"; };
+		57532BAE1FD79F4D001D674C /* ChatterboxMessageAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatterboxMessageAdapter.swift; sourceTree = "<group>"; };
 		5760B91E1FD5C8C100591C06 /* UIImageUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageUtils.swift; sourceTree = "<group>"; };
 		5760C8CD1FBF4C920055B73D /* PickerTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerTableViewController.swift; sourceTree = "<group>"; };
 		578632071FBB571D00FA0282 /* BubbleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BubbleViewController.swift; sourceTree = "<group>"; };
@@ -129,7 +128,6 @@
 		57E1EA321FC33D1C009FC76D /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
 		57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ControlsViewController.xib; sourceTree = "<group>"; };
 		57EDCEA31FD5DA7A009A9A35 /* UIColor+Control.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Control.swift"; sourceTree = "<group>"; };
-		57F41D421FD1F69300532834 /* Controls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls.swift; sourceTree = "<group>"; };
 		BE2925A01FC3391D005E55CA /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .swiftlint.yml; sourceTree = SOURCE_ROOT; };
 		BE50E2231FB9305C00948FBC /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		BE50E2261FB9337D00948FBC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
@@ -203,7 +201,7 @@
 		57532BB01FD8561E001D674C /* Chatterbox Adapters */ = {
 			isa = PBXGroup;
 			children = (
-				57532BAE1FD79F4D001D674C /* ChatterboxAdapter.swift */,
+				57532BAE1FD79F4D001D674C /* ChatterboxMessageAdapter.swift */,
 			);
 			path = "Chatterbox Adapters";
 			sourceTree = "<group>";
@@ -221,7 +219,6 @@
 			isa = PBXGroup;
 			children = (
 				57532BB01FD8561E001D674C /* Chatterbox Adapters */,
-				57F41D421FD1F69300532834 /* Controls.swift */,
 				578632151FBB9E0300FA0282 /* ControlProtocol.swift */,
 				57532BAC1FD777FA001D674C /* TextControl.swift */,
 				57532BAA1FD777AC001D674C /* PickerControl.swift */,
@@ -676,7 +673,7 @@
 				57532BAD1FD777FA001D674C /* TextControl.swift in Sources */,
 				BE5974C41FC392FB00959406 /* ControlsViewController.swift in Sources */,
 				5760B91F1FD5C8C100591C06 /* UIImageUtils.swift in Sources */,
-				57532BAF1FD79F4D001D674C /* ChatterboxAdapter.swift in Sources */,
+				57532BAF1FD79F4D001D674C /* ChatterboxMessageAdapter.swift in Sources */,
 				BE6B9D911FC38AD400B9F47A /* DebugViewController.swift in Sources */,
 				C4F3AF2F1FD235D100B27B0D /* Chatterbox.swift in Sources */,
 				57532BAB1FD777AC001D674C /* PickerControl.swift in Sources */,
@@ -719,7 +716,6 @@
 				5786320B1FBB571E00FA0282 /* BubbleViewController.swift in Sources */,
 				5796E4481FD0B3E0009D2035 /* CGPathUtils.swift in Sources */,
 				57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */,
-				57F41D431FD1F69300532834 /* Controls.swift in Sources */,
 				57EDCEA41FD5DA7A009A9A35 /* UIColor+Control.swift in Sources */,
 				572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */,
 				5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */,
