@@ -92,7 +92,7 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return model.items?.count ?? 0
+        return model.items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -105,18 +105,13 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
             return cell
         }
         
-        if let itemModel = model.items?[indexPath.row] {
-            configurableCell.configure(withModel: itemModel)
-        }
-        
+        let itemModel = model.items[indexPath.row]
+        configurableCell.configure(withModel: itemModel)
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let selectedItemModel = model.items?[indexPath.row] else {
-            return
-        }
-        
+        let selectedItemModel = model.items[indexPath.row]
         selectedItemModel.isSelected = !selectedItemModel.isSelected
         tableView.reloadRows(at: [indexPath], with: .none)
         

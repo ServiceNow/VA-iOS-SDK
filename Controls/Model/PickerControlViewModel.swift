@@ -36,7 +36,7 @@ protocol PickerControlViewModel: ControlViewModel {
     var isMultiSelect: Bool { get }
     
     // collection of item models
-    var items: [SelectableItemViewModel]? { get }
+    var items: [SelectableItemViewModel] { get }
     
     // represents items as a string
     var displayValues: [String?]? { get }
@@ -54,12 +54,12 @@ extension PickerControlViewModel {
     }
     
     var displayValues: [String?]? {
-        let values = items?.map({ $0.displayValue })
+        let values = items.map({ $0.displayValue })
         return values
     }
     
     var selectedItems: [SelectableItemViewModel]? {
-        let values = items?.filter({ $0.isSelected })
+        let values = items.filter({ $0.isSelected })
         return values
     }
 }

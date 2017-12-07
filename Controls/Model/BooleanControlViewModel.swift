@@ -25,7 +25,7 @@ class BooleanControlViewModel: PickerControlViewModel {
     
     let isMultiSelect: Bool
     
-    let items: [SelectableItemViewModel]?
+    let items: [SelectableItemViewModel]
     
     let type: CBControlType = .boolean
     

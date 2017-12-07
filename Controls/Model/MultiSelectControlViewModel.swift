@@ -12,7 +12,7 @@ class MultiSelectControlViewModel: PickerControlViewModel {
     
     let isRequired: Bool
     
-    var items: [SelectableItemViewModel]?
+    var items: [SelectableItemViewModel]
     
     let title: String
     
@@ -20,11 +20,15 @@ class MultiSelectControlViewModel: PickerControlViewModel {
     
     var type: CBControlType = .multiSelect
     
+    required convenience init(id: String, title: String, required: Bool, items: [SelectableItemViewModel]) {
+        self.init(id: id, title: title, required: required, items: items)
+    }
+    
     required init(id: String, title: String, required: Bool, items: [SelectableItemViewModel], multiSelect: Bool = true) {
         self.id = id
         self.title = title
         self.isRequired = required
-        self.isMultiSelect = multiSelect
+        self.isMultiSelect = true
         self.items = items
     }
 }
