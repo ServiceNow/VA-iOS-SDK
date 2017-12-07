@@ -26,10 +26,6 @@ class MultiselectPickerControl: PickerControlProtocol {
         style = .inline
     }
     
-    func submit() {
-        
-    }
-    
     // MARK: - PickerTableDelegate
     
     func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: SelectableItemViewModel, forPickerModel pickerModel: PickerControlViewModel) {

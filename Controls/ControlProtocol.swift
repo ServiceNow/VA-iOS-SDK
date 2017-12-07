@@ -22,6 +22,4 @@ protocol ControlProtocol: AnyObject {
     var viewController: UIViewController { get }
     
     weak var delegate: ControlDelegate? { get set }
-    
-    func submit()
 }

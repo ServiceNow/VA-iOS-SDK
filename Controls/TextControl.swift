@@ -16,10 +16,6 @@ class TextControl: ControlProtocol {
     
     weak var delegate: ControlDelegate?
     
-    func submit() {
-        
-    }
-    
     required init(model: ControlViewModel) {
         self.model = model
         self.viewController = UIViewController()

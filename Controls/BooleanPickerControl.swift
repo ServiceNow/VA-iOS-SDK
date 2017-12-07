@@ -25,10 +25,6 @@ class BooleanPickerControl: PickerControlProtocol {
         self.model = model
     }
     
-    func submit() {
-        
-    }
-    
     // MARK: - PickerTableDelegate
     
     func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: SelectableItemViewModel, forPickerModel pickerModel: PickerControlViewModel) {
