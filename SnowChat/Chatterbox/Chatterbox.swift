@@ -7,6 +7,8 @@
 //
 //  Chatterbox instance is created and retained by client that is interested in displaying a chat session
 //
+//  Client should implement the ChatDataListener protocol to get events and 
+//
 //  1) Call initializeSession to start login and initiate the system-topic for a user. A ContextualActionMessage is
 //  provided upon success. Options for picking a topic are in the messages inputControls.uiMetadata property
 //
@@ -316,7 +318,7 @@ class Chatterbox: AMBListener {
                 let actionMessage = startedUserTopic.data.actionMessage
                 logger.logInfo("User Topic Started: \(actionMessage.topicName) - \(actionMessage.topicId) - \(actionMessage.ready ? "Ready" : "Not Ready")")
                 
-                chatListener?.chatterbox(self, topicStarted: startedUserTopic, forChat: chatId)
+                chatListener?.chatterbox(self, didStartTopic: startedUserTopic, forChat: chatId)
 
                 installTopicMessageHandler()
             }
@@ -332,41 +334,19 @@ class Chatterbox: AMBListener {
         return startUserTopicReady
     }
     
-    fileprivate func handleBooleanControl(_ control: CBControlData) {
-        if let booleanControl = control as? BooleanControlMessage {
-            chatStore.didReceiveControl(booleanControl, ofType: .boolean, fromChat: self)
-            chatListener?.chatterbox(self, booleanDataReceived: booleanControl, forChat: chatId)
-        }
+    // MARK: User Topic Message Handler Methods
+    
+    private func installTopicMessageHandler() {
+        clearMessageHandlers()
+        
+        messageHandler = userTopicMessageHandler
     }
     
-    fileprivate func handleInputControl(_ control: CBControlData) {
-        if let inputControl = control as? InputControlMessage {
-            chatStore.didReceiveControl(inputControl, ofType: .input, fromChat: self)
-            chatListener?.chatterbox(self, inputDataReceived: inputControl, forChat: chatId)
-        }
-    }
-    
-    fileprivate func handlePickerControl(_ control: CBControlData) {
-        if let pickerControl = control as? PickerControlMessage {
-            chatStore.didReceiveControl(pickerControl, ofType: .picker, fromChat: self)
-            chatListener?.chatterbox(self, pickerDataReceived: pickerControl, forChat: chatId)
-        }
-    }
-    
-    fileprivate func handleTextControl(_ control: CBControlData) {
-        if let textControl = control as? OutputTextMessage {
-            chatStore.didReceiveControl(textControl, ofType: .text, fromChat: self)
-            chatListener?.chatterbox(self, textDataReceived: textControl, forChat: chatId)
-        }
-    }
-    
-    fileprivate func handleUnknownControl(_ control: CBControlData) {
-        logger.logInfo("Ignoring unrecognized control type \(control.controlType)")
-    }
-    
-    fileprivate func handleTopicFinishedAction(_ action: CBActionMessageData) {
-        if let topicFinishedMessage = action as? TopicFinishedMessage {
-            chatListener?.chatterbox(self, topicFinished: topicFinishedMessage, forChat: chatId)
+    private func userTopicMessageHandler(_ message: String) {
+        Logger.default.logDebug("userTopicMessage received: \(message)")
+        
+        if handleEventMessage(message) != true {
+            handleControlMessage(message)
         }
     }
     
@@ -379,7 +359,7 @@ class Chatterbox: AMBListener {
         default:
             logger.logInfo("Unhandled event message: \(action.eventType)")
             return false
-        }        
+        }
         return true
     }
     
@@ -400,23 +380,49 @@ class Chatterbox: AMBListener {
         }
     }
     
-    private func userTopicMessageHandler(_ message: String) {
-        Logger.default.logDebug("userTopicMessage received: \(message)")
-        
-        if handleEventMessage(message) != true {
-            handleControlMessage(message)
+    fileprivate func handleBooleanControl(_ control: CBControlData) {
+        if let booleanControl = control as? BooleanControlMessage {
+            chatStore.didReceiveControl(booleanControl, ofType: .boolean, fromChat: self)
+            chatListener?.chatterbox(self, didReceiveBooleanData: booleanControl, forChat: chatId)
         }
     }
+    
+    fileprivate func handleInputControl(_ control: CBControlData) {
+        if let inputControl = control as? InputControlMessage {
+            chatStore.didReceiveControl(inputControl, ofType: .input, fromChat: self)
+            chatListener?.chatterbox(self, didReceiveInputData: inputControl, forChat: chatId)
+        }
+    }
+    
+    fileprivate func handlePickerControl(_ control: CBControlData) {
+        if let pickerControl = control as? PickerControlMessage {
+            chatStore.didReceiveControl(pickerControl, ofType: .picker, fromChat: self)
+            chatListener?.chatterbox(self, didReceivePickerData: pickerControl, forChat: chatId)
+        }
+    }
+    
+    fileprivate func handleTextControl(_ control: CBControlData) {
+        if let textControl = control as? OutputTextMessage {
+            chatStore.didReceiveControl(textControl, ofType: .text, fromChat: self)
+            chatListener?.chatterbox(self, didReceiveTextData: textControl, forChat: chatId)
+        }
+    }
+    
+    fileprivate func handleUnknownControl(_ control: CBControlData) {
+        logger.logInfo("Ignoring unrecognized control type \(control.controlType)")
+    }
+    
+    fileprivate func handleTopicFinishedAction(_ action: CBActionMessageData) {
+        if let topicFinishedMessage = action as? TopicFinishedMessage {
+            chatListener?.chatterbox(self, didFinishTopic: topicFinishedMessage, forChat: chatId)
+        }
+    }
+    
+    // MARK: cleanup
     
     private func clearMessageHandlers() {
         messageHandler = nil
         handshakeCompletedHandler = nil
-    }
-    
-    private func installTopicMessageHandler() {
-        clearMessageHandlers()
-        
-        messageHandler = userTopicMessageHandler
     }
     
     private func unsubscribe() {

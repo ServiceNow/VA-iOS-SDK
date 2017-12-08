@@ -13,15 +13,15 @@ let consumerId = "marc.attinasi"
 
 class AMBTestPanelViewController: UIViewController, ChatDataListener {
 
-    func chatterbox(_: Chatterbox, topicStarted topic: StartedUserTopicMessage, forChat chatId: String) {
+    func chatterbox(_: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
         appendContent(message: "Successfully started User Topic \(topic.data.actionMessage.topicName)")
     }
     
-    func chatterbox(_: Chatterbox, topicFinished topic: TopicFinishedMessage, forChat chatId: String) {
+    func chatterbox(_: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String) {
         appendContent(message: "\n\nTopic is OVER! Thanks for playing...")
     }
     
-    func chatterbox(_: Chatterbox, booleanDataReceived message: BooleanControlMessage, forChat chatId: String) {
+    func chatterbox(_: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String) {
         if message.data.direction == MessageConstants.directionFromServer.rawValue {
             let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
             appendContent(message: "\nooleanControl received: \(label)")
@@ -30,7 +30,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener {
         }
     }
     
-    func chatterbox(_: Chatterbox, inputDataReceived message: InputControlMessage, forChat chatId: String) {
+    func chatterbox(_: Chatterbox, didReceiveInputData message: InputControlMessage, forChat chatId: String) {
         if message.data.direction == MessageConstants.directionFromServer.rawValue {
             let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
             appendContent(message: "\nInputControl received: \(label)")
@@ -39,7 +39,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener {
         }
     }
     
-    func chatterbox(_: Chatterbox, pickerDataReceived message: PickerControlMessage, forChat chatId: String) {
+    func chatterbox(_: Chatterbox, didReceivePickerData message: PickerControlMessage, forChat chatId: String) {
         if message.data.direction == MessageConstants.directionFromServer.rawValue {
             let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
             appendContent(message: "\nPickerControl received: \(label)")
@@ -48,7 +48,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener {
         }
     }
 
-    func chatterbox(_: Chatterbox, textDataReceived message: OutputTextMessage, forChat chatId: String) {
+    func chatterbox(_: Chatterbox, didReceiveTextData message: OutputTextMessage, forChat chatId: String) {
         if message.data.direction == MessageConstants.directionFromServer.rawValue {
             let label = message.data.richControl?.value ?? "[missing value]"
             appendContent(message: "\nText Output received: \(label)")
