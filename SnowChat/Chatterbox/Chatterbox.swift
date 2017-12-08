@@ -309,7 +309,7 @@ class Chatterbox: AMBListener {
         if control.controlType == .boolean {
             if let booleanControl = control as? BooleanControlMessage {
                 chatStore.didReceiveBooleanControl(booleanControl, fromChat: self)
-                chatListener?.chatterbox(self, booleanData: booleanControl, forChat: chatId)
+                chatListener?.chatterbox(self, booleanDataReceived: booleanControl, forChat: chatId)
             }
         }
     }

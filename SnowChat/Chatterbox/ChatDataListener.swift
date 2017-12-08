@@ -13,8 +13,5 @@ protocol ChatDataListener: NSObjectProtocol {
     
     func chatterbox(_: Chatterbox, topicStarted topic: StartedUserTopicMessage, forChat chatId: String)
     
-    func chatterbox(_: Chatterbox, booleanData message: BooleanControlMessage, forChat chatId: String)
-
-//    func chatterbox(_: Chatterbox, inputData: InputControlMessage, forChat: String)
-//    func chatterbox(_: Chatterbox, dateData: DateControlMessage, forChat: String)
+    func chatterbox(_: Chatterbox, booleanDataReceived message: BooleanControlMessage, forChat chatId: String)
 }

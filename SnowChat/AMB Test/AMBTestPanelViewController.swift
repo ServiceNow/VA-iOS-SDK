@@ -17,7 +17,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener {
         appendContent(message: "Successfully started User Topic \(topic.data.actionMessage.topicName)")
     }
     
-    func chatterbox(_: Chatterbox, booleanData message: BooleanControlMessage, forChat chatId: String) {
+    func chatterbox(_: Chatterbox, booleanDataReceived message: BooleanControlMessage, forChat chatId: String) {
         if message.data.direction == MessageConstants.directionFromServer.rawValue {
             let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
             appendContent(message: "BooleanControl received: \(label)")
