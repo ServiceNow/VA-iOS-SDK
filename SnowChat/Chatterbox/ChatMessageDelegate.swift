@@ -19,10 +19,6 @@ protocol ChatMessageNotification {
     
     // MARK: control notifications
     
-    func didReceiveBooleanControl(_ data: BooleanControlMessage, fromChat source: Chatterbox)
-    
-    /**
-    func didReceiveInputControl(_ data: InputControlMessage, fromChat source: Chatterbox)
-    func didReceiveMultiSelectControl(_ data: MultiSelectControlMessage, fromChat source: Chatterbox)
-    **/
+    func didReceiveControl(_ data: CBControlData, ofType controlType: CBControlType, fromChat source: Chatterbox)
+
 }

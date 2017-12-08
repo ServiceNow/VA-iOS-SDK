@@ -23,6 +23,12 @@ class CBDataFactory {
                     return try CBData.jsonDecoder.decode(UserTopicPickerMessage.self, from: jsonData)
                 case CBControlType.boolean.rawValue:
                     return try CBData.jsonDecoder.decode(BooleanControlMessage.self, from: jsonData)
+                case CBControlType.input.rawValue:
+                    return try CBData.jsonDecoder.decode(InputControlMessage.self, from: jsonData)
+                case CBControlType.picker.rawValue:
+                    return try CBData.jsonDecoder.decode(PickerControlMessage.self, from: jsonData)
+                case CBControlType.text.rawValue:
+                    return try CBData.jsonDecoder.decode(OutputTextMessage.self, from: jsonData)
                 default:
                     Logger.default.logError("Unrecognized UI Control: \(uiMessage.data.richControl.uiType)")
                 }
@@ -47,6 +53,8 @@ class CBDataFactory {
                     return try CBData.jsonDecoder.decode(StartUserTopicMessage.self, from: jsonData)
                 case CBActionEventType.startedUserTopic.rawValue:
                     return try CBData.jsonDecoder.decode(StartedUserTopicMessage.self, from: jsonData)
+                case CBActionEventType.finishedUserTopic.rawValue:
+                    return try CBData.jsonDecoder.decode(TopicFinishedMessage.self, from: jsonData)
                 default:
                     Logger.default.logError("Unrecognized ActionMessage type: \(t)")
                 }

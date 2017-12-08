@@ -89,20 +89,51 @@ class Chatterbox: AMBListener {
     }
     
     func update(control controlId: String, ofType: CBControlType, withValue: Any) {
+        guard let control = chatStore.retrieve(byId: controlId) else {
+            logger.logError("Cannot update control \(controlId) - not found in chatStore")
+            return
+        }
+        
         // based on type, cast the value and push to the store, then send back to service via AMB
         if ofType == .boolean {
-            if let value = withValue as? Bool {
-                if let control = chatStore.retrieve(byId: controlId), let booleanControl = control as? BooleanControlMessage, let amb = ambClient {
-                    var updatedControl = booleanControl
-                    updatedControl.data.direction = MessageConstants.directionFromClient.rawValue
-                    updatedControl.data.sendTime = Date()
-                    updatedControl.data.richControl?.value = value
-                    
-                    chatStore.didReceiveBooleanControl(updatedControl, fromChat: self)
-                    amb.publish(message: updatedControl, toChannel: chatChannel)
-                }
+            if let value = withValue as? Bool, var booleanControl = control as? BooleanControlMessage {
+                booleanControl.data = updateMessage(booleanControl.data)
+                booleanControl.data.richControl?.value = value
+                
+                storeAndNotify(booleanControl, ofType: ofType)
             }
+        } else if ofType == .input {
+            if let value = withValue as? String, var inputControl = control as? InputControlMessage {
+                inputControl.data = updateMessage(inputControl.data)
+                inputControl.data.richControl?.value = value
+                
+                storeAndNotify(inputControl, ofType: ofType)
+            }
+        } else if ofType == .picker {
+            if let value = withValue as? String, var inputControl = control as? PickerControlMessage {
+                inputControl.data = updateMessage(inputControl.data)
+                inputControl.data.richControl?.value = value
+                
+                storeAndNotify(inputControl, ofType: ofType)
+            }
+        } else {
+            logger.logInfo("Unrecognized control type - skipping: \(ofType.rawValue)")
+            return
         }
+        
+        // FIX ME - ^^^^ too much repetition for each control type, fix that ^^^^
+    }
+    
+    func updateMessage<T>(_ inputMessage: RichControlData<T>) -> RichControlData<T> {
+        var message = inputMessage
+        message.direction = MessageConstants.directionFromClient.rawValue
+        message.sendTime = Date()
+        return message
+    }
+    
+    func storeAndNotify<T: CBControlData>(_ message: T, ofType type: CBControlType) {
+        chatStore.didReceiveControl(message, ofType: type, fromChat: self)
+        ambClient?.publish(message: message, toChannel: chatChannel)
     }
     
     // MARK: internal properties and methods
@@ -301,16 +332,79 @@ class Chatterbox: AMBListener {
         return startUserTopicReady
     }
     
+    fileprivate func handleBooleanControl(_ control: CBControlData) {
+        if let booleanControl = control as? BooleanControlMessage {
+            chatStore.didReceiveControl(booleanControl, ofType: .boolean, fromChat: self)
+            chatListener?.chatterbox(self, booleanDataReceived: booleanControl, forChat: chatId)
+        }
+    }
+    
+    fileprivate func handleInputControl(_ control: CBControlData) {
+        if let inputControl = control as? InputControlMessage {
+            chatStore.didReceiveControl(inputControl, ofType: .input, fromChat: self)
+            chatListener?.chatterbox(self, inputDataReceived: inputControl, forChat: chatId)
+        }
+    }
+    
+    fileprivate func handlePickerControl(_ control: CBControlData) {
+        if let pickerControl = control as? PickerControlMessage {
+            chatStore.didReceiveControl(pickerControl, ofType: .picker, fromChat: self)
+            chatListener?.chatterbox(self, pickerDataReceived: pickerControl, forChat: chatId)
+        }
+    }
+    
+    fileprivate func handleTextControl(_ control: CBControlData) {
+        if let textControl = control as? OutputTextMessage {
+            chatStore.didReceiveControl(textControl, ofType: .text, fromChat: self)
+            chatListener?.chatterbox(self, textDataReceived: textControl, forChat: chatId)
+        }
+    }
+    
+    fileprivate func handleUnknownControl(_ control: CBControlData) {
+        logger.logInfo("Ignoring unrecognized control type \(control.controlType)")
+    }
+    
+    fileprivate func handleTopicFinishedAction(_ action: CBActionMessageData) {
+        if let topicFinishedMessage = action as? TopicFinishedMessage {
+            chatListener?.chatterbox(self, topicFinished: topicFinishedMessage, forChat: chatId)
+        }
+    }
+    
+    fileprivate func handleEventMessage(_ message: String) -> Bool {
+        let action = CBDataFactory.channelEventFromJSON(message)
+        
+        switch action.eventType {
+        case CBActionEventType.finishedUserTopic:
+            handleTopicFinishedAction(action)
+        default:
+            logger.logInfo("Unhandled event message: \(action.eventType)")
+            return false
+        }        
+        return true
+    }
+    
+    fileprivate func handleControlMessage(_ message: String) {
+        let control = CBDataFactory.controlFromJSON(message)
+        
+        switch control.controlType {
+        case .boolean:
+            handleBooleanControl(control)
+        case .input:
+            handleInputControl(control)
+        case .picker:
+            handlePickerControl(control)
+        case .text:
+            handleTextControl(control)
+        default:
+            handleUnknownControl(control)
+        }
+    }
+    
     private func userTopicMessageHandler(_ message: String) {
         Logger.default.logDebug("userTopicMessage received: \(message)")
         
-        let control = CBDataFactory.controlFromJSON(message)
-        
-        if control.controlType == .boolean {
-            if let booleanControl = control as? BooleanControlMessage {
-                chatStore.didReceiveBooleanControl(booleanControl, fromChat: self)
-                chatListener?.chatterbox(self, booleanDataReceived: booleanControl, forChat: chatId)
-            }
+        if handleEventMessage(message) != true {
+            handleControlMessage(message)
         }
     }
     

@@ -32,6 +32,11 @@ struct UIMetadata: Codable {
     var error: UIError?
 }
 
+struct LabeledValue: Codable {
+    let label: String
+    let value: String
+}
+
 struct UIError: Codable {
     var handler: UIHandler?
     var message: String

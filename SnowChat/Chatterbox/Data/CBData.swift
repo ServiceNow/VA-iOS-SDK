@@ -133,9 +133,11 @@ struct CBActionMessageUnknownData: CBActionMessageData {
 enum CBActionEventType: String, Codable, CodingKey {
     // from Qlue protocol
     case channelInit = "Init"
+    
     case topicPicker = "TopicPicker"
     case startUserTopic = "StartTopic"
     case startedUserTopic = "StartedVendorTopic"
+    case finishedUserTopic = "TopicFinished"
     
     case unknown = "unknownAction"
 }
@@ -147,7 +149,9 @@ enum CBControlType: String, Codable {
     case startTopicMessage = "StartTopic"
     case boolean = "Boolean"
     case date = "Date"
-    case input = "Input"
+    case input = "InputText"
+    case picker = "Picker"
+    case text = "OutputText"
     
     case contextualActionMessage = "ContextualAction"
     

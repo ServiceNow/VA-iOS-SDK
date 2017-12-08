@@ -32,11 +32,6 @@ struct ContextualActionMessage: Codable, CBControlData {
         
     }
     
-    struct LabeledValue: Codable {
-        let label: String
-        let value: String
-    }
-    
     private enum CodingKeys: String, CodingKey {
         case type
         case data

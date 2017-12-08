@@ -14,9 +14,9 @@ class ChatDataStore: ChatMessageNotification {
         id = storeId
     }
     
-    func didReceiveBooleanControl(_ data: BooleanControlMessage, fromChat source: Chatterbox) {
+    func didReceiveControl(_ data: CBControlData, ofType controlType: CBControlType, fromChat source: Chatterbox) {
         addOrUpdate(data)
-        publishBooleanControlNotification(data, fromSource: source)
+        publishControlNotification(data, ofType: controlType, fromSource: source)
     }
     
     func didReceiveStartedTopic(_ event: StartedUserTopicMessage, fromChat source: Chatterbox) {
@@ -44,24 +44,33 @@ class ChatDataStore: ChatMessageNotification {
         case none = "com.servicenow.SnowChat.none"
     }
     
-    static func addObserver(forControl: CBControlType, source: Chatterbox?, block: @escaping (Notification) -> Swift.Void) -> NSObjectProtocol {
+    private static func notificationNameFor(controlType: CBControlType) -> Notification.Name {
         var notificationName: String
         
-        switch forControl {
+        switch controlType {
         case .boolean:
             notificationName = ChatNotificationType.booleanControl.rawValue
+        case .input:
+            notificationName = ChatNotificationType.inputControl.rawValue
         default:
             notificationName = ChatNotificationType.none.rawValue
         }
-        return NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: notificationName),
+        return Notification.Name(notificationName)
+    }
+    
+    static func addObserver(forControl: CBControlType, source: Chatterbox?, block: @escaping (Notification) -> Swift.Void) -> NSObjectProtocol {
+        let notificationName = notificationNameFor(controlType: forControl)
+        return NotificationCenter.default.addObserver(forName: notificationName,
                                                       object: source,
                                                       queue: nil,
                                                       using: block)
     }
     
-    fileprivate func publishBooleanControlNotification(_ data: BooleanControlMessage, fromSource source: Chatterbox ) {
+    fileprivate func publishControlNotification(_ data: CBControlData, ofType: CBControlType, fromSource source: Chatterbox) {
+        let notificationName = ChatDataStore.notificationNameFor(controlType: ofType)
+
         let info: [String: Any] = ["state": data]
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: ChatNotificationType.booleanControl.rawValue),
+        NotificationCenter.default.post(name: notificationName,
                                         object: source,
                                         userInfo: info)
     }

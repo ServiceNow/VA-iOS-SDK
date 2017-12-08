@@ -43,7 +43,7 @@ class CBStoreTests: XCTestCase {
         let expect = expectation(description: "Expect Notification for Boolean Control")
         let subscriber = subscribeForAddEvent(booleanData, expect)
         
-        store?.didReceiveBooleanControl(booleanData, fromChat: Chatterbox())
+        store?.didReceiveControl(booleanData, ofType: .boolean, fromChat: Chatterbox())
 
         waitForExpectations(timeout: 1) { error in
             XCTAssertNil(error)
@@ -75,7 +75,7 @@ class CBStoreTests: XCTestCase {
         
         var updateData = booleanData
         updateData.data.richControl?.value = true
-        store?.didReceiveBooleanControl(updateData, fromChat: Chatterbox())
+        store?.didReceiveControl(updateData, ofType: .boolean, fromChat: Chatterbox())
         
         waitForExpectations(timeout: 1) { error in
             XCTAssertNil(error)
