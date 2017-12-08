@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="SelectableView" customModule="SnowChat" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="354" height="40"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D4x-9T-pwM">
+                    <rect key="frame" x="60" y="0.0" width="284" height="40"/>
+                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="qca-8d-OJw">
+                    <rect key="frame" x="10" y="0.0" width="40" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="qca-8d-OJw" secondAttribute="height" multiplier="1:1" id="zLd-58-iLx"/>
+                    </constraints>
+                </imageView>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="D4x-9T-pwM" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="39s-Tx-62z"/>
+                <constraint firstItem="qca-8d-OJw" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="10" id="8Cz-mQ-hWs"/>
+                <constraint firstItem="D4x-9T-pwM" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" constant="-10" id="Pup-hd-3bp"/>
+                <constraint firstItem="qca-8d-OJw" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="agn-oY-BWI"/>
+                <constraint firstItem="D4x-9T-pwM" firstAttribute="leading" secondItem="qca-8d-OJw" secondAttribute="trailing" constant="10" id="d60-ea-IT3"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="D4x-9T-pwM" secondAttribute="bottom" id="fnB-A2-Te8"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="qca-8d-OJw" secondAttribute="bottom" id="tAw-T5-GJC"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <connections>
+                <outlet property="selectionIndicatorView" destination="qca-8d-OJw" id="Bwt-60-3zF"/>
+                <outlet property="titleLabel" destination="D4x-9T-pwM" id="dMQ-Me-abW"/>
+            </connections>
+            <point key="canvasLocation" x="16" y="-253"/>
+        </view>
+    </objects>
+</document>
