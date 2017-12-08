@@ -16,7 +16,7 @@ struct SystemTopicPickerMessage: Codable, CBActionMessageData {
     
     struct ControlWrapper: Codable {
         let uiType: String = CBActionEventType.topicPicker.rawValue
-        let model: ControlMessage.ModelType
+        let model: ControlModel
         let value: String
     }
     
@@ -24,7 +24,7 @@ struct SystemTopicPickerMessage: Codable, CBActionMessageData {
         type = "consumerTextMessage"
         data = RichControlData<ControlWrapper>(sessionId: sessionId,
                                                conversationId: nil,
-                                               controlData: ControlWrapper(model: ControlMessage.ModelType(type: "topic", name: nil), value: value))
+                                               controlData: ControlWrapper(model: ControlModel(type: "topic", name: nil), value: value))
     }
     
     // define the properties that we decode / encode

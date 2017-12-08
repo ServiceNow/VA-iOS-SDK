@@ -14,15 +14,19 @@ struct BooleanControlMessage: Codable, CBControlData {
         return id
     }
     
-    var id: String = UUID().uuidString
+    var id: String = CBData.uuidString()
     var controlType: CBControlType = .boolean
     
-    let type: String
-    var data: RichControlData<ControlMessage.ControlWrapper<ControlMessage.UIMetadata>>
+    let type: String = "consumerTextMessage"
+    var data: RichControlData<ControlWrapper<Bool?, UIMetadata>>
  
     // define the properties that we decode / encode
     private enum CodingKeys: String, CodingKey {
         case type
         case data
+    }
+    
+    init(withData: RichControlData<ControlWrapper<Bool?, UIMetadata>>) {
+        data = withData
     }
 }

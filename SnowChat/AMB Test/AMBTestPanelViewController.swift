@@ -11,7 +11,20 @@ import UIKit
 let consumerAccountId = UUID().uuidString
 let consumerId = "marc.attinasi"
 
-class AMBTestPanelViewController: UIViewController {
+class AMBTestPanelViewController: UIViewController, ChatDataListener {
+
+    func chatterbox(_: Chatterbox, topicStarted topic: StartedUserTopicMessage, forChat chatId: String) {
+        appendContent(message: "Successfully started User Topic \(topic.data.actionMessage.topicName)")
+    }
+    
+    func chatterbox(_: Chatterbox, booleanData message: BooleanControlMessage, forChat chatId: String) {
+        if message.data.direction == MessageConstants.directionFromServer.rawValue {
+            let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
+            appendContent(message: "BooleanControl received: \(label)")
+            
+            //chatterbox.update(control: message.id, ofType: .boolean, withValue: (Bool(true)))
+        }
+    }
     
     let user = CBUser(id: "9927", token: "938457hge98", name: "maint", consumerId: consumerId, consumerAccountId: consumerAccountId, password: "maint")
     let vendor = CBVendor(name: "ServiceNow", vendorId: "c2f0b8f187033200246ddd4c97cb0bb9", consumerId: consumerId, consumerAccountId: consumerAccountId)
@@ -62,13 +75,7 @@ class AMBTestPanelViewController: UIViewController {
         })
         
         do {
-            try chatterbox.startTopic(withName: topicName ?? "Create Incident") { [weak self] topic in
-                if let topic = topic {
-                    self?.appendContent(message: "Successfully started User Topic \(topic.data.actionMessage.topicName)")
-                } else {
-                    self?.appendContent(message: "Failed to start topic")
-                }
-            }
+            try chatterbox.startTopic(withName: topicName ?? "Create Incident", listener: self)
         } catch let error {
             self.appendContent(message: "Error thrown in startTopic: \(error.localizedDescription)")
         }
@@ -83,37 +90,14 @@ class AMBTestPanelViewController: UIViewController {
         chatContent.scrollRangeToVisible(NSRange(location: chatContent.text.lengthOfBytes(using: .utf8) - 1, length: 1))
     }
 
-    private func subscribeToControlNotifications() {
-        notificationObserver = NotificationCenter.default.addObserver(forName: ChatNotification.name(forKind: .booleanControl), object: nil, queue: nil) { notification in
-            let info = notification.userInfo as! [String: Any]
-            if let notificationData = info["state"] as? BooleanControlMessage {
-                let label = notificationData.data.richControl?.uiMetadata?.label ?? "[missing label]"
-                self.appendContent(message: "BooleanControl received: \(label)")
-            } else {
-                Logger.default.logError("Expected boolean control in notification, but got something else: \(notification.debugDescription)")
-            }
-        }
-    }
-    
-    private func unsubscribeFromAllNotifications() {
-        if let observer = notificationObserver {
-            NotificationCenter.default.removeObserver(observer)
-            notificationObserver = nil
-        }
-    }
-    
     // MARK: LIFECYCLE METHODS
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        subscribeToControlNotifications()
     }
 
     public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        
-        unsubscribeFromAllNotifications()
     }
     
     override func didReceiveMemoryWarning() {

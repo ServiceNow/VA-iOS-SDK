@@ -14,18 +14,17 @@ class CBDataFactory {
         
         if let jsonData = json.data(using: .utf8) {
             do {
-                let uiMessage = try CBData.jsonDecoder.decode(ControlMessage.self, from: jsonData)
-                if let t = uiMessage.data.richControl?.uiType {
-                    switch t {
-                    case CBControlType.contextualActionMessage.rawValue:
-                        return try CBData.jsonDecoder.decode(ContextualActionMessage.self, from: jsonData)
-                    case CBControlType.topicPicker.rawValue:
-                        return try CBData.jsonDecoder.decode(UserTopicPickerMessage.self, from: jsonData)
-                    case CBControlType.boolean.rawValue:
-                        return try CBData.jsonDecoder.decode(BooleanControlMessage.self, from: jsonData)
-                    default:
-                        Logger.default.logError("Unrecognized UI Control: \(t)")
-                    }
+                let uiMessage = try CBData.jsonDecoder.decode(ControlMessageStub.self, from: jsonData)
+
+                switch uiMessage.data.richControl.uiType {
+                case CBControlType.contextualActionMessage.rawValue:
+                    return try CBData.jsonDecoder.decode(ContextualActionMessage.self, from: jsonData)
+                case CBControlType.topicPicker.rawValue:
+                    return try CBData.jsonDecoder.decode(UserTopicPickerMessage.self, from: jsonData)
+                case CBControlType.boolean.rawValue:
+                    return try CBData.jsonDecoder.decode(BooleanControlMessage.self, from: jsonData)
+                default:
+                    Logger.default.logError("Unrecognized UI Control: \(uiMessage.data.richControl.uiType)")
                 }
             } catch let parseError {
                 print(parseError)
@@ -58,5 +57,21 @@ class CBDataFactory {
         }
         
         return CBActionMessageUnknownData()
+    }
+}
+
+// ControlMessageStub is used to decode just the basic COntrolMessage fields, which can then be queried
+// to determine the actual type to decode
+//
+private struct ControlMessageStub: Codable {
+    let type: String
+    let data: RichControlStub
+    
+    struct RichControlStub: Codable {
+        let richControl: UIType
+    }
+    
+    struct UIType: Codable {
+        let uiType: String
     }
 }

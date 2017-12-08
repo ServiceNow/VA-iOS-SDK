@@ -8,43 +8,37 @@
 
 import Foundation
 
-struct ControlMessage: Codable {
-    
+struct ControlMessage<ValueType: Codable, MetadataType: Codable>: Codable {
     let type: String
-    let data: RichControlData<ControlWrapper<UIMetadata>>
+    let data: RichControlData<ControlWrapper<ValueType, MetadataType>>
+}
+
+struct ControlWrapper<ValueType: Codable, MetadataType: Codable>: Codable {
+    let model: ControlModel?
+    let uiType: String
+    let uiMetadata: MetadataType?
+    var value: ValueType?
+}
+
+struct ControlModel: Codable {
+    var type: String?
+    var name: String?
+}
+
+struct UIMetadata: Codable {
+    var label: String?
+    var required: Bool?
     
-    struct ControlWrapper<MetadataType: Codable>: Codable {
-        let model: ModelType?
-        let uiType: String
-        var value: String?
-        let uiMetadata: MetadataType?
-    }
-    
-    struct UIMetadata: Codable {
-        var label: String?
-        var required: Bool?
-        
-        var error: UIError?
-    }
-    
-    struct ModelType: Codable {
-        var type: String?
-        var name: String?
-    }
-    
-    struct UIError: Codable {
-        var handler: UIHandler?
-        var message: String
-        var code: String
-    }
-    
-    struct UIHandler: Codable {
-        var type: String
-        var instruction: String
-    }
-    
-    init(withData: RichControlData<ControlWrapper<UIMetadata>>) {
-        type = "systemTextMessage"
-        data = withData
-    }
+    var error: UIError?
+}
+
+struct UIError: Codable {
+    var handler: UIHandler?
+    var message: String
+    var code: String
+}
+
+struct UIHandler: Codable {
+    var type: String
+    var instruction: String
 }

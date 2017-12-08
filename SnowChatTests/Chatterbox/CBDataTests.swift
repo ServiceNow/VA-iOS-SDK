@@ -47,6 +47,12 @@ class CBDataTests: XCTestCase {
         XCTAssert(cd.controlType == .unknown)
     }
     
+//    func testBooleanControlToJSON() {
+//        let booleanWrapper = ControlMessage.ControlWrapper<Bool?, ControlMessage.UIMetadata>(type: "consumerTextMessage", data: RichControlData<ControlWrapper<Bool?, ControlMessage.UIMetadata>>() )
+//        let richControlData = RichControlData<ControlMessage.ControlWrapper<Bool?, ControlMessage.UIMetadata>>(sessionId: "session_id", conversationId: "convo_id", )
+//        let booleanControl = BooleanControlMessage(id: "boolean", controlType: .boolean, data: richControlData)
+//    }
+    
     func testBooleanFromJSON() {
         let json = """
         {
@@ -58,6 +64,7 @@ class CBDataTests: XCTestCase {
             "direction": "outbound",
             "richControl": {
               "uiType": "Boolean",
+              "value": true,
               "uiMetadata": {
                 "label": "Would you like to create an incident?",
                 "required": true
@@ -235,7 +242,7 @@ class CBDataTests: XCTestCase {
         let jsonData = json.data(using: .utf8)
         let decoder = JSONDecoder()
         do {
-            let systemMessage = try decoder.decode(ControlMessage.self, from: jsonData!) as ControlMessage
+            let systemMessage = try decoder.decode(ControlMessage<Any?, UIMetadata>.self, from: jsonData!) as ControlMessage
             XCTAssert(systemMessage.data.richControl?.uiType == "SystemError")
             XCTAssert(systemMessage.data.richControl?.uiMetadata?.error?.message == "An unrecoverable error has occurred.")
         } catch let error {

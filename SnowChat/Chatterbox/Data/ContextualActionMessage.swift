@@ -19,10 +19,10 @@ struct ContextualActionMessage: Codable, CBControlData {
     let type: String
     let data: RichControlData<ContextualActionWrapper>
 
-    typealias ContextualActionWrapper = ControlMessage.ControlWrapper<ContextualActionMetadata>
+    typealias ContextualActionWrapper = ControlWrapper<String?, ContextualActionMetadata>
     
     struct ContextualActionMetadata: Codable {
-        let inputControls: [ControlMessage.ControlWrapper<ContextualControlMetadata>]
+        let inputControls: [ControlWrapper<String?, ContextualControlMetadata>]
     }
     
     struct ContextualControlMetadata: Codable {

@@ -5,6 +5,23 @@
 //  Created by Marc Attinasi on 12/1/17.
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
+//  Chatterbox instance is created and retained by client that is interested in displaying a chat session
+//
+//  1) Call initializeSession to start login and initiate the system-topic for a user. A ContextualActionMessage is
+//  provided upon success. Options for picking a topic are in the messages inputControls.uiMetadata property
+//
+//  2) After session is initialized, call startTopic, providing a topic name (obtained from the to
+//  During the chat session controls are delivered to clients via notifications. Subscribe to the notifications
+//  that you care about as in:
+//
+//    NotificationCenter.default.addObserver(forName: ChatNotification.name(forKind: .booleanControl),
+//                                           object: chatterbox,
+//                                           queue: nil)
+//
+//  3) As user interaction takes place, push state changes to the
+//
+//  When chat session is over, remove your observer
+//
 
 import Foundation
 
@@ -23,6 +40,8 @@ class Chatterbox: AMBListener {
     
     var user: CBUser?
     var vendor: CBVendor?
+    
+    // MARK: Client Callable methods
     
     func initializeSession(forUser: CBUser, vendor: CBVendor,
                            success: @escaping (ContextualActionMessage) -> Void,
@@ -53,17 +72,36 @@ class Chatterbox: AMBListener {
         logger.logDebug("initializeAMB returning")
     }
     
-    func startTopic(withName: String, completion: @escaping (StartedUserTopicMessage?) -> Void) throws {
+    func startTopic(withName: String, listener: ChatDataListener) throws {
         conversationContext.topicName = withName
         
         if let sessionId = session?.id, let conversationId = conversationContext.conversationId, let amb = ambClient {
-            startUserTopicCompletionHandler = completion
+            chatListener = listener
             messageHandler = startTopicHandler
             
             let startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
             amb.publish(message: startTopic, toChannel: chatChannel)
+            
+            // TODO: how do we signal an error?
         } else {
             throw ChatterboxError.invalidParameter(details: "Session must be initialized before startTopic is called")
+        }
+    }
+    
+    func update(control controlId: String, ofType: CBControlType, withValue: Any) {
+        // based on type, cast the value and push to the store, then send back to service via AMB
+        if ofType == .boolean {
+            if let value = withValue as? Bool {
+                if let control = chatStore.retrieve(byId: controlId), let booleanControl = control as? BooleanControlMessage, let amb = ambClient {
+                    var updatedControl = booleanControl
+                    updatedControl.data.direction = MessageConstants.directionFromClient.rawValue
+                    updatedControl.data.sendTime = Date()
+                    updatedControl.data.richControl?.value = value
+                    
+                    chatStore.didReceiveBooleanControl(updatedControl, fromChat: self)
+                    amb.publish(message: updatedControl, toChannel: chatChannel)
+                }
+            }
         }
     }
     
@@ -87,11 +125,10 @@ class Chatterbox: AMBListener {
 
     private var messageHandler: ((String) -> Void)?
     private var handshakeCompletedHandler: ((ContextualActionMessage) -> Void)?
-    private var startUserTopicCompletionHandler: ((StartedUserTopicMessage?) -> Void)?
+    
+    private weak var chatListener: ChatDataListener?
     
     private let logger = Logger(forCategory: "Chatterbox", level: .Info)
-    
-    // MARK: Handshake / initialization methods
     
     private func initializeAMB(_ completion: @escaping (Error?) -> Void) {
         guard  let user = user, vendor != nil else {
@@ -170,7 +207,7 @@ class Chatterbox: AMBListener {
         }
     }
     
-    func topicSelectionHandler(_ message: String) {
+    private func topicSelectionHandler(_ message: String) {
         let choices: CBControlData = CBDataFactory.controlFromJSON(message)
         
         if choices.controlType == .contextualActionMessage {
@@ -219,7 +256,7 @@ class Chatterbox: AMBListener {
                     var outgoingMessage = topicPicker
                     outgoingMessage.type = "consumerTextMessage"
                     outgoingMessage.data.direction = MessageConstants.directionFromClient.rawValue
-                    outgoingMessage.data.richControl?.model = ControlMessage.ModelType(type:"field", name: "Topic")
+                    outgoingMessage.data.richControl?.model = ControlModel(type:"field", name: "Topic")
                     outgoingMessage.data.richControl?.value = conversationContext.topicName
                     
                     messageHandler = startUserTopicHandshakeHandler
@@ -248,7 +285,7 @@ class Chatterbox: AMBListener {
                 let actionMessage = startedUserTopic.data.actionMessage
                 logger.logInfo("User Topic Started: \(actionMessage.topicName) - \(actionMessage.topicId) - \(actionMessage.ready ? "Ready" : "Not Ready")")
                 
-                startUserTopicCompletionHandler?(startedUserTopic)
+                chatListener?.chatterbox(self, topicStarted: startedUserTopic, forChat: chatId)
 
                 installTopicMessageHandler()
             }
@@ -271,7 +308,8 @@ class Chatterbox: AMBListener {
         
         if control.controlType == .boolean {
             if let booleanControl = control as? BooleanControlMessage {
-                chatStore.controlEvent(didReceiveBooleanControl: booleanControl)
+                chatStore.didReceiveBooleanControl(booleanControl, fromChat: self)
+                chatListener?.chatterbox(self, booleanData: booleanControl, forChat: chatId)
             }
         }
     }
@@ -279,7 +317,6 @@ class Chatterbox: AMBListener {
     private func clearMessageHandlers() {
         messageHandler = nil
         handshakeCompletedHandler = nil
-        startUserTopicCompletionHandler = nil
     }
     
     private func installTopicMessageHandler() {
