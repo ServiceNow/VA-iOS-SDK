@@ -11,8 +11,21 @@ import UIKit
 let consumerAccountId = UUID().uuidString
 let consumerId = "marc.attinasi"
 
-class AMBTestPanelViewController: UIViewController, ChatDataListener {
-
+class AMBTestPanelViewController: UIViewController, ChatDataListener, ControlDelegate {
+    func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
+        switch model.type {
+        case .boolean:
+            if let boolModel = model as? BooleanControlViewModel {
+                self.chatterbox.update(control:  boolModel.id, ofType: .boolean, withValue: boolModel.value)
+                bubbleViewController?.removeCurrentUIControl()
+                bubbleViewController?.view.isHidden = true
+            }
+        default:
+            Logger.default.logInfo("unhandled control type \(model.type)")
+        }
+        
+    }
+    
     func chatterbox(_: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
         appendContent(message: "Successfully started User Topic \(topic.data.actionMessage.topicName)")
     }
@@ -55,21 +68,53 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener {
         }
     }
 
+    private func addBubbleViewController() {
+        let bubbleViewController = BubbleViewController()
+        bubbleViewController.willMove(toParentViewController: self)
+        addChildViewController(bubbleViewController)
+        bubbleViewController.didMove(toParentViewController: self)
+        
+        guard let bubbleView = bubbleViewController.view else {
+            fatalError("ooops, where's the Bubble view?!")
+        }
+        
+        bubbleView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(bubbleView)
+        NSLayoutConstraint.activate([bubbleView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                                     bubbleView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+                                     bubbleView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7)])
+        self.bubbleViewController = bubbleViewController
+    }
+    
     func presentBooleanAlert(_ message: BooleanControlMessage) {
-        let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
-        let alertController = UIAlertController(title: "SnowChat", message: label, preferredStyle: .alert)
+        let useRealControls = true
         
-        let OKAction = UIAlertAction(title: "Yes", style: .default) { (action:UIAlertAction!) in
-            self.chatterbox.update(control: message.id, ofType: .boolean, withValue: (Bool(true)))
+        if useRealControls {
+            var uiControl: ControlProtocol
+            if let booleanModel = BooleanControlViewModel.model(withMessage: message) {
+                uiControl = BooleanPickerControl(model: booleanModel)
+                uiControl.delegate = self
+                bubbleViewController?.addUIControl(uiControl)
+            } else {
+                Logger.default.logFatal("Fatal error: could not create BooleanControlViewModel")
+            }
+            
+        } else {
+            let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
+            let alertController = UIAlertController(title: "SnowChat", message: label, preferredStyle: .alert)
+            
+            let OKAction = UIAlertAction(title: "Yes", style: .default) { (action:UIAlertAction!) in
+                self.chatterbox.update(control: message.id, ofType: .boolean, withValue: (Bool(true)))
+            }
+            alertController.addAction(OKAction)
+            
+            let cancelAction = UIAlertAction(title: "No", style: .cancel) { (action:UIAlertAction!) in
+                self.chatterbox.update(control: message.id, ofType: .boolean, withValue: (Bool(false)))
+            }
+            alertController.addAction(cancelAction)
+            
+            self.present(alertController, animated: true, completion:nil)
         }
-        alertController.addAction(OKAction)
-        
-        let cancelAction = UIAlertAction(title: "No", style: .cancel) { (action:UIAlertAction!) in
-            self.chatterbox.update(control: message.id, ofType: .boolean, withValue: (Bool(false)))
-        }
-        alertController.addAction(cancelAction)
-        
-        self.present(alertController, animated: true, completion:nil)
     }
     
     func presentTextInput(_ message: InputControlMessage) {
@@ -113,6 +158,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener {
     
     let chatterbox = Chatterbox()
     private var notificationObserver: NSObjectProtocol?
+    var bubbleViewController: BubbleViewController?
     
     @IBOutlet weak var chatContent: UITextView!
     @IBOutlet weak var startTopicBtn: UIButton!
@@ -176,6 +222,8 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        addBubbleViewController()
     }
 
     public override func viewDidDisappear(_ animated: Bool) {

@@ -29,6 +29,13 @@ class BooleanControlViewModel: PickerControlViewModel {
     
     let type: CBControlType = .boolean
     
+    var value: Bool {
+        if let selected = selectedItems {
+            return selected.count > 0 && selected[0].title == BooleanControlOption.yes.rawValue
+        }
+        return false
+    }
+    
     required convenience init(id: String, title: String, required: Bool) {
         let items = [BooleanControlOption.yes.selectableItemModel(), BooleanControlOption.no.selectableItemModel()]
         self.init(id: id, title: title, required: required, items: items)

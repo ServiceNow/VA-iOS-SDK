@@ -24,7 +24,7 @@ public class BubbleViewController: UIViewController {
         bubbleView.borderColor = UIColor(red: 220 / 255, green: 225 / 255, blue: 231 / 255, alpha: 1)
     }
     
-    private func removeCurrentUIControl() {
+    func removeCurrentUIControl() {
         guard let currentUIControl = currentUIControl else {
             return
         }
