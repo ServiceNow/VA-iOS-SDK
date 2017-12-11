@@ -7,7 +7,8 @@
 //
 //  Chatterbox instance is created and retained by client that is interested in displaying a chat session
 //
-//  Client should implement the ChatDataListener protocol to get events and 
+//  Client should implement the ChatDataListener protocol to get control messages and implement
+//  the ChatEventListener to get converation lifecycle events
 //
 //  1) Call initializeSession to start login and initiate the system-topic for a user. A ContextualActionMessage is
 //  provided upon success. Options for picking a topic are in the messages inputControls.uiMetadata property
@@ -45,6 +46,11 @@ class Chatterbox: AMBListener {
     
     // MARK: Client Callable methods
     
+    init(dataListener: ChatDataListener, eventListener: ChatEventListener) {
+        chatDataListener = dataListener
+        chatEventListener = eventListener
+    }
+    
     func initializeSession(forUser: CBUser, vendor: CBVendor,
                            success: @escaping (ContextualActionMessage) -> Void,
                            failure: @escaping (Error?) -> Void ) {
@@ -74,11 +80,10 @@ class Chatterbox: AMBListener {
         logger.logDebug("initializeAMB returning")
     }
     
-    func startTopic(withName: String, listener: ChatDataListener) throws {
+    func startTopic(withName: String) throws {
         conversationContext.topicName = withName
         
         if let sessionId = session?.id, let conversationId = conversationContext.conversationId, let amb = ambClient {
-            chatListener = listener
             messageHandler = startTopicHandler
             
             let startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
@@ -159,7 +164,8 @@ class Chatterbox: AMBListener {
     private var messageHandler: ((String) -> Void)?
     private var handshakeCompletedHandler: ((ContextualActionMessage) -> Void)?
     
-    private weak var chatListener: ChatDataListener?
+    private weak var chatDataListener: ChatDataListener?
+    private weak var chatEventListener: ChatEventListener?
     
     private let logger = Logger(forCategory: "Chatterbox", level: .Info)
     
@@ -318,7 +324,7 @@ class Chatterbox: AMBListener {
                 let actionMessage = startedUserTopic.data.actionMessage
                 logger.logInfo("User Topic Started: \(actionMessage.topicName) - \(actionMessage.topicId) - \(actionMessage.ready ? "Ready" : "Not Ready")")
                 
-                chatListener?.chatterbox(self, didStartTopic: startedUserTopic, forChat: chatId)
+                chatEventListener?.chatterbox(self, didStartTopic: startedUserTopic, forChat: chatId)
 
                 installTopicMessageHandler()
             }
@@ -383,28 +389,28 @@ class Chatterbox: AMBListener {
     fileprivate func handleBooleanControl(_ control: CBControlData) {
         if let booleanControl = control as? BooleanControlMessage {
             chatStore.didReceiveControl(booleanControl, ofType: .boolean, fromChat: self)
-            chatListener?.chatterbox(self, didReceiveBooleanData: booleanControl, forChat: chatId)
+            chatDataListener?.chatterbox(self, didReceiveBooleanData: booleanControl, forChat: chatId)
         }
     }
     
     fileprivate func handleInputControl(_ control: CBControlData) {
         if let inputControl = control as? InputControlMessage {
             chatStore.didReceiveControl(inputControl, ofType: .input, fromChat: self)
-            chatListener?.chatterbox(self, didReceiveInputData: inputControl, forChat: chatId)
+            chatDataListener?.chatterbox(self, didReceiveInputData: inputControl, forChat: chatId)
         }
     }
     
     fileprivate func handlePickerControl(_ control: CBControlData) {
         if let pickerControl = control as? PickerControlMessage {
             chatStore.didReceiveControl(pickerControl, ofType: .picker, fromChat: self)
-            chatListener?.chatterbox(self, didReceivePickerData: pickerControl, forChat: chatId)
+            chatDataListener?.chatterbox(self, didReceivePickerData: pickerControl, forChat: chatId)
         }
     }
     
     fileprivate func handleTextControl(_ control: CBControlData) {
         if let textControl = control as? OutputTextMessage {
             chatStore.didReceiveControl(textControl, ofType: .text, fromChat: self)
-            chatListener?.chatterbox(self, didReceiveTextData: textControl, forChat: chatId)
+            chatDataListener?.chatterbox(self, didReceiveTextData: textControl, forChat: chatId)
         }
     }
     
@@ -414,7 +420,7 @@ class Chatterbox: AMBListener {
     
     fileprivate func handleTopicFinishedAction(_ action: CBActionMessageData) {
         if let topicFinishedMessage = action as? TopicFinishedMessage {
-            chatListener?.chatterbox(self, didFinishTopic: topicFinishedMessage, forChat: chatId)
+            chatEventListener?.chatterbox(self, didFinishTopic: topicFinishedMessage, forChat: chatId)
         }
     }
     

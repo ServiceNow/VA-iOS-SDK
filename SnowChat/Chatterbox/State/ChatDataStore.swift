@@ -8,7 +8,7 @@
 
 import Foundation
 
-class ChatDataStore: ChatMessageNotification {
+class ChatDataStore {
     
     init(storeId: String) {
         id = storeId
@@ -18,11 +18,7 @@ class ChatDataStore: ChatMessageNotification {
         addOrUpdate(data)
         publishControlNotification(data, ofType: controlType, fromSource: source)
     }
-    
-    func didReceiveStartedTopic(_ event: StartedUserTopicMessage, fromChat source: Chatterbox) {
-        ignore(action: event)
-    }
-    
+
     func retrieve(byId id: String) -> CBStorable? {
         var result: CBStorable?
         
@@ -84,9 +80,5 @@ class ChatDataStore: ChatMessageNotification {
         } else {
             dataSink.append(chatItem)
         }
-    }
-    
-    private func ignore(action: CBActionMessageData) {
-        Logger.default.logInfo("ChatDataStore ignoring action message: \(action)")
     }
 }

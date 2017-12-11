@@ -11,12 +11,12 @@ import UIKit
 let consumerAccountId = UUID().uuidString
 let consumerId = "marc.attinasi"
 
-class AMBTestPanelViewController: UIViewController, ChatDataListener, ControlDelegate {
+class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventListener, ControlDelegate {
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
         switch model.type {
         case .boolean:
             if let boolModel = model as? BooleanControlViewModel {
-                self.chatterbox.update(control:  boolModel.id, ofType: .boolean, withValue: boolModel.value)
+                self.chatterbox?.update(control:  boolModel.id, ofType: .boolean, withValue: boolModel.value)
                 bubbleViewController?.removeCurrentUIControl()
                 bubbleViewController?.view.isHidden = true
             }
@@ -110,7 +110,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ControlDel
             if let fields = alert.textFields {
                 let textField = fields[0]
                 print("User entered: \(textField.text ?? "")")
-                self.chatterbox.update(control: message.id, ofType: .input, withValue: textField.text ?? "")
+                self.chatterbox?.update(control: message.id, ofType: .input, withValue: textField.text ?? "")
             }
         }))
 
@@ -125,7 +125,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ControlDel
         if let options = message.data.richControl?.uiMetadata?.options {
             for option in options {
                 let action = UIAlertAction(title: option.label, style: .default) { (action:UIAlertAction!) in
-                    self.chatterbox.update(control: message.id, ofType: .picker, withValue: option.value)
+                    self.chatterbox?.update(control: message.id, ofType: .picker, withValue: option.value)
                 }
                 alertController.addAction(action)
             }
@@ -137,7 +137,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ControlDel
     let user = CBUser(id: "9927", token: "938457hge98", name: "maint", consumerId: consumerId, consumerAccountId: consumerAccountId, password: "maint")
     let vendor = CBVendor(name: "ServiceNow", vendorId: "c2f0b8f187033200246ddd4c97cb0bb9", consumerId: consumerId, consumerAccountId: consumerAccountId)
     
-    let chatterbox = Chatterbox()
+    var chatterbox: Chatterbox?
     private var notificationObserver: NSObjectProtocol?
     var bubbleViewController: BubbleViewController?
     
@@ -146,7 +146,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ControlDel
     
     @IBAction func onInitiateHandshake(_ sender: Any) {
         
-        chatterbox.initializeSession(forUser: user, vendor: vendor,
+        chatterbox?.initializeSession(forUser: user, vendor: vendor,
                              success: { [weak self] (topicChoices) in
                                 if let options = topicChoices.data.richControl?.uiMetadata?.inputControls[0].uiMetadata?.options {
                                     self?.appendContent(message: "What would you like to do?")
@@ -165,7 +165,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ControlDel
 
     @IBAction func onTopicSearchChanged(_ sender: Any) {
         if let field = sender as? UITextField, let val = field.text {
-            chatterbox.sessionAPI?.suggestTopics(searchText: val, completionHandler: { (topics) in
+            chatterbox?.sessionAPI?.suggestTopics(searchText: val, completionHandler: { (topics) in
                 for t in topics {
                     self.appendContent(message: "Topic: \(t.title) [\(t.name)]")
                 }
@@ -176,7 +176,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ControlDel
     @IBAction func onStartTopic(_ sender: Any) {
         var topicName: String?
         
-        chatterbox.sessionAPI?.allTopics(completionHandler: { (topics) in
+        chatterbox?.sessionAPI?.allTopics(completionHandler: { (topics) in
             if let t = topics.first {
                 self.appendContent(message: "Topic: \(t.title) [\(t.name)]")
                 topicName = t.name
@@ -184,7 +184,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ControlDel
         })
         
         do {
-            try chatterbox.startTopic(withName: topicName ?? "Create Incident", listener: self)
+            try chatterbox?.startTopic(withName: topicName ?? "Create Incident")
         } catch let error {
             self.appendContent(message: "Error thrown in startTopic: \(error.localizedDescription)")
         }
@@ -204,6 +204,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ControlDel
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        chatterbox = Chatterbox(dataListener: self, eventListener: self)
         addBubbleViewController()
     }
 

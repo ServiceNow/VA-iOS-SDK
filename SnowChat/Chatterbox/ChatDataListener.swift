@@ -11,9 +11,6 @@ import Foundation
 
 protocol ChatDataListener: AnyObject {
     
-    func chatterbox(_: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String)
-    func chatterbox(_: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String)
-    
     func chatterbox(_: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String)
     func chatterbox(_: Chatterbox, didReceiveInputData message: InputControlMessage, forChat chatId: String)
     func chatterbox(_: Chatterbox, didReceivePickerData message: PickerControlMessage, forChat chatId: String)
