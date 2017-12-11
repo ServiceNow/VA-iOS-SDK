@@ -147,10 +147,12 @@ enum CBActionEventType: String, Codable, CodingKey {
 enum CBControlType: String, Codable {
     case topicPicker = "TopicPicker"
     case startTopicMessage = "StartTopic"
+    
     case boolean = "Boolean"
     case date = "Date"
     case input = "InputText"
     case picker = "Picker"
+    case multiSelect = "MultiSelect"
     case text = "OutputText"
     
     case contextualActionMessage = "ContextualAction"
