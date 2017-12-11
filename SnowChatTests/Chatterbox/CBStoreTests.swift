@@ -11,7 +11,24 @@ import XCTest
 
 @testable import SnowChat
 
-class CBStoreTests: XCTestCase {
+class CBStoreTests: XCTestCase, ChatDataListener, ChatEventListener {
+    func chatterbox(_: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String) {
+    }
+    
+    func chatterbox(_: Chatterbox, didReceiveInputData message: InputControlMessage, forChat chatId: String) {
+    }
+    
+    func chatterbox(_: Chatterbox, didReceivePickerData message: PickerControlMessage, forChat chatId: String) {
+    }
+    
+    func chatterbox(_: Chatterbox, didReceiveTextData message: OutputTextMessage, forChat chatId: String) {
+    }
+    
+    func chatterbox(_: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
+    }
+    
+    func chatterbox(_: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String) {
+    }
 
     var store: ChatDataStore?
     
@@ -43,7 +60,7 @@ class CBStoreTests: XCTestCase {
         let expect = expectation(description: "Expect Notification for Boolean Control")
         let subscriber = subscribeForAddEvent(booleanData, expect)
         
-        store?.didReceiveControl(booleanData, ofType: .boolean, fromChat: Chatterbox())
+        store?.didReceiveControl(booleanData, ofType: .boolean, fromChat: Chatterbox(dataListener: self, eventListener: self))
 
         waitForExpectations(timeout: 1) { error in
             XCTAssertNil(error)
@@ -75,7 +92,7 @@ class CBStoreTests: XCTestCase {
         
         var updateData = booleanData
         updateData.data.richControl?.value = true
-        store?.didReceiveControl(updateData, ofType: .boolean, fromChat: Chatterbox())
+        store?.didReceiveControl(updateData, ofType: .boolean, fromChat: Chatterbox(dataListener: self, eventListener: self))
         
         waitForExpectations(timeout: 1) { error in
             XCTAssertNil(error)
@@ -96,6 +113,4 @@ class CBStoreTests: XCTestCase {
             expect.fulfill()
         }
     }
-    
-
 }
