@@ -14,16 +14,14 @@
 //  provided upon success. Options for picking a topic are in the messages inputControls.uiMetadata property
 //
 //  2) After session is initialized, call startTopic, providing a topic name (obtained from the to
-//  During the chat session controls are delivered to clients via notifications. Subscribe to the notifications
-//  that you care about as in:
+//  During the chat session controls are delivered to clients via the chatDataListener, which must be set by the caller
+//  Additionally, chat lifecycle events are deliverd via the chatEventListener, which must also be set by the caller
+//   NOTE: both listeners are easily set when the Chattertbox instance is created via
+//         'init(dataListener: ChatDataListener?, eventListener: ChatEventListener?)'
 //
-//    NotificationCenter.default.addObserver(forName: ChatNotification.name(forKind: .booleanControl),
-//                                           object: chatterbox,
-//                                           queue: nil)
-//
-//  3) As user interaction takes place, push state changes to the
-//
-//  When chat session is over, remove your observer
+//  3) As user interaction takes place, push state changes via
+//     'update(control controlId: String, ofType: CBControlType, withValue: Any)', passing the original
+//     control ID and the user-entered value
 //
 
 import Foundation
