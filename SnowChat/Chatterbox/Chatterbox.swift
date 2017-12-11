@@ -46,7 +46,7 @@ class Chatterbox: AMBListener {
     
     // MARK: Client Callable methods
     
-    init(dataListener: ChatDataListener, eventListener: ChatEventListener) {
+    init(dataListener: ChatDataListener?, eventListener: ChatEventListener?) {
         chatDataListener = dataListener
         chatEventListener = eventListener
     }

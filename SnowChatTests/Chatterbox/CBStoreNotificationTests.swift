@@ -11,24 +11,7 @@ import XCTest
 
 @testable import SnowChat
 
-class CBStoreTests: XCTestCase, ChatDataListener, ChatEventListener {
-    func chatterbox(_: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String) {
-    }
-    
-    func chatterbox(_: Chatterbox, didReceiveInputData message: InputControlMessage, forChat chatId: String) {
-    }
-    
-    func chatterbox(_: Chatterbox, didReceivePickerData message: PickerControlMessage, forChat chatId: String) {
-    }
-    
-    func chatterbox(_: Chatterbox, didReceiveTextData message: OutputTextMessage, forChat chatId: String) {
-    }
-    
-    func chatterbox(_: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
-    }
-    
-    func chatterbox(_: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String) {
-    }
+class CBStoreNotificationTests: XCTestCase {
 
     var store: ChatDataStore?
     
@@ -39,7 +22,6 @@ class CBStoreTests: XCTestCase, ChatDataListener, ChatEventListener {
     }
     
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
     
@@ -54,13 +36,13 @@ class CBStoreTests: XCTestCase, ChatDataListener, ChatEventListener {
                                                                            value: nil))
     }
     
-    func testStoreBooleanControl() {
+    func testStoreBooleanControlSendNotification() {
         let booleanData = BooleanControlMessage(withData: newControlData())
         
         let expect = expectation(description: "Expect Notification for Boolean Control")
         let subscriber = subscribeForAddEvent(booleanData, expect)
         
-        store?.didReceiveControl(booleanData, ofType: .boolean, fromChat: Chatterbox(dataListener: self, eventListener: self))
+        store?.didReceiveControl(booleanData, ofType: .boolean, fromChat: Chatterbox(dataListener: nil, eventListener: nil))
 
         waitForExpectations(timeout: 1) { error in
             XCTAssertNil(error)
@@ -80,7 +62,6 @@ class CBStoreTests: XCTestCase, ChatDataListener, ChatEventListener {
             XCTAssert(notificationData.controlType == .boolean)
             XCTAssertEqual(notificationData.id, booleanData.id)
             XCTAssertEqual(notificationData.data.richControl?.model?.type, booleanData.data.richControl?.model?.type)
-            //XCTAssertEqual(notificationData.data.richControl?.value, nil)
             
             expect.fulfill()
         }
@@ -92,7 +73,7 @@ class CBStoreTests: XCTestCase, ChatDataListener, ChatEventListener {
         
         var updateData = booleanData
         updateData.data.richControl?.value = true
-        store?.didReceiveControl(updateData, ofType: .boolean, fromChat: Chatterbox(dataListener: self, eventListener: self))
+        store?.didReceiveControl(updateData, ofType: .boolean, fromChat: Chatterbox(dataListener: nil, eventListener: nil))
         
         waitForExpectations(timeout: 1) { error in
             XCTAssertNil(error)
