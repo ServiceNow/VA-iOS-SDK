@@ -87,33 +87,14 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ControlDel
     }
     
     func presentBooleanAlert(_ message: BooleanControlMessage) {
-        let useRealControls = true
-        
-        if useRealControls {
-            var uiControl: ControlProtocol
-            if let booleanModel = BooleanControlViewModel.model(withMessage: message) {
-                uiControl = BooleanPickerControl(model: booleanModel)
-                uiControl.delegate = self
-                bubbleViewController?.addUIControl(uiControl)
-            } else {
-                Logger.default.logFatal("Fatal error: could not create BooleanControlViewModel")
-            }
-            
+        var uiControl: ControlProtocol
+        if let booleanModel = BooleanControlViewModel.model(withMessage: message) {
+            uiControl = BooleanPickerControl(model: booleanModel)
+            uiControl.delegate = self
+            bubbleViewController?.addUIControl(uiControl)
+            bubbleViewController?.view.isHidden = false
         } else {
-            let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
-            let alertController = UIAlertController(title: "SnowChat", message: label, preferredStyle: .alert)
-            
-            let OKAction = UIAlertAction(title: "Yes", style: .default) { (action:UIAlertAction!) in
-                self.chatterbox.update(control: message.id, ofType: .boolean, withValue: (Bool(true)))
-            }
-            alertController.addAction(OKAction)
-            
-            let cancelAction = UIAlertAction(title: "No", style: .cancel) { (action:UIAlertAction!) in
-                self.chatterbox.update(control: message.id, ofType: .boolean, withValue: (Bool(false)))
-            }
-            alertController.addAction(cancelAction)
-            
-            self.present(alertController, animated: true, completion:nil)
+            Logger.default.logFatal("Fatal error: could not create BooleanControlViewModel")
         }
     }
     
