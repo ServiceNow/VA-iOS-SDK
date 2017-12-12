@@ -15,22 +15,26 @@ class CBDataFactory {
         if let jsonData = json.data(using: .utf8) {
             do {
                 let uiMessage = try CBData.jsonDecoder.decode(ControlMessageStub.self, from: jsonData)
-
-                switch uiMessage.data.richControl.uiType {
-                case CBControlType.contextualActionMessage.rawValue:
+                
+                guard let controlType = CBControlType(rawValue: uiMessage.data.richControl.uiType) else {
+                    return CBControlDataUnknown()
+                }
+                
+                switch controlType {
+                case .contextualActionMessage:
                     return try CBData.jsonDecoder.decode(ContextualActionMessage.self, from: jsonData)
-                case CBControlType.topicPicker.rawValue:
+                case.topicPicker:
                     return try CBData.jsonDecoder.decode(UserTopicPickerMessage.self, from: jsonData)
-                case CBControlType.boolean.rawValue:
+                case .boolean:
                     return try CBData.jsonDecoder.decode(BooleanControlMessage.self, from: jsonData)
-                case CBControlType.input.rawValue:
+                case .input:
                     return try CBData.jsonDecoder.decode(InputControlMessage.self, from: jsonData)
-                case CBControlType.picker.rawValue:
+                case .picker:
                     return try CBData.jsonDecoder.decode(PickerControlMessage.self, from: jsonData)
-                case CBControlType.text.rawValue:
+                case .text:
                     return try CBData.jsonDecoder.decode(OutputTextMessage.self, from: jsonData)
                 default:
-                    Logger.default.logError("Unrecognized UI Control: \(uiMessage.data.richControl.uiType)")
+                    Logger.default.logError("Unrecognized UI Control: \(controlType)")
                 }
             } catch let parseError {
                 print(parseError)
@@ -44,19 +48,22 @@ class CBDataFactory {
         if let jsonData = json.data(using: .utf8) {
             do {
                 let actionMessage = try CBData.jsonDecoder.decode(ActionMessage.self, from: jsonData)
-                let t = actionMessage.data.actionMessage.type
                 
-                switch t {
-                case CBActionEventType.channelInit.rawValue:
+                guard let eventType = CBActionEventType(rawValue: actionMessage.data.actionMessage.type) else {
+                    return CBActionMessageUnknownData()
+                }
+                
+                switch eventType {
+                case .channelInit:
                     return try CBData.jsonDecoder.decode(InitMessage.self, from: jsonData)
-                case CBActionEventType.startUserTopic.rawValue:
+                case .startUserTopic:
                     return try CBData.jsonDecoder.decode(StartUserTopicMessage.self, from: jsonData)
-                case CBActionEventType.startedUserTopic.rawValue:
+                case .startedUserTopic:
                     return try CBData.jsonDecoder.decode(StartedUserTopicMessage.self, from: jsonData)
-                case CBActionEventType.finishedUserTopic.rawValue:
+                case .finishedUserTopic:
                     return try CBData.jsonDecoder.decode(TopicFinishedMessage.self, from: jsonData)
                 default:
-                    Logger.default.logError("Unrecognized ActionMessage type: \(t)")
+                    Logger.default.logError("Unrecognized ActionMessage type: \(eventType)")
                 }
                 
             } catch let decodeError {

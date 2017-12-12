@@ -55,10 +55,10 @@ class Chatterbox: AMBListener {
         self.user = forUser
         self.vendor = vendor
         
-        initializeAMB { errorIn in
-            if errorIn == nil {
-                self.createChatSession { errorIn in
-                    if errorIn == nil {
+        initializeAMB { error in
+            if error == nil {
+                self.createChatSession { error in
+                    if error == nil {
                         self.performChatHandshake { actionMessage in
                             success(actionMessage)
                             return
@@ -68,11 +68,11 @@ class Chatterbox: AMBListener {
                         // the handhake we will just sit here waiting...
                         
                     } else {
-                        failure(errorIn)
+                        failure(error)
                     }
                 }
             } else {
-                failure(errorIn)
+                failure(error)
             }
         }
         logger.logDebug("initializeAMB returning")
@@ -93,36 +93,36 @@ class Chatterbox: AMBListener {
         }
     }
     
-    func update(control controlId: String, ofType: CBControlType, withValue: Any) {
+    func update(control controlId: String, ofType type: CBControlType, withValue value: Any) {
         guard let control = chatStore.retrieve(byId: controlId) else {
             logger.logError("Cannot update control \(controlId) - not found in chatStore")
             return
         }
         
         // based on type, cast the value and push to the store, then send back to service via AMB
-        if ofType == .boolean {
-            if let value = withValue as? Bool, var booleanControl = control as? BooleanControlMessage {
+        if type == .boolean {
+            if let value = value as? Bool, var booleanControl = control as? BooleanControlMessage {
                 booleanControl.data = updateMessage(booleanControl.data)
                 booleanControl.data.richControl?.value = value
                 
-                storeAndNotify(booleanControl, ofType: ofType)
+                storeAndNotify(booleanControl, ofType: type)
             }
-        } else if ofType == .input {
-            if let value = withValue as? String, var inputControl = control as? InputControlMessage {
+        } else if type == .input {
+            if let value = value as? String, var inputControl = control as? InputControlMessage {
                 inputControl.data = updateMessage(inputControl.data)
                 inputControl.data.richControl?.value = value
                 
-                storeAndNotify(inputControl, ofType: ofType)
+                storeAndNotify(inputControl, ofType: type)
             }
-        } else if ofType == .picker {
-            if let value = withValue as? String, var inputControl = control as? PickerControlMessage {
+        } else if type == .picker {
+            if let value = value as? String, var inputControl = control as? PickerControlMessage {
                 inputControl.data = updateMessage(inputControl.data)
                 inputControl.data.richControl?.value = value
                 
-                storeAndNotify(inputControl, ofType: ofType)
+                storeAndNotify(inputControl, ofType: type)
             }
         } else {
-            logger.logInfo("Unrecognized control type - skipping: \(ofType.rawValue)")
+            logger.logInfo("Unrecognized control type - skipping: \(type.rawValue)")
             return
         }
         
@@ -153,7 +153,7 @@ class Chatterbox: AMBListener {
     private let chatStore = ChatDataStore(storeId: "ChatterboxDataStore")
     private var session: CBSession?
     private var ambClient: AMBChatClient?
-    private (set) var sessionAPI: SessionAPI?
+    private(set) var sessionAPI: SessionAPI?
     
     private var chatChannel: String {
         return "/cs/messages/\(chatId)"
