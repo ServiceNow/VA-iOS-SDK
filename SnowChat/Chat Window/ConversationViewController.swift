@@ -20,11 +20,12 @@ class ConversationViewController: SLKTextViewController {
     
     // MARK: - Initialization
     
-    init(chatterbox: Chatterbox) {
+    init?(chatterbox: Chatterbox) {
         dataController = ChatDataController(chatterbox: chatterbox)
+
+        super.init(tableViewStyle: .plain)
         
-        // swiftlint:disable:next force_unwrapping
-        super.init(tableViewStyle: .plain)!
+        chatterbox.chatDataListener = self
     }
     
     required init?(coder decoder: NSCoder) {
@@ -44,5 +45,24 @@ class ConversationViewController: SLKTextViewController {
     private func setupTableView() {
         tableView.separatorStyle = .none
     }
+
+}
+
+extension ConversationViewController: ChatDataListener {
     
+    func chatterbox(_: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String) {
+        Logger.default.logDebug("BooleanControl: \(message)")
+    }
+    
+    func chatterbox(_: Chatterbox, didReceiveInputData message: InputControlMessage, forChat chatId: String) {
+        Logger.default.logDebug("InputControl: \(message)")
+    }
+    
+    func chatterbox(_: Chatterbox, didReceivePickerData message: PickerControlMessage, forChat chatId: String) {
+        Logger.default.logDebug("PickerControl: \(message)")
+    }
+    
+    func chatterbox(_: Chatterbox, didReceiveTextData message: OutputTextMessage, forChat chatId: String) {
+        Logger.default.logDebug("TextControl: \(message)")
+    }
 }
