@@ -14,6 +14,7 @@ class TextControl: ControlProtocol {
     private class TextViewController: UIViewController {
         
         let textView = UITextView()
+        
         override func loadView() {
             self.view = textView
         }
