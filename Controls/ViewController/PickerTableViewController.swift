@@ -163,7 +163,7 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     @objc func doneButtonSelected(_ sender: UIButton) {
-        guard let selectedItemsCount = model.selectedItems?.count, selectedItemsCount != 0 else {
+        guard model.selectedItems.count != 0 else {
             Logger.default.logDebug("Didn't select any item!")
             return
         }

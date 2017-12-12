@@ -11,17 +11,35 @@ import XCTest
 
 class BooleanPickerTests: XCTestCase {
     
-    override func setUp() {
-        super.setUp()
-    }
-    
-    func testBooleanPickerDefaultPresentationStyle() {
-        let model = BooleanControlViewModel(id: "123", title: "", required: true)
+    func testBooleanPickerVCDefaultPresentationStyle() {
+        let model = BooleanControlViewModel(id: "123", title: "?", required: true)
         let booleanControl = BooleanPickerControl(model: model)
         XCTAssert(booleanControl.style == .inline)
     }
     
-    func testBooleanPickerItems() {
+    func testBooleanPickerValueItems() {
+        let model = BooleanControlViewModel(id: "123", title: "?", required: true)
+        XCTAssert(model.value == nil)
         
+        // Select No
+        model.select(itemAt: 0)
+        XCTAssert(model.value == true)
+        
+        XCTAssert(model.selectedItems.count != 0)
+        var selectedItems = model.selectedItems
+        XCTAssert(selectedItems.count == 1)
+        
+        // Select Yes
+        model.select(itemAt: 1)
+        XCTAssert(model.value == false)
+        
+        XCTAssert(model.selectedItems.count != 0)
+        selectedItems = model.selectedItems
+        XCTAssert(selectedItems.count == 1)
+    }
+    
+    func testBooleanMultiSelectVar() {
+        let model = BooleanControlViewModel(id: "123", title: "?", required: true)
+        XCTAssert(model.isMultiSelect == false)
     }
 }

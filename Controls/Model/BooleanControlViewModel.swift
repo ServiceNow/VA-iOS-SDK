@@ -20,8 +20,13 @@ class BooleanControlViewModel: PickerControlViewModel {
     
     let type: CBControlType = .boolean
     
-    var value: Bool {
-        return selectedItems?.first?.isSelected ?? false
+    var value: Bool? {
+        guard let selectedItem = selectedItem else {
+            return nil
+        }
+        
+        // is Yes selected?
+        return selectedItem === items[0]
     }
     
     required convenience init(id: String, title: String, required: Bool) {
@@ -35,5 +40,12 @@ class BooleanControlViewModel: PickerControlViewModel {
         self.isRequired = required
         self.isMultiSelect = multiSelect
         self.items = items
+    }
+    
+    func select(itemAt index: Int) {
+        // clear out all the items first
+        items.forEach({ $0.isSelected = false })
+        let item = items[index]
+        item.isSelected = true
     }
 }

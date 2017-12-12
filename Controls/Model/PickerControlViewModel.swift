@@ -41,7 +41,11 @@ protocol PickerControlViewModel: ControlViewModel {
     // represents items as a string
     var displayValues: [String?]? { get }
     
-    var selectedItems: [SelectableItemViewModel]? { get }
+    var selectedItems: [SelectableItemViewModel] { get }
+    
+    var selectedItem: SelectableItemViewModel? { get }
+    
+    func select(itemAt index: Int)
     
     init(id: String, title: String, required: Bool, items: [SelectableItemViewModel], multiSelect: Bool)
 }
@@ -58,8 +62,12 @@ extension PickerControlViewModel {
         return values
     }
     
-    var selectedItems: [SelectableItemViewModel]? {
+    var selectedItems: [SelectableItemViewModel] {
         let values = items.filter({ $0.isSelected })
         return values
+    }
+    
+    var selectedItem: SelectableItemViewModel? {
+        return selectedItems.first
     }
 }

@@ -33,6 +33,7 @@
 		5760B91F1FD5C8C100591C06 /* UIImageUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760B91E1FD5C8C100591C06 /* UIImageUtils.swift */; };
 		5760C8CE1FBF4C920055B73D /* PickerTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760C8CD1FBF4C920055B73D /* PickerTableViewController.swift */; };
 		5778CF981FDEE767004F77D8 /* BooleanPickerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5778CF971FDEE767004F77D8 /* BooleanPickerTests.swift */; };
+		5778CF9A1FE05A3F004F77D8 /* MultiSelectPickerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5778CF991FE05A3F004F77D8 /* MultiSelectPickerTests.swift */; };
 		5786320B1FBB571E00FA0282 /* BubbleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578632071FBB571D00FA0282 /* BubbleViewController.swift */; };
 		578632161FBB9E0300FA0282 /* ControlProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578632151FBB9E0300FA0282 /* ControlProtocol.swift */; };
 		5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5788B2A61FBB38FD00846F33 /* ControlViewModel.swift */; };
@@ -116,6 +117,7 @@
 		5760B91E1FD5C8C100591C06 /* UIImageUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageUtils.swift; sourceTree = "<group>"; };
 		5760C8CD1FBF4C920055B73D /* PickerTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerTableViewController.swift; sourceTree = "<group>"; };
 		5778CF971FDEE767004F77D8 /* BooleanPickerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooleanPickerTests.swift; sourceTree = "<group>"; };
+		5778CF991FE05A3F004F77D8 /* MultiSelectPickerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectPickerTests.swift; sourceTree = "<group>"; };
 		578632071FBB571D00FA0282 /* BubbleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BubbleViewController.swift; sourceTree = "<group>"; };
 		578632151FBB9E0300FA0282 /* ControlProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlProtocol.swift; sourceTree = "<group>"; };
 		5788B2A61FBB38FD00846F33 /* ControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlViewModel.swift; sourceTree = "<group>"; };
@@ -212,6 +214,7 @@
 			isa = PBXGroup;
 			children = (
 				5778CF971FDEE767004F77D8 /* BooleanPickerTests.swift */,
+				5778CF991FE05A3F004F77D8 /* MultiSelectPickerTests.swift */,
 			);
 			path = Controls;
 			sourceTree = "<group>";
@@ -738,6 +741,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C420ED7F1FC5F488002476C0 /* LoggerTests.swift in Sources */,
+				5778CF9A1FE05A3F004F77D8 /* MultiSelectPickerTests.swift in Sources */,
 				C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */,
 				C40565D11FBE32F3004BD28C /* CBStoreTests.swift in Sources */,
 				C4CED9401FD74479008E3E25 /* SessionAPITests.swift in Sources */,
