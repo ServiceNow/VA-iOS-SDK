@@ -22,6 +22,7 @@ class BooleanPickerControl: PickerControlProtocol {
     }()
     
     required init(model: ControlViewModel) {
+        assert(model.type == .boolean, "Model must be boolean type")
         self.model = model
     }
     

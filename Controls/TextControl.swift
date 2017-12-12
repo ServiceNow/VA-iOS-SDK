@@ -28,6 +28,11 @@ class TextControl: ControlProtocol {
         textView.isScrollEnabled = false
         textView.font = UIFont.preferredFont(forTextStyle: .body)
         textView.text = model.title
-        viewController.view = textView
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        viewController.view.addSubview(textView)
+        NSLayoutConstraint.activate([textView.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
+                                     textView.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
+                                     textView.topAnchor.constraint(equalTo: viewController.view.topAnchor),
+                                     textView.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)])
     }
 }
