@@ -19,7 +19,7 @@ struct StartTopicMessage: Codable, CBControlData {
     let type: String
     let data: RichControlData<StartTopicWrapper>
     
-    typealias StartTopicWrapper = ControlMessage.ControlWrapper<ContextualActionMetadata>
+    typealias StartTopicWrapper = ControlWrapper<String?, ContextualActionMetadata>
     
     struct ContextualActionMetadata: Codable {
         // nothing more to add for this one
@@ -27,7 +27,7 @@ struct StartTopicMessage: Codable, CBControlData {
     
     init(withSessionId: String, withConversationId: String) {
         type = "consumerTextMessage"
-        let controlData: StartTopicWrapper = ControlMessage.ControlWrapper(model: ControlMessage.ModelType(type: "task", name: nil), uiType: "ContextualAction", value: "startTopic", uiMetadata: nil)
+        let controlData: StartTopicWrapper = ControlWrapper(model: ControlModel(type: "task", name: nil), uiType: "ContextualAction", uiMetadata: nil, value: "startTopic")
         data = RichControlData<StartTopicWrapper>(sessionId: withSessionId, conversationId: withConversationId, controlData: controlData)
     }
     

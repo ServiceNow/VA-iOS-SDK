@@ -8,7 +8,7 @@
 
 import Foundation
 
-public func getDeviceId() -> String {
+public func deviceIdentifier() -> String {
     let id = UIDevice.current.identifierForVendor ?? UUID()
     return id.uuidString
 }

@@ -8,19 +8,67 @@
 
 import Foundation
 
-class ChatDataStore: ChatEventNotification {
+class ChatDataStore {
     
     init(storeId: String) {
         id = storeId
     }
     
-    func controlEvent(didReceiveBooleanControl data: BooleanControlMessage) {
+    func didReceiveControl(_ data: CBControlData, ofType controlType: CBControlType, fromChat source: Chatterbox) {
         addOrUpdate(data)
-        publishBooleanControlNotification(data)
+        publishControlNotification(data, ofType: controlType, fromSource: source)
+    }
+
+    func retrieve(byId id: String) -> CBStorable? {
+        var result: CBStorable?
+        
+        dataSink.forEach { item in
+            if item.uniqueId() == id {
+                result = item
+            }
+        }
+        return result
     }
     
-    func topicEvent(didReceiveStartedTopic event: StartedUserTopicMessage) {
-        ignore(action: event)
+    // MARK: Notifications
+    
+    enum ChatNotificationType: String {
+        case booleanControl = "com.servicenow.SnowChat.BooleanControl"
+        case dateControl = "com.servicenow.SnowChat.DateControl"
+        case inputControl = "com.servicenow.SnowChat.InputControl"
+        
+        case none = "com.servicenow.SnowChat.none"
+    }
+    
+    private static func notificationNameFor(controlType: CBControlType) -> Notification.Name {
+        var notificationName: String
+        
+        switch controlType {
+        case .boolean:
+            notificationName = ChatNotificationType.booleanControl.rawValue
+        case .input:
+            notificationName = ChatNotificationType.inputControl.rawValue
+        default:
+            notificationName = ChatNotificationType.none.rawValue
+        }
+        return Notification.Name(notificationName)
+    }
+    
+    static func addObserver(forControl: CBControlType, source: Chatterbox?, block: @escaping (Notification) -> Swift.Void) -> NSObjectProtocol {
+        let notificationName = notificationNameFor(controlType: forControl)
+        return NotificationCenter.default.addObserver(forName: notificationName,
+                                                      object: source,
+                                                      queue: nil,
+                                                      using: block)
+    }
+    
+    fileprivate func publishControlNotification(_ data: CBControlData, ofType: CBControlType, fromSource source: Chatterbox) {
+        let notificationName = ChatDataStore.notificationNameFor(controlType: ofType)
+
+        let info: [String: Any] = ["state": data]
+        NotificationCenter.default.post(name: notificationName,
+                                        object: source,
+                                        userInfo: info)
     }
     
     internal let id: String
@@ -32,30 +80,5 @@ class ChatDataStore: ChatEventNotification {
         } else {
             dataSink.append(chatItem)
         }
-    }
-    
-    fileprivate func publishBooleanControlNotification(_ data: BooleanControlMessage ) {
-        let info: [String: Any] = ["state": data]
-        NotificationCenter.default.post(name: ChatNotification.name(forKind: .booleanControl),
-                                        object: self,
-                                        userInfo: info)
-    }
-    
-//    fileprivate func publishDateControlNotification(_ channel: CBChannel, _ data: CBDateData ) {
-//        let info: [String: Any] = ["state": data]
-//        NotificationCenter.default.post(name: ChatNotification.name(forKind: .dateControl),
-//                                        object: self,
-//                                        userInfo: info)
-//    }
-//    
-//    fileprivate func publishInputControlNotification(_ channel: CBChannel, _ data: CBInputData ) {
-//        let info: [String: Any] = ["state": data]
-//        NotificationCenter.default.post(name: ChatNotification.name(forKind: .inputControl),
-//                                        object: self,
-//                                        userInfo: info)
-//    }
-    
-    private func ignore(action: CBActionMessageData) {
-        Logger.default.logInfo("ChatDataStore ignoring action message: \(action)")
     }
 }

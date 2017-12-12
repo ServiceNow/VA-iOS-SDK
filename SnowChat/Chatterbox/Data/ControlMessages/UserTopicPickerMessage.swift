@@ -23,7 +23,7 @@ struct UserTopicPickerMessage: Codable, CBControlData {
     
     struct ControlWrapper: Codable {
         let uiType: String
-        var model: ControlMessage.ModelType
+        var model: ControlModel
         var value: String?
     }
     

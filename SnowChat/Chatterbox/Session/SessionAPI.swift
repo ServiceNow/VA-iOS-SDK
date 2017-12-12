@@ -22,14 +22,14 @@ class SessionAPI {
     
     var chatId: String = CBData.uuidString()
     
-    func getSession(sessionInfo: CBSession, completionHandler: @escaping (CBSession?) -> Void) {
-        var resultSession = sessionInfo
+    func chatSession(forSessionInfo: CBSession, completion: @escaping (CBSession?) -> Void) {
+        var resultSession = forSessionInfo
         
-        let parameters: Parameters = ["deviceId" : sessionInfo.deviceId,
+        let parameters: Parameters = ["deviceId" : forSessionInfo.deviceId,
                                       "channelId": "/cs/messages/\(chatId)",
-                                      "vendorId" : sessionInfo.vendor.vendorId,
-                                      "consumerId": sessionInfo.user.consumerId,
-                                      "consumerAccountId": sessionInfo.user.consumerAccountId,
+                                      "vendorId" : forSessionInfo.vendor.vendorId,
+                                      "consumerId": forSessionInfo.user.consumerId,
+                                      "consumerAccountId": forSessionInfo.user.consumerAccountId,
                                       "requestTime" : Int((Date().timeIntervalSince1970 * 1000).rounded()),
                                       "direction" : "inbound",
                                       "deviceType" : "ios"]
@@ -49,15 +49,13 @@ class SessionAPI {
                 self.sessionState = .SessionError
                 self.lastError = error
                 
-                completionHandler(nil)
+                completion(nil)
                 return
             }
             
             if let value = response.result.value,
                let data = value as? NSDictionary,
                let sessionData = data.object(forKey: "session") as? NSDictionary {
-                
-                Logger.default.logInfo("value: \(value)")
                 
                 resultSession.welcomeMessage = data.object(forKey: "welcomeMessage") as? String
                 resultSession.id = sessionData.object(forKey: "sessionId") as! String
@@ -68,24 +66,12 @@ class SessionAPI {
                 self.lastError = nil
                 self.sessionState = .SessionActive
                 
-                completionHandler(resultSession)
+                completion(resultSession)
             } else {
                 Logger.default.logError("Error getting respons data from session request: malformed server response")
-                completionHandler(nil)
+                completion(nil)
             }
         }
-    }
-    
-    static func topicsFromResult(_ result: Any) -> [CBTopic] {
-        guard let dictionary = result as? NSDictionary,
-              let topicDictionaries = dictionary["root"] as? [NSDictionary] else { return [] }
-        
-        let topics: [CBTopic] = topicDictionaries.flatMap { topic in
-            guard let title = topic["title"] as? String, let name = topic["topicName"] as? String else { return nil }
-            return CBTopic(title: title, name: name)
-        }
-        
-        return topics
     }
     
     func suggestTopics(searchText: String, completionHandler: @escaping([CBTopic]) -> Void) {
@@ -98,8 +84,6 @@ class SessionAPI {
 
                 if response.error == nil {
                     if let result = response.result.value {
-                        Logger.default.logInfo("result: \(result)")
-                        
                         topics = SessionAPI.topicsFromResult(result)
                     }
                 }
@@ -114,12 +98,22 @@ class SessionAPI {
                 var topics = [CBTopic]()
                 if response.error == nil {
                     if let result = response.result.value {
-                        Logger.default.logInfo("result: \(result)")
-                        
                         topics = SessionAPI.topicsFromResult(result)
                     }
                 }
                 completionHandler(topics)
         }
+    }
+    
+    static func topicsFromResult(_ result: Any) -> [CBTopic] {
+        guard let dictionary = result as? NSDictionary,
+              let topicDictionaries = dictionary["root"] as? [NSDictionary] else { return [] }
+        
+        let topics: [CBTopic] = topicDictionaries.flatMap { topic in
+            guard let title = topic["title"] as? String, let name = topic["topicName"] as? String else { return nil }
+            return CBTopic(title: title, name: name)
+        }
+        
+        return topics
     }
 }
