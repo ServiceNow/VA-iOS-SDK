@@ -47,12 +47,17 @@
 		57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */; };
 		57EDCEA41FD5DA7A009A9A35 /* UIColor+Control.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EDCEA31FD5DA7A009A9A35 /* UIColor+Control.swift */; };
 		BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = BE2925A01FC3391D005E55CA /* .swiftlint.yml */; };
+		BE29E0C91FDEF74C0029D1F0 /* SlackTextViewController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */; };
+		BE29E0CC1FDEFA5B0029D1F0 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */; };
+		BE29E0CF1FDF06C20029D1F0 /* ChatDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE29E0CE1FDF06C20029D1F0 /* ChatDataController.swift */; };
 		BE50E2241FB9305C00948FBC /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = BE50E2231FB9305C00948FBC /* Cartfile */; };
 		BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
 		BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE5974BE1FC38ECB00959406 /* Debug.storyboard */; };
 		BE5974C41FC392FB00959406 /* ControlsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5974C31FC392FB00959406 /* ControlsViewController.swift */; };
 		BE6B9D911FC38AD400B9F47A /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6B9D8F1FC38AD400B9F47A /* DebugViewController.swift */; };
 		BE6FBE401FBFB3060062A0EB /* AMBHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6FBE3F1FBFB3060062A0EB /* AMBHTTPClient.swift */; };
+		BE876FDD1FDF4F75008EEF04 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE876FDC1FDF4F75008EEF04 /* ChatService.swift */; };
+		BE876FDF1FDF5177008EEF04 /* ConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */; };
 		BE9E8B631FBF5AEC00499960 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9E8B621FBF5AEC00499960 /* AMBClient.framework */; };
 		BE9E8BA11FBF7F3600499960 /* AMBClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8B9E1FBF7F3500499960 /* AMBClient.swift */; };
 		BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */; };
@@ -133,12 +138,17 @@
 		57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ControlsViewController.xib; sourceTree = "<group>"; };
 		57EDCEA31FD5DA7A009A9A35 /* UIColor+Control.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Control.swift"; sourceTree = "<group>"; };
 		BE2925A01FC3391D005E55CA /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .swiftlint.yml; sourceTree = SOURCE_ROOT; };
+		BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SlackTextViewController.framework; path = Carthage/Build/iOS/SlackTextViewController.framework; sourceTree = "<group>"; };
+		BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
+		BE29E0CE1FDF06C20029D1F0 /* ChatDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataController.swift; sourceTree = "<group>"; };
 		BE50E2231FB9305C00948FBC /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		BE50E2261FB9337D00948FBC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
 		BE5974BE1FC38ECB00959406 /* Debug.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Debug.storyboard; sourceTree = "<group>"; };
 		BE5974C31FC392FB00959406 /* ControlsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlsViewController.swift; sourceTree = "<group>"; };
 		BE6B9D8F1FC38AD400B9F47A /* DebugViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugViewController.swift; sourceTree = "<group>"; };
 		BE6FBE3F1FBFB3060062A0EB /* AMBHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBHTTPClient.swift; sourceTree = "<group>"; };
+		BE876FDC1FDF4F75008EEF04 /* ChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatService.swift; sourceTree = "<group>"; };
+		BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewController.swift; sourceTree = "<group>"; };
 		BE9E8B621FBF5AEC00499960 /* AMBClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AMBClient.framework; path = Carthage/Build/iOS/AMBClient.framework; sourceTree = "<group>"; };
 		BE9E8B9E1FBF7F3500499960 /* AMBClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AMBClient.swift; sourceTree = "<group>"; };
 		BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthHeadersAdapter.swift; sourceTree = "<group>"; };
@@ -190,6 +200,7 @@
 			files = (
 				BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */,
 				BE9E8B631FBF5AEC00499960 /* AMBClient.framework in Frameworks */,
+				BE29E0C91FDEF74C0029D1F0 /* SlackTextViewController.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,6 +303,23 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		BE29E0CA1FDEF79B0029D1F0 /* Chat Window */ = {
+			isa = PBXGroup;
+			children = (
+				BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */,
+				BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */,
+			);
+			path = "Chat Window";
+			sourceTree = "<group>";
+		};
+		BE29E0CD1FDF06990029D1F0 /* Chat Data Controller */ = {
+			isa = PBXGroup;
+			children = (
+				BE29E0CE1FDF06C20029D1F0 /* ChatDataController.swift */,
+			);
+			path = "Chat Data Controller";
+			sourceTree = "<group>";
+		};
 		BE50E2221FB9305300948FBC /* Deployment */ = {
 			isa = PBXGroup;
 			children = (
@@ -303,6 +331,7 @@
 		BE50E2251FB9337D00948FBC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */,
 				BE9E8B621FBF5AEC00499960 /* AMBClient.framework */,
 				BE50E2261FB9337D00948FBC /* Alamofire.framework */,
 			);
@@ -345,6 +374,14 @@
 			path = "AMB Test";
 			sourceTree = "<group>";
 		};
+		BE876FDB1FDF4F64008EEF04 /* Chat Service */ = {
+			isa = PBXGroup;
+			children = (
+				BE876FDC1FDF4F75008EEF04 /* ChatService.swift */,
+			);
+			path = "Chat Service";
+			sourceTree = "<group>";
+		};
 		BE9E8B9B1FBF7F1700499960 /* Networking */ = {
 			isa = PBXGroup;
 			children = (
@@ -381,6 +418,9 @@
 		BEB6C8591FB92CD700B1D497 /* SnowChat */ = {
 			isa = PBXGroup;
 			children = (
+				BE876FDB1FDF4F64008EEF04 /* Chat Service */,
+				BE29E0CD1FDF06990029D1F0 /* Chat Data Controller */,
+				BE29E0CA1FDEF79B0029D1F0 /* Chat Window */,
 				C4F3AF301FD601EA00B27B0D /* Util */,
 				C420ED7B1FC5F467002476C0 /* Logger */,
 				BE6FBE441FBFBC210062A0EB /* AMB Test */,
@@ -647,11 +687,13 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/AMBClient.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/SlackTextViewController.framework",
 			);
 			name = "Copy Carthage Frameworks";
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Alamofire.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/AMBClient.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SlackTextViewController.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -704,10 +746,12 @@
 				5760B91F1FD5C8C100591C06 /* UIImageUtils.swift in Sources */,
 				57532BAF1FD79F4D001D674C /* ChatterboxMessageAdapter.swift in Sources */,
 				BE6B9D911FC38AD400B9F47A /* DebugViewController.swift in Sources */,
+				BE29E0CC1FDEFA5B0029D1F0 /* ChatViewController.swift in Sources */,
 				C4F3AF2F1FD235D100B27B0D /* Chatterbox.swift in Sources */,
 				57532BAB1FD777AC001D674C /* PickerControl.swift in Sources */,
 				BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */,
 				BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */,
+				BE29E0CF1FDF06C20029D1F0 /* ChatDataController.swift in Sources */,
 				BE6FBE401FBFB3060062A0EB /* AMBHTTPClient.swift in Sources */,
 				C4F3AF361FD6291E00B27B0D /* SystemTopicPickerMessage.swift in Sources */,
 				C46A7D881FCE23D300DC12AC /* ActionMessageData.swift in Sources */,
@@ -739,7 +783,9 @@
 				57B7E2D21FBA75B100196BA9 /* PickerControlViewModel.swift in Sources */,
 				57B7E2CD1FBA3C8400196BA9 /* UIView+Additions.swift in Sources */,
 				578632161FBB9E0300FA0282 /* ControlProtocol.swift in Sources */,
+				BE876FDF1FDF5177008EEF04 /* ConversationViewController.swift in Sources */,
 				57B7E2C81FBA25A200196BA9 /* SelectableView.swift in Sources */,
+				BE876FDD1FDF4F75008EEF04 /* ChatService.swift in Sources */,
 				57B7E2C31FBA25A200196BA9 /* BooleanPickerControl.swift in Sources */,
 				5760C8CE1FBF4C920055B73D /* PickerTableViewController.swift in Sources */,
 				57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */,
