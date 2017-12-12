@@ -1,5 +1,5 @@
 //
-//  MultiSelectPickerTests.swift
+//  MultiSelectControlTests.swift
 //  SnowChatTests
 //
 //  Created by Michael Borowiec on 12/12/17.
@@ -9,7 +9,7 @@
 import XCTest
 @testable import SnowChat
 
-class MultiSelectPickerTests: XCTestCase {
+class MultiSelectControlTests: XCTestCase {
     
     private var multiSelectItems: [SelectableItemViewModel]?
     

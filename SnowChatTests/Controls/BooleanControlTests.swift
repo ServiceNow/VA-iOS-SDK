@@ -1,5 +1,5 @@
 //
-//  BooleanPickerTests.swift
+//  BooleanControlTests.swift
 //  SnowChatTests
 //
 //  Created by Michael Borowiec on 12/11/17.
@@ -9,7 +9,7 @@
 import XCTest
 @testable import SnowChat
 
-class BooleanPickerTests: XCTestCase {
+class BooleanControlTests: XCTestCase {
     
     func testBooleanPickerVCDefaultPresentationStyle() {
         let model = BooleanControlViewModel(id: "123", title: "?", required: true)
