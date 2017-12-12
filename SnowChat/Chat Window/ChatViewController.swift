@@ -41,7 +41,6 @@ public class ChatViewController: UIViewController {
         controller.willMove(toParentViewController: self)
         addChildViewController(controller)
         controller.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        controller.view.translatesAutoresizingMaskIntoConstraints = true
         controller.view.frame = view.bounds
         view.addSubview(controller.view)
         controller.didMove(toParentViewController: self)
