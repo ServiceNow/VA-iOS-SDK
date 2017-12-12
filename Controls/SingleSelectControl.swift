@@ -19,7 +19,7 @@ class SingleSelectControl: PickerControlProtocol {
     
     var model: ControlViewModel
     
-    var delegate: ControlDelegate?
+    weak var delegate: ControlDelegate?
     
     required init(model: ControlViewModel) {
         self.model = model
@@ -29,6 +29,4 @@ class SingleSelectControl: PickerControlProtocol {
     func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: SelectableItemViewModel, forPickerModel pickerModel: PickerControlViewModel) {
         // FIXME: Something add here
     }
-    
-    
 }

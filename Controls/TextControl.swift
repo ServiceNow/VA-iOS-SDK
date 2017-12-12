@@ -10,29 +10,34 @@ import Foundation
 
 class TextControl: ControlProtocol {
     
+    // Private class to handle custom view controller for Text Control.
+    private class TextViewController: UIViewController {
+        
+        let textView = UITextView()
+        override func loadView() {
+            self.view = textView
+        }
+        
+        override func viewDidLoad() {
+            super.viewDidLoad()
+            
+            textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+            textView.isScrollEnabled = false
+            textView.font = UIFont.preferredFont(forTextStyle: .body)
+        }
+    }
+    
     var model: ControlViewModel
     
-    var viewController: UIViewController
+    let viewController: UIViewController
     
     weak var delegate: ControlDelegate?
     
     required init(model: ControlViewModel) {
         self.model = model
-        self.viewController = UIViewController()
-        setupTextView()
-    }
-    
-    private func setupTextView() {
-        let textView = UITextView()
-        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        textView.isScrollEnabled = false
-        textView.font = UIFont.preferredFont(forTextStyle: .body)
-        textView.text = model.title
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        viewController.view.addSubview(textView)
-        NSLayoutConstraint.activate([textView.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
-                                     textView.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
-                                     textView.topAnchor.constraint(equalTo: viewController.view.topAnchor),
-                                     textView.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)])
+        
+        let textViewController = TextViewController()
+        textViewController.textView.text = model.title
+        self.viewController = textViewController
     }
 }
