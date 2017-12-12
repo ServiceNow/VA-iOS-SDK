@@ -16,19 +16,10 @@ class SingleSelectControlViewModel: PickerControlViewModel {
     
     let isMultiSelect: Bool
     
-    let items: [SelectableItemViewModel]
+    var items = [SelectableItemViewModel]()
     
     var type: CBControlType {
         return .multiSelect
-    }
-    
-    var value: Bool? {
-        guard let selectedItem = selectedItem else {
-            return nil
-        }
-        
-        // is Yes selected?
-        return selectedItem === items[0]
     }
     
     init(id: String, title: String, required: Bool, items: [SelectableItemViewModel]) {
@@ -37,6 +28,10 @@ class SingleSelectControlViewModel: PickerControlViewModel {
         self.isRequired = required
         self.isMultiSelect = false
         self.items = items
+        
+        if required {
+            self.items.append(SelectableItemViewModel.skipItem())
+        }
     }
     
     func select(itemAt index: Int) {

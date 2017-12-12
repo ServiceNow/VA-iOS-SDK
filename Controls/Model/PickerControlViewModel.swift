@@ -13,7 +13,7 @@ class SelectableItemViewModel: ControlViewModel {
     
     let title: String
     
-    let isRequired: Bool
+    let isRequired: Bool = true
     
     var isSelected: Bool = false
     
@@ -23,10 +23,14 @@ class SelectableItemViewModel: ControlViewModel {
     
     var type: CBControlType = .unknown
     
-    init(id: String = "selectable_item", title: String, required: Bool = true) {
+    init(id: String = "selectable_item", title: String) {
         self.title = title
         self.id = id
-        self.isRequired = required
+    }
+    
+    static func skipItem() -> SelectableItemViewModel {
+        let item = SelectableItemViewModel(title: "Skip")
+        return item
     }
 }
 

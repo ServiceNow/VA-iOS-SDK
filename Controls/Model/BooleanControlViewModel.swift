@@ -16,4 +16,13 @@ class BooleanControlViewModel: SingleSelectControlViewModel {
         let items = [SelectableItemViewModel(title: "Yes"), SelectableItemViewModel(title: "No")]
         super.init(id: id, title: title, required: required, items: items)
     }
+    
+    var value: Bool? {
+        guard let selectedItem = selectedItem else {
+            return nil
+        }
+        
+        // is Yes selected?
+        return selectedItem === items[0]
+    }
 }
