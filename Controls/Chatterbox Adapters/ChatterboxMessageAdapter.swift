@@ -34,7 +34,7 @@ extension BooleanControlViewModel: ChatterboxMessageAdapter {
             return nil
         }
         
-        let booleanModel = BooleanControlViewModel(id: message.id, title: title, required: required)
+        let booleanModel = BooleanControlViewModel(id: message.id, label: title, required: required)
         return booleanModel
     }
 }

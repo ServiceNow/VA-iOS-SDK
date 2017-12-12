@@ -9,8 +9,10 @@
 // base model for all ui control models
 protocol ControlViewModel {
     
-    // title of the control
-    var title: String { get }
+    // label of the control
+    var label: String { get }
+    
+//    var value: AnyObject? { get set }
     
     // indicates whether uicontrol is required or not (i.e if input control has it set to false, "Skip" button is presented)
     var isRequired: Bool { get }
@@ -22,7 +24,7 @@ protocol ControlViewModel {
 
 class TextViewModel: ControlViewModel {
     
-    let title: String
+    let label: String
     
     let isRequired: Bool
     
@@ -30,8 +32,8 @@ class TextViewModel: ControlViewModel {
     
     let type: CBControlType = .text
     
-    init(id: String = "text_control", title: String, required: Bool = true) {
-        self.title = title
+    init(id: String = "text_control", label: String, required: Bool = true) {
+        self.label = label
         self.isRequired = required
         self.id = id
     }

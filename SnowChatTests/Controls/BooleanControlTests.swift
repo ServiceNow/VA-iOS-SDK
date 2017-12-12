@@ -12,13 +12,13 @@ import XCTest
 class BooleanControlTests: XCTestCase {
     
     func testBooleanPickerVCDefaultPresentationStyle() {
-        let model = BooleanControlViewModel(id: "123", title: "?", required: true)
+        let model = BooleanControlViewModel(id: "123", label: "?", required: true)
         let booleanControl = BooleanControl(model: model)
         XCTAssert(booleanControl.style == .inline)
     }
     
     func testBooleanPickerValueItems() {
-        let model = BooleanControlViewModel(id: "123", title: "?", required: true)
+        let model = BooleanControlViewModel(id: "123", label: "?", required: true)
         XCTAssert(model.value == nil)
         
         // Select No
@@ -39,7 +39,7 @@ class BooleanControlTests: XCTestCase {
     }
     
     func testBooleanMultiSelectVar() {
-        let model = BooleanControlViewModel(id: "123", title: "?", required: true)
+        let model = BooleanControlViewModel(id: "123", label: "?", required: true)
         XCTAssert(model.isMultiSelect == false)
     }
 }

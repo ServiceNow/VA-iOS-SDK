@@ -127,7 +127,7 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
         let headerView = UIView()
         let titleLabel = UILabel()
         titleLabel.adjustsFontSizeToFitWidth = true
-        titleLabel.text = model.title
+        titleLabel.text = model.label
         titleLabel.textColor = headerTextColor
         headerView.backgroundColor = UIColor.controlHeaderBackgroundColor
         titleLabel.translatesAutoresizingMaskIntoConstraints = false

@@ -38,7 +38,7 @@ class TextControl: ControlProtocol {
         self.model = model
         
         let textViewController = TextViewController()
-        textViewController.textView.text = model.title
+        textViewController.textView.text = model.label
         self.viewController = textViewController
     }
 }

@@ -16,18 +16,18 @@ class MultiSelectControlTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        self.multiSelectItems = [SelectableItemViewModel(title: "Item 1"), SelectableItemViewModel(title: "Item 2"), SelectableItemViewModel(title: "Item 3"), SelectableItemViewModel(title: "Item 4")]
+        self.multiSelectItems = [SelectableItemViewModel(label: "Item 1"), SelectableItemViewModel(label: "Item 2"), SelectableItemViewModel(label: "Item 3"), SelectableItemViewModel(label: "Item 4")]
     }
     
     func testMultiSelectPickerVCDefaultPresentationStyle() {
-        let model = MultiSelectControlViewModel(id: "123", title: "Choice", required: true, items: multiSelectItems!)
+        let model = MultiSelectControlViewModel(id: "123", label: "Choice", required: true, items: multiSelectItems!)
         let multiSelectPicker = MultiSelectControl(model: model)
     
         XCTAssert(multiSelectPicker.style == .inline)
     }
 
     func testMultiSelectSelection() {
-        let model = MultiSelectControlViewModel(id: "123", title: "Choice", required: true, items: multiSelectItems!)
+        let model = MultiSelectControlViewModel(id: "123", label: "Choice", required: true, items: multiSelectItems!)
         
         XCTAssert(model.selectedItems.count == 0)
         model.select(itemAt: 0)

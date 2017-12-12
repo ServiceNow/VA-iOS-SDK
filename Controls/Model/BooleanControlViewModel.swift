@@ -12,9 +12,9 @@ class BooleanControlViewModel: SingleSelectControlViewModel {
         return .boolean
     }
     
-    init(id: String, title: String, required: Bool) {
-        let items = [SelectableItemViewModel(title: "Yes"), SelectableItemViewModel(title: "No")]
-        super.init(id: id, title: title, required: required, items: items)
+    init(id: String, label: String, required: Bool) {
+        let items = [SelectableItemViewModel(label: "Yes"), SelectableItemViewModel(label: "No")]
+        super.init(id: id, label: label, required: required, items: items)
     }
     
     var value: Bool? {

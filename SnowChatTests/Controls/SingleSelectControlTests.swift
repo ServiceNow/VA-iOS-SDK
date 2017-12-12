@@ -16,18 +16,17 @@ class SingleSelectControlTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        self.singleSelectItems = [SelectableItemViewModel(title: "Item 1"), SelectableItemViewModel(title: "Item 2"), SelectableItemViewModel(title: "Item 3"), SelectableItemViewModel(title: "Item 4")]
+        self.singleSelectItems = [SelectableItemViewModel(label: "Item 1"), SelectableItemViewModel(label: "Item 2"), SelectableItemViewModel(label: "Item 3"), SelectableItemViewModel(label: "Item 4")]
     }
     
     func testSingleSelectVCDefaultPresentationStyle() {
-        let model = SingleSelectControlViewModel(id: "123", title: "?", required: true, items: singleSelectItems!)
+        let model = SingleSelectControlViewModel(id: "123", label: "?", required: true, items: singleSelectItems!)
         let singleSelect = SingleSelectControl(model: model)
         XCTAssert(singleSelect.style == .inline)
     }
     
     func testSingleSelectValueItems() {
-        let model = SingleSelectControlViewModel(id: "123", title: "?", required: true, items: singleSelectItems!)
-        XCTAssert(model.value == nil)
+        let model = SingleSelectControlViewModel(id: "123", label: "?", required: true, items: singleSelectItems!)
         
         model.select(itemAt: 0)
         XCTAssert(model.selectedItems.count == 1)
@@ -37,7 +36,7 @@ class SingleSelectControlTests: XCTestCase {
     }
     
     func testBooleanMultiSelectVar() {
-        let model = SingleSelectControlViewModel(id: "123", title: "?", required: true, items: singleSelectItems!)
+        let model = SingleSelectControlViewModel(id: "123", label: "?", required: true, items: singleSelectItems!)
         XCTAssert(model.isMultiSelect == false)
     }
 }
