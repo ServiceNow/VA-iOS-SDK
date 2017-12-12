@@ -1,30 +1,29 @@
 //
-//  MultiselectPickerControl.swift
-//  SnowChat
+//  BooleanPickerControl.swift
+//  Controls
 //
-//  Created by Michael Borowiec on 11/21/17.
-//  Copyright © 2017 ServiceNow. All rights reserved.
+//  Created by Michael Borowiec on 11/8/17.
+//  Copyright © 2017 ServiceNow, Inc. All rights reserved.
 //
 
 import UIKit
 
-class MultiSelectPickerControl: PickerControlProtocol {
+class BooleanControl: PickerControlProtocol {
+    
+    var style: PickerControlStyle = .inline
     
     var model: ControlViewModel
     
-    var style: PickerControlStyle
+    weak var delegate: ControlDelegate?
     
-    lazy var viewController: UIViewController = {
+    public lazy var viewController: UIViewController = {
         let vc = self.viewController(forStyle: style, model: model)
         return vc
     }()
     
-    weak var delegate: ControlDelegate?
-    
     required init(model: ControlViewModel) {
-        assert(model.type == .multiSelect, "Model must be multiselect type")
+        assert(model.type == .boolean, "Model must be boolean type")
         self.model = model
-        style = .inline
     }
     
     // MARK: - PickerTableDelegate

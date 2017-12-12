@@ -13,7 +13,7 @@ class BooleanPickerTests: XCTestCase {
     
     func testBooleanPickerVCDefaultPresentationStyle() {
         let model = BooleanControlViewModel(id: "123", title: "?", required: true)
-        let booleanControl = BooleanPickerControl(model: model)
+        let booleanControl = BooleanControl(model: model)
         XCTAssert(booleanControl.style == .inline)
     }
     

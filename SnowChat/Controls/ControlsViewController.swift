@@ -61,14 +61,14 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         case .boolean:
             let booleanMessage = BooleanControlMessage(id: "foo", controlType: .boolean, type: "Boolean", data: newControlData())
             if let booleanModel = BooleanControlViewModel.model(withMessage: booleanMessage) {
-                uiControl = BooleanPickerControl(model: booleanModel)
+                uiControl = BooleanControl(model: booleanModel)
             } else {
                 uiControl = nil
             }
         case .multiSelect:
             let items = [SelectableItemViewModel(title: "Item 1"), SelectableItemViewModel(title: "Item 2"), SelectableItemViewModel(title: "Item 3"), SelectableItemViewModel(title: "Item 4")]
             let multiselectModel = MultiSelectControlViewModel(id: "multi_1234", title: "What is your issue?", required: true, items: items)
-            uiControl = MultiSelectPickerControl(model: multiselectModel)
+            uiControl = MultiSelectControl(model: multiselectModel)
         case .text:
             let textModel = TextViewModel(title: "Some random text that is longer than one line........")
             uiControl = TextControl(model: textModel)

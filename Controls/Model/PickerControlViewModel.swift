@@ -23,7 +23,7 @@ class SelectableItemViewModel: ControlViewModel {
     
     var type: CBControlType = .unknown
     
-    required init(id: String = "selectable_item", title: String, required: Bool = true) {
+    init(id: String = "selectable_item", title: String, required: Bool = true) {
         self.title = title
         self.id = id
         self.isRequired = required
@@ -47,15 +47,11 @@ protocol PickerControlViewModel: ControlViewModel {
     
     func select(itemAt index: Int)
     
-    init(id: String, title: String, required: Bool, items: [SelectableItemViewModel], multiSelect: Bool)
+//    init(id: String, title: String, required: Bool, items: [SelectableItemViewModel], multiSelect: Bool)
 }
 
 // Provides default implementation for displayValues and selectedItems
 extension PickerControlViewModel {
-    
-    init(id: String, title: String, required: Bool) {
-        self.init(id: id, title: title, required: required, items: [SelectableItemViewModel](), multiSelect: false)
-    }
     
     var displayValues: [String?]? {
         let values = items.map({ $0.displayValue })

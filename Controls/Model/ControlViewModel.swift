@@ -18,8 +18,6 @@ protocol ControlViewModel {
     var id: String { get }
     
     var type: CBControlType { get }
-    
-    init(id: String, title: String, required: Bool)
 }
 
 class TextViewModel: ControlViewModel {
@@ -32,7 +30,7 @@ class TextViewModel: ControlViewModel {
     
     let type: CBControlType = .text
     
-    required init(id: String = "text_control", title: String, required: Bool = true) {
+    init(id: String = "text_control", title: String, required: Bool = true) {
         self.title = title
         self.isRequired = required
         self.id = id

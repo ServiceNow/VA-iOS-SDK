@@ -21,7 +21,7 @@ class MultiSelectPickerTests: XCTestCase {
     
     func testMultiSelectPickerVCDefaultPresentationStyle() {
         let model = MultiSelectControlViewModel(id: "123", title: "Choice", required: true, items: multiSelectItems!)
-        let multiSelectPicker = MultiSelectPickerControl(model: model)
+        let multiSelectPicker = MultiSelectControl(model: model)
     
         XCTAssert(multiSelectPicker.style == .inline)
     }

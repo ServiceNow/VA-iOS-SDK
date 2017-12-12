@@ -18,13 +18,9 @@ class MultiSelectControlViewModel: PickerControlViewModel {
     
     let id: String
     
-    var type: CBControlType = .multiSelect
+    let type: CBControlType = .multiSelect
     
-    required convenience init(id: String, title: String, required: Bool, items: [SelectableItemViewModel]) {
-        self.init(id: id, title: title, required: required, items: items, multiSelect: true)
-    }
-    
-    required init(id: String, title: String, required: Bool, items: [SelectableItemViewModel], multiSelect: Bool = true) {
+    init(id: String, title: String, required: Bool, items: [SelectableItemViewModel]) {
         self.id = id
         self.title = title
         self.isRequired = required
