@@ -9,7 +9,7 @@
 import Foundation
 import SlackTextViewController
 
-class ConversationViewController: SLKTextViewController {
+class ConversationViewController: SLKTextViewController, ViewDataChangeListener {
     
     private let dataController: ChatDataController
     
@@ -25,7 +25,7 @@ class ConversationViewController: SLKTextViewController {
 
         super.init(tableViewStyle: .plain)
         
-        chatterbox.chatDataListener = self
+        dataController.changeListener = self
     }
     
     required init?(coder decoder: NSCoder) {
@@ -40,29 +40,20 @@ class ConversationViewController: SLKTextViewController {
         setupTableView()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+    }
+
     // MARK: - View Setup
     
     private func setupTableView() {
         tableView.separatorStyle = .none
     }
 
-}
-
-extension ConversationViewController: ChatDataListener {
-    
-    func chatterbox(_: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String) {
-        Logger.default.logDebug("BooleanControl: \(message)")
-    }
-    
-    func chatterbox(_: Chatterbox, didReceiveInputData message: InputControlMessage, forChat chatId: String) {
-        Logger.default.logDebug("InputControl: \(message)")
-    }
-    
-    func chatterbox(_: Chatterbox, didReceivePickerData message: PickerControlMessage, forChat chatId: String) {
-        Logger.default.logDebug("PickerControl: \(message)")
-    }
-    
-    func chatterbox(_: Chatterbox, didReceiveTextData message: OutputTextMessage, forChat chatId: String) {
-        Logger.default.logDebug("TextControl: \(message)")
+    func didChange(_ model: ControlViewModel, atIndex index: Int) {
+        tableView.reloadData()
+        
+        // TODO: optimize to update changed rows if possible...
     }
 }
