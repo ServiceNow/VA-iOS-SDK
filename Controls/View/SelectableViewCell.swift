@@ -45,7 +45,7 @@ class SelectableViewCell: UITableViewCell, ConfigurablePickerCell {
     // MARK: - ConfigurablePickerCell Protocol
     
     func configure(withModel model: SelectableItemViewModel) {
-        selectableView.titleLabel.text = model.displayValue
+        selectableView.titleLabel.text = model.label
         selectableView.titleLabel.textColor = itemTextColor
         selectableView.isSelected = model.isSelected
     }

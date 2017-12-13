@@ -6,8 +6,11 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
+
 // base class for item model
 class SelectableItemViewModel: ControlViewModel {
+    
+    var value: ControlValue?
     
     let id: String
     
@@ -17,14 +20,11 @@ class SelectableItemViewModel: ControlViewModel {
     
     var isSelected: Bool = false
     
-    var displayValue: String? {
-        return label
-    }
-    
     var type: CBControlType = .unknown
     
-    init(id: String = "selectable_item", label: String) {
+    init(id: String = "selectable_item", label: String, value: ControlValue = .null) {
         self.label = label
+        self.value = value
         self.id = id
     }
     
@@ -42,9 +42,6 @@ protocol PickerControlViewModel: ControlViewModel {
     // collection of item models
     var items: [SelectableItemViewModel] { get }
     
-    // represents items as a string
-    var displayValues: [String?]? { get }
-    
     var selectedItems: [SelectableItemViewModel] { get }
     
     var selectedItem: SelectableItemViewModel? { get }
@@ -56,11 +53,6 @@ protocol PickerControlViewModel: ControlViewModel {
 
 // Provides default implementation for displayValues and selectedItems
 extension PickerControlViewModel {
-    
-    var displayValues: [String?]? {
-        let values = items.map({ $0.displayValue })
-        return values
-    }
     
     var selectedItems: [SelectableItemViewModel] {
         let values = items.filter({ $0.isSelected })

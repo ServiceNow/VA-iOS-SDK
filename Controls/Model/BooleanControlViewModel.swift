@@ -17,12 +17,15 @@ class BooleanControlViewModel: SingleSelectControlViewModel {
         super.init(id: id, label: label, required: required, items: items)
     }
     
-    var value: Bool? {
-        guard let selectedItem = selectedItem else {
-            return nil
+    override var value: ControlValue? {
+        get {
+            guard let selectedItem = selectedItem else {
+                return nil
+            }
+            
+//            let isSelected = selectedItem === items[0]
+            // is Yes selected?
+            return selectedItem.value
         }
-        
-        // is Yes selected?
-        return selectedItem === items[0]
     }
 }

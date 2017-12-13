@@ -22,7 +22,7 @@ class PickerTableViewCell: UITableViewCell, ConfigurablePickerCell {
     // MARK: - ConfigurablePickerCell Protocol
     
     func configure(withModel model: SelectableItemViewModel) {
-        titleLabel.text = model.displayValue
+        titleLabel.text = model.label
         titleLabel.textColor = UIColor.controlTextColor
     }
 }

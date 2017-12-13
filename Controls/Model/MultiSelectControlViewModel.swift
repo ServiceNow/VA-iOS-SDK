@@ -8,6 +8,8 @@
 
 class MultiSelectControlViewModel: PickerControlViewModel {
     
+    var value: ControlValue?
+    
     let isMultiSelect: Bool 
     
     let isRequired: Bool

@@ -8,6 +8,10 @@
 
 class SingleSelectControlViewModel: PickerControlViewModel {
     
+    var value: ControlValue? {
+        return nil
+    }
+    
     let id: String
     
     let label: String
