@@ -10,7 +10,7 @@ import Foundation
 
 public class ChatService {
     
-    private let chatterbox = Chatterbox()
+    private let chatterbox = Chatterbox(dataListener: nil, eventListener: nil)
     
     public func chatViewController(modal: Bool) -> ChatViewController {
         if modal {
