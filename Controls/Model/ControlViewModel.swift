@@ -19,7 +19,7 @@ enum ControlType {
     case unknown
 }
 
-protocol ValueRepresentable: AnyObject {
+protocol ValueRepresentable {
     
     associatedtype ResultType
     
