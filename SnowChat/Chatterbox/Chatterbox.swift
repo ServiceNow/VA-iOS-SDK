@@ -42,9 +42,12 @@ class Chatterbox: AMBListener {
     var user: CBUser?
     var vendor: CBVendor?
     
+    weak var chatDataListener: ChatDataListener?
+    weak var chatEventListener: ChatEventListener?
+    
     // MARK: Client Callable methods
     
-    init(dataListener: ChatDataListener?, eventListener: ChatEventListener?) {
+    init(dataListener: ChatDataListener? = nil, eventListener: ChatEventListener? = nil) {
         chatDataListener = dataListener
         chatEventListener = eventListener
     }
@@ -155,9 +158,6 @@ class Chatterbox: AMBListener {
 
     private var messageHandler: ((String) -> Void)?
     private var handshakeCompletedHandler: ((ContextualActionMessage) -> Void)?
-    
-    private weak var chatDataListener: ChatDataListener?
-    private weak var chatEventListener: ChatEventListener?
     
     private let logger = Logger(forCategory: "Chatterbox", level: .Info)
     

@@ -11,13 +11,13 @@ import UIKit
 public class ChatViewController: UIViewController {
     
     private let chatterbox: Chatterbox
-    
     private var conversationViewController: ConversationViewController?
     
     // MARK: - Initialization
     
     internal init(chatterbox: Chatterbox) {
         self.chatterbox = chatterbox
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -37,7 +37,6 @@ public class ChatViewController: UIViewController {
     
     private func setupConversationViewController() {
         let controller = ConversationViewController(chatterbox: chatterbox)
-        
         controller.willMove(toParentViewController: self)
         addChildViewController(controller)
         controller.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -47,5 +46,4 @@ public class ChatViewController: UIViewController {
         
         conversationViewController = controller
     }
-    
 }
