@@ -8,7 +8,7 @@
 
 import UIKit
 
-public class DebugViewController: UITableViewController {
+public class DebugViewController: UITableViewController, ChatServiceAppDelegate {
     
     @IBOutlet private weak var ambTestCell: UITableViewCell!
     @IBOutlet private weak var uiControlsCell: UITableViewCell!
@@ -47,10 +47,20 @@ public class DebugViewController: UITableViewController {
         }
     }
     
+    // MARK: ChatServiceAppDelegate methods
+    
+    func userCredentials() -> ChatUserCredentials {
+        return ChatUserCredentials(userName: "maint",
+                                   userPassword: "maint",
+                                   vendorId: "c2f0b8f187033200246ddd4c97cb0bb9",
+                                   consumerId: CBData.uuidString(),
+                                   consumerAccountId: CBData.uuidString())
+    }
+    
     // MARK: - Navigation
     
     private func pushChatController() {
-        let controller = ChatService().chatViewController(modal: false)
+        let controller = ChatService(delegate: self).chatViewController()
         navigationController?.pushViewController(controller, animated: true)
     }
     

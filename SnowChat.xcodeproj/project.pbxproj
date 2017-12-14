@@ -88,6 +88,7 @@
 		C489073D1FCC8209008D9521 /* AMBTestPanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C489073B1FCC8209008D9521 /* AMBTestPanelViewController.swift */; };
 		C489073E1FCC8209008D9521 /* AMBTestPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C489073C1FCC8209008D9521 /* AMBTestPanelViewController.xib */; };
 		C4A774A91FDF22E200B6DF68 /* ChatEventListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A774A81FDF22E200B6DF68 /* ChatEventListener.swift */; };
+		C4A774AD1FE0607D00B6DF68 /* ChatServiceAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A774AC1FE0607D00B6DF68 /* ChatServiceAppDelegate.swift */; };
 		C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA21FBCF2F8007007F5 /* CBData.swift */; };
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
 		C4CAFEA81FBD0912007007F5 /* CBDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */; };
@@ -180,6 +181,7 @@
 		C489073B1FCC8209008D9521 /* AMBTestPanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBTestPanelViewController.swift; sourceTree = "<group>"; };
 		C489073C1FCC8209008D9521 /* AMBTestPanelViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AMBTestPanelViewController.xib; sourceTree = "<group>"; };
 		C4A774A81FDF22E200B6DF68 /* ChatEventListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEventListener.swift; sourceTree = "<group>"; };
+		C4A774AC1FE0607D00B6DF68 /* ChatServiceAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceAppDelegate.swift; sourceTree = "<group>"; };
 		C4CAFEA21FBCF2F8007007F5 /* CBData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBData.swift; sourceTree = "<group>"; };
 		C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataTests.swift; sourceTree = "<group>"; };
 		C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataFactory.swift; sourceTree = "<group>"; };
@@ -378,6 +380,7 @@
 			isa = PBXGroup;
 			children = (
 				BE876FDC1FDF4F75008EEF04 /* ChatService.swift */,
+				C4A774AC1FE0607D00B6DF68 /* ChatServiceAppDelegate.swift */,
 			);
 			path = "Chat Service";
 			sourceTree = "<group>";
@@ -797,6 +800,7 @@
 				57EDCEA41FD5DA7A009A9A35 /* UIColor+Control.swift in Sources */,
 				572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */,
 				5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */,
+				C4A774AD1FE0607D00B6DF68 /* ChatServiceAppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
