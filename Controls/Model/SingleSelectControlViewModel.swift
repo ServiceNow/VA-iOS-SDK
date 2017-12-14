@@ -6,9 +6,11 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-class SingleSelectControlViewModel: PickerControlViewModel {
+class SingleSelectControlViewModel: PickerControlViewModel, Resultable {
     
-    var value: ControlValue? {
+    typealias ResultType = String
+
+    var value: String? {
         return nil
     }
     
@@ -20,13 +22,13 @@ class SingleSelectControlViewModel: PickerControlViewModel {
     
     let isMultiSelect: Bool
     
-    var items = [SelectableItemViewModel]()
+    var items = [PickerItem]()
     
-    var type: CBControlType {
+    var type: ControlType {
         return .multiSelect
     }
     
-    init(id: String, label: String, required: Bool, items: [SelectableItemViewModel]) {
+    init(id: String, label: String, required: Bool, items: [PickerItem]) {
         self.id = id
         self.label = label
         self.isRequired = required
@@ -34,15 +36,8 @@ class SingleSelectControlViewModel: PickerControlViewModel {
         self.items = items
         
         if required {
-            self.items.append(SelectableItemViewModel.skipItem())
+            self.items.append(PickerItem.skipItem())
         }
-    }
-    
-    func select(itemAt index: Int) {
-        // clear out all the items first
-        items.forEach({ $0.isSelected = false })
-        let item = items[index]
-        item.isSelected = true
     }
     
 }

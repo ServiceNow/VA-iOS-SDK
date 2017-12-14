@@ -8,25 +8,22 @@
 
 class MultiSelectControlViewModel: PickerControlViewModel {
     
-    var value: ControlValue?
-    
-    let isMultiSelect: Bool 
+    let isMultiSelect: Bool = true
     
     let isRequired: Bool
     
-    let items: [SelectableItemViewModel]
+    let items: [PickerItem]
     
     let label: String
     
     let id: String
     
-    let type: CBControlType = .multiSelect
+    let type: ControlType = .multiSelect
     
-    init(id: String, label: String, required: Bool, items: [SelectableItemViewModel]) {
+    init(id: String, label: String, required: Bool, items: [PickerItem]) {
         self.id = id
         self.label = label
         self.isRequired = required
-        self.isMultiSelect = true
         self.items = items
     }
     

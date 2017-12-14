@@ -6,60 +6,37 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-
-// base class for item model
-class SelectableItemViewModel: ControlViewModel {
-    
-    var value: ControlValue?
-    
-    let id: String
-    
-    let label: String
-    
-    let isRequired: Bool = true
-    
-    var isSelected: Bool = false
-    
-    var type: CBControlType = .unknown
-    
-    init(id: String = "selectable_item", label: String, value: ControlValue = .null) {
-        self.label = label
-        self.value = value
-        self.id = id
-    }
-    
-    static func skipItem() -> SelectableItemViewModel {
-        let item = SelectableItemViewModel(label: "Skip")
-        return item
-    }
-}
-
 protocol PickerControlViewModel: ControlViewModel {
     
     // can user select mutliple items?
     var isMultiSelect: Bool { get }
     
     // collection of item models
-    var items: [SelectableItemViewModel] { get }
+    var items: [PickerItem] { get }
     
-    var selectedItems: [SelectableItemViewModel] { get }
+    var selectedItems: [PickerItem] { get }
     
-    var selectedItem: SelectableItemViewModel? { get }
+    var selectedItem: PickerItem? { get }
     
     func select(itemAt index: Int)
-    
-//    init(id: String, title: String, required: Bool, items: [SelectableItemViewModel], multiSelect: Bool)
 }
 
 // Provides default implementation for displayValues and selectedItems
 extension PickerControlViewModel {
     
-    var selectedItems: [SelectableItemViewModel] {
+    var selectedItems: [PickerItem] {
         let values = items.filter({ $0.isSelected })
         return values
     }
     
-    var selectedItem: SelectableItemViewModel? {
+    var selectedItem: PickerItem? {
         return selectedItems.first
+    }
+    
+    func select(itemAt index: Int) {
+        // clear out all the items first
+        items.forEach({ $0.isSelected = false })
+        let item = items[index]
+        item.isSelected = true
     }
 }

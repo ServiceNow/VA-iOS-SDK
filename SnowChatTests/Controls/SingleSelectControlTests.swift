@@ -11,12 +11,12 @@ import XCTest
 
 class SingleSelectControlTests: XCTestCase {
     
-    private var singleSelectItems: [SelectableItemViewModel]?
+    private var singleSelectItems: [PickerItem]?
     
     override func setUp() {
         super.setUp()
         
-        self.singleSelectItems = [SelectableItemViewModel(label: "Item 1"), SelectableItemViewModel(label: "Item 2"), SelectableItemViewModel(label: "Item 3"), SelectableItemViewModel(label: "Item 4")]
+        self.singleSelectItems = [PickerItem(label: "Item 1"), PickerItem(label: "Item 2"), PickerItem(label: "Item 3"), PickerItem(label: "Item 4")]
     }
     
     func testSingleSelectVCDefaultPresentationStyle() {

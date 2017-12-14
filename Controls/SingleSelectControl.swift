@@ -26,7 +26,7 @@ class SingleSelectControl: PickerControlProtocol {
         self.style = .inline
     }
     
-    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: SelectableItemViewModel, forPickerModel pickerModel: PickerControlViewModel) {
+    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
         // FIXME: Something add here
     }
 }

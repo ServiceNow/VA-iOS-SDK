@@ -6,37 +6,28 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-enum ControlValue {
-    case bool(Bool)
-    case string(String)
-    case null
+enum ControlType {
     
-    func getBool() -> Bool? {
-        switch self {
-        case .bool(let value):
-            return value
-        case .null: fallthrough
-        case .string:
-            return nil
-        }
-    }
+    case multiSelect
     
-    func getString() -> String? {
-        switch self {
-        case .null: fallthrough
-        case .bool:
-            return nil
-        case .string(let value):
-            return value
-        }
-    }
+    case text
+    
+    case boolean
+    
+    case singleSelect
+    
+    case unknown
+}
+
+protocol Resultable: AnyObject {
+    
+    associatedtype ResultType
+    
+    var value: ResultType? { get }
 }
 
 // base model for all ui control models
 protocol ControlViewModel {
-    
-    // Might be String, Bool or Number depending on what Control is using it
-    var value: ControlValue? { get }
     
     // label of the control
     var label: String { get }
@@ -46,5 +37,5 @@ protocol ControlViewModel {
     
     var id: String { get }
     
-    var type: CBControlType { get }
+    var type: ControlType { get }
 }

@@ -24,7 +24,7 @@ enum PickerControlStyle: Int {
 protocol PickerViewControllerDelegate: AnyObject {
     
     // pickerTable:didSelectItemWithModel: is called when touch comes down on an item
-    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: SelectableItemViewModel, forPickerModel pickerModel: PickerControlViewModel)
+    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel)
     
     // pickerTable:didFinishWithModel: is called when touch comes down on Done button if one exists
     func pickerTable(_ pickerTable: PickerTableViewController, didFinishWithModel model: PickerControlViewModel)

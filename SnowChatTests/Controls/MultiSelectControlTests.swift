@@ -11,12 +11,12 @@ import XCTest
 
 class MultiSelectControlTests: XCTestCase {
     
-    private var multiSelectItems: [SelectableItemViewModel]?
+    private var multiSelectItems: [PickerItem]?
     
     override func setUp() {
         super.setUp()
         
-        self.multiSelectItems = [SelectableItemViewModel(label: "Item 1"), SelectableItemViewModel(label: "Item 2"), SelectableItemViewModel(label: "Item 3"), SelectableItemViewModel(label: "Item 4")]
+        self.multiSelectItems = [PickerItem(label: "Item 1"), PickerItem(label: "Item 2"), PickerItem(label: "Item 3"), PickerItem(label: "Item 4")]
     }
     
     func testMultiSelectPickerVCDefaultPresentationStyle() {

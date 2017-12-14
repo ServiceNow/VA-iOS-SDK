@@ -66,11 +66,11 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
                 uiControl = nil
             }
         case .multiSelect:
-            let items = [SelectableItemViewModel(label: "Item 1"), SelectableItemViewModel(label: "Item 2"), SelectableItemViewModel(label: "Item 3"), SelectableItemViewModel(label: "Item 4")]
+            let items = [PickerItem(label: "Item 1"), PickerItem(label: "Item 2"), PickerItem(label: "Item 3"), PickerItem(label: "Item 4")]
             let multiselectModel = MultiSelectControlViewModel(id: "multi_1234", label: "What is your issue?", required: true, items: items)
             uiControl = MultiSelectControl(model: multiselectModel)
         case .text:
-            let textModel = TextViewModel(label: "Some random text that is longer than one line........")
+            let textModel = TextViewModel(label: "Text View", value: "Some random text that is longer than one line........")
             uiControl = TextControl(model: textModel)
         default:
             fatalError("This control doesnt exist!")

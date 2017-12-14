@@ -22,13 +22,14 @@ class BooleanControl: PickerControlProtocol {
     }()
     
     required init(model: ControlViewModel) {
-        assert(model.type == .boolean, "Model must be boolean type")
         self.model = model
     }
     
     // MARK: - PickerTableDelegate
     
-    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: SelectableItemViewModel, forPickerModel pickerModel: PickerControlViewModel) {
+    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
         // FIXME: Add something in here
     }
+    
+    
 }

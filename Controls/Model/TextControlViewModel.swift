@@ -8,19 +8,19 @@
 
 class TextViewModel: ControlViewModel {
     
-    var value: ControlValue?
-    
     let label: String
     
-    let isRequired: Bool
+    let isRequired: Bool = true
     
     let id: String
     
-    let type: CBControlType = .text
+    let type: ControlType = .text
     
-    init(id: String = "text_control", label: String, required: Bool = true) {
+    let value: String
+    
+    init(id: String = "text_control", label: String, value: String) {
         self.label = label
-        self.isRequired = required
+        self.value = value
         self.id = id
     }
 }

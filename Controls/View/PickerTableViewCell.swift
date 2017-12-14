@@ -10,7 +10,7 @@ import UIKit
 
 protocol ConfigurablePickerCell: class {
     
-    func configure(withModel model: SelectableItemViewModel)
+    func configure(withModel model: PickerItem)
 }
 
 class PickerTableViewCell: UITableViewCell, ConfigurablePickerCell {
@@ -21,7 +21,7 @@ class PickerTableViewCell: UITableViewCell, ConfigurablePickerCell {
     
     // MARK: - ConfigurablePickerCell Protocol
     
-    func configure(withModel model: SelectableItemViewModel) {
+    func configure(withModel model: PickerItem) {
         titleLabel.text = model.label
         titleLabel.textColor = UIColor.controlTextColor
     }

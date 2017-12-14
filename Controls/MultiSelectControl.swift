@@ -22,14 +22,14 @@ class MultiSelectControl: PickerControlProtocol {
     weak var delegate: ControlDelegate?
     
     required init(model: ControlViewModel) {
-        assert(model.type == .multiSelect, "Model must be multiselect type")
+//        assert(model.type == .multiSelect, "Model must be multiselect type")
         self.model = model
         style = .inline
     }
     
     // MARK: - PickerTableDelegate
     
-    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: SelectableItemViewModel, forPickerModel pickerModel: PickerControlViewModel) {
+    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
         // FIXME: Add something in here
     }
 }
