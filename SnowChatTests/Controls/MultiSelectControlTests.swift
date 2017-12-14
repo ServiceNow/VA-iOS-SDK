@@ -49,14 +49,15 @@ class MultiSelectControlTests: XCTestCase {
         model.select(itemAt: 0)
         model.select(itemAt: 1)
         
-        let result = model.resultValue?.map({ $0 as? String })
-        XCTAssert(result?[0]! == "1")
-        XCTAssert(result?[1]! == "2")
+        let result = model.resultValue
+        XCTAssert(result![0] == "1")
+        XCTAssert(result![1] == "2")
     }
     
     func testMultiSelectSelectionWithRequiredFalse() {
         let model = MultiSelectControlViewModel(id: "123", label: "Choice", required: false, items: multiSelectItems!)
         model.select(itemAt: 4)
+        XCTAssert(model.selectedItem!.type == .skip)
     }
     
     func testResultWithRequiredFalse() {
@@ -64,13 +65,13 @@ class MultiSelectControlTests: XCTestCase {
         model.select(itemAt: 0)
         model.select(itemAt: 1)
         
-        var result = model.resultValue?.map({ $0 as? String })
-        XCTAssert(result?[0]! == "1")
-        XCTAssert(result?[1]! == "2")
+        var result = model.resultValue
+        XCTAssert(result![0] == "1")
+        XCTAssert(result![1] == "2")
         
         // select Skip
         model.select(itemAt: 4)
-        result = model.resultValue?.map({ $0 as? String })
-        XCTAssert(result == nil)
+        result = model.resultValue
+        XCTAssertNil(result)
     }
 }

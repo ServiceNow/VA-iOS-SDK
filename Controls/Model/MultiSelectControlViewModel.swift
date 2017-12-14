@@ -42,13 +42,15 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
         item.isSelected = !item.isSelected
     }
     
-    var resultValue: [Any]? {
+    // MARK: - ValueRepresentable
+    
+    var resultValue: [String]? {
         guard selectedItems.count != 0, selectedItems.first?.type != .skip else {
             return nil
         }
         
         // Array of selected values
-        let values = selectedItems.map({ $0.value })
+        let values = selectedItems.flatMap({ $0.value as? String })
         return values
     }
 }

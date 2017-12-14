@@ -8,12 +8,6 @@
 
 class SingleSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     
-    typealias ResultType = String
-
-    var resultValue: String? {
-        return nil
-    }
-    
     let id: String
     
     let label: String
@@ -40,4 +34,14 @@ class SingleSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
         }
     }
     
+    // MARK: - ValueRepresentable
+    
+    var resultValue: String? {
+        guard let selectedItem = selectedItem, selectedItem.type != .skip else {
+            return nil
+        }
+        
+        // is Yes selected?
+        return selectedItem.value as? String
+    }
 }
