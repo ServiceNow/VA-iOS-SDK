@@ -9,7 +9,7 @@
 import Foundation
 
 protocol ViewDataChangeListener {
-    func didChange(_ model: ControlViewModel, atIndex index: Int)
+    func chatDataController(_ dataController: ChatDataController, didChangeModel model: ControlViewModel, atIndex index: Int)
 }
 
 class ChatDataController {
@@ -39,7 +39,7 @@ class ChatDataController {
             return nil
         }
         controlData[index] = data
-        changeListener?.didChange(controlData[index], atIndex: index)
+        changeListener?.chatDataController(self, didChangeModel: controlData[index], atIndex: index)
         return data
     }
 }
@@ -75,6 +75,6 @@ extension ChatDataController: ChatDataListener {
     fileprivate func addControlData(_ data: ControlViewModel) {
         let index = controlData.count
         controlData.append(data)
-        changeListener?.didChange(data, atIndex: index)
+        changeListener?.chatDataController(self, didChangeModel: data, atIndex: index)
     }
 }

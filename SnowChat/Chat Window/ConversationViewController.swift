@@ -20,10 +20,12 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     // MARK: - Initialization
     
-    init?(chatterbox: Chatterbox) {
+    init(chatterbox: Chatterbox) {
         dataController = ChatDataController(chatterbox: chatterbox)
 
-        super.init(tableViewStyle: .plain)
+        // NOTE: this failable initializer cannot really fail, so keeping it clean and forcing
+        // swiftlint:disable:next force_unwrapping
+        super.init(tableViewStyle: .plain)!
         
         dataController.changeListener = self
     }
@@ -42,7 +44,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
     }
 
     // MARK: - View Setup
@@ -51,7 +52,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.separatorStyle = .none
     }
 
-    func didChange(_ model: ControlViewModel, atIndex index: Int) {
+    func chatDataController(_ dataController: ChatDataController, didChangeModel model: ControlViewModel, atIndex index: Int) {
         tableView.reloadData()
         
         // TODO: optimize to update changed rows if possible...

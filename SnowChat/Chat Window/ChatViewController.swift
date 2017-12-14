@@ -36,17 +36,14 @@ public class ChatViewController: UIViewController {
     // MARK: - Setup
     
     private func setupConversationViewController() {
-
-        if let controller = ConversationViewController(chatterbox: chatterbox) {
-            controller.willMove(toParentViewController: self)
-            addChildViewController(controller)
-            controller.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            controller.view.frame = view.bounds
-            view.addSubview(controller.view)
-            controller.didMove(toParentViewController: self)
-            
-            conversationViewController = controller
-        }
+        let controller = ConversationViewController(chatterbox: chatterbox)
+        controller.willMove(toParentViewController: self)
+        addChildViewController(controller)
+        controller.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        controller.view.frame = view.bounds
+        view.addSubview(controller.view)
+        controller.didMove(toParentViewController: self)
+        
+        conversationViewController = controller
     }
-
 }
