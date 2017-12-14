@@ -30,6 +30,4 @@ class BooleanControl: PickerControlProtocol {
     func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
         // FIXME: Add something in here
     }
-    
-    
 }

@@ -10,7 +10,7 @@ class SingleSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     typealias ResultType = String
 
-    var value: String? {
+    var resultValue: String? {
         return nil
     }
     

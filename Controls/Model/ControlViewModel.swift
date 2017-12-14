@@ -23,7 +23,7 @@ protocol ValueRepresentable {
     
     associatedtype ResultType
     
-    var value: ResultType? { get }
+    var resultValue: ResultType? { get }
 }
 
 // base model for all ui control models

@@ -23,7 +23,7 @@ class BooleanControlTests: XCTestCase {
         
         // Select No
         model.select(itemAt: 0)
-        let result = model.value
+        let result = model.resultValue
         XCTAssert(result! == true)
         
 //        XCTAssert(value == true)

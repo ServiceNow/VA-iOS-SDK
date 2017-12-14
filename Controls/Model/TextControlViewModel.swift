@@ -6,7 +6,7 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-class TextViewModel: ControlViewModel {
+class TextControlViewModel: ControlViewModel {
     
     let label: String
     
