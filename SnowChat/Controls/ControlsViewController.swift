@@ -59,7 +59,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         
         switch controlType {
         case .boolean:
-            let booleanMessage = BooleanControlMessage(id: "foo", controlType: .boolean, type: "Boolean", data: newControlData())
+            let booleanMessage = BooleanControlMessage(withData: newControlData())
             if let booleanModel = BooleanControlViewModel.model(withMessage: booleanMessage) {
                 uiControl = BooleanControl(model: booleanModel)
             } else {
@@ -84,15 +84,15 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     // Copy-pasted from Marc's code - needs to be removed
-    fileprivate func newControlData() -> RichControlData<ControlMessage.ControlWrapper<ControlMessage.UIMetadata>> {
-        return RichControlData<ControlMessage.ControlWrapper>(sessionId: "100",
-                                                              conversationId: nil,
-                                                              controlData: ControlMessage.ControlWrapper(model: ControlMessage.ModelType(type: "Boolean", name: "Boolean"),
-                                                                                                         uiType: "BooleanControl",
-                                                                                                         value: nil,
-                                                                                                         uiMetadata: ControlMessage.UIMetadata(label:"Test",
-                                                                                                                                               required: false,
-                                                                                                                                               error: nil)))
+    fileprivate func newControlData() -> RichControlData<ControlWrapper<Bool?, UIMetadata>> {
+        return RichControlData<ControlWrapper>(sessionId: "100",
+                                              conversationId: nil,
+                                              controlData: ControlWrapper(model: ControlModel(type: "Boolean", name: "Boolean"),
+                                                                         uiType: "BooleanControl",
+                                                                         uiMetadata: UIMetadata(label:"Test",
+                                                                                               required: false,
+                                                                                               error: nil),
+                                                                         value: nil))
     }
     
 }

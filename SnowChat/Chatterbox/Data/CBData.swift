@@ -68,7 +68,7 @@ struct CBSession: Codable {
     var vendor: CBVendor
     var sessionState: SessionState = .closed
     var welcomeMessage: String?
-    var deviceId: String { return getDeviceId() }
+    var deviceId: String { return deviceIdentifier() }
 
     var extId: String { return "\(deviceId)\(vendor.consumerAccountId)" }
 
@@ -133,11 +133,13 @@ struct CBActionMessageUnknownData: CBActionMessageData {
 enum CBActionEventType: String, Codable, CodingKey {
     // from Qlue protocol
     case channelInit = "Init"
+    
     case topicPicker = "TopicPicker"
     case startUserTopic = "StartTopic"
     case startedUserTopic = "StartedVendorTopic"
+    case finishedUserTopic = "TopicFinished"
     
-    case unknown = "unknownActionEvent"
+    case unknown = "unknownAction"
 }
 
 // MARK: - Control Data
@@ -145,15 +147,26 @@ enum CBActionEventType: String, Codable, CodingKey {
 enum CBControlType: String, Codable {
     case topicPicker = "TopicPicker"
     case startTopicMessage = "StartTopic"
+    
     case boolean = "Boolean"
     case date = "Date"
-    case input = "Input"
+    case input = "InputText"
+    case picker = "Picker"
     case multiSelect = "MultiSelect"
-    case text = "Text"
+    case text = "OutputText"
     
     case contextualActionMessage = "ContextualAction"
     
     case unknown = "unknownControl"
+}
+
+enum MessageConstants: String, Codable {
+    case directionFromClient = "inbound"
+    case directionFromServer = "outbound"
+    
+    case loginStart = "Start"
+    case loginFinish = "Finish"
+    case loginUserSession = "UserSession"
 }
 
 protocol CBControlData: CBStorable, Codable {

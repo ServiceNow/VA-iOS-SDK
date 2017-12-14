@@ -5,6 +5,24 @@
 //  Created by Marc Attinasi on 12/1/17.
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
+//  Chatterbox instance is created and retained by client that is interested in displaying a chat session
+//
+//  Client should implement the ChatDataListener protocol to get control messages and implement
+//  the ChatEventListener to get converation lifecycle events
+//
+//  1) Call initializeSession to start login and initiate the system-topic for a user. A ContextualActionMessage is
+//  provided upon success. Options for picking a topic are in the messages inputControls.uiMetadata property
+//
+//  2) After session is initialized, call startTopic, providing a topic name (obtained from the to
+//  During the chat session controls are delivered to clients via the chatDataListener, which must be set by the caller
+//  Additionally, chat lifecycle events are deliverd via the chatEventListener, which must also be set by the caller
+//   NOTE: both listeners are easily set when the Chattertbox instance is created via
+//         'init(dataListener: ChatDataListener?, eventListener: ChatEventListener?)'
+//
+//  3) As user interaction takes place, push state changes via
+//     'update(control controlId: String, ofType: CBControlType, withValue: Any)', passing the original
+//     control ID and the user-entered value
+//
 
 import Foundation
 
@@ -16,27 +34,33 @@ enum ChatterboxError: Error {
 
 class Chatterbox: AMBListener {
     let id = CBData.uuidString()
-    
-    var user: CBUser?
-    var vendor: CBVendor?
-    
+
     var chatId: String {
         return sessionAPI?.chatId ?? "0"
     }
     
-    func initializeSession(forUser: CBUser, ofVendor: CBVendor,
-                           whenSuccess: @escaping (ContextualActionMessage) -> Void,
-                           whenError: @escaping (Error?) -> Void ) {
-        user = forUser
-        vendor = ofVendor
+    var user: CBUser?
+    var vendor: CBVendor?
+    
+    // MARK: Client Callable methods
+    
+    init(dataListener: ChatDataListener?, eventListener: ChatEventListener?) {
+        chatDataListener = dataListener
+        chatEventListener = eventListener
+    }
+    
+    func initializeSession(forUser: CBUser, vendor: CBVendor,
+                           success: @escaping (ContextualActionMessage) -> Void,
+                           failure: @escaping (Error?) -> Void ) {
+        self.user = forUser
+        self.vendor = vendor
         
         initializeAMB { error in
             if error == nil {
                 self.createChatSession { error in
                     if error == nil {
-                        self.subscribeChatChannel()
                         self.performChatHandshake { actionMessage in
-                            whenSuccess(actionMessage)
+                            success(actionMessage)
                             return
                         }
                         // TODO: how do we detect an error here? timeout?
@@ -44,26 +68,77 @@ class Chatterbox: AMBListener {
                         // the handhake we will just sit here waiting...
                         
                     } else {
-                        whenError(error)
+                        failure(error)
                     }
                 }
             } else {
-                whenError(error)
+                failure(error)
             }
         }
         logger.logDebug("initializeAMB returning")
     }
     
-    func startTopic(name: String, completionHandler: @escaping (StartedUserTopicMessage?) -> Void) {
-        conversationContext.topicName = name
+    func startTopic(withName: String) throws {
+        conversationContext.topicName = withName
         
-        if let sessionId = session?.id, let convoId = conversationContext.conversationId {
-            let startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: convoId)
-            
-            startUserTopicCompletionHandler = completionHandler
+        if let sessionId = session?.id, let conversationId = conversationContext.conversationId, let amb = ambClient {
             messageHandler = startTopicHandler
-            ambClient?.publish(channel: chatChannel, message: startTopic)
+            
+            let startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
+            amb.publish(message: startTopic, toChannel: chatChannel)
+            
+            // TODO: how do we signal an error?
+        } else {
+            throw ChatterboxError.invalidParameter(details: "Session must be initialized before startTopic is called")
         }
+    }
+    
+    func update(control controlId: String, ofType type: CBControlType, withValue value: Any) {
+        guard let control = chatStore.retrieve(byId: controlId) else {
+            logger.logError("Cannot update control \(controlId) - not found in chatStore")
+            return
+        }
+        
+        // based on type, cast the value and push to the store, then send back to service via AMB
+        if type == .boolean {
+            if let value = value as? Bool, var booleanControl = control as? BooleanControlMessage {
+                booleanControl.data = updateMessage(booleanControl.data)
+                booleanControl.data.richControl?.value = value
+                
+                storeAndNotify(booleanControl, ofType: type)
+            }
+        } else if type == .input {
+            if let value = value as? String, var inputControl = control as? InputControlMessage {
+                inputControl.data = updateMessage(inputControl.data)
+                inputControl.data.richControl?.value = value
+                
+                storeAndNotify(inputControl, ofType: type)
+            }
+        } else if type == .picker {
+            if let value = value as? String, var inputControl = control as? PickerControlMessage {
+                inputControl.data = updateMessage(inputControl.data)
+                inputControl.data.richControl?.value = value
+                
+                storeAndNotify(inputControl, ofType: type)
+            }
+        } else {
+            logger.logInfo("Unrecognized control type - skipping: \(type.rawValue)")
+            return
+        }
+        
+        // FIX ME - ^^^^ too much repetition for each control type, fix that ^^^^
+    }
+    
+    func updateMessage<T>(_ inputMessage: RichControlData<T>) -> RichControlData<T> {
+        var message = inputMessage
+        message.direction = MessageConstants.directionFromClient.rawValue
+        message.sendTime = Date()
+        return message
+    }
+    
+    func storeAndNotify<T: CBControlData>(_ message: T, ofType type: CBControlType) {
+        chatStore.didReceiveControl(message, ofType: type, fromChat: self)
+        ambClient?.publish(message: message, toChannel: chatChannel)
     }
     
     // MARK: internal properties and methods
@@ -75,10 +150,10 @@ class Chatterbox: AMBListener {
     }
     private var conversationContext = ConversationContext()
 
+    private let chatStore = ChatDataStore(storeId: "ChatterboxDataStore")
     private var session: CBSession?
     private var ambClient: AMBChatClient?
     private(set) var sessionAPI: SessionAPI?
-    private let chatStore = ChatDataStore(storeId: "ChatterboxDataStore")
     
     private var chatChannel: String {
         return "/cs/messages/\(chatId)"
@@ -86,17 +161,17 @@ class Chatterbox: AMBListener {
 
     private var messageHandler: ((String) -> Void)?
     private var handshakeCompletedHandler: ((ContextualActionMessage) -> Void)?
-    private var startUserTopicCompletionHandler: ((StartedUserTopicMessage?) -> Void)?
     
-    private let logger = Logger(forCategory: "Chatterbox", atLevel: .Info)
+    private weak var chatDataListener: ChatDataListener?
+    private weak var chatEventListener: ChatEventListener?
     
-    // MARK: Handshake / initialization methods
+    private let logger = Logger(forCategory: "Chatterbox", level: .Info)
     
     private func initializeAMB(_ completion: @escaping (Error?) -> Void) {
         guard  let user = user, vendor != nil else {
-            let err = ChatterboxError.invalidParameter(details: "User and Vendor must be initialized first")
-            logger.logError(err.localizedDescription)
-            completion(err)
+            let error = ChatterboxError.invalidParameter(details: "User and Vendor must be initialized first")
+            logger.logError(error.localizedDescription)
+            completion(error)
             return
         }
         
@@ -104,7 +179,7 @@ class Chatterbox: AMBListener {
         
         // swiftlint:disable:next force_unwrapping
         ambClient = AMBChatClient(withEndpoint: URL(string: url)!)
-        ambClient?.login(userName: user.name, password: user.password ?? "", completionHandler: { (error) in
+        ambClient?.login(userName: user.name, password: user.password ?? "", completion: { (error) in
             if error == nil {
                 self.logger.logInfo("AMB Login succeeded")
             } else {
@@ -124,7 +199,7 @@ class Chatterbox: AMBListener {
 
         if let sessionService = sessionAPI {
             let session = CBSession(id: UUID().uuidString, user: user, vendor: vendor)
-            sessionService.getSession(sessionInfo: session) { session in
+            sessionService.chatSession(forSessionInfo: session) { session in
                 if session == nil {
                     self.logger.logError("getSession failed!")
                 } else {
@@ -136,16 +211,18 @@ class Chatterbox: AMBListener {
     }
     
     private func subscribeChatChannel() {
-        ambClient?.subscribe(forChannel: chatChannel, receiver: self)
+        ambClient?.subscribe(self, toChannel: chatChannel)
     }
     
     private func performChatHandshake(_ completion: @escaping (ContextualActionMessage) -> Void) {
         handshakeCompletedHandler = completion
         messageHandler = handshakeHandler
         
+        subscribeChatChannel()
+
         if let sessionId = session?.id {
-            ambClient?.publish(channel: chatChannel,
-                                message: SystemTopicPickerMessage(forSession: sessionId, withValue: "system"))
+            ambClient?.publish(message: SystemTopicPickerMessage(forSession: sessionId),
+                               toChannel: chatChannel)
         }
     }
     
@@ -153,46 +230,52 @@ class Chatterbox: AMBListener {
         let event = CBDataFactory.channelEventFromJSON(message)
         
         if event.eventType == .channelInit, let initEvent = event as? InitMessage {
-            let loginStage = initEvent.data.actionMessage.loginStage
-            if loginStage == "Start" {
-                initUserSession(withInitEvent: initEvent)
-            } else if loginStage == "Finish" {
+            if initEvent.data.actionMessage.loginStage == MessageConstants.loginStart.rawValue {
+                logger.logInfo("Handshake START message received")
+                startUserSession(withInitEvent: initEvent)
+            } else if initEvent.data.actionMessage.loginStage == MessageConstants.loginFinish.rawValue {
+                logger.logInfo("Handshake FINISH message received: conversationID=\(conversationContext.conversationId ?? "nil")")
+                
                 conversationContext.conversationId = initEvent.data.conversationId
+                
                 // handshake done, setup handler for the topic selection
                 messageHandler = self.topicSelectionHandler
             }
         }
     }
     
-    func topicSelectionHandler(_ message: String) {
+    private func topicSelectionHandler(_ message: String) {
         let choices: CBControlData = CBDataFactory.controlFromJSON(message)
         
         if choices.controlType == .contextualActionMessage {
             if let topicChoices = choices as? ContextualActionMessage, let completion = handshakeCompletedHandler {
                 completion(topicChoices)
             } else {
-                logger.logFatal("Could not call user session completion handler: invalid message or not handler provided")
+                logger.logFatal("Could not call user session completion handler: invalid message or no handler provided")
             }
         }
     }
     
-    private func initUserSession(withInitEvent initEvent: InitMessage) {
+    private func startUserSession(withInitEvent initEvent: InitMessage) {
+        let initUserEvent = createUserSessionInitMessage(fromInitEvent: initEvent)
+        ambClient?.publish(message: initUserEvent, toChannel: chatChannel)
+    }
+    
+    private func createUserSessionInitMessage(fromInitEvent initEvent: InitMessage) -> InitMessage {
         var initUserEvent = initEvent
         
-        initUserEvent.data.actionMessage.loginStage = "UserSession"
-        initUserEvent.data.direction = "inbound"
+        initUserEvent.data.direction = MessageConstants.directionFromClient.rawValue
+        initUserEvent.data.sendTime = Date()
+        initUserEvent.data.actionMessage.loginStage = MessageConstants.loginUserSession.rawValue
         initUserEvent.data.actionMessage.userId = user?.id
         initUserEvent.data.actionMessage.contextHandshake.consumerAccountId = user?.consumerAccountId
         initUserEvent.data.actionMessage.contextHandshake.vendorId = vendor?.vendorId
-        initUserEvent.data.actionMessage.contextHandshake.deviceId = getDeviceId()
-        initUserEvent.data.sendTime = Date()
+        initUserEvent.data.actionMessage.contextHandshake.deviceId = deviceIdentifier()
         
-        if let req = initUserEvent.data.actionMessage.contextHandshake.serverContextRequest {
-            initUserEvent.data.actionMessage.contextHandshake.serverContextResponse = serverContextResponse(request: req)
+        if let request = initUserEvent.data.actionMessage.contextHandshake.serverContextRequest {
+            initUserEvent.data.actionMessage.contextHandshake.serverContextResponse = serverContextResponse(fromRequest: request)
         }
-        initUserEvent.data.actionMessage.loginStage = "UserSession"
-        
-        ambClient?.publish(channel: chatChannel, message: initUserEvent)
+        return initUserEvent
     }
     
     // MARK: User Topic Methods
@@ -204,23 +287,23 @@ class Chatterbox: AMBListener {
         
         if picker.controlType == .topicPicker {
             if let topicPicker = picker as? UserTopicPickerMessage {
-                if topicPicker.data.direction == "outbound" {
+                if topicPicker.data.direction == MessageConstants.directionFromServer.rawValue {
                     conversationContext.taskId = topicPicker.data.taskId
                     
                     var outgoingMessage = topicPicker
                     outgoingMessage.type = "consumerTextMessage"
-                    outgoingMessage.data.direction = "inbound"
-                    outgoingMessage.data.richControl?.model = ControlMessage.ModelType(type:"field", name: "Topic")
+                    outgoingMessage.data.direction = MessageConstants.directionFromClient.rawValue
+                    outgoingMessage.data.richControl?.model = ControlModel(type:"field", name: "Topic")
                     outgoingMessage.data.richControl?.value = conversationContext.topicName
                     
-                    messageHandler = startUserTopicHandshake
-                    ambClient?.publish(channel: chatChannel, message: outgoingMessage)
+                    messageHandler = startUserTopicHandshakeHandler
+                    ambClient?.publish(message: outgoingMessage, toChannel: chatChannel)
                 }
             }
         }
     }
     
-    private func startUserTopicHandshake(_ message: String) {
+    private func startUserTopicHandshakeHandler(_ message: String) {
         Logger.default.logDebug("startUserTopicHandshake received: \(message)")
         
         let actionMessage = CBDataFactory.channelEventFromJSON(message)
@@ -228,15 +311,10 @@ class Chatterbox: AMBListener {
         if actionMessage.eventType == .startUserTopic {
             if let startUserTopic = actionMessage as? StartUserTopicMessage {
                 
-                // client and server messages are the same, so only look at server responses
-                if startUserTopic.data.direction == "outbound" {
-                    // just turn the 'ready' property to true (and make it incoming) then publish it
-                    var response = startUserTopic
-                    response.data.messageId = UUID().uuidString
-                    response.data.sendTime = Date()
-                    response.data.direction = "inbound"
-                    response.data.actionMessage.ready = true
-                    ambClient?.publish(channel: chatChannel, message: response)
+                // client and server messages are the same, so only look at server responses!
+                if startUserTopic.data.direction == MessageConstants.directionFromServer.rawValue {
+                    let startUserTopicReadyMessage = createStartTopicReadyMessage(startUserTopic: startUserTopic)
+                    ambClient?.publish(message: startUserTopicReadyMessage, toChannel: chatChannel)
                 }
             }
         } else if actionMessage.eventType == .startedUserTopic {
@@ -244,30 +322,23 @@ class Chatterbox: AMBListener {
                 let actionMessage = startedUserTopic.data.actionMessage
                 logger.logInfo("User Topic Started: \(actionMessage.topicName) - \(actionMessage.topicId) - \(actionMessage.ready ? "Ready" : "Not Ready")")
                 
-                startUserTopicCompletionHandler?(startedUserTopic)
+                chatEventListener?.chatterbox(self, didStartTopic: startedUserTopic, forChat: chatId)
 
                 installTopicMessageHandler()
             }
         }
     }
     
-    private func userTopicMessageHandler(_ message: String) {
-        Logger.default.logDebug("startTopicHandler received: \(message)")
-        
-        let control: CBControlData = CBDataFactory.controlFromJSON(message)
-        
-        if control.controlType == .boolean {
-            if let booleanControl = control as? BooleanControlMessage {
-                chatStore.controlEvent(didReceiveBooleanControl: booleanControl)
-            }
-        }
+    private func createStartTopicReadyMessage(startUserTopic: StartUserTopicMessage) -> StartUserTopicMessage {
+        var startUserTopicReady = startUserTopic
+        startUserTopicReady.data.messageId = CBData.uuidString()
+        startUserTopicReady.data.sendTime = Date()
+        startUserTopicReady.data.direction = MessageConstants.directionFromClient.rawValue
+        startUserTopicReady.data.actionMessage.ready = true
+        return startUserTopicReady
     }
     
-    private func clearMessageHandlers() {
-        messageHandler = nil
-        handshakeCompletedHandler = nil
-        startUserTopicCompletionHandler = nil
-    }
+    // MARK: User Topic Message Handler Methods
     
     private func installTopicMessageHandler() {
         clearMessageHandlers()
@@ -275,11 +346,96 @@ class Chatterbox: AMBListener {
         messageHandler = userTopicMessageHandler
     }
     
-    private func unsubscribe() {
-        ambClient?.unsubscribe(fromChannel: self.chatChannel, receiver: self)
+    private func userTopicMessageHandler(_ message: String) {
+        Logger.default.logDebug("userTopicMessage received: \(message)")
+        
+        if handleEventMessage(message) != true {
+            handleControlMessage(message)
+        }
     }
     
-    func onMessage(_ message: String, fromChannel: String) {
+    fileprivate func handleEventMessage(_ message: String) -> Bool {
+        let action = CBDataFactory.channelEventFromJSON(message)
+        
+        switch action.eventType {
+        case CBActionEventType.finishedUserTopic:
+            handleTopicFinishedAction(action)
+        default:
+            logger.logInfo("Unhandled event message: \(action.eventType)")
+            return false
+        }
+        return true
+    }
+    
+    fileprivate func handleControlMessage(_ message: String) {
+        let control = CBDataFactory.controlFromJSON(message)
+        
+        switch control.controlType {
+        case .boolean:
+            handleBooleanControl(control)
+        case .input:
+            handleInputControl(control)
+        case .picker:
+            handlePickerControl(control)
+        case .text:
+            handleTextControl(control)
+        default:
+            handleUnknownControl(control)
+        }
+    }
+    
+    fileprivate func handleBooleanControl(_ control: CBControlData) {
+        if let booleanControl = control as? BooleanControlMessage {
+            chatStore.didReceiveControl(booleanControl, ofType: .boolean, fromChat: self)
+            chatDataListener?.chatterbox(self, didReceiveBooleanData: booleanControl, forChat: chatId)
+        }
+    }
+    
+    fileprivate func handleInputControl(_ control: CBControlData) {
+        if let inputControl = control as? InputControlMessage {
+            chatStore.didReceiveControl(inputControl, ofType: .input, fromChat: self)
+            chatDataListener?.chatterbox(self, didReceiveInputData: inputControl, forChat: chatId)
+        }
+    }
+    
+    fileprivate func handlePickerControl(_ control: CBControlData) {
+        if let pickerControl = control as? PickerControlMessage {
+            chatStore.didReceiveControl(pickerControl, ofType: .picker, fromChat: self)
+            chatDataListener?.chatterbox(self, didReceivePickerData: pickerControl, forChat: chatId)
+        }
+    }
+    
+    fileprivate func handleTextControl(_ control: CBControlData) {
+        if let textControl = control as? OutputTextMessage {
+            chatStore.didReceiveControl(textControl, ofType: .text, fromChat: self)
+            chatDataListener?.chatterbox(self, didReceiveTextData: textControl, forChat: chatId)
+        }
+    }
+    
+    fileprivate func handleUnknownControl(_ control: CBControlData) {
+        logger.logInfo("Ignoring unrecognized control type \(control.controlType)")
+    }
+    
+    fileprivate func handleTopicFinishedAction(_ action: CBActionMessageData) {
+        if let topicFinishedMessage = action as? TopicFinishedMessage {
+            chatEventListener?.chatterbox(self, didFinishTopic: topicFinishedMessage, forChat: chatId)
+        }
+    }
+    
+    // MARK: cleanup
+    
+    private func clearMessageHandlers() {
+        messageHandler = nil
+        handshakeCompletedHandler = nil
+    }
+    
+    private func unsubscribe() {
+        ambClient?.unsubscribe(self, fromChannel: self.chatChannel)
+    }
+    
+    // MARK: AMBListener protocol methods
+    
+    func client(_ client: AMBChatClient, didReceiveMessage message: String, fromChannel channel: String) {
         logger.logDebug(message)
 
         if let messageHandler = messageHandler {
@@ -290,7 +446,7 @@ class Chatterbox: AMBListener {
     }
 }
 
-private func serverContextResponse(request: [String: ContextItem]) -> [String: Bool] {
+private func serverContextResponse(fromRequest request: [String: ContextItem]) -> [String: Bool] {
     var response: [String: Bool] = [:]
     
     request.forEach { item in

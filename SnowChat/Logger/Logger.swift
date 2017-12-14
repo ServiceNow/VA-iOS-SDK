@@ -4,8 +4,8 @@
 //
 //  Logging facility for SnowChat
 //
-//  - use `Logger.def' for basic logging, or create a new logger for specific needs using
-//    'let logger = Logger.logger(for: "AMB")` to greate a logger specific to a functional area or category od usage.
+//  - use `Logger.default' for basic logging, or create a new logger for specific needs using
+//    'let logger = Logger.logger(for: "AMB")` to greate a logger specific to a functional area or category of usage.
 //    Note that the named logger is retained, so you can access the same instance by name repeatedly and do not have
 //    to manage the logger instance yourself
 //  - loggers are configured indepently, and all use the underlying Apple Unified Logging APIs
@@ -27,14 +27,10 @@ class Logger {
     static func logger(for name: String) -> Logger {
         let logger = loggers[name]
         if logger == nil {
-            setLogger(name: name, logger: Logger(forCategory: name))
+            setLogger(withName: name, logger: Logger(forCategory: name))
         }
         // swiftlint:disable:next force_unwrapping
         return loggers[name]!
-    }
-    
-    static func setLogger(name: String, logger: Logger) {
-        loggers.updateValue(logger, forKey: name)
     }
     
     enum LogLevel {
@@ -55,54 +51,47 @@ class Logger {
         let enabled: Bool = false
     #endif
     
-    init(forCategory: String, atLevel: LogLevel = .Info) {
+    init(forCategory: String, level: LogLevel = .Info) {
         category = forCategory
-        logLevel = atLevel
+        logLevel = level
         osLogger = OSLog(subsystem: domain, category: forCategory)
     }
-    
-    func logInfo(_ msg: String) {
-        if enabled && shouldLog(level: .Info) {
-            let m: StaticString = "%@"
-            os_log(m, log: osLogger, type: .info, msg)
+
+    func log(_ message: String, level: LogLevel) {
+        if enabled && shouldLog(level: level) {
+            let type: OSLogType
+            switch level {
+            case .Debug:
+                type = .debug
+            case .Info:
+                type = .info
+            case .Error:
+                type = .error
+            case .Fatal:
+                type = .fault
+            }
+            let formatString: StaticString = "%@"
+            os_log(formatString, log: osLogger, type: type, message)
         }
     }
-    
-    func logDebug(_ msg: String) {
-        if enabled && shouldLog(level: .Debug) {
-            let m: StaticString = "%@"
-            os_log(m, log: osLogger, type: .debug, msg)
-        }
+
+    func logInfo(_ message: String) {
+        log(message, level: .Info)
     }
     
-    func logError(_ msg: String) {
-        if enabled && shouldLog(level: .Error) {
-            let m: StaticString = "%@"
-            os_log(m, log: osLogger, type: .error, msg)
-        }
+    func logDebug(_ message: String) {
+        log(message, level: .Debug)
     }
     
-    func logFatal(_ msg: String) {
-        if enabled && shouldLog(level: .Fatal) {
-            let m: StaticString = "%@"
-            os_log(m, log: osLogger, type: .fault, msg)
-        }
+    func logError(_ message: String) {
+        log(message, level: .Error)
     }
     
-    func log(_ msg: String, level: LogLevel) {
-        switch level {
-        case .Info:
-            logInfo(msg)
-        case .Debug:
-            logDebug(msg)
-        case .Error:
-            logError(msg)
-        case .Fatal:
-            logFatal(msg)
-        }
+    func logFatal(_ message: String) {
+        log(message, level: .Fatal)
     }
     
-    fileprivate func shouldLog(level: LogLevel) -> Bool {
+    private func shouldLog(level: LogLevel) -> Bool {
         switch level {
         case .Fatal:
             return true
@@ -113,5 +102,9 @@ class Logger {
         case .Info:
             return logLevel == .Info
         }
+    }
+    
+    private static func setLogger(withName name: String, logger: Logger) {
+        loggers.updateValue(logger, forKey: name)
     }
 }

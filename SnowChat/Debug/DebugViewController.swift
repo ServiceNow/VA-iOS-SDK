@@ -12,6 +12,7 @@ public class DebugViewController: UITableViewController {
     
     @IBOutlet private weak var ambTestCell: UITableViewCell!
     @IBOutlet private weak var uiControlsCell: UITableViewCell!
+    @IBOutlet private weak var chatWindowCell: UITableViewCell!
     
     // MARK: - Initialization
     
@@ -39,12 +40,19 @@ public class DebugViewController: UITableViewController {
             pushAMBViewController()
         case uiControlsCell:
             pushControlsViewController()
+        case chatWindowCell:
+            pushChatController()
         default:
             break // noop
         }
     }
     
     // MARK: - Navigation
+    
+    private func pushChatController() {
+        let controller = ChatService().chatViewController(modal: false)
+        navigationController?.pushViewController(controller, animated: true)
+    }
     
     private func pushAMBViewController() {
         let controller = AMBTestPanelViewController(nibName: "AMBTestPanelViewController", bundle: Bundle(for: type(of: self)))
