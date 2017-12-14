@@ -16,7 +16,7 @@ class MultiSelectControlTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        self.multiSelectItems = [PickerItem(label: "Item 1"), PickerItem(label: "Item 2"), PickerItem(label: "Item 3"), PickerItem(label: "Item 4")]
+        self.multiSelectItems = [PickerItem(label: "Item 1", value: "1"), PickerItem(label: "Item 2", value: "2"), PickerItem(label: "Item 3", value: "3"), PickerItem(label: "Item 4", value: "4")]
     }
     
     func testMultiSelectPickerVCDefaultPresentationStyle() {
@@ -26,7 +26,7 @@ class MultiSelectControlTests: XCTestCase {
         XCTAssert(multiSelectPicker.style == .inline)
     }
 
-    func testMultiSelectSelection() {
+    func testMultiSelectSelectionWithRequiredTrue() {
         let model = MultiSelectControlViewModel(id: "123", label: "Choice", required: true, items: multiSelectItems!)
         
         XCTAssert(model.selectedItems.count == 0)
@@ -42,5 +42,35 @@ class MultiSelectControlTests: XCTestCase {
         // deselect item
         model.select(itemAt: 2)
         XCTAssert(model.selectedItems.count == 2)
+    }
+    
+    func testResultWithRequiredTrue() {
+        let model = MultiSelectControlViewModel(id: "123", label: "Choice", required: true, items: multiSelectItems!)
+        model.select(itemAt: 0)
+        model.select(itemAt: 1)
+        
+        let result = model.resultValue?.map({ $0 as? String })
+        XCTAssert(result?[0]! == "1")
+        XCTAssert(result?[1]! == "2")
+    }
+    
+    func testMultiSelectSelectionWithRequiredFalse() {
+        let model = MultiSelectControlViewModel(id: "123", label: "Choice", required: false, items: multiSelectItems!)
+        model.select(itemAt: 4)
+    }
+    
+    func testResultWithRequiredFalse() {
+        let model = MultiSelectControlViewModel(id: "123", label: "Choice", required: false, items: multiSelectItems!)
+        model.select(itemAt: 0)
+        model.select(itemAt: 1)
+        
+        var result = model.resultValue?.map({ $0 as? String })
+        XCTAssert(result?[0]! == "1")
+        XCTAssert(result?[1]! == "2")
+        
+        // select Skip
+        model.select(itemAt: 4)
+        result = model.resultValue?.map({ $0 as? String })
+        XCTAssert(result == nil)
     }
 }

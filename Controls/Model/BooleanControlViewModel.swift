@@ -30,7 +30,7 @@ class BooleanControlViewModel: PickerControlViewModel, ValueRepresentable {
         self.isMultiSelect = false
         self.items = items
         
-        if required {
+        if !required {
             self.items.append(PickerItem.skipItem())
         }
     }

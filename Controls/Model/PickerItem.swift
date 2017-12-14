@@ -18,33 +18,35 @@ class PickerItem {
     
     let label: String
     
-    var value: AnyObject?
+    var value: Any
     
     var isSelected: Bool = false
     
     let type: ItemType
     
-    init(type: ItemType = .custom, label: String, value: AnyObject? = nil) {
+    init(type: ItemType = .custom, label: String, value: Any) {
         self.label = label
         self.value = value
         self.type = type
     }
 }
 
-// MARK: - Utils
+// MARK: - PickerItem Utils
+
 extension PickerItem {
+    
     static func skipItem() -> PickerItem {
-        let item = PickerItem(type: .skip, label: "Skip")
+        let item = PickerItem(type: .skip, label: "Skip", value: "Skip")
         return item
     }
     
     static func yesItem() -> PickerItem {
-        let item = PickerItem(type: .yes, label: "Yes")
+        let item = PickerItem(type: .yes, label: "Yes", value: "Yes")
         return item
     }
     
     static func noItem() -> PickerItem {
-        let item = PickerItem(type: .no, label: "No")
+        let item = PickerItem(type: .no, label: "No", value: "No")
         return item
     }
 }

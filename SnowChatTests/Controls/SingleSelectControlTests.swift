@@ -16,7 +16,7 @@ class SingleSelectControlTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        self.singleSelectItems = [PickerItem(label: "Item 1"), PickerItem(label: "Item 2"), PickerItem(label: "Item 3"), PickerItem(label: "Item 4")]
+        self.singleSelectItems = [PickerItem(label: "Item 1", value: "1"), PickerItem(label: "Item 2", value: "2"), PickerItem(label: "Item 3", value: "3"), PickerItem(label: "Item 4", value: "4")]
     }
     
     func testSingleSelectVCDefaultPresentationStyle() {

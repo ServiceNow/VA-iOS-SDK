@@ -17,9 +17,8 @@ class BooleanControlTests: XCTestCase {
         XCTAssert(booleanControl.style == .inline)
     }
     
-    func testBooleanPickerValueItems() {
+    func testRequiredBooleanControlValueWithRequiredTrue() {
         let model = BooleanControlViewModel(id: "123", label: "?", required: true)
-//        XCTAssert(model.value == nil)
         
         // Select No
         model.select(itemAt: 0)
@@ -38,6 +37,16 @@ class BooleanControlTests: XCTestCase {
         XCTAssert(model.selectedItems.count != 0)
         selectedItems = model.selectedItems
         XCTAssert(selectedItems.count == 1)
+    }
+    
+    // Required = false will introduce a "Skip" button to the picker
+    func testRequiredBooleanControlValueWithRequiredFalse() {
+        let model = BooleanControlViewModel(id: "123", label: "?", required: false)
+        
+        // Select Skip!
+        model.select(itemAt: 2)
+        let result = model.resultValue
+        XCTAssert(result == nil)
     }
     
     func testBooleanMultiSelectVar() {

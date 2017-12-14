@@ -6,13 +6,13 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-class MultiSelectControlViewModel: PickerControlViewModel {
+class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     let isMultiSelect: Bool = true
     
     let isRequired: Bool
     
-    let items: [PickerItem]
+    var items = [PickerItem]()
     
     let label: String
     
@@ -25,10 +25,30 @@ class MultiSelectControlViewModel: PickerControlViewModel {
         self.label = label
         self.isRequired = required
         self.items = items
+        
+        if !required {
+            self.items.append(PickerItem.skipItem())
+        }
     }
     
     func select(itemAt index: Int) {
         let item = items[index]
+        
+        // if .skip item is selected - unselect all other items
+        if item.type == .skip {
+            items.forEach({ $0.isSelected = false })
+        }
+        
         item.isSelected = !item.isSelected
+    }
+    
+    var resultValue: [Any]? {
+        guard selectedItems.count != 0, selectedItems.first?.type != .skip else {
+            return nil
+        }
+        
+        // Array of selected values
+        let values = selectedItems.map({ $0.value })
+        return values
     }
 }
