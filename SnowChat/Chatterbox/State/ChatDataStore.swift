@@ -14,71 +14,130 @@ class ChatDataStore {
         id = storeId
     }
     
-    func didReceiveControl(_ data: CBControlData, ofType controlType: CBControlType, fromChat source: Chatterbox) {
-        addOrUpdate(data)
-        publishControlNotification(data, ofType: controlType, fromSource: source)
-    }
-
-    func retrieve(byId id: String) -> CBStorable? {
-        var result: CBStorable?
+    // didReceiveControl: find or create a conversation and add a new MessageExchange with the new control data
+    //
+    func didReceiveControl(_ data: CBControlData, expectResponse: Bool, forConversation conversationId: String, fromChat source: Chatterbox) {
+        let messageExchange = MessageExchange(withMessage: data, isComplete: !expectResponse)
         
-        dataSink.forEach { item in
-            if item.uniqueId() == id {
-                result = item
+        var index = conversations.index { (conversation) -> Bool in
+            return conversation.uniqueId() == conversationId
+        }
+
+        if index == nil {
+            index = conversations.count
+            conversations.append(Conversation(withConversationId: conversationId))
+        }
+        
+        if let index = index {
+            conversations[index].add(messageExchange)
+        }
+    }
+    
+    // didReceiveResponse: find the conversation and add the response to it's pending MessageExchange, completing it
+    //
+    func didReceiveResponse(_ data: CBControlData, forConversation conversationId: String) {
+        let index = conversations.index { (conversation) -> Bool in
+            return conversation.uniqueId() == conversationId
+        }
+        
+        if let index = index {
+            conversations[index].didReceiveResponse(data)
+        }
+    }
+    
+    // pendingMessage: get the lat pendng message for a conversation, if any
+    //
+    func lastPendingMessage(forConversation conversationId: String) -> CBStorable? {
+        let index = conversations.index { conversation in
+                return conversation.uniqueId() == conversationId
+            }
+        
+        if let index = index {
+            return conversations[index].lastPendingMessage()
+        }
+        
+        return nil
+    }
+    
+    func conversationIds() -> [String] {
+        return conversations.map({ conversation in
+            return conversation.uniqueId()
+        })
+    }
+    
+    func conversation(forId id: String) -> Conversation? {
+        var result: Conversation?
+        
+        conversations.forEach { (conversation) in
+            if conversation.uniqueId() == id {
+                result = conversation
             }
         }
         return result
     }
     
-    // MARK: Notifications
-    
-    enum ChatNotificationType: String {
-        case booleanControl = "com.servicenow.SnowChat.BooleanControl"
-        case dateControl = "com.servicenow.SnowChat.DateControl"
-        case inputControl = "com.servicenow.SnowChat.InputControl"
-        
-        case none = "com.servicenow.SnowChat.none"
-    }
-    
-    private static func notificationNameFor(controlType: CBControlType) -> Notification.Name {
-        var notificationName: String
-        
-        switch controlType {
-        case .boolean:
-            notificationName = ChatNotificationType.booleanControl.rawValue
-        case .input:
-            notificationName = ChatNotificationType.inputControl.rawValue
-        default:
-            notificationName = ChatNotificationType.none.rawValue
-        }
-        return Notification.Name(notificationName)
-    }
-    
-    static func addObserver(forControl: CBControlType, source: Chatterbox?, block: @escaping (Notification) -> Swift.Void) -> NSObjectProtocol {
-        let notificationName = notificationNameFor(controlType: forControl)
-        return NotificationCenter.default.addObserver(forName: notificationName,
-                                                      object: source,
-                                                      queue: nil,
-                                                      using: block)
-    }
-    
-    fileprivate func publishControlNotification(_ data: CBControlData, ofType: CBControlType, fromSource source: Chatterbox) {
-        let notificationName = ChatDataStore.notificationNameFor(controlType: ofType)
+    private let id: String
+    private var conversations = [Conversation]()
+}
 
-        let info: [String: Any] = ["state": data]
-        NotificationCenter.default.post(name: notificationName,
-                                        object: source,
-                                        userInfo: info)
+struct Conversation: CBStorable {
+    func uniqueId() -> String {
+        return id
     }
     
-    internal let id: String
-    internal var dataSink: [CBStorable] = []
+    private let id: String
+    private let state: ConversationState
+    private var exchanges = [MessageExchange]()
     
-    fileprivate func addOrUpdate(_ chatItem: CBStorable) {
-        if let index = dataSink.index(where: { $0.uniqueId() == chatItem.uniqueId() }) {
-            dataSink[index] = chatItem
+    init(withConversationId conversationId: String) {
+        id = conversationId
+        state = .pending
+    }
+    
+    mutating func add(_ item: MessageExchange) {
+        exchanges.append(item)
+    }
+    
+    mutating func didReceiveResponse(_ data: CBControlData) {
+        if let last = exchanges.last, last.complete != true {
+            let index = exchanges.count - 1
+            exchanges[index].response = data
+            exchanges[index].complete = true
         } else {
-            dataSink.append(chatItem)
+            Logger.default.logError("Response received for conversationID \(id) with no pending message exchange!")
         }
+    }
+    
+    func lastPendingMessage() -> CBStorable? {
+        if let last = exchanges.last {
+            if !last.complete {
+                return last.message
+            }
+        }
+        return nil
+    }
+    
+    func messageExchanges() -> [MessageExchange] {
+        return exchanges.map({ exchange in
+            return exchange
+        })
+    }
+    
+    enum ConversationState {
+        case pending
+        case completed
+        case unknown
+    }
+}
+
+struct MessageExchange {
+    var complete: Bool
+    
+    var message: CBStorable
+    var response: CBStorable?
+    
+    init(withMessage message: CBStorable, isComplete: Bool = false) {
+        self.message = message
+        complete = isComplete
     }
 }

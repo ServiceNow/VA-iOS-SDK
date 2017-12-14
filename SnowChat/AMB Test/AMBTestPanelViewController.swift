@@ -11,19 +11,19 @@ import UIKit
 let consumerAccountId = UUID().uuidString
 let consumerId = "marc.attinasi"
 
+func booleanControlFromBooleanViewModel(viewModel: BooleanControlViewModel) -> BooleanControlMessage {
+    let controlData = ControlWrapper<Bool?, UIMetadata>(model: nil, uiType: "Boolean", uiMetadata: UIMetadata(), value: viewModel.value)
+    let boolData = RichControlData<ControlWrapper<Bool?, UIMetadata>>(sessionId: "", conversationId: "", controlData: controlData)
+    return BooleanControlMessage(withData: boolData)
+}
+
 class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventListener, ControlDelegate {
+    
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
-        switch model.type {
-        case .boolean:
-            if let boolModel = model as? BooleanControlViewModel {
-                self.chatterbox?.update(control:  boolModel.id, ofType: .boolean, withValue: boolModel.value)
-                bubbleViewController?.removeCurrentUIControl()
-                bubbleViewController?.view.isHidden = true
-            }
-        default:
-            Logger.default.logInfo("unhandled control type \(model.type)")
-        }
+        didRespondToControlMessage(model)
         
+        bubbleViewController?.removeCurrentUIControl()
+        bubbleViewController?.view.isHidden = true
     }
     
     func chatterbox(_: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
@@ -37,7 +37,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     func chatterbox(_: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String) {
         if message.data.direction == MessageConstants.directionFromServer.rawValue {
             let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
-            appendContent(message: "\nooleanControl received: \(label)")
+            appendContent(message: "\nBooleanControl received: \(label)")
 
             presentBooleanAlert(message)
         }
@@ -68,6 +68,27 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
         }
     }
 
+    private func didRespondToControlMessage(_ model: ControlViewModel) {
+        guard let lastControl = lastPresentedControl else {
+            Logger.default.logError("Response received with no pending message!")
+            return
+        }
+        
+        guard lastControl.type == model.type else {
+            Logger.default.logError("Response to control is not of the same type: message-type=\(lastControl.type) response-type=\(model.type)")
+            return
+        }
+        
+        switch model.type {
+        case .boolean:
+            if let boolViewModel = model as? BooleanControlViewModel, let requestMessage = lastControl.control as? BooleanControlMessage {
+                self.chatterbox?.update(control: BooleanControlMessage(withValue: boolViewModel.value, fromMessage: requestMessage), ofType: .boolean)
+            }
+        default:
+            Logger.default.logInfo("unhandled control type \(model.type)")
+        }
+    }
+    
     private func addBubbleViewController() {
         let bubbleViewController = BubbleViewController()
         bubbleViewController.willMove(toParentViewController: self)
@@ -89,8 +110,12 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     func presentBooleanAlert(_ message: BooleanControlMessage) {
         var uiControl: ControlProtocol
         if let booleanModel = BooleanControlViewModel.model(withMessage: message) {
+            
+            lastPresentedControl = (type: .boolean, control: message)
+            
             uiControl = BooleanPickerControl(model: booleanModel)
             uiControl.delegate = self
+            
             bubbleViewController?.addUIControl(uiControl)
             bubbleViewController?.view.isHidden = false
         } else {
@@ -99,6 +124,8 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     }
     
     func presentTextInput(_ message: InputControlMessage) {
+        lastPresentedControl = (type: .input, control: message)
+
         let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
         let alert = UIAlertController(title: "SnowChat", message: label, preferredStyle: .alert)
         
@@ -110,7 +137,11 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
             if let fields = alert.textFields {
                 let textField = fields[0]
                 print("User entered: \(textField.text ?? "")")
-                self.chatterbox?.update(control: message.id, ofType: .input, withValue: textField.text ?? "")
+                
+                if let requestMessage = self.lastPresentedControl?.control as? InputControlMessage {
+                    self.chatterbox?.update(control: InputControlMessage(withValue: textField.text ?? "", fromMessage: requestMessage), ofType: .input)
+                }
+
             }
         }))
 
@@ -118,14 +149,22 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     }
 
     func presentPickerAlert(_ message: PickerControlMessage) {
+        lastPresentedControl = (type: .picker, control: message)
+
         let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
         let alertController = UIAlertController(title: "SnowChat", message: label, preferredStyle: .alert)
-        
+
         // actions
         if let options = message.data.richControl?.uiMetadata?.options {
             for option in options {
                 let action = UIAlertAction(title: option.label, style: .default) { (action:UIAlertAction!) in
-                    self.chatterbox?.update(control: message.id, ofType: .picker, withValue: option.value)
+                    print("User Selected: \(option.value)")
+                    
+                    if let requestMessage = self.lastPresentedControl?.control as? PickerControlMessage {
+                        self.chatterbox?.update(control: PickerControlMessage(withValue: option.value, fromMessage: requestMessage), ofType: .picker)
+                    }
+
+                    //self.chatterbox?.update(control: message.id, ofType: .picker, withValue: option.value)
                 }
                 alertController.addAction(action)
             }
@@ -140,6 +179,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     var chatterbox: Chatterbox?
     private var notificationObserver: NSObjectProtocol?
     var bubbleViewController: BubbleViewController?
+    var lastPresentedControl: (type: CBControlType, control: CBControlData)?
     
     @IBOutlet weak var chatContent: UITextView!
     @IBOutlet weak var startTopicBtn: UIButton!

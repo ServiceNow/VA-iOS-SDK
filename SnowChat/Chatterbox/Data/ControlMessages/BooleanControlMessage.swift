@@ -29,4 +29,10 @@ struct BooleanControlMessage: Codable, CBControlData {
     init(withData: RichControlData<ControlWrapper<Bool?, UIMetadata>>) {
         data = withData
     }
+    
+    init(withValue value: Bool, fromMessage: BooleanControlMessage) {
+        data = fromMessage.data
+        data.sendTime = Date()
+        data.richControl?.value = value
+    }
 }

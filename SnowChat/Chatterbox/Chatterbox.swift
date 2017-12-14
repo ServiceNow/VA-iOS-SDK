@@ -93,33 +93,27 @@ class Chatterbox: AMBListener {
         }
     }
     
-    func update(control controlId: String, ofType type: CBControlType, withValue value: Any) {
-        guard let control = chatStore.retrieve(byId: controlId) else {
-            logger.logError("Cannot update control \(controlId) - not found in chatStore")
-            return
-        }
+    func lastPendingControlMessage(forConversation conversationId: String) -> CBControlData? {
+        return chatStore.lastPendingMessage(forConversation: conversationId) as? CBControlData
+    }
+    
+    func update(control: CBControlData, ofType type: CBControlType) {
         
         // based on type, cast the value and push to the store, then send back to service via AMB
         if type == .boolean {
-            if let value = value as? Bool, var booleanControl = control as? BooleanControlMessage {
+            if var booleanControl = control as? BooleanControlMessage, let conversationId = booleanControl.data.conversationId {
                 booleanControl.data = updateMessage(booleanControl.data)
-                booleanControl.data.richControl?.value = value
-                
-                storeAndNotify(booleanControl, ofType: type)
+                storeAndPublish(booleanControl, forConversation: conversationId, ofType: type)
             }
         } else if type == .input {
-            if let value = value as? String, var inputControl = control as? InputControlMessage {
+            if var inputControl = control as? InputControlMessage, let conversationId = inputControl.data.conversationId {
                 inputControl.data = updateMessage(inputControl.data)
-                inputControl.data.richControl?.value = value
-                
-                storeAndNotify(inputControl, ofType: type)
+                storeAndPublish(inputControl, forConversation: conversationId, ofType: type)
             }
         } else if type == .picker {
-            if let value = value as? String, var inputControl = control as? PickerControlMessage {
+            if var inputControl = control as? PickerControlMessage, let conversationId = inputControl.data.conversationId {
                 inputControl.data = updateMessage(inputControl.data)
-                inputControl.data.richControl?.value = value
-                
-                storeAndNotify(inputControl, ofType: type)
+                storeAndPublish(inputControl, forConversation: conversationId, ofType: type)
             }
         } else {
             logger.logInfo("Unrecognized control type - skipping: \(type.rawValue)")
@@ -136,8 +130,8 @@ class Chatterbox: AMBListener {
         return message
     }
     
-    func storeAndNotify<T: CBControlData>(_ message: T, ofType type: CBControlType) {
-        chatStore.didReceiveControl(message, ofType: type, fromChat: self)
+    func storeAndPublish<T: CBControlData>(_ message: T, forConversation conversationId: String, ofType type: CBControlType) {
+        chatStore.didReceiveResponse(message, forConversation: conversationId)
         ambClient?.publish(message: message, toChannel: chatChannel)
     }
     
@@ -385,29 +379,32 @@ class Chatterbox: AMBListener {
     }
     
     fileprivate func handleBooleanControl(_ control: CBControlData) {
-        if let booleanControl = control as? BooleanControlMessage {
-            chatStore.didReceiveControl(booleanControl, ofType: .boolean, fromChat: self)
+        if let booleanControl = control as? BooleanControlMessage, let conversationId = booleanControl.data.conversationId {
+            var messageExchange = MessageExchange(withMessage: booleanControl)
+            messageExchange.complete = false
+            
+            chatStore.didReceiveControl(booleanControl, expectResponse: true, forConversation: conversationId, fromChat: self)
             chatDataListener?.chatterbox(self, didReceiveBooleanData: booleanControl, forChat: chatId)
         }
     }
     
     fileprivate func handleInputControl(_ control: CBControlData) {
-        if let inputControl = control as? InputControlMessage {
-            chatStore.didReceiveControl(inputControl, ofType: .input, fromChat: self)
+        if let inputControl = control as? InputControlMessage, let conversationId = inputControl.data.conversationId {
+            chatStore.didReceiveControl(inputControl, expectResponse: true, forConversation: conversationId, fromChat: self)
             chatDataListener?.chatterbox(self, didReceiveInputData: inputControl, forChat: chatId)
         }
     }
     
     fileprivate func handlePickerControl(_ control: CBControlData) {
-        if let pickerControl = control as? PickerControlMessage {
-            chatStore.didReceiveControl(pickerControl, ofType: .picker, fromChat: self)
+        if let pickerControl = control as? PickerControlMessage, let conversationId = pickerControl.data.conversationId {
+            chatStore.didReceiveControl(pickerControl, expectResponse: true, forConversation: conversationId, fromChat: self)
             chatDataListener?.chatterbox(self, didReceivePickerData: pickerControl, forChat: chatId)
         }
     }
     
     fileprivate func handleTextControl(_ control: CBControlData) {
-        if let textControl = control as? OutputTextMessage {
-            chatStore.didReceiveControl(textControl, ofType: .text, fromChat: self)
+        if let textControl = control as? OutputTextMessage, let conversationId = textControl.data.conversationId {
+            chatStore.didReceiveControl(textControl, expectResponse: false, forConversation: conversationId, fromChat: self)
             chatDataListener?.chatterbox(self, didReceiveTextData: textControl, forChat: chatId)
         }
     }
