@@ -6,7 +6,7 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-class SingleSelectControlViewModel: PickerControlViewModel, Resultable {
+class SingleSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     typealias ResultType = String
 

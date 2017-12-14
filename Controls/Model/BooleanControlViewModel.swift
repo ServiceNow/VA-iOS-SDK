@@ -6,7 +6,7 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-class BooleanControlViewModel: PickerControlViewModel, Resultable {
+class BooleanControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     let id: String
     
@@ -23,7 +23,7 @@ class BooleanControlViewModel: PickerControlViewModel, Resultable {
     }
     
     init(id: String, label: String, required: Bool) {
-        let items = [PickerItem(label: "Yes"), PickerItem(label: "No")]
+        let items = [PickerItem.yesItem(), PickerItem.noItem()]
         self.id = id
         self.label = label
         self.isRequired = required
@@ -36,12 +36,11 @@ class BooleanControlViewModel: PickerControlViewModel, Resultable {
     }
     
     var value: Bool? {
-        guard let selectedItem = selectedItem else {
+        guard let selectedItem = selectedItem, selectedItem.type == .skip else {
             return nil
         }
 
         // is Yes selected?
-        let isSelected = selectedItem === items[0]
-        return isSelected
+        return selectedItem.type == .yes
     }
 }
