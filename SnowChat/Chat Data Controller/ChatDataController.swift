@@ -33,7 +33,7 @@ class ChatDataController {
         return controlData[index]
     }
     
-    public func update(controlData data: ControlViewModel, atIndex index: Int) -> ControlViewModel? {
+    public func updateControlData(_ data: ControlViewModel, atIndex index: Int) -> ControlViewModel? {
         guard index >= 0 && index < controlData.count else {
             Logger.default.logError("Index \(index) out of range")
             return nil
@@ -50,7 +50,7 @@ extension ChatDataController: ChatDataListener {
         Logger.default.logDebug("BooleanControl: \(message)")
         
         if let booleanViewModel = BooleanControlViewModel.model(withMessage: message) {
-            new(controlData: booleanViewModel)
+            addControlData(booleanViewModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
         }
@@ -72,7 +72,7 @@ extension ChatDataController: ChatDataListener {
         Logger.default.logError("Data Conversion Error: \(controlId) : \(controlType)")
     }
     
-    fileprivate func new(controlData data: ControlViewModel) {
+    fileprivate func addControlData(_ data: ControlViewModel) {
         let index = controlData.count
         controlData.append(data)
         changeListener?.didChange(data, atIndex: index)
