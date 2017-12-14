@@ -21,7 +21,7 @@ protocol PickerControlViewModel: ControlViewModel {
     func select(itemAt index: Int)
 }
 
-// Provides default implementation for displayValues and selectedItems
+// MARK: - Items selection: provides default implementation for selecting items
 extension PickerControlViewModel {
     
     var selectedItems: [PickerItem] {

@@ -23,24 +23,21 @@ class BooleanControlTests: XCTestCase {
         
         // Select No
         model.select(itemAt: 0)
-        let result = model.resultValue
+        var result = model.resultValue
         XCTAssert(result! == true)
-        
-//        XCTAssert(value == true)
-//
-//        
-//        XCTAssert(model.selectedItems.count != 0)
-//        var selectedItems = model.selectedItems
-//        XCTAssert(selectedItems.count == 1)
-//
-//        // Select Yes
-//        model.select(itemAt: 1)
-//        value = (model.value?.getValue())!
-//        XCTAssert(value == false)
-//
-//        XCTAssert(model.selectedItems.count != 0)
-//        selectedItems = model.selectedItems
-//        XCTAssert(selectedItems.count == 1)
+
+        XCTAssert(model.selectedItems.count != 0)
+        var selectedItems = model.selectedItems
+        XCTAssert(selectedItems.count == 1)
+
+        // Select Yes
+        model.select(itemAt: 1)
+        result = (model.resultValue)!
+        XCTAssert(result == false)
+
+        XCTAssert(model.selectedItems.count != 0)
+        selectedItems = model.selectedItems
+        XCTAssert(selectedItems.count == 1)
     }
     
     func testBooleanMultiSelectVar() {

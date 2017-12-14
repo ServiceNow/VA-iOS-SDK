@@ -36,7 +36,7 @@ class BooleanControlViewModel: PickerControlViewModel, ValueRepresentable {
     }
     
     var resultValue: Bool? {
-        guard let selectedItem = selectedItem, selectedItem.type == .skip else {
+        guard let selectedItem = selectedItem, selectedItem.type != .skip else {
             return nil
         }
 
