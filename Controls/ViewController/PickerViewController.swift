@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PickerViewController: UIViewController, ControlStateAdaptable {
+class PickerViewController: UIViewController {
     
     weak var delegate: PickerViewControllerDelegate?
     
@@ -17,8 +17,6 @@ class PickerViewController: UIViewController, ControlStateAdaptable {
     var fullSizeContainer: FullSizeScrollViewContainerView?
     
     var tableView: UITableView?
-    
-    var responseView: UIView?
     
     var model: PickerControlViewModel {
         didSet {
@@ -47,59 +45,7 @@ class PickerViewController: UIViewController, ControlStateAdaptable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupViews(forState: .submitted)
-    }
-    
-    func updateControlState(_ state: ControlState) {
-        
-        // we can only transition to submitted state
-        guard state == .submitted else {
-            return
-        }
-        
-        setupMessageAndResponseView()
-    }
-    
-    private func setupViews(forState state: ControlState) {
-        switch state {
-        case .regular:
-            setupPickerView()
-        case .submitted:
-            setupMessageAndResponseView()
-        }
-    }
-    
-    private func setupMessageAndResponseView() {
-        guard let fullSizeContainer = fullSizeContainer else {
-            return
-        }
-        
-        // HA! first time using nested functions in Swift..pretty nice!
-        func setupTextView(_ textView: UITextView) {
-            textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-            textView.isScrollEnabled = false
-            textView.font = UIFont.preferredFont(forTextStyle: .body)
-        }
-        
-        // main message view (question for the user)
-        let messageView = UITextView()
-        setupTextView(messageView)
-        messageView.text = model.label
-        
-        messageView.translatesAutoresizingMaskIntoConstraints = false
-        fullSizeContainer.addSubview(messageView)
-        NSLayoutConstraint.activate([messageView.leadingAnchor.constraint(equalTo: fullSizeContainer.leadingAnchor),
-                                     messageView.trailingAnchor.constraint(equalTo: fullSizeContainer.trailingAnchor),
-                                     messageView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
-                                     messageView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor)])
-        fullSizeContainer.scrollView = messageView
-        fullSizeContainer.maxHeight = 200
-        
-        // response view
-        let responseView = UITextView()
-        setupTextView(responseView)
-        responseView.text = "Yes"
-        self.responseView = responseView
+        setupPickerView()
     }
     
     private func setupPickerView() {

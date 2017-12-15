@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		5706C5791FE43FB3008D70D1 /* SnowControlUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706C5781FE43FB3008D70D1 /* SnowControlUtils.swift */; };
 		572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572A4E3B1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift */; };
 		572A4E401FCF06320081318D /* PickerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 572A4E3F1FCF06320081318D /* PickerTableViewCell.xib */; };
 		572A4E421FCF07150081318D /* PickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572A4E411FCF07150081318D /* PickerTableViewCell.swift */; };
@@ -119,6 +120,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5706C5781FE43FB3008D70D1 /* SnowControlUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowControlUtils.swift; sourceTree = "<group>"; };
 		572A4E3B1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullSizeScrollViewContainerView.swift; sourceTree = "<group>"; };
 		572A4E3F1FCF06320081318D /* PickerTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PickerTableViewCell.xib; sourceTree = "<group>"; };
 		572A4E411FCF07150081318D /* PickerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerTableViewCell.swift; sourceTree = "<group>"; };
@@ -231,6 +233,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5706C5771FE43F8A008D70D1 /* SnowControls */ = {
+			isa = PBXGroup;
+			children = (
+				5706C5781FE43FB3008D70D1 /* SnowControlUtils.swift */,
+			);
+			path = SnowControls;
+			sourceTree = "<group>";
+		};
 		57532BB01FD8561E001D674C /* Chatterbox Adapters */ = {
 			isa = PBXGroup;
 			children = (
@@ -262,6 +272,7 @@
 		57B7E2B91FBA24A600196BA9 /* Controls */ = {
 			isa = PBXGroup;
 			children = (
+				5706C5771FE43F8A008D70D1 /* SnowControls */,
 				57532BB01FD8561E001D674C /* Chatterbox Adapters */,
 				578632151FBB9E0300FA0282 /* ControlProtocol.swift */,
 				57532BAC1FD777FA001D674C /* TextControl.swift */,
@@ -794,6 +805,7 @@
 				C41EF5DC1FDB4CA400707F45 /* OutputTextMessage.swift in Sources */,
 				C4F3AF381FD6293F00B27B0D /* UserTopicPickerMessage.swift in Sources */,
 				C4F3AF321FD601FE00B27B0D /* Util.swift in Sources */,
+				5706C5791FE43FB3008D70D1 /* SnowControlUtils.swift in Sources */,
 				C40565F21FC49CD8004BD28C /* InitMessage.swift in Sources */,
 				57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */,
 				C41EF5DA1FDB490F00707F45 /* TopicFinishedMessage.swift in Sources */,

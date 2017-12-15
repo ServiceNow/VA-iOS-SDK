@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ControlsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ControlsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ControlDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     
@@ -19,13 +19,14 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     private var bubbleViewController: BubbleViewController?
     
     override func viewDidLoad() {
-        addBubbleViewController()
         super.viewDidLoad()
+        
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         tableView.tableFooterView = UIView()
+        setupBubbleViewController()
     }
     
-    private func addBubbleViewController() {
+    private func setupBubbleViewController() {
         let bubbleViewController = BubbleViewController()
         bubbleViewController.willMove(toParentViewController: self)
         addChildViewController(bubbleViewController)
@@ -55,16 +56,12 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controlType = controls[indexPath.row]
-        let uiControl: ControlProtocol?
+        let uiControl: ControlProtocol
         
         switch controlType {
         case .boolean:
             let booleanMessage = BooleanControlMessage(withData: newControlData())
-            if let booleanModel = BooleanControlViewModel.model(withMessage: booleanMessage) {
-                uiControl = BooleanControl(model: booleanModel)
-            } else {
-                uiControl = nil
-            }
+            uiControl = SnowControlUtils.booleanControl(forBooleanMessage: booleanMessage)
         case .multiSelect:
             let items = [PickerItem(label: "Item 1", value: "1"), PickerItem(label: "Item 2", value: "2"), PickerItem(label: "Item 3", value: "3"), PickerItem(label: "Item 4", value: "4")]
             let multiselectModel = MultiSelectControlViewModel(id: "multi_1234", label: "What is your issue?", required: true, items: items)
@@ -76,14 +73,18 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             fatalError("This control doesnt exist!")
         }
         
-        guard let selectedControl = uiControl else {
-            return
-        }
+        uiControl.delegate = self
+        bubbleViewController?.addUIControl(uiControl)
+    }
+    
+    // MARK: - ControlDelegate
+    
+    func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
         
-        bubbleViewController?.addUIControl(selectedControl)
     }
     
     // Copy-pasted from Marc's code - needs to be removed
+    
     fileprivate func newControlData() -> RichControlData<ControlWrapper<Bool?, UIMetadata>> {
         return RichControlData<ControlWrapper>(sessionId: "100",
                                               conversationId: nil,

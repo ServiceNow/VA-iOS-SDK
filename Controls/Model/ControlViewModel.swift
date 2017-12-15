@@ -6,19 +6,6 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-enum ControlType {
-    
-    case multiSelect
-    
-    case text
-    
-    case boolean
-    
-    case singleSelect
-    
-    case unknown
-}
-
 protocol ValueRepresentable {
     
     associatedtype ResultType

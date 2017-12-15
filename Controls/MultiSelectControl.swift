@@ -10,8 +10,6 @@ import UIKit
 
 class MultiSelectControl: PickerControlProtocol {
     
-    var state: ControlState = .regular
-    
     var model: ControlViewModel
     
     var style: PickerControlStyle

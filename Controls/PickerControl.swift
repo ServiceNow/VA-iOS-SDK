@@ -61,8 +61,5 @@ extension PickerControlProtocol {
     
     func pickerViewController(_ viewController: PickerViewController, didFinishWithModel model: PickerControlViewModel) {
         delegate?.control(self, didFinishWithModel: model)
-        
-        state = .submitted
-        viewController.updateControlState(state)
     }
 }

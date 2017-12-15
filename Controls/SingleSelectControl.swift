@@ -10,8 +10,6 @@ import UIKit
 
 class SingleSelectControl: PickerControlProtocol {
     
-    var state: ControlState = .regular
-    
     public lazy var viewController: UIViewController = {
         let vc = self.viewController(forStyle: style, model: model)
         return vc

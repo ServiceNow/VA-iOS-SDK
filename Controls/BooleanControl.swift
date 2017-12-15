@@ -12,8 +12,6 @@ class BooleanControl: PickerControlProtocol {
     
     var style: PickerControlStyle = .inline
     
-    var state: ControlState = .regular
-    
     var model: ControlViewModel
     
     weak var delegate: ControlDelegate?

@@ -28,8 +28,6 @@ class TextControl: ControlProtocol {
         }
     }
     
-    var state: ControlState = .regular
-    
     var model: ControlViewModel
     
     let viewController: UIViewController
