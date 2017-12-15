@@ -45,7 +45,7 @@ class PickerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupTableView()
+        setupViews(forState: .regular)
     }
     
     private func setupViews(forState state: ControlState) {
