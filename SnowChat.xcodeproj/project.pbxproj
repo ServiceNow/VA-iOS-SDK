@@ -31,7 +31,7 @@
 		57532BAD1FD777FA001D674C /* TextControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57532BAC1FD777FA001D674C /* TextControl.swift */; };
 		57532BAF1FD79F4D001D674C /* ChatterboxMessageAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57532BAE1FD79F4D001D674C /* ChatterboxMessageAdapter.swift */; };
 		5760B91F1FD5C8C100591C06 /* UIImageUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760B91E1FD5C8C100591C06 /* UIImageUtils.swift */; };
-		5760C8CE1FBF4C920055B73D /* PickerTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760C8CD1FBF4C920055B73D /* PickerTableViewController.swift */; };
+		5760C8CE1FBF4C920055B73D /* PickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760C8CD1FBF4C920055B73D /* PickerViewController.swift */; };
 		5763F3C81FE20FF90035764A /* PickerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5763F3C71FE20FF90035764A /* PickerItem.swift */; };
 		5778CF981FDEE767004F77D8 /* BooleanControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5778CF971FDEE767004F77D8 /* BooleanControlTests.swift */; };
 		5778CF9A1FE05A3F004F77D8 /* MultiSelectControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5778CF991FE05A3F004F77D8 /* MultiSelectControlTests.swift */; };
@@ -129,7 +129,7 @@
 		57532BAC1FD777FA001D674C /* TextControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControl.swift; sourceTree = "<group>"; };
 		57532BAE1FD79F4D001D674C /* ChatterboxMessageAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatterboxMessageAdapter.swift; sourceTree = "<group>"; };
 		5760B91E1FD5C8C100591C06 /* UIImageUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageUtils.swift; sourceTree = "<group>"; };
-		5760C8CD1FBF4C920055B73D /* PickerTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerTableViewController.swift; sourceTree = "<group>"; };
+		5760C8CD1FBF4C920055B73D /* PickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerViewController.swift; sourceTree = "<group>"; };
 		5763F3C71FE20FF90035764A /* PickerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerItem.swift; sourceTree = "<group>"; };
 		5778CF971FDEE767004F77D8 /* BooleanControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooleanControlTests.swift; sourceTree = "<group>"; };
 		5778CF991FE05A3F004F77D8 /* MultiSelectControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectControlTests.swift; sourceTree = "<group>"; };
@@ -279,7 +279,7 @@
 		57B7E2BA1FBA25A200196BA9 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				5760C8CD1FBF4C920055B73D /* PickerTableViewController.swift */,
+				5760C8CD1FBF4C920055B73D /* PickerViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -819,7 +819,7 @@
 				57B7E2C81FBA25A200196BA9 /* SelectableView.swift in Sources */,
 				57B7E2C31FBA25A200196BA9 /* BooleanControl.swift in Sources */,
 				BE876FDD1FDF4F75008EEF04 /* ChatService.swift in Sources */,
-				5760C8CE1FBF4C920055B73D /* PickerTableViewController.swift in Sources */,
+				5760C8CE1FBF4C920055B73D /* PickerViewController.swift in Sources */,
 				57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */,
 				572A4E441FCF70070081318D /* BubbleView.swift in Sources */,
 				57B7E2C61FBA25A200196BA9 /* SelectableViewCell.swift in Sources */,

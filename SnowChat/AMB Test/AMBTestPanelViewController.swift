@@ -16,7 +16,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
         switch model.type {
         case .boolean:
             if let boolModel = model as? BooleanControlViewModel {
-                self.chatterbox?.update(control:  boolModel.id, ofType: .boolean, withValue: boolModel.value)
+                self.chatterbox?.update(control:  boolModel.id, ofType: .boolean, withValue: boolModel.resultValue!)
                 bubbleViewController?.removeCurrentUIControl()
                 bubbleViewController?.view.isHidden = true
             }
@@ -89,7 +89,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     func presentBooleanAlert(_ message: BooleanControlMessage) {
         var uiControl: ControlProtocol
         if let booleanModel = BooleanControlViewModel.model(withMessage: message) {
-            uiControl = BooleanPickerControl(model: booleanModel)
+            uiControl = BooleanControl(model: booleanModel)
             uiControl.delegate = self
             bubbleViewController?.addUIControl(uiControl)
             bubbleViewController?.view.isHidden = false

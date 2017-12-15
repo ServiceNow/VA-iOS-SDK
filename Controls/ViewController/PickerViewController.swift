@@ -1,5 +1,5 @@
 //
-//  PickerTableViewController.swift
+//  PickerViewController.swift
 //  SnowChat
 //
 //  Created by Michael Borowiec on 11/17/17.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PickerTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class PickerViewController: UIViewController {
     
     weak var delegate: PickerViewControllerDelegate?
     
@@ -48,7 +48,25 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
         setupTableView()
     }
     
-    private func setupTableView() {
+    private func setupViews(forState state: ControlState) {
+        switch state {
+        case .regular:
+            setupPickerView()
+        case .submitted:
+            setupMessageAndResponseView()
+        }
+    }
+    
+    private func setupMessageAndResponseView() {
+        guard let fullSizeContainer = fullSizeContainer else {
+            return
+        }
+        
+        let messageView = UITextView()
+        let responseView = UITextView()
+    }
+    
+    private func setupPickerView() {
         guard let fullSizeContainer = fullSizeContainer else {
             return
         }
@@ -56,7 +74,7 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
         let tableView = UITableView()
         tableView.estimatedSectionFooterHeight = model.isMultiSelect ? 30 : 0
         
-        let bundle = Bundle(for: PickerTableViewController.self)
+        let bundle = Bundle(for: PickerViewController.self)
         if model.isMultiSelect {
             tableView.register(SelectableViewCell.self, forCellReuseIdentifier: SelectableViewCell.cellIdentifier)
         } else {
@@ -90,6 +108,24 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
         
         tableView.reloadData()
     }
+}
+
+// MARK: - ControlStateAdaptable
+
+extension PickerViewController: ControlStateAdaptable {
+    
+    func updateControlState(_ state: ControlState) {
+        
+        // we can only transition to submitted state
+        guard state == .submitted else {
+            return
+        }
+    }
+}
+
+// MARK: - PickerViewController + UITableView
+
+extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return model.items.count

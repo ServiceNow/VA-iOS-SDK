@@ -12,6 +12,8 @@ class BooleanControl: PickerControlProtocol {
     
     var style: PickerControlStyle = .inline
     
+    var state: ControlState = .regular
+    
     var model: ControlViewModel
     
     weak var delegate: ControlDelegate?
@@ -27,7 +29,8 @@ class BooleanControl: PickerControlProtocol {
     
     // MARK: - PickerTableDelegate
     
-    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
-        // FIXME: Add something in here
+    func pickerTable(_ pickerTable: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
+        state = .submitted
+        (viewController as? ControlStateAdaptable)?.updateControlState(state)
     }
 }

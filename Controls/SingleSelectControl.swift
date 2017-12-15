@@ -10,6 +10,8 @@ import UIKit
 
 class SingleSelectControl: PickerControlProtocol {
     
+    var state: ControlState = .regular
+    
     public lazy var viewController: UIViewController = {
         let vc = self.viewController(forStyle: style, model: model)
         return vc
@@ -26,7 +28,7 @@ class SingleSelectControl: PickerControlProtocol {
         self.style = .inline
     }
     
-    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
+    func pickerTable(_ pickerTable: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
         // FIXME: Something add here
     }
 }
