@@ -35,7 +35,7 @@ class BubbleView: UIView {
     }
     
     override var intrinsicContentSize: CGSize {
-        // if bubble view has some control - calculate its intrinsicContentSize and size Bubble accordingly
+        // if bubble view has some view - calculate its intrinsicContentSize and size Bubble accordingly
         var contentSize = super.intrinsicContentSize
         guard let subview = contentView.subviews.first else {
             return contentSize
@@ -57,6 +57,11 @@ class BubbleView: UIView {
         layer.addSublayer(borderLayer)
         return borderLayer
     }()
+
+    convenience init(arrowDirection: ArrowDirection = .left) {
+        self.init(frame: CGRect.zero)
+        self.arrowDirection = arrowDirection
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -78,7 +83,7 @@ class BubbleView: UIView {
         NSLayoutConstraint.deactivate(insetConstraints)
         insetConstraints.removeAll()
         
-        insetConstraints.append(contentView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10 + contentViewInsets.left))
+        insetConstraints.append(contentView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: contentViewInsets.left))
         insetConstraints.append(contentView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -contentViewInsets.right))
         insetConstraints.append(contentView.topAnchor.constraint(equalTo: topAnchor, constant: contentViewInsets.top))
         insetConstraints.append(contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -contentViewInsets.bottom))
@@ -96,7 +101,7 @@ class BubbleView: UIView {
             return
         }
         
-        let bubblePath = chatBubblePath(forBounds: bounds)
+        let bubblePath = chatBubblePath(forBounds: bounds, leftSide: (arrowDirection == .left))
         (layer.mask as? CAShapeLayer)?.path = bubblePath
         layer.mask?.frame = bounds
         borderLayer.frame = bounds

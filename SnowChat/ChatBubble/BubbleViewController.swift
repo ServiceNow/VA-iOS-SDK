@@ -10,18 +10,16 @@ import UIKit
 
 public class BubbleViewController: UIViewController {
     
-    let bubbleView = BubbleView()
+    let bubbleView = BubbleView(arrowDirection: .right)
     
     lazy var responseBubbleView: BubbleView = {
         let bubble = BubbleView()
-        bubble.backgroundColor = UIColor(red: 190 / 255, green: 221 / 255, blue: 239 / 255, alpha: 1)
-        bubble.borderColor = UIColor.red
+        bubble.backgroundColor = UIColor.userBubbleBackgroundColor
         
         bubble.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(bubble)
         NSLayoutConstraint.activate([bubble.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                     bubble.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     bubble.centerYAnchor.constraint(equalTo: view.centerYAnchor)])
+                                     bubble.topAnchor.constraint(equalTo: bubbleView.bottomAnchor)])
         
         return bubble
     }()
@@ -33,12 +31,9 @@ public class BubbleViewController: UIViewController {
 
         bubbleView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(bubbleView)
-        NSLayoutConstraint.activate([bubbleView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                     bubbleView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        NSLayoutConstraint.activate([bubbleView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                                      bubbleView.centerYAnchor.constraint(equalTo: view.centerYAnchor)])
-        
-        bubbleView.backgroundColor = UIColor.white //UIColor(red: 190 / 255, green: 221 / 255, blue: 239 / 255, alpha: 1)
-        bubbleView.borderColor = UIColor(red: 220 / 255, green: 225 / 255, blue: 231 / 255, alpha: 1)
+        bubbleView.backgroundColor = UIColor.agentBubbleBackgroundColor
     }
     
     func removeCurrentUIControl() {
@@ -75,6 +70,8 @@ public class BubbleViewController: UIViewController {
     }
     
     private func addMessageViewToBubble(_ messageView: UIView) {
+        bubbleView.contentViewInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 10)
+        messageView.backgroundColor = UIColor.agentBubbleBackgroundColor
         messageView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(messageView)
         
@@ -88,9 +85,10 @@ public class BubbleViewController: UIViewController {
     }
     
     private func addBubble(forResponseView responseView: UIView) {
+        responseBubbleView.contentViewInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 0)
+        responseView.backgroundColor = UIColor.userBubbleBackgroundColor
         responseView.translatesAutoresizingMaskIntoConstraints = false
         responseBubbleView.contentView.addSubview(responseView)
-        
         NSLayoutConstraint.activate([responseView.leadingAnchor.constraint(equalTo: responseBubbleView.contentView.leadingAnchor),
                                      responseView.trailingAnchor.constraint(equalTo: responseBubbleView.contentView.trailingAnchor),
                                      responseView.centerYAnchor.constraint(equalTo: responseBubbleView.contentView.centerYAnchor)])

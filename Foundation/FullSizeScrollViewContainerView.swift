@@ -10,6 +10,12 @@ import UIKit
 
 class FullSizeScrollViewContainerView: UIView {
     
+    override var backgroundColor: UIColor? {
+        didSet {
+            scrollView?.backgroundColor = backgroundColor
+        }
+    }
+    
     var scrollView: UIScrollView? {
         didSet {
             invalidateIntrinsicContentSize()
