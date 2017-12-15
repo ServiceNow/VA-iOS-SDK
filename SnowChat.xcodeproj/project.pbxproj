@@ -284,7 +284,8 @@
 				57B7E2BA1FBA25A200196BA9 /* ViewController */,
 				57B7E2BF1FBA25A200196BA9 /* View */,
 			);
-			path = Controls;
+			name = Controls;
+			path = ../Controls;
 			sourceTree = "<group>";
 		};
 		57B7E2BA1FBA25A200196BA9 /* ViewController */ = {
@@ -436,8 +437,6 @@
 			children = (
 				BE50E2221FB9305300948FBC /* Deployment */,
 				BEB6C8581FB92CD700B1D497 /* Products */,
-				57B7E2D31FBA7FB300196BA9 /* Foundation */,
-				57B7E2B91FBA24A600196BA9 /* Controls */,
 				BEB6C8591FB92CD700B1D497 /* SnowChat */,
 				BEB6C8641FB92CD700B1D497 /* SnowChatTests */,
 				BE50E2251FB9337D00948FBC /* Frameworks */,
@@ -456,6 +455,8 @@
 		BEB6C8591FB92CD700B1D497 /* SnowChat */ = {
 			isa = PBXGroup;
 			children = (
+				57B7E2D31FBA7FB300196BA9 /* Foundation */,
+				57B7E2B91FBA24A600196BA9 /* Controls */,
 				57860EA51FD1C51800612E34 /* ChatBubble */,
 				BE876FDB1FDF4F64008EEF04 /* Chat Service */,
 				BE29E0CD1FDF06990029D1F0 /* Chat Data Controller */,
