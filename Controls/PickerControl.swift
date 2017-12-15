@@ -39,6 +39,8 @@ protocol PickerControlProtocol: ControlProtocol, PickerViewControllerDelegate {
     func viewController(forStyle style: PickerControlStyle, model: ControlViewModel) -> UIViewController
 }
 
+// MARK: - Default PickerControl implementation
+
 extension PickerControlProtocol {
     
     // default implementation of protocol method. returns viewController based on provided style of the picker

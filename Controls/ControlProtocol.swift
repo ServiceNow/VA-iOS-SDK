@@ -45,7 +45,7 @@ protocol ControlProtocol: AnyObject {
 }
 
 // adds adaptivity to a different control' state
-protocol ControlStateAdaptable where Self: UIViewController {
+protocol ControlStateAdaptable: AnyObject {
     
     // depending on the state, UIControl might provide additional view that represents response that user provided.
     var responseView: UIView? { get }

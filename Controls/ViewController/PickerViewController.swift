@@ -47,7 +47,7 @@ class PickerViewController: UIViewController, ControlStateAdaptable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupViews(forState: .regular)
+        setupViews(forState: .submitted)
     }
     
     func updateControlState(_ state: ControlState) {
@@ -81,11 +81,11 @@ class PickerViewController: UIViewController, ControlStateAdaptable {
             textView.font = UIFont.preferredFont(forTextStyle: .body)
         }
         
-        let messageView = UITextView()
-        let responseView = UITextView()
-        
         // main message view (question for the user)
+        let messageView = UITextView()
         setupTextView(messageView)
+        messageView.text = model.label
+        
         messageView.translatesAutoresizingMaskIntoConstraints = false
         fullSizeContainer.addSubview(messageView)
         NSLayoutConstraint.activate([messageView.leadingAnchor.constraint(equalTo: fullSizeContainer.leadingAnchor),
@@ -96,7 +96,9 @@ class PickerViewController: UIViewController, ControlStateAdaptable {
         fullSizeContainer.maxHeight = 200
         
         // response view
+        let responseView = UITextView()
         setupTextView(responseView)
+        responseView.text = "Yes"
         self.responseView = responseView
     }
     
