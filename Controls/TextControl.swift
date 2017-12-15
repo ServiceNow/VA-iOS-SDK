@@ -23,7 +23,7 @@ class TextControl: ControlProtocol {
             super.viewDidLoad()
             
             textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-            textView.isScrollEnabled = false
+            textView.isScrollEnabled = false // to turn on autoresizing
             textView.font = UIFont.preferredFont(forTextStyle: .body)
         }
     }

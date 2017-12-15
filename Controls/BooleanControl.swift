@@ -29,8 +29,7 @@ class BooleanControl: PickerControlProtocol {
     
     // MARK: - PickerTableDelegate
     
-    func pickerTable(_ pickerTable: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
-        state = .submitted
-        (viewController as? ControlStateAdaptable)?.updateControlState(state)
+    func pickerViewController(_ viewController: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
+
     }
 }

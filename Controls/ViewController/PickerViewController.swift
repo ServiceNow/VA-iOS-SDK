@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PickerViewController: UIViewController {
+class PickerViewController: UIViewController, ControlStateAdaptable {
     
     weak var delegate: PickerViewControllerDelegate?
     
@@ -17,6 +17,8 @@ class PickerViewController: UIViewController {
     var fullSizeContainer: FullSizeScrollViewContainerView?
     
     var tableView: UITableView?
+    
+    var responseView: UIView?
     
     var model: PickerControlViewModel {
         didSet {
@@ -48,6 +50,16 @@ class PickerViewController: UIViewController {
         setupViews(forState: .regular)
     }
     
+    func updateControlState(_ state: ControlState) {
+        
+        // we can only transition to submitted state
+        guard state == .submitted else {
+            return
+        }
+        
+        setupMessageAndResponseView()
+    }
+    
     private func setupViews(forState state: ControlState) {
         switch state {
         case .regular:
@@ -62,8 +74,30 @@ class PickerViewController: UIViewController {
             return
         }
         
+        // HA! first time using nested functions in Swift..pretty nice!
+        func setupTextView(_ textView: UITextView) {
+            textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+            textView.isScrollEnabled = false
+            textView.font = UIFont.preferredFont(forTextStyle: .body)
+        }
+        
         let messageView = UITextView()
         let responseView = UITextView()
+        
+        // main message view (question for the user)
+        setupTextView(messageView)
+        messageView.translatesAutoresizingMaskIntoConstraints = false
+        fullSizeContainer.addSubview(messageView)
+        NSLayoutConstraint.activate([messageView.leadingAnchor.constraint(equalTo: fullSizeContainer.leadingAnchor),
+                                     messageView.trailingAnchor.constraint(equalTo: fullSizeContainer.trailingAnchor),
+                                     messageView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
+                                     messageView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor)])
+        fullSizeContainer.scrollView = messageView
+        fullSizeContainer.maxHeight = 200
+        
+        // response view
+        setupTextView(responseView)
+        self.responseView = responseView
     }
     
     private func setupPickerView() {
@@ -104,22 +138,8 @@ class PickerViewController: UIViewController {
         
         fullSizeContainer.scrollView = tableView
         fullSizeContainer.maxHeight = 200
-        self.fullSizeContainer = fullSizeContainer
         
         tableView.reloadData()
-    }
-}
-
-// MARK: - ControlStateAdaptable
-
-extension PickerViewController: ControlStateAdaptable {
-    
-    func updateControlState(_ state: ControlState) {
-        
-        // we can only transition to submitted state
-        guard state == .submitted else {
-            return
-        }
     }
 }
 
@@ -153,9 +173,9 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         
         // for non-multiselect control we are just done here. Otherwise we just send didSelectItem: callback
         if !model.isMultiSelect {
-            delegate?.pickerTable(self, didFinishWithModel: model)
+            delegate?.pickerViewController(self, didFinishWithModel: model)
         } else {
-            delegate?.pickerTable(self, didSelectItem: selectedItemModel, forPickerModel: model)
+            delegate?.pickerViewController(self, didSelectItem: selectedItemModel, forPickerModel: model)
         }
     }
     
@@ -204,6 +224,6 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
             return
         }
         
-        delegate?.pickerTable(self, didFinishWithModel: model)
+        delegate?.pickerViewController(self, didFinishWithModel: model)
     }
 }

@@ -29,9 +29,9 @@ class MultiSelectControl: PickerControlProtocol {
         style = .inline
     }
     
-    // MARK: - PickerTableDelegate
+    // MARK: - PickerViewControllerDelegate
     
-    func pickerTable(_ pickerTable: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
+    func pickerViewController(_ viewController: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
         // FIXME: Add something in here
     }
 }

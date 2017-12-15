@@ -48,7 +48,7 @@ protocol ControlProtocol: AnyObject {
 protocol ControlStateAdaptable where Self: UIViewController {
     
     // depending on the state, UIControl might provide additional view that represents response that user provided.
-//    var responseView: UIView? { get }
+    var responseView: UIView? { get }
     
     func updateControlState(_ state: ControlState)
 }

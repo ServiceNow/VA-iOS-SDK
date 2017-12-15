@@ -24,10 +24,10 @@ enum PickerControlStyle: Int {
 protocol PickerViewControllerDelegate: AnyObject {
     
     // pickerTable:didSelectItemWithModel: is called when touch comes down on an item
-    func pickerTable(_ pickerTable: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel)
+    func pickerViewController(_ viewController: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel)
     
     // pickerTable:didFinishWithModel: is called when touch comes down on Done button if one exists
-    func pickerTable(_ pickerTable: PickerViewController, didFinishWithModel model: PickerControlViewModel)
+    func pickerViewController(_ viewController: PickerViewController, didFinishWithModel model: PickerControlViewModel)
 }
 
 // MARK: - PickerControlProtocol
@@ -57,7 +57,10 @@ extension PickerControlProtocol {
     
     // MARK: - PickerTableDelegate
     
-    func pickerTable(_ pickerTable: PickerViewController, didFinishWithModel model: PickerControlViewModel) {
+    func pickerViewController(_ viewController: PickerViewController, didFinishWithModel model: PickerControlViewModel) {
         delegate?.control(self, didFinishWithModel: model)
+        
+        state = .submitted
+        viewController.updateControlState(state)
     }
 }
