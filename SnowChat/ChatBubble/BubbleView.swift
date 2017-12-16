@@ -10,12 +10,20 @@ import UIKit
 
 class BubbleView: UIView {
     
-    enum ArrowDirection : Int {
+    enum ArrowDirection {
         case left
         case right
     }
     
-    var arrowDirection: ArrowDirection = .left
+    var arrowDirection: ArrowDirection = .left {
+        didSet {
+            if arrowDirection == .left {
+                contentViewInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 0)
+            } else {
+                contentViewInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 10)
+            }
+        }
+    }
     
     var insetConstraints = [NSLayoutConstraint]()
     
@@ -70,7 +78,11 @@ class BubbleView: UIView {
     }
     
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
+        arrowDirection = .left
+        contentViewInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 0)
+        setupContentView()
+        setupShapeLayer()
     }
     
     private func setupContentView() {

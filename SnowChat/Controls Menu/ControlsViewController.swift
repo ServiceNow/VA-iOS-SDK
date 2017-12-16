@@ -16,32 +16,31 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     
     private var controls = [CBControlType.boolean, CBControlType.multiSelect, CBControlType.text]
     
-    private var bubbleViewController: BubbleViewController?
+    private var fakeChatViewController: FakeChatViewController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         tableView.tableFooterView = UIView()
-        setupBubbleViewController()
+        setupFakeChatViewController()
     }
     
-    private func setupBubbleViewController() {
-        let bubbleViewController = BubbleViewController()
-        bubbleViewController.willMove(toParentViewController: self)
-        addChildViewController(bubbleViewController)
-        bubbleViewController.didMove(toParentViewController: self)
+    private func setupFakeChatViewController() {
+        let fakeChatViewController = FakeChatViewController()
+        fakeChatViewController.willMove(toParentViewController: self)
+        addChildViewController(fakeChatViewController)
         
-        guard let bubbleView = bubbleViewController.view else {
-            fatalError("ooops, where's the Bubble view?!")
-        }
+        let fakeView: UIView = fakeChatViewController.view
+        fakeView.translatesAutoresizingMaskIntoConstraints = false
+        controlContainerView.addSubview(fakeView)
+        NSLayoutConstraint.activate([fakeView.centerXAnchor.constraint(equalTo: controlContainerView.centerXAnchor),
+                                     fakeView.centerYAnchor.constraint(equalTo: controlContainerView.centerYAnchor),
+                                     fakeView.widthAnchor.constraint(equalTo: controlContainerView.widthAnchor),
+                                     fakeView.heightAnchor.constraint(equalTo: controlContainerView.heightAnchor)])
         
-        bubbleView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(bubbleView)
-        NSLayoutConstraint.activate([bubbleView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                                     bubbleView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-                                     bubbleView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7)])
-        self.bubbleViewController = bubbleViewController
+        fakeChatViewController.didMove(toParentViewController: self)
+        self.fakeChatViewController = fakeChatViewController
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -74,13 +73,21 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         }
         
         uiControl.delegate = self
-        bubbleViewController?.addUIControl(uiControl)
+        
+        // set the controls
+        fakeChatViewController?.controls = [uiControl]
     }
     
     // MARK: - ControlDelegate
     
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
         
+        // update boolean control to 2 text controls when selected
+        if model.type == .boolean {
+            let booleanMessage = BooleanControlMessage(withData: newControlData())
+            let textControls = SnowControlUtils.textControls(forBooleanMessage: booleanMessage)
+            fakeChatViewController?.controls = textControls
+        }
     }
     
     // Copy-pasted from Marc's code - needs to be removed
