@@ -24,6 +24,7 @@ class TextControl: ControlProtocol {
             
             textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
             textView.isScrollEnabled = false // to turn on autoresizing
+            textView.isEditable = false
             textView.font = UIFont.preferredFont(forTextStyle: .body)
         }
     }
