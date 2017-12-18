@@ -43,14 +43,12 @@ class BubbleView: UIView {
     }
     
     override var intrinsicContentSize: CGSize {
-        // if bubble view has some view - calculate its intrinsicContentSize and size Bubble accordingly
-        var contentSize = super.intrinsicContentSize
+        // if bubble view has some subview - calculate its intrinsicContentSize and size Bubble accordingly
         guard let subview = contentView.subviews.first else {
-            return contentSize
+            return super.intrinsicContentSize
         }
         
-        subview.invalidateIntrinsicContentSize()
-        contentSize.height = subview.intrinsicContentSize.height
+        let contentSize = subview.intrinsicContentSize
         return contentSize
     }
     

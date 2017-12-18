@@ -54,12 +54,16 @@ class PickerViewController: UIViewController {
         }
         
         let tableView = UITableView()
-        tableView.estimatedSectionFooterHeight = model.isMultiSelect ? 30 : 0
+//        tableView.sectionHeaderHeight = UITableViewAutomaticDimension
+//        tableView.sectionFooterHeight = UITableViewAutomaticDimension
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 50
+        tableView.tableFooterView = model.isMultiSelect ? nil : UIView()
         
-        let bundle = Bundle(for: PickerViewController.self)
         if model.isMultiSelect {
             tableView.register(SelectableViewCell.self, forCellReuseIdentifier: SelectableViewCell.cellIdentifier)
         } else {
+            let bundle = Bundle(for: PickerViewController.self)
             tableView.register(UINib(nibName: "PickerTableViewCell", bundle: bundle), forCellReuseIdentifier: PickerTableViewCell.cellIdentifier)
         }
         
@@ -76,16 +80,10 @@ class PickerViewController: UIViewController {
         tableView.showsVerticalScrollIndicator = false
         tableView.showsHorizontalScrollIndicator = false
         
-        tableView.sectionHeaderHeight = 30
-        tableView.estimatedRowHeight = 30
-        tableView.rowHeight = UITableViewAutomaticDimension
-        
         // TODO: need to adjust based on the number of items, display style etc
         tableView.isScrollEnabled = false
         self.tableView = tableView
-        
         fullSizeContainer.scrollView = tableView
-        fullSizeContainer.maxHeight = 200
         
         tableView.reloadData()
     }
@@ -158,11 +156,10 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         doneButton.backgroundColor = UIColor.controlHeaderBackgroundColor
         doneButton.translatesAutoresizingMaskIntoConstraints = false
         footerView.addSubview(doneButton)
-        
         NSLayoutConstraint.activate([doneButton.leftAnchor.constraint(equalTo: footerView.leftAnchor),
                                      doneButton.rightAnchor.constraint(equalTo: footerView.rightAnchor),
-                                     doneButton.heightAnchor.constraint(equalTo: footerView.heightAnchor),
-                                     doneButton.bottomAnchor.constraint(equalTo: footerView.bottomAnchor, constant: 0)])
+                                     doneButton.topAnchor.constraint(equalTo: footerView.topAnchor),
+                                     doneButton.bottomAnchor.constraint(equalTo: footerView.bottomAnchor)])
         return footerView
     }
     

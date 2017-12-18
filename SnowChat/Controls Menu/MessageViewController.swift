@@ -10,45 +10,40 @@ import UIKit
 
 class MessageViewController: UIViewController {
     
-    // self.view..
-    var messageView = MessageView.fromNib() as! MessageView
+    @IBOutlet weak var bubbleView: BubbleView!
     
     var uiControl: ControlProtocol?
     
-    override func loadView() {
-        self.view = messageView
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        bubbleView.borderColor = UIColor.agentBubbleBackgroundColor
+        bubbleView.backgroundColor = UIColor.agentBubbleBackgroundColor
     }
     
     func addUIControl(_ control: ControlProtocol) {
+        removeUIControl()
         uiControl = control
         
-        let viewController = control.viewController
-        viewController.willMove(toParentViewController: self)
-        addChildViewController(viewController)
+        let controlViewController = control.viewController
+        controlViewController.willMove(toParentViewController: self)
+        addChildViewController(controlViewController)
         
-        let controlView: UIView = viewController.view
-        let bubbleView: BubbleView = messageView.bubbleView
-        bubbleView.borderColor = UIColor.agentBubbleBackgroundColor
-        bubbleView.backgroundColor = UIColor.agentBubbleBackgroundColor
+        let controlView: UIView = controlViewController.view
+        controlView.backgroundColor = UIColor.agentBubbleBackgroundColor
+        
         controlView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(controlView)
+        controlViewController.didMove(toParentViewController: self)
         
         NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: bubbleView.contentView.leadingAnchor),
                                      controlView.trailingAnchor.constraint(equalTo: bubbleView.contentView.trailingAnchor),
-                                     controlView.centerYAnchor.constraint(equalTo: bubbleView.contentView.centerYAnchor)])
-        
-        view.setNeedsLayout()
-        view.layoutIfNeeded()
-        bubbleView.invalidateIntrinsicContentSize()
-        viewController.didMove(toParentViewController: self)
+                                     controlView.topAnchor.constraint(equalTo: bubbleView.contentView.topAnchor),
+                                     controlView.bottomAnchor.constraint(equalTo: bubbleView.contentView.bottomAnchor)])
     }
     
     func removeUIControl() {
-        guard let uiControl = uiControl else {
-            return
-        }
-        
-        uiControl.viewController.removeFromParentViewController()
-        uiControl.viewController.view.removeFromSuperview()
+        bubbleView.invalidateIntrinsicContentSize()
+        uiControl?.viewController.removeFromParentViewController()
+        uiControl?.viewController.view.removeFromSuperview()
     }
 }

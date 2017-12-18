@@ -20,8 +20,9 @@ class FullSizeScrollViewContainerView: UIView {
     
     var scrollView: UIScrollView? {
         didSet {
-            observer = scrollView?.observe(\UIScrollView.contentSize) { (scrollView, change) in
-                scrollView.invalidateIntrinsicContentSize()
+            invalidateIntrinsicContentSize()
+            observer = scrollView?.observe(\UIScrollView.contentSize) { [weak self] (scrollView, change) in
+                self?.invalidateIntrinsicContentSize()
             }
         }
     }
@@ -32,13 +33,17 @@ class FullSizeScrollViewContainerView: UIView {
         }
     }
     
+    override func invalidateIntrinsicContentSize() {
+        super.invalidateIntrinsicContentSize()
+    }
+    
     override var intrinsicContentSize: CGSize {
         guard let scrollView = scrollView,
             let height = [scrollView.contentSize.height, maxHeight].min() else {
                 return super.intrinsicContentSize
         }
         
-        let width = scrollView.bounds.width
+        let width = scrollView.contentSize.width
         return CGSize(width: width, height: height)
     }
 }

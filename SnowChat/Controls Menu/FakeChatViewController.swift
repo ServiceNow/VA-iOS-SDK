@@ -6,15 +6,41 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
+// Add view controllers caching in actual app: http://khanlou.com/2015/04/view-controllers-in-cells/
+
 import UIKit
 
 class FakeChatViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     let tableView = UITableView()
     
+    var observer: NSKeyValueObservation?
+    
+    var messageViewControllers = [MessageViewController]()
+    
     var controls: [ControlProtocol]? {
         didSet {
+            
+            messageViewControllers.forEach({
+                $0.removeUIControl()
+                $0.removeFromParentViewController()
+            })
+            messageViewControllers.removeAll()
             tableView.reloadData()
+            
+            guard let controls = controls else { return }
+            for control in controls {
+                let controller = MessageViewController(nibName: "MessageViewController", bundle: Bundle(for: type(of: self)))
+                controller.willMove(toParentViewController: self)
+                addChildViewController(controller)
+                messageViewControllers.append(controller)
+                
+                if let scroll = (control.viewController.view as? FullSizeScrollViewContainerView)?.scrollView {
+                    observer = scroll.observe(\UIScrollView.contentSize) { [weak self] (scrollView, change) in
+                        self?.tableView.reloadData()
+                    }
+                }
+            }
         }
     }
     
@@ -22,7 +48,7 @@ class FakeChatViewController: UIViewController, UITableViewDelegate, UITableView
         super.viewDidLoad()
         tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         tableView.frame = view.bounds
-        tableView.estimatedRowHeight = 50
+        tableView.estimatedRowHeight = 100
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.separatorStyle = .none
         
@@ -30,36 +56,29 @@ class FakeChatViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.delegate = self
         tableView.dataSource = self
         
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ChatCell")
-        tableView.reloadData()
+        tableView.register(FakeChatViewCell.self, forCellReuseIdentifier: "ChatCell")
     }
+    
+    // MARK: UITableViewDataSource
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return controls?.count ?? 0
     }
     
+    // MARK: UITableViewDelegate
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ChatCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ChatCell", for: indexPath) as! FakeChatViewCell
+        cell.selectionStyle = .none
         
-        let messageViewController = MessageViewController()
-        messageViewController.willMove(toParentViewController: self)
-        addChildViewController(messageViewController)
-//        cell.contentView.layer.borderColor = UIColor.blue.cgColor
-//        cell.contentView.layer.borderWidth = 1
-        
-        let messageView: UIView = messageViewController.view
-        messageView.translatesAutoresizingMaskIntoConstraints = false
-        cell.contentView.addSubview(messageView)
-        NSLayoutConstraint.activate([messageView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor),
-                                     messageView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor),
-                                     messageView.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
-                                     messageView.heightAnchor.constraint(equalTo: cell.contentView.heightAnchor)])
-        messageViewController.didMove(toParentViewController: self)
-        
-        if let control = controls?[indexPath.row] {
-            messageViewController.addUIControl(control)
+        guard let control = controls?[indexPath.row] else {
+            return cell
         }
         
+        let messageViewController = messageViewControllers[indexPath.row]
+        let messageView: UIView = messageViewController.view
+        messageViewController.addUIControl(control)
+        cell.messageView = messageView
         return cell
     }
 }
