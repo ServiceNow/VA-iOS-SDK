@@ -42,7 +42,6 @@ class MessageViewController: UIViewController {
     }
     
     func removeUIControl() {
-        bubbleView.invalidateIntrinsicContentSize()
         uiControl?.viewController.removeFromParentViewController()
         uiControl?.viewController.view.removeFromSuperview()
     }
