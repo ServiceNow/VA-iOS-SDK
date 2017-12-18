@@ -18,10 +18,7 @@ class FakeChatViewCell: UITableViewCell {
         didSet {
             guard let messageView = messageView else { return }
             messageView.translatesAutoresizingMaskIntoConstraints = false
-            messageView.setContentHuggingPriority(.required, for: .vertical)
             contentView.addSubview(messageView)
-            messageView.layer.borderWidth = 1
-            messageView.layer.borderColor = UIColor.green.cgColor
             NSLayoutConstraint.activate([messageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
                                          messageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
                                          messageView.topAnchor.constraint(equalTo: contentView.topAnchor),

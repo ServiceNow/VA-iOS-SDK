@@ -6,8 +6,6 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-// Add view controllers caching in actual app: http://khanlou.com/2015/04/view-controllers-in-cells/
-
 import UIKit
 
 class FakeChatViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
@@ -21,25 +19,34 @@ class FakeChatViewController: UIViewController, UITableViewDelegate, UITableView
     var controls: [ControlProtocol]? {
         didSet {
             
+            // Each cell will have its own view controller to handle each message
+            // It will need to be definitely improved. I just added simple solution
+            // More on it: http://khanlou.com/2015/04/view-controllers-in-cells/
             messageViewControllers.forEach({
                 $0.removeUIControl()
                 $0.removeFromParentViewController()
             })
             messageViewControllers.removeAll()
-            tableView.reloadData()
             
             guard let controls = controls else { return }
-            for control in controls {
+            for _ in controls {
                 let controller = MessageViewController(nibName: "MessageViewController", bundle: Bundle(for: type(of: self)))
                 controller.willMove(toParentViewController: self)
                 addChildViewController(controller)
                 messageViewControllers.append(controller)
-                
-                if let scroll = (control.viewController.view as? FullSizeScrollViewContainerView)?.scrollView {
-                    observer = scroll.observe(\UIScrollView.contentSize) { [weak self] (scrollView, change) in
-                        self?.tableView.reloadData()
-                    }
-                }
+            }
+            
+            tableView.reloadData()
+            
+            // Due to silly self-sizing problems with UITableViewCell I am forcing table to draw itself after data are reloaded
+            // This will trigger UIControl to be placed in the cell and update its height
+            // Then we need to call beginUpdates() endUpdates() on cell to refresh cell height
+            tableView.setNeedsLayout()
+            tableView.layoutIfNeeded()
+            
+            UIView.performWithoutAnimation {
+                tableView.beginUpdates()
+                tableView.endUpdates()
             }
         }
     }
@@ -51,11 +58,11 @@ class FakeChatViewController: UIViewController, UITableViewDelegate, UITableView
         tableView.estimatedRowHeight = 100
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.separatorStyle = .none
-        
+
         view.addSubview(tableView)
         tableView.delegate = self
         tableView.dataSource = self
-        
+
         tableView.register(FakeChatViewCell.self, forCellReuseIdentifier: "ChatCell")
     }
     
@@ -77,8 +84,14 @@ class FakeChatViewController: UIViewController, UITableViewDelegate, UITableView
         
         let messageViewController = messageViewControllers[indexPath.row]
         let messageView: UIView = messageViewController.view
-        messageViewController.addUIControl(control)
         cell.messageView = messageView
+        messageViewController.addUIControl(control)
+        
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let messageViewController = messageViewControllers[indexPath.row]
+        messageViewController.didMove(toParentViewController: self)
     }
 }

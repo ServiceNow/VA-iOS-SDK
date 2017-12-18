@@ -14,13 +14,13 @@ class PickerViewController: UIViewController {
     
     let headerTextColor = UIColor.controlHeaderTextColor
     
-    var fullSizeContainer: FullSizeScrollViewContainerView?
+    let fullSizeContainer = FullSizeScrollViewContainerView()
     
-    var tableView: UITableView?
+    let tableView = UITableView()
     
     var model: PickerControlViewModel {
         didSet {
-            tableView?.reloadData()
+            tableView.reloadData()
         }
     }
     
@@ -38,9 +38,7 @@ class PickerViewController: UIViewController {
     // MARK: - View Life Cycle
     
     override func loadView() {
-        let fullSizeContainer = FullSizeScrollViewContainerView(frame: CGRect.zero)
         self.view = fullSizeContainer
-        self.fullSizeContainer = fullSizeContainer
     }
     
     override func viewDidLoad() {
@@ -49,13 +47,6 @@ class PickerViewController: UIViewController {
     }
     
     private func setupPickerView() {
-        guard let fullSizeContainer = fullSizeContainer else {
-            return
-        }
-        
-        let tableView = UITableView()
-//        tableView.sectionHeaderHeight = UITableViewAutomaticDimension
-//        tableView.sectionFooterHeight = UITableViewAutomaticDimension
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 50
         tableView.tableFooterView = model.isMultiSelect ? nil : UIView()
@@ -67,13 +58,6 @@ class PickerViewController: UIViewController {
             tableView.register(UINib(nibName: "PickerTableViewCell", bundle: bundle), forCellReuseIdentifier: PickerTableViewCell.cellIdentifier)
         }
         
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        fullSizeContainer.addSubview(tableView)
-        NSLayoutConstraint.activate([tableView.leadingAnchor.constraint(equalTo: fullSizeContainer.leadingAnchor),
-                                     tableView.trailingAnchor.constraint(equalTo: fullSizeContainer.trailingAnchor),
-                                     tableView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
-                                     tableView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor)])
-        
         // FIXME: upcoming lots of changes here
         tableView.delegate = self
         tableView.dataSource = self
@@ -82,8 +66,14 @@ class PickerViewController: UIViewController {
         
         // TODO: need to adjust based on the number of items, display style etc
         tableView.isScrollEnabled = false
-        self.tableView = tableView
+        
         fullSizeContainer.scrollView = tableView
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        fullSizeContainer.addSubview(tableView)
+        NSLayoutConstraint.activate([tableView.leadingAnchor.constraint(equalTo: fullSizeContainer.leadingAnchor),
+                                     tableView.trailingAnchor.constraint(equalTo: fullSizeContainer.trailingAnchor),
+                                     tableView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
+                                     tableView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor)])
         
         tableView.reloadData()
     }
