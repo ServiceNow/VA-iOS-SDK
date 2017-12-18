@@ -15,8 +15,8 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
         switch model.type {
         case .boolean:
-            if let boolModel = model as? BooleanControlViewModel {
-                self.chatterbox?.update(control:  boolModel.id, ofType: .boolean, withValue: boolModel.resultValue!)
+            if let boolModel = model as? BooleanControlViewModel, let resultValue = boolModel.resultValue {
+                self.chatterbox?.update(control:  boolModel.id, ofType: .boolean, withValue: resultValue)
                 bubbleViewController?.removeCurrentUIControl()
                 bubbleViewController?.view.isHidden = true
             }
