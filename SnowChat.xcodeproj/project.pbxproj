@@ -53,6 +53,7 @@
 		57B7E2CD1FBA3C8400196BA9 /* UIView+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2CB1FBA3C8400196BA9 /* UIView+Additions.swift */; };
 		57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2CF1FBA6DA500196BA9 /* BooleanControlViewModel.swift */; };
 		57B7E2D21FBA75B100196BA9 /* PickerControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */; };
+		57CBFE001FE849D0006396E8 /* vagent-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 57CBFDFF1FE849D0006396E8 /* vagent-icon.png */; };
 		57D997AB1FE5B00000394A6D /* MessageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57D997AA1FE5B00000394A6D /* MessageViewController.xib */; };
 		57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1EA321FC33D1C009FC76D /* RoundedView.swift */; };
 		57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */; };
@@ -156,6 +157,7 @@
 		57B7E2CB1FBA3C8400196BA9 /* UIView+Additions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Additions.swift"; sourceTree = "<group>"; };
 		57B7E2CF1FBA6DA500196BA9 /* BooleanControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooleanControlViewModel.swift; sourceTree = "<group>"; };
 		57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControlViewModel.swift; sourceTree = "<group>"; };
+		57CBFDFF1FE849D0006396E8 /* vagent-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vagent-icon.png"; sourceTree = "<group>"; };
 		57D997AA1FE5B00000394A6D /* MessageViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageViewController.xib; sourceTree = "<group>"; };
 		57E1EA321FC33D1C009FC76D /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
 		57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ControlsViewController.xib; sourceTree = "<group>"; };
@@ -388,6 +390,7 @@
 		BE5974C01FC392A300959406 /* Controls Menu */ = {
 			isa = PBXGroup;
 			children = (
+				57CBFDFF1FE849D0006396E8 /* vagent-icon.png */,
 				BE5974C31FC392FB00959406 /* ControlsViewController.swift */,
 				57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */,
 				5706C57A1FE499A0008D70D1 /* FakeChatViewController.swift */,
@@ -712,6 +715,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57CBFE001FE849D0006396E8 /* vagent-icon.png in Resources */,
 				BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */,
 				572A4E401FCF06320081318D /* PickerTableViewCell.xib in Resources */,
 				57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */,
