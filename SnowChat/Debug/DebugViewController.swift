@@ -14,6 +14,8 @@ public class DebugViewController: UITableViewController, ChatServiceAppDelegate 
     @IBOutlet private weak var uiControlsCell: UITableViewCell!
     @IBOutlet private weak var chatWindowCell: UITableViewCell!
     
+    private var chatService: ChatService?
+    
     // MARK: - Initialization
     
     public class func fromStoryboard() -> DebugViewController {
@@ -60,8 +62,10 @@ public class DebugViewController: UITableViewController, ChatServiceAppDelegate 
     // MARK: - Navigation
     
     private func pushChatController() {
-        let controller = ChatService(delegate: self).chatViewController()
-        navigationController?.pushViewController(controller, animated: true)
+        chatService = ChatService(delegate: self)
+        if let controller = chatService?.chatViewController() {
+            navigationController?.pushViewController(controller, animated: true)
+        }
     }
     
     private func pushAMBViewController() {

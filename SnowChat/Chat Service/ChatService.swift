@@ -44,10 +44,12 @@ public class ChatService {
         chatterbox.initializeSession(forUser: user, vendor: vendor, success: { message in
             Logger.default.logDebug("Session Initialized")
             
-            if let options = message.data.richControl?.uiMetadata?.inputControls[0].uiMetadata?.options {
-                for option in options {
+            if let options = message.data.richControl?.uiMetadata?.inputControls.first?.uiMetadata?.options {
+                options.forEach({ (option) in
                     Logger.default.logDebug(option.label)
-                }
+                })
+            } else {
+                Logger.default.logDebug("Session initialized but no valid ContexztualActionMessage received!")
             }
 
         }, failure: { error in
@@ -62,9 +64,12 @@ extension ChatService: ChatEventListener {
     func chatterbox(_ chatterbox: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
         Logger.default.logDebug("Topic Started: \(topic)")
         
+        viewController?.chatterbox(chatterbox, didStartTopic: topic, forChat: chatId)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String) {
         Logger.default.logDebug("Topic Finished: \(topic)")
+        
+        viewController?.chatterbox(chatterbox, didFinishTopic: topic, forChat: chatId)
     }
 }

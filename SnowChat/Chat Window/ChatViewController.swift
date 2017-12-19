@@ -19,8 +19,6 @@ public class ChatViewController: UIViewController {
         self.chatterbox = chatterbox
         
         super.init(nibName: nil, bundle: nil)
-        
-        chatterbox.chatEventListener = self
     }
     
     public required init?(coder aDecoder: NSCoder) {
