@@ -26,6 +26,7 @@ class SnowControlUtils {
         let questionModel = TextControlViewModel(id: model.id, label: model.label, value: model.label, direction: .inbound)
         let questionTextControl = TextControl(model: questionModel)
         
+        // FIXME: This result needs to come from the BooleanControlMessage. Not sure if that is ready yet
         let result = "Yes"
         let answerModel = TextControlViewModel(id: model.id, label: result, value: result, direction: .outbound)
         let answerTextControl = TextControl(model: answerModel)
