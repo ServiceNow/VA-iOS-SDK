@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "BE5C658D1FE88FA6001A3EEE"
-               BuildableName = "Certificates"
-               BlueprintName = "Certificates"
+               BuildableName = "Install Certificates"
+               BlueprintName = "Install Certificates"
                ReferencedContainer = "container:SnowChat.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -48,8 +48,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "BE5C658D1FE88FA6001A3EEE"
-            BuildableName = "Certificates"
-            BlueprintName = "Certificates"
+            BuildableName = "Install Certificates"
+            BlueprintName = "Install Certificates"
             ReferencedContainer = "container:SnowChat.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -66,8 +66,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "BE5C658D1FE88FA6001A3EEE"
-            BuildableName = "Certificates"
-            BlueprintName = "Certificates"
+            BuildableName = "Install Certificates"
+            BlueprintName = "Install Certificates"
             ReferencedContainer = "container:SnowChat.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

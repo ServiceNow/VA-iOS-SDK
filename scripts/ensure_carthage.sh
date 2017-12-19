@@ -13,10 +13,10 @@ if ! hash carthage 2>/dev/null; then
         brew install carthage
     elif [[ $CARTHAGE_INSTALL_RESULT == 'Learn More…' ]]; then
         open https://github.com/Carthage/Carthage/#installing-carthage
-        echo "Carthage is not installed."
+        echo "error: Carthage is not installed."
         exit 1
     else
-       echo "Carthage is not installed."
+       echo "error: Carthage is not installed."
        exit 1
     fi
 fi

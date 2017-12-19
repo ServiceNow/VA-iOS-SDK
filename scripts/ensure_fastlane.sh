@@ -1,3 +1,5 @@
+export PATH="$HOME/.fastlane/bin:$PATH"
+
 if ! hash fastlane 2>/dev/null; then
     FASTLANE_INSTALL_SCRIPT="
        try
@@ -10,13 +12,15 @@ if ! hash fastlane 2>/dev/null; then
     FASTLANE_INSTALL_RESULT=`osascript -e "$FASTLANE_INSTALL_SCRIPT"`
 
     if [[ $FASTLANE_INSTALL_RESULT == 'Install Fastlane' ]]; then
-       osascript -e "do shell script \"gem install fastlane -NV\" with administrator privileges"
+        brew tap caskroom/cask
+        brew cask install fastlane
+        echo 'export PATH="$HOME/.fastlane/bin:$PATH"' >>~/.bash_profile
     elif [[ $FASTLANE_INSTALL_RESULT == 'Learn More…' ]]; then
         open https://docs.fastlane.tools/#choose-your-installation-method
-        echo "Fastlane is not installed."
+        echo "error: fastlane is not installed."
         exit 1
     else
-       echo "Fastlane is not installed."
+       echo "error: fastlane is not installed."
        exit 1
     fi
 fi

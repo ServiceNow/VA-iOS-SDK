@@ -12,6 +12,11 @@ CERT_PASSWORD_SCRIPT="
 
 CERT_PASSWORD_RESULT=`osascript -e "$CERT_PASSWORD_SCRIPT"`
 
+if [ -z "$CERT_PASSWORD_RESULT" ]; then
+    echo "error: Must provide a password for mobile certificates."
+    exit 1
+fi
+
 export MATCH_PASSWORD=$CERT_PASSWORD_RESULT
 
 fastlane certificates

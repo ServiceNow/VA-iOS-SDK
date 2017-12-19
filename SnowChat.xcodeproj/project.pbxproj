@@ -18,15 +18,15 @@
 			name = "Carthage Bootstrap";
 			productName = "Carthage Bootstrap";
 		};
-		BE5C658D1FE88FA6001A3EEE /* Certificates */ = {
+		BE5C658D1FE88FA6001A3EEE /* Install Certificates */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = BE5C658E1FE88FA6001A3EEE /* Build configuration list for PBXAggregateTarget "Certificates" */;
+			buildConfigurationList = BE5C658E1FE88FA6001A3EEE /* Build configuration list for PBXAggregateTarget "Install Certificates" */;
 			buildPhases = (
 				BE5C65911FE890B7001A3EEE /* ShellScript */,
 			);
 			dependencies = (
 			);
-			name = Certificates;
+			name = "Install Certificates";
 			productName = Certificates;
 		};
 		BE6F4E371FE9740A007294BA /* Deploy Staging */ = {
@@ -601,6 +601,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BEB6C86B1FB92CD700B1D497 /* Build configuration list for PBXNativeTarget "SnowChat" */;
 			buildPhases = (
+				BE04BA691FE9BAA400422B5E /* Carthage Pre-Check */,
 				BEB6C8521FB92CD700B1D497 /* Sources */,
 				BEB6C8531FB92CD700B1D497 /* Frameworks */,
 				BEB6C8541FB92CD700B1D497 /* Headers */,
@@ -683,7 +684,7 @@
 				BEB6C8561FB92CD700B1D497 /* SnowChat */,
 				BEB6C85F1FB92CD700B1D497 /* SnowChatTests */,
 				BE5C65881FE88F53001A3EEE /* Carthage Bootstrap */,
-				BE5C658D1FE88FA6001A3EEE /* Certificates */,
+				BE5C658D1FE88FA6001A3EEE /* Install Certificates */,
 				BE6F4E371FE9740A007294BA /* Deploy Staging */,
 			);
 		};
@@ -714,6 +715,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		BE04BA691FE9BAA400422B5E /* Carthage Pre-Check */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Carthage Pre-Check";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ! -d ${PROJECT_DIR}/Carthage/Build ]; then\necho \"error: The carthage folder is missing. Try running the Carthage Bootstrap scheme.\"\nexit 1\nfi\n";
+		};
 		BE50E21A1FB92F5800948FBC /* Copy Carthage Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1152,7 +1167,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BE5C658E1FE88FA6001A3EEE /* Build configuration list for PBXAggregateTarget "Certificates" */ = {
+		BE5C658E1FE88FA6001A3EEE /* Build configuration list for PBXAggregateTarget "Install Certificates" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BE5C658F1FE88FA6001A3EEE /* Debug */,
