@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BE50E4321FB9FAB700948FBC"
-               BuildableName = "Bootstrap"
-               BlueprintName = "Bootstrap"
+               BlueprintIdentifier = "BE5C658D1FE88FA6001A3EEE"
+               BuildableName = "Certificates"
+               BlueprintName = "Certificates"
                ReferencedContainer = "container:SnowChat.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -47,9 +47,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BE50E4321FB9FAB700948FBC"
-            BuildableName = "Bootstrap"
-            BlueprintName = "Bootstrap"
+            BlueprintIdentifier = "BE5C658D1FE88FA6001A3EEE"
+            BuildableName = "Certificates"
+            BlueprintName = "Certificates"
             ReferencedContainer = "container:SnowChat.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -65,9 +65,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BE50E4321FB9FAB700948FBC"
-            BuildableName = "Bootstrap"
-            BlueprintName = "Bootstrap"
+            BlueprintIdentifier = "BE5C658D1FE88FA6001A3EEE"
+            BuildableName = "Certificates"
+            BlueprintName = "Certificates"
             ReferencedContainer = "container:SnowChat.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
