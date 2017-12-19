@@ -22,11 +22,12 @@ class SnowControlUtils {
             fatalError("oops")
         }
         
-        let questionModel = TextControlViewModel(id: model.id, label: model.label, value: model.label)
+        // FIXME: provide proper direction info and result string. Temporary hacking together
+        let questionModel = TextControlViewModel(id: model.id, label: model.label, value: model.label, direction: .inbound)
         let questionTextControl = TextControl(model: questionModel)
         
         let result = "Yes"
-        let answerModel = TextControlViewModel(id: model.id, label: result, value: result)
+        let answerModel = TextControlViewModel(id: model.id, label: result, value: result, direction: .outbound)
         let answerTextControl = TextControl(model: answerModel)
         return [questionTextControl, answerTextControl]
     }

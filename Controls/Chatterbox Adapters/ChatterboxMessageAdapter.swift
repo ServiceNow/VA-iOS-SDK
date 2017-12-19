@@ -31,10 +31,12 @@ extension BooleanControlViewModel: ChatterboxMessageAdapter {
     static func model(withMessage message: BooleanControlMessage) -> BooleanControlViewModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
             let required = message.data.richControl?.uiMetadata?.required else {
-            return nil
+                return nil
         }
         
-        let booleanModel = BooleanControlViewModel(id: message.id, label: title, required: required)
+        // FIXME: direction should be an enum. Talk to Marc about it
+        let direction = message.data.direction
+        let booleanModel = BooleanControlViewModel(id: message.id, label: title, required: required, direction: ControlDirection.direction(forStringValue: direction))
         return booleanModel
     }
 }

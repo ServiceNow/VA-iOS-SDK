@@ -63,10 +63,10 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             uiControl = SnowControlUtils.booleanControl(forBooleanMessage: booleanMessage)
         case .multiSelect:
             let items = [PickerItem(label: "Item 1", value: "1"), PickerItem(label: "Item 2", value: "2"), PickerItem(label: "Item 3", value: "3"), PickerItem(label: "Item 4", value: "4")]
-            let multiselectModel = MultiSelectControlViewModel(id: "multi_1234", label: "What is your issue?", required: true, items: items)
+            let multiselectModel = MultiSelectControlViewModel(id: "multi_1234", label: "What is your issue?", required: true, direction: .inbound, items: items)
             uiControl = MultiSelectControl(model: multiselectModel)
         case .text:
-            let textModel = TextControlViewModel(label: "Text View", value: "Some random text that is longer than one line........")
+            let textModel = TextControlViewModel(label: "Text View", value: "Some random text that is longer than one line........", direction: .inbound)
             uiControl = TextControl(model: textModel)
         default:
             fatalError("This control doesnt exist!")

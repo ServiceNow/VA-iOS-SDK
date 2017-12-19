@@ -22,13 +22,16 @@ class BooleanControlViewModel: PickerControlViewModel, ValueRepresentable {
         return .boolean
     }
     
-    init(id: String, label: String, required: Bool) {
+    var direction: ControlDirection
+    
+    init(id: String, label: String, required: Bool, direction: ControlDirection) {
         let items = [PickerItem.yesItem(), PickerItem.noItem()]
         self.id = id
         self.label = label
         self.isRequired = required
         self.isMultiSelect = false
         self.items = items
+        self.direction = direction
         
         if !required {
             self.items.append(PickerItem.skipItem())

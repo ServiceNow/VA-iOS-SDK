@@ -18,9 +18,12 @@ class TextControlViewModel: ControlViewModel {
     
     let value: String
     
-    init(id: String = "text_control", label: String, value: String) {
+    var direction: ControlDirection
+    
+    init(id: String = "text_control", label: String, value: String, direction: ControlDirection) {
         self.label = label
         self.value = value
         self.id = id
+        self.direction = direction
     }
 }

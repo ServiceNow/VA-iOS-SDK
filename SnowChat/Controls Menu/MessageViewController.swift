@@ -12,6 +12,12 @@ class MessageViewController: UIViewController {
     
     @IBOutlet weak var bubbleView: BubbleView!
     
+    @IBOutlet weak var agentImageView: UIImageView!
+    
+    @IBOutlet weak var agentBubbleLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var bubbleLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var bubbleTrailingConstraint: NSLayoutConstraint!
+    
     var uiControl: ControlProtocol?
     
     override func viewDidLoad() {
@@ -31,6 +37,8 @@ class MessageViewController: UIViewController {
         let controlView: UIView = controlViewController.view
         controlView.backgroundColor = UIColor.agentBubbleBackgroundColor
         
+        updateForControlDirection(control.model.direction)
+        
         controlView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(controlView)
         controlViewController.didMove(toParentViewController: self)
@@ -44,5 +52,25 @@ class MessageViewController: UIViewController {
     func removeUIControl() {
         uiControl?.viewController.removeFromParentViewController()
         uiControl?.viewController.view.removeFromSuperview()
+    }
+    
+    // updates message view based on the direction of the message
+    private func updateForControlDirection(_ direction: ControlDirection) {
+        switch direction {
+        case .inbound:
+            agentImageView.isHidden = false
+            bubbleView.arrowDirection = .left
+            agentBubbleLeadingConstraint.priority = .defaultHigh
+            bubbleLeadingConstraint.priority = .defaultLow
+            bubbleTrailingConstraint.priority = .defaultHigh
+        case .outbound:
+            bubbleView.arrowDirection = .right
+            agentBubbleLeadingConstraint.priority = .defaultLow
+            bubbleLeadingConstraint.priority = .defaultHigh
+            bubbleTrailingConstraint.priority = .veryHigh
+            agentImageView.isHidden = true
+        }
+        
+        self.view.layoutIfNeeded()
     }
 }
