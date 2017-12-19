@@ -60,7 +60,7 @@ class MessageViewController: UIViewController {
         case .inbound:
             agentImageView.isHidden = false
             bubbleView.arrowDirection = .left
-            agentBubbleLeadingConstraint.priority = .defaultHigh
+            agentBubbleLeadingConstraint.priority = .veryHigh
             bubbleLeadingConstraint.priority = .defaultLow
             bubbleTrailingConstraint.priority = .defaultHigh
         case .outbound:
