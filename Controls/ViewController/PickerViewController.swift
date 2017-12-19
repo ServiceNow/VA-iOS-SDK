@@ -47,9 +47,14 @@ class PickerViewController: UIViewController {
     }
     
     private func setupPickerView() {
+        tableView.sectionHeaderHeight = UITableViewAutomaticDimension
+        tableView.sectionFooterHeight = UITableViewAutomaticDimension
+        tableView.estimatedSectionHeaderHeight = 50
+        tableView.estimatedSectionFooterHeight = model.isMultiSelect ? 50 : 0
+        tableView.tableFooterView = model.isMultiSelect ? nil : UIView()
+        
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 50
-        tableView.tableFooterView = model.isMultiSelect ? nil : UIView()
         
         if model.isMultiSelect {
             tableView.register(SelectableViewCell.self, forCellReuseIdentifier: SelectableViewCell.cellIdentifier)
