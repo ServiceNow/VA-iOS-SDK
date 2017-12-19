@@ -21,10 +21,6 @@ protocol AutoCompleteHandler {
     
     func heightForAutoCompletionView() -> CGFloat
     
-    // cells use automatic sizing, but need to provide estiamted sizing for efficient computation
-    func estimatedHeightForRowAt(_ indexPath: IndexPath) -> CGFloat
-    func estimatedHeightForHeaderInSection(_ section: Int) -> CGFloat
-    
     func cellForRowAt(_ indexPath: IndexPath) -> UITableViewCell
     func viewForHeaderInSection(_ section: Int) -> UIView?
     

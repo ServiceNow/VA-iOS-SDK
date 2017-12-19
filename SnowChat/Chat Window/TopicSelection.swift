@@ -18,14 +18,6 @@ class TopicSelectionHandler: AutoCompleteHandler {
         return topics.count
     }
     
-    func estimatedHeightForHeaderInSection(_ section: Int) -> CGFloat {
-        return section == 0 ? TopicSelectionTableCell.estimatedHeaderHeight : 0
-    }
-    
-    func estimatedHeightForRowAt(_ indexPath: IndexPath) -> CGFloat {
-        return UITableViewAutomaticDimension
-    }
-    
     func heightForAutoCompletionView() -> CGFloat {
         let cellHeight:CGFloat = TopicSelectionTableCell.estimatedCellHeight
         let headerHeight: CGFloat = TopicSelectionTableCell.estimatedHeaderHeight
@@ -70,8 +62,8 @@ class TopicSelectionHandler: AutoCompleteHandler {
         
         headerView.text = title
         
-        containerView.addSubview(headerView)
         headerView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(headerView)
         NSLayoutConstraint.activate([headerView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10),
                                      headerView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 10),
                                      headerView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 10),
@@ -89,7 +81,12 @@ class TopicSelectionHandler: AutoCompleteHandler {
         conversationController = controller
         self.chatterbox = chatterbox
         
-        conversationController?.autoCompletionView.register(TopicSelectionTableCell.classForCoder(), forCellReuseIdentifier: TopicSelectionTableCell.cellIdentifier)
+        conversationController?.autoCompletionView.register(TopicSelectionTableCell.self, forCellReuseIdentifier: TopicSelectionTableCell.cellIdentifier)
+        
+        conversationController?.autoCompletionView.estimatedRowHeight = TopicSelectionTableCell.estimatedCellHeight
+        conversationController?.autoCompletionView.rowHeight = UITableViewAutomaticDimension
+        conversationController?.autoCompletionView.estimatedSectionHeaderHeight = TopicSelectionTableCell.estimatedHeaderHeight
+        conversationController?.autoCompletionView.sectionHeaderHeight = UITableViewAutomaticDimension
         
         // make the autocompletion filter include all alphanumeric characters
         
@@ -121,18 +118,18 @@ class TopicSelectionHandler: AutoCompleteHandler {
     }
     
     func cellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
-        if let controller = conversationController {
-            let cell = controller.autoCompletionView.dequeueReusableCell(withIdentifier: TopicSelectionTableCell.cellIdentifier) as! TopicSelectionTableCell
-            
-            let row = (indexPath as NSIndexPath).row
-            let text = topics[row].title
-            cell.topicLabel?.text = text
-            cell.topicLabel?.textColor = UIColor.blue
-            
-            return cell
-        } else {
+        guard let controller = conversationController else {
             return UITableViewCell()
         }
+        
+        let cell = controller.autoCompletionView.dequeueReusableCell(withIdentifier: TopicSelectionTableCell.cellIdentifier) as! TopicSelectionTableCell
+        
+        let row = indexPath.row
+        let text = topics[row].title
+        cell.topicLabel?.text = text
+        cell.topicLabel?.textColor = UIColor.blue
+        
+        return cell
     }
 }
 

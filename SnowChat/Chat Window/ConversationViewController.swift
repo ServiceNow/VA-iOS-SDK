@@ -62,6 +62,12 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     private func setupTableView() {
         tableView.separatorStyle = .none
         
+        // NOTE: making section header height very tiny as 0 make it default size in iOS11
+        //  see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
+        tableView.sectionHeaderHeight = CGFloat(0.01)
+        tableView.estimatedRowHeight = 50
+        tableView.rowHeight = UITableViewAutomaticDimension
+        
         setupInputForState()
     }
 
@@ -145,18 +151,6 @@ extension ConversationViewController {
         return count
     }
     
-    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        if tableView == autoCompletionView, let handler = autocompleteHandler {
-            return handler.estimatedHeightForRowAt(indexPath)
-        } else {
-            return CGFloat(100.0)   // TODO: message row height
-        }
-    }
-    
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableViewAutomaticDimension
-    }
-    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if tableView == autoCompletionView {
             autocompleteHandler?.didSelectRowAt(indexPath)
@@ -176,26 +170,6 @@ extension ConversationViewController {
             return handler.viewForHeaderInSection(section)
         } else {
             return nil
-        }
-    }
-
-    // NOTE: have to implement this for iOS 11, since super implements titleForHeaderInSection and that
-    //       causes an empty header even when nil is returned from viewForHeaderInSection
-    //       https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
-    //
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        let verySmall = CGFloat(0.01)
-        if tableView == autoCompletionView {
-            return UITableViewAutomaticDimension
-        }
-        return verySmall
-    }
-    
-    override func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
-        if tableView == autoCompletionView, let handler = autocompleteHandler {
-            return handler.estimatedHeightForHeaderInSection(section)
-        } else {
-            return CGFloat(100.0)   // TODO: message row height
         }
     }
 }
