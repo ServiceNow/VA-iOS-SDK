@@ -5,6 +5,12 @@
 //  Created by Marc Attinasi on 12/18/17.
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
+//  AutoCompleteHandler is used to take over the autocomplete tableview facility of the
+//  Slack View Controller. We use it differently in different phases of the chat:
+//   - topic selection, active conversation, system topic interaction
+//
+//  This protocol is used to allow different implementations to be plugged-in to the ConversationViewController
+//  to allow varying behavior in different situations
 
 import Foundation
 
@@ -14,8 +20,10 @@ protocol AutoCompleteHandler {
     func numberOfRowsInSection(_ section: Int) -> Int
     
     func heightForAutoCompletionView() -> CGFloat
-    func heightForRowAt(_ indexPath: IndexPath) -> CGFloat
-    func heightForHeaderInSection(_ section: Int) -> CGFloat
+    
+    // cells use automatic sizing, but need to provide estiamted sizing for efficient computation
+    func estimatedHeightForRowAt(_ indexPath: IndexPath) -> CGFloat
+    func estimatedHeightForHeaderInSection(_ section: Int) -> CGFloat
     
     func cellForRowAt(_ indexPath: IndexPath) -> UITableViewCell
     func viewForHeaderInSection(_ section: Int) -> UIView?

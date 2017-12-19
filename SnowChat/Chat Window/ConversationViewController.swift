@@ -145,12 +145,16 @@ extension ConversationViewController {
         return count
     }
     
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         if tableView == autoCompletionView, let handler = autocompleteHandler {
-            return handler.heightForRowAt(indexPath)
+            return handler.estimatedHeightForRowAt(indexPath)
         } else {
             return CGFloat(100.0)   // TODO: message row height
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableViewAutomaticDimension
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -181,10 +185,18 @@ extension ConversationViewController {
     //
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         let verySmall = CGFloat(0.01)
-        if tableView == autoCompletionView, let handler = autocompleteHandler {
-            return handler.heightForHeaderInSection(section)
+        if tableView == autoCompletionView {
+            return UITableViewAutomaticDimension
         }
         return verySmall
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
+        if tableView == autoCompletionView, let handler = autocompleteHandler {
+            return handler.estimatedHeightForHeaderInSection(section)
+        } else {
+            return CGFloat(100.0)   // TODO: message row height
+        }
     }
 }
 

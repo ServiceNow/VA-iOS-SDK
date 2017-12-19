@@ -18,18 +18,18 @@ class TopicSelectionHandler: AutoCompleteHandler {
         return topics.count
     }
     
-    func heightForHeaderInSection(_ section: Int) -> CGFloat {
-        return section == 0 ? TopicSelectionTableCell.headerHeight : 0
+    func estimatedHeightForHeaderInSection(_ section: Int) -> CGFloat {
+        return section == 0 ? TopicSelectionTableCell.estimatedHeaderHeight : 0
     }
     
-    func heightForRowAt(_ indexPath: IndexPath) -> CGFloat {
-        return TopicSelectionTableCell.cellHeight
+    func estimatedHeightForRowAt(_ indexPath: IndexPath) -> CGFloat {
+        return UITableViewAutomaticDimension
     }
     
     func heightForAutoCompletionView() -> CGFloat {
-        let cellHeight:CGFloat = TopicSelectionTableCell.cellHeight
-        let headerHeight: CGFloat = TopicSelectionTableCell.headerHeight
-        return cellHeight * CGFloat(topics.count) + headerHeight
+        let cellHeight:CGFloat = TopicSelectionTableCell.estimatedCellHeight
+        let headerHeight: CGFloat = TopicSelectionTableCell.estimatedHeaderHeight
+        return (cellHeight * CGFloat(topics.count)) + headerHeight
     }
     
     func didChangeAutoCompletionText(withPrefix prefix: String, andWord word: String) {
@@ -40,7 +40,7 @@ class TopicSelectionHandler: AutoCompleteHandler {
 
     func didCommitEditing(_ value: String) {
         // try to search for the string, if nothing comes back, show all topics
-        searchTopics(value, allTopicsIfNoMatch: true)
+        searchTopics(value, forceMenu: true)
     }
 
     func didSelectRowAt(_ indexPath: IndexPath) {
@@ -63,18 +63,19 @@ class TopicSelectionHandler: AutoCompleteHandler {
         containerView.backgroundColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
         
         let headerView = UILabel()
-        var title = isAllTopics ?
+        let title = isAllTopics ?
             NSLocalizedString("All Topics", comment: "Header for all-topics list matches") :
-            NSLocalizedString("Matching Topics", comment: "Header for topic list matches")
+            topics.count > 0 ? NSLocalizedString("Matching Topics", comment: "Header for topic list matches") :
+                               NSLocalizedString("No Matching Topics", comment: "Header for topic list when no matches")
         
         headerView.text = title
         
         containerView.addSubview(headerView)
         headerView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([headerView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 5),
-                                     headerView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 5),
-                                     headerView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 5),
-                                     headerView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -5)])
+        NSLayoutConstraint.activate([headerView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10),
+                                     headerView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 10),
+                                     headerView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 10),
+                                     headerView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -10)])
         return containerView
     }
     
@@ -98,6 +99,7 @@ class TopicSelectionHandler: AutoCompleteHandler {
         // swiftlint:enable force_unwrapping
         conversationController?.registerPrefixes(forAutoCompletion: upperCase + lowerCase)
         
+        conversationController?.textView.isTypingSuggestionEnabled = false
         conversationController?.textView.placeholder = NSLocalizedString("Type your question...", comment: "Placeholder text for input field when user is matching a topic")
         conversationController?.rightButton.setTitle(NSLocalizedString("Search", comment: "Right button title in topic selection"), for: UIControlState())
     }
@@ -110,20 +112,11 @@ class TopicSelectionHandler: AutoCompleteHandler {
         }
     }
     
-    func searchTopics(_ searchString: String, allTopicsIfNoMatch: Bool = false) {
+    func searchTopics(_ searchString: String, forceMenu: Bool = false) {
         chatterbox.sessionAPI?.suggestTopics(searchText: searchString, completionHandler: { topics in
-            if topics.count == 0 {
-                if allTopicsIfNoMatch {
-                    self.showAllTopics()
-                } else {
-                    self.topics = topics
-                    self.conversationController?.showAutoCompletionView(false)
-                }
-            } else {
-                self.topics = topics
-                self.isAllTopics = false
-                self.conversationController?.showAutoCompletionView(true)
-            }
+            self.isAllTopics = false
+            self.topics = topics
+            self.conversationController?.showAutoCompletionView(forceMenu || topics.count > 0)
         })
     }
     
@@ -146,8 +139,8 @@ class TopicSelectionHandler: AutoCompleteHandler {
 class TopicSelectionTableCell: UITableViewCell {
     
     static let cellIdentifier = "TopicSelectionTableCell"
-    static let cellHeight: CGFloat = 50.0
-    static let headerHeight: CGFloat = 35.0
+    static let estimatedCellHeight: CGFloat = 50.0
+    static let estimatedHeaderHeight: CGFloat = 35.0
     
     @IBOutlet var topicLabel: UILabel?
     
@@ -160,10 +153,10 @@ class TopicSelectionTableCell: UITableViewCell {
             topicLabel.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview(topicLabel)
             
-            NSLayoutConstraint.activate([topicLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
-                                         topicLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 5),
-                                         topicLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
-                                         topicLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5)])
+            NSLayoutConstraint.activate([topicLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+                                         topicLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 10),
+                                         topicLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+                                         topicLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)])
         }
     }
     
