@@ -108,14 +108,14 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedItemModel = model.items[indexPath.row]
-        selectedItemModel.isSelected = !selectedItemModel.isSelected
+        model.select(itemAt: indexPath.row)
         tableView.reloadRows(at: [indexPath], with: .none)
         
         // for non-multiselect control we are just done here. Otherwise we just send didSelectItem: callback
         if !model.isMultiSelect {
             delegate?.pickerViewController(self, didFinishWithModel: model)
         } else {
+            let selectedItemModel = model.items[indexPath.row]
             delegate?.pickerViewController(self, didSelectItem: selectedItemModel, forPickerModel: model)
         }
     }

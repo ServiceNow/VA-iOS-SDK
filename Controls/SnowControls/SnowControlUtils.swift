@@ -19,7 +19,7 @@ class SnowControlUtils {
     
     static func textControls(forBooleanMessage message: BooleanControlMessage) -> [TextControl] {
         guard let model = BooleanControlViewModel.model(withMessage: message) else {
-            fatalError("oops")
+            fatalError("Invalid message")
         }
         
         // FIXME: provide proper direction info and result string. Temporary hacking together
