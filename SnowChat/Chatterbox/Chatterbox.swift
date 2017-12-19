@@ -134,7 +134,7 @@ class Chatterbox: AMBListener {
     }
     
     func storeAndPublish<T: CBControlData>(_ message: T, forConversation conversationId: String, ofType type: CBControlType) {
-        chatStore.didReceiveResponse(message, forConversation: conversationId)
+        chatStore.storeResponseData(message, forConversation: conversationId)
         ambClient?.publish(message: message, toChannel: chatChannel)
     }
     
@@ -383,28 +383,28 @@ class Chatterbox: AMBListener {
             var messageExchange = MessageExchange(withMessage: booleanControl)
             messageExchange.complete = false
             
-            chatStore.didReceiveControl(booleanControl, expectResponse: true, forConversation: conversationId, fromChat: self)
+            chatStore.storeControlData(booleanControl, expectResponse: true, forConversation: conversationId, fromChat: self)
             chatDataListener?.chatterbox(self, didReceiveBooleanData: booleanControl, forChat: chatId)
         }
     }
     
     fileprivate func handleInputControl(_ control: CBControlData) {
         if let inputControl = control as? InputControlMessage, let conversationId = inputControl.data.conversationId {
-            chatStore.didReceiveControl(inputControl, expectResponse: true, forConversation: conversationId, fromChat: self)
+            chatStore.storeControlData(inputControl, expectResponse: true, forConversation: conversationId, fromChat: self)
             chatDataListener?.chatterbox(self, didReceiveInputData: inputControl, forChat: chatId)
         }
     }
     
     fileprivate func handlePickerControl(_ control: CBControlData) {
         if let pickerControl = control as? PickerControlMessage, let conversationId = pickerControl.data.conversationId {
-            chatStore.didReceiveControl(pickerControl, expectResponse: true, forConversation: conversationId, fromChat: self)
+            chatStore.storeControlData(pickerControl, expectResponse: true, forConversation: conversationId, fromChat: self)
             chatDataListener?.chatterbox(self, didReceivePickerData: pickerControl, forChat: chatId)
         }
     }
     
     fileprivate func handleTextControl(_ control: CBControlData) {
         if let textControl = control as? OutputTextMessage, let conversationId = textControl.data.conversationId {
-            chatStore.didReceiveControl(textControl, expectResponse: false, forConversation: conversationId, fromChat: self)
+            chatStore.storeControlData(textControl, expectResponse: false, forConversation: conversationId, fromChat: self)
             chatDataListener?.chatterbox(self, didReceiveTextData: textControl, forChat: chatId)
         }
     }

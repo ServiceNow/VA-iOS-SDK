@@ -50,8 +50,8 @@ class DataStoreTests: XCTestCase {
         let store = ChatDataStore(storeId: "test-store")
         let control = CBDataFactory.controlFromJSON(jsonBoolean)
         
-        store.didReceiveControl(control, expectResponse: true, forConversation: "testConversationID1", fromChat: chatterbox!)
-        store.didReceiveControl(control, expectResponse: true, forConversation: "testConversationID2", fromChat: chatterbox!)
+        store.storeControlData(control, expectResponse: true, forConversation: "testConversationID1", fromChat: chatterbox!)
+        store.storeControlData(control, expectResponse: true, forConversation: "testConversationID2", fromChat: chatterbox!)
         
         // make sure 2 conversations
         let conversationIds = store.conversationIds()
@@ -73,8 +73,8 @@ class DataStoreTests: XCTestCase {
         let store = ChatDataStore(storeId: "test-store")
         let control = CBDataFactory.controlFromJSON(jsonBoolean)
         
-        store.didReceiveControl(control, expectResponse: true, forConversation: "testConversationID1", fromChat: chatterbox!)
-        store.didReceiveControl(control, expectResponse: false, forConversation: "testConversationID2", fromChat: chatterbox!)
+        store.storeControlData(control, expectResponse: true, forConversation: "testConversationID1", fromChat: chatterbox!)
+        store.storeControlData(control, expectResponse: false, forConversation: "testConversationID2", fromChat: chatterbox!)
         
         XCTAssertEqual(control.id, store.lastPendingMessage(forConversation: "testConversationID1")?.uniqueId())
         XCTAssertNil(store.lastPendingMessage(forConversation: "testConversationID2"))
@@ -84,7 +84,7 @@ class DataStoreTests: XCTestCase {
         let store = ChatDataStore(storeId: "test-store")
         let control = CBDataFactory.controlFromJSON(jsonBoolean)
         
-        store.didReceiveControl(control, expectResponse: true, forConversation: "testConversationID1", fromChat: chatterbox!)
+        store.storeControlData(control, expectResponse: true, forConversation: "testConversationID1", fromChat: chatterbox!)
 
         XCTAssertEqual(control.id, store.lastPendingMessage(forConversation: "testConversationID1")?.uniqueId())
         XCTAssertNil(store.lastPendingMessage(forConversation: "some-other-conversation"))
@@ -94,12 +94,12 @@ class DataStoreTests: XCTestCase {
         let store = ChatDataStore(storeId: "test-store")
         let control = CBDataFactory.controlFromJSON(jsonBoolean)
         
-        store.didReceiveControl(control, expectResponse: true, forConversation: "testConversationID", fromChat: chatterbox!)
-        store.didReceiveControl(control, expectResponse: true, forConversation: "testConversationID2", fromChat: chatterbox!)
+        store.storeControlData(control, expectResponse: true, forConversation: "testConversationID", fromChat: chatterbox!)
+        store.storeControlData(control, expectResponse: true, forConversation: "testConversationID2", fromChat: chatterbox!)
         XCTAssertNotNil(store.lastPendingMessage(forConversation: "testConversationID")?.uniqueId())
         XCTAssertNotNil(store.lastPendingMessage(forConversation: "testConversationID2")?.uniqueId())
         
-        store.didReceiveResponse(control, forConversation: "testConversationID")
+        store.storeResponseData(control, forConversation: "testConversationID")
         
         XCTAssertNil(store.lastPendingMessage(forConversation: "testConversationID"))
         XCTAssertNotNil(store.lastPendingMessage(forConversation: "testConversationID2")?.uniqueId())

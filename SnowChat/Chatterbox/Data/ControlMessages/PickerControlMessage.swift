@@ -40,8 +40,8 @@ struct PickerControlMessage: Codable, CBControlData {
         data = withData
     }
     
-    init(withValue value: String, fromMessage: PickerControlMessage) {
-        data = fromMessage.data
+    init(withValue value: String, fromMessage message: PickerControlMessage) {
+        data = message.data
         data.sendTime = Date()
         data.richControl?.value = value
     }

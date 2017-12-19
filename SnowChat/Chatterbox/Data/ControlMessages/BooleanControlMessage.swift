@@ -30,8 +30,8 @@ struct BooleanControlMessage: Codable, CBControlData {
         data = withData
     }
     
-    init(withValue value: Bool, fromMessage: BooleanControlMessage) {
-        data = fromMessage.data
+    init(withValue value: Bool, fromMessage message: BooleanControlMessage) {
+        data = message.data
         data.sendTime = Date()
         data.richControl?.value = value
     }

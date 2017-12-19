@@ -14,9 +14,9 @@ class ChatDataStore {
         id = storeId
     }
     
-    // didReceiveControl: find or create a conversation and add a new MessageExchange with the new control data
+    // storeControlData: find or create a conversation and add a new MessageExchange with the new control data
     //
-    func didReceiveControl(_ data: CBControlData, expectResponse: Bool, forConversation conversationId: String, fromChat source: Chatterbox) {
+    func storeControlData(_ data: CBControlData, expectResponse: Bool, forConversation conversationId: String, fromChat source: Chatterbox) {
         let messageExchange = MessageExchange(withMessage: data, isComplete: !expectResponse)
         
         var index = conversations.index { (conversation) -> Bool in
@@ -33,9 +33,9 @@ class ChatDataStore {
         }
     }
     
-    // didReceiveResponse: find the conversation and add the response to it's pending MessageExchange, completing it
+    // storeResponseData: find the conversation and add the response to it's pending MessageExchange, completing it
     //
-    func didReceiveResponse(_ data: CBControlData, forConversation conversationId: String) {
+    func storeResponseData(_ data: CBControlData, forConversation conversationId: String) {
         let index = conversations.index { (conversation) -> Bool in
             return conversation.uniqueId() == conversationId
         }
