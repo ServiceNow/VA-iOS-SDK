@@ -19,6 +19,8 @@ public class ChatViewController: UIViewController {
         self.chatterbox = chatterbox
         
         super.init(nibName: nil, bundle: nil)
+        
+        chatterbox.chatEventListener = self
     }
     
     public required init?(coder aDecoder: NSCoder) {
@@ -37,6 +39,7 @@ public class ChatViewController: UIViewController {
     
     private func setupConversationViewController() {
         let controller = ConversationViewController(chatterbox: chatterbox)
+        
         controller.willMove(toParentViewController: self)
         addChildViewController(controller)
         controller.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -45,5 +48,15 @@ public class ChatViewController: UIViewController {
         controller.didMove(toParentViewController: self)
         
         conversationViewController = controller
+    }
+}
+
+extension ChatViewController: ChatEventListener {
+    func chatterbox(_ chatterbox: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
+        conversationViewController?.chatterbox(chatterbox, didStartTopic: topic, forChat: chatId)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String) {
+        conversationViewController?.chatterbox(chatterbox, didFinishTopic: topic, forChat: chatId)
     }
 }

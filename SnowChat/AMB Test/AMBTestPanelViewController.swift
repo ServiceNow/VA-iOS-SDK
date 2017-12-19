@@ -26,11 +26,11 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
         
     }
     
-    func chatterbox(_: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
         appendContent(message: "Successfully started User Topic \(topic.data.actionMessage.topicName)")
     }
     
-    func chatterbox(_: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String) {
         appendContent(message: "\n\nTopic is OVER! Thanks for playing...")
     }
     
