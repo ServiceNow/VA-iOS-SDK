@@ -12,13 +12,13 @@ import XCTest
 class BooleanControlTests: XCTestCase {
     
     func testBooleanPickerVCDefaultPresentationStyle() {
-        let model = BooleanControlViewModel(id: "123", label: "?", required: true)
+        let model = BooleanControlViewModel(id: "123", label: "?", required: true, direction: .inbound)
         let booleanControl = BooleanControl(model: model)
         XCTAssert(booleanControl.style == .inline)
     }
     
-    func testRequiredBooleanControlValueWithRequiredTrue() {
-        let model = BooleanControlViewModel(id: "123", label: "?", required: true)
+    func testBooleanControlValueSetting() {
+        let model = BooleanControlViewModel(id: "123", label: "?", required: true, direction: .inbound)
         
         // Select No
         model.select(itemAt: 0)
@@ -40,8 +40,8 @@ class BooleanControlTests: XCTestCase {
     }
     
     // Required = false will introduce a "Skip" button to the picker
-    func testRequiredBooleanControlValueWithRequiredFalse() {
-        let model = BooleanControlViewModel(id: "123", label: "?", required: false)
+    func testNonRequiredBooleanControlValueHasSkipItem() {
+        let model = BooleanControlViewModel(id: "123", label: "?", required: false, direction: .inbound)
         
         // Select Skip!
         model.select(itemAt: 2)
@@ -50,7 +50,7 @@ class BooleanControlTests: XCTestCase {
     }
     
     func testBooleanMultiSelectVar() {
-        let model = BooleanControlViewModel(id: "123", label: "?", required: true)
+        let model = BooleanControlViewModel(id: "123", label: "?", required: true, direction: .inbound)
         XCTAssert(model.isMultiSelect == false)
     }
 }

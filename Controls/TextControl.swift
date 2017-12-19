@@ -36,10 +36,13 @@ class TextControl: ControlProtocol {
     weak var delegate: ControlDelegate?
     
     required init(model: ControlViewModel) {
-        self.model = model
+        guard let textModel = model as? TextControlViewModel else {
+            fatalError("Wrong model class")
+        }
         
+        self.model = textModel   
         let textViewController = TextViewController()
-        textViewController.textView.text = (model as! TextControlViewModel).value
+        textViewController.textView.text = textModel.value
         self.viewController = textViewController
     }
 }

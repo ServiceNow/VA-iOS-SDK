@@ -18,13 +18,13 @@ class PickerItem {
     
     let label: String
     
-    var value: Any
+    var value: String
     
     var isSelected: Bool = false
     
     let type: ItemType
     
-    init(type: ItemType = .custom, label: String, value: Any) {
+    init(type: ItemType = .custom, label: String, value: String) {
         self.label = label
         self.value = value
         self.type = type

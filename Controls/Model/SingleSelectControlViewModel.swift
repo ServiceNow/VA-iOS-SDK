@@ -45,6 +45,6 @@ class SingleSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
         }
         
         // is Yes selected?
-        return selectedItem.value as? String
+        return selectedItem.value
     }
 }

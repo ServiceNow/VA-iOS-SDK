@@ -53,7 +53,7 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
         }
         
         // Array of selected values
-        let values = selectedItems.flatMap({ $0.value as? String })
+        let values = selectedItems.map({ $0.value })
         return values
     }
 }

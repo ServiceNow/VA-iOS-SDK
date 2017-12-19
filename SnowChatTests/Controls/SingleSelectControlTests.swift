@@ -20,13 +20,13 @@ class SingleSelectControlTests: XCTestCase {
     }
     
     func testSingleSelectVCDefaultPresentationStyle() {
-        let model = SingleSelectControlViewModel(id: "123", label: "?", required: true, items: singleSelectItems!)
+        let model = SingleSelectControlViewModel(id: "123", label: "?", required: true, direction: .inbound, items: singleSelectItems!)
         let singleSelect = SingleSelectControl(model: model)
         XCTAssert(singleSelect.style == .inline)
     }
     
     func testSingleSelectValueItemsWithRequiredTrue() {
-        let model = SingleSelectControlViewModel(id: "123", label: "?", required: true, items: singleSelectItems!)
+        let model = SingleSelectControlViewModel(id: "123", label: "?", required: true, direction: .inbound, items: singleSelectItems!)
         
         model.select(itemAt: 0)
         XCTAssert(model.selectedItems.count == 1)
@@ -36,7 +36,7 @@ class SingleSelectControlTests: XCTestCase {
     }
     
     func testSingleSelectValueItemsWithRequiredFalse() {
-        let model = SingleSelectControlViewModel(id: "123", label: "?", required: false, items: singleSelectItems!)
+        let model = SingleSelectControlViewModel(id: "123", label: "?", required: false, direction: .inbound, items: singleSelectItems!)
         
         model.select(itemAt: 0)
         XCTAssert(model.selectedItems.count == 1)
@@ -49,7 +49,7 @@ class SingleSelectControlTests: XCTestCase {
     }
     
     func testResultTrue() {
-        let model = SingleSelectControlViewModel(id: "123", label: "?", required: true, items: singleSelectItems!)
+        let model = SingleSelectControlViewModel(id: "123", label: "?", required: true, direction: .inbound, items: singleSelectItems!)
         
         model.select(itemAt: 0)
         var result = model.resultValue
@@ -61,7 +61,7 @@ class SingleSelectControlTests: XCTestCase {
     }
     
     func testResultFalse() {
-        let model = SingleSelectControlViewModel(id: "123", label: "?", required: false, items: singleSelectItems!)
+        let model = SingleSelectControlViewModel(id: "123", label: "?", required: false, direction: .inbound, items: singleSelectItems!)
         
         model.select(itemAt: 0)
         var result = model.resultValue
@@ -77,8 +77,8 @@ class SingleSelectControlTests: XCTestCase {
         XCTAssertNil(result)
     }
     
-    func testBooleanMultiSelectVar() {
-        let model = SingleSelectControlViewModel(id: "123", label: "?", required: true, items: singleSelectItems!)
+    func testSingleSelectMultiSelectVar() {
+        let model = SingleSelectControlViewModel(id: "123", label: "?", required: true, direction: .inbound, items: singleSelectItems!)
         XCTAssert(model.isMultiSelect == false)
     }
 }
