@@ -67,7 +67,6 @@
 		BEB6C8681FB92CD700B1D497 /* SnowChat.h in Headers */ = {isa = PBXBuildFile; fileRef = BEB6C85A1FB92CD700B1D497 /* SnowChat.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C40565CB1FBE283C004BD28C /* AMBChatClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565CA1FBE283C004BD28C /* AMBChatClient.swift */; };
 		C40565CD1FBE292B004BD28C /* ChatDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565CC1FBE292B004BD28C /* ChatDataStore.swift */; };
-		C40565D11FBE32F3004BD28C /* CBStoreNotificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565D01FBE32F3004BD28C /* CBStoreNotificationTests.swift */; };
 		C40565F01FC491DA004BD28C /* ActionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565EF1FC491DA004BD28C /* ActionMessage.swift */; };
 		C40565F21FC49CD8004BD28C /* InitMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565F11FC49CD8004BD28C /* InitMessage.swift */; };
 		C40565F81FC4F4D3004BD28C /* BooleanControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565F71FC4F4D3004BD28C /* BooleanControlMessage.swift */; };
@@ -88,6 +87,7 @@
 		C489073D1FCC8209008D9521 /* AMBTestPanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C489073B1FCC8209008D9521 /* AMBTestPanelViewController.swift */; };
 		C489073E1FCC8209008D9521 /* AMBTestPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C489073C1FCC8209008D9521 /* AMBTestPanelViewController.xib */; };
 		C4A774A91FDF22E200B6DF68 /* ChatEventListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A774A81FDF22E200B6DF68 /* ChatEventListener.swift */; };
+		C4B6A9521FE22208007DBEED /* ChatDataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */; };
 		C4A774AD1FE0607D00B6DF68 /* ChatServiceAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A774AC1FE0607D00B6DF68 /* ChatServiceAppDelegate.swift */; };
 		C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA21FBCF2F8007007F5 /* CBData.swift */; };
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
@@ -162,7 +162,6 @@
 		BEB6C8671FB92CD700B1D497 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C40565CA1FBE283C004BD28C /* AMBChatClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBChatClient.swift; sourceTree = "<group>"; };
 		C40565CC1FBE292B004BD28C /* ChatDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataStore.swift; sourceTree = "<group>"; };
-		C40565D01FBE32F3004BD28C /* CBStoreNotificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBStoreNotificationTests.swift; sourceTree = "<group>"; };
 		C40565EF1FC491DA004BD28C /* ActionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionMessage.swift; sourceTree = "<group>"; };
 		C40565F11FC49CD8004BD28C /* InitMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitMessage.swift; sourceTree = "<group>"; };
 		C40565F71FC4F4D3004BD28C /* BooleanControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooleanControlMessage.swift; sourceTree = "<group>"; };
@@ -181,6 +180,7 @@
 		C489073B1FCC8209008D9521 /* AMBTestPanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBTestPanelViewController.swift; sourceTree = "<group>"; };
 		C489073C1FCC8209008D9521 /* AMBTestPanelViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AMBTestPanelViewController.xib; sourceTree = "<group>"; };
 		C4A774A81FDF22E200B6DF68 /* ChatEventListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEventListener.swift; sourceTree = "<group>"; };
+		C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataStoreTests.swift; sourceTree = "<group>"; };
 		C4A774AC1FE0607D00B6DF68 /* ChatServiceAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceAppDelegate.swift; sourceTree = "<group>"; };
 		C4CAFEA21FBCF2F8007007F5 /* CBData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBData.swift; sourceTree = "<group>"; };
 		C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataTests.swift; sourceTree = "<group>"; };
@@ -547,8 +547,8 @@
 			isa = PBXGroup;
 			children = (
 				C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */,
-				C40565D01FBE32F3004BD28C /* CBStoreNotificationTests.swift */,
 				C4CED93F1FD74479008E3E25 /* SessionAPITests.swift */,
+				C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */,
 			);
 			path = Chatterbox;
 			sourceTree = "<group>";
@@ -809,8 +809,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C420ED7F1FC5F488002476C0 /* LoggerTests.swift in Sources */,
+				C4B6A9521FE22208007DBEED /* ChatDataStoreTests.swift in Sources */,
 				C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */,
-				C40565D11FBE32F3004BD28C /* CBStoreNotificationTests.swift in Sources */,
 				C4CED9401FD74479008E3E25 /* SessionAPITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -105,6 +105,20 @@ class SessionAPI {
         }
     }
     
+    func retrieve(conversation conversationId: String, completionHandler: @escaping ([CBControlData]) -> Void) {
+        Alamofire.request("\(CBData.config.url)/api/now/v1/cs/conversation/\(conversationId)/message",
+            method: .get,
+            encoding: JSONEncoding.default).responseJSON { response in
+                var messages = [CBControlData]()
+                if response.error == nil {
+                    if let result = response.result.value {
+                        messages = SessionAPI.messagesFromResult(result)
+                    }
+                }
+                completionHandler(messages)
+        }
+    }
+    
     static func topicsFromResult(_ result: Any) -> [CBTopic] {
         guard let dictionary = result as? NSDictionary,
               let topicDictionaries = dictionary["root"] as? [NSDictionary] else { return [] }
@@ -115,5 +129,21 @@ class SessionAPI {
         }
         
         return topics
+    }
+    
+    static func messagesFromResult(_ result: Any) -> [CBControlData] {
+        guard let dictionary = result as? NSDictionary,
+            let messageArray = dictionary["conversation"] as? [NSDictionary] else { return [] }
+        
+        let messages: [CBControlData] = messageArray.flatMap { message in
+            if let richControl = message["richControl"] as? NSDictionary, let uiType = richControl["uiType"] as? String, let controlType = CBControlType(rawValue: uiType) {
+                switch controlType {
+                default:
+                    Logger.default.logError("Unrecognized message type in messageFromResult: \(controlType) - \(richControl)")
+                }
+            }
+            return nil
+        }
+        return messages
     }
 }
