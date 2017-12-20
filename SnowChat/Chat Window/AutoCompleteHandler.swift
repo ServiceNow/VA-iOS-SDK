@@ -24,6 +24,8 @@ protocol AutoCompleteHandler {
     func cellForRowAt(_ indexPath: IndexPath) -> UITableViewCell
     func viewForHeaderInSection(_ section: Int) -> UIView?
     
+    func textDidChange(_ text: String)
+    
     func didChangeAutoCompletionText(withPrefix prefix: String, andWord word: String)
     func didCommitEditing(_ value: String)
     

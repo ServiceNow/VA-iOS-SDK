@@ -24,10 +24,16 @@ class TopicSelectionHandler: AutoCompleteHandler {
         return (cellHeight * CGFloat(topics.count)) + headerHeight
     }
     
-    func didChangeAutoCompletionText(withPrefix prefix: String, andWord word: String) {
-        if word.count > 2 {
-            searchTopics("\(prefix)\(word)")
+    func textDidChange(_ text: String) {
+        conversationController?.rightButton.isEnabled = text.count > 2
+        
+        if text.count > 2 {
+            searchTopics(text)
         }
+    }
+
+    func didChangeAutoCompletionText(withPrefix prefix: String, andWord word: String) {
+        // we are handling textDidChange so no need to use the prefix-based method
     }
 
     func didCommitEditing(_ value: String) {
@@ -88,14 +94,6 @@ class TopicSelectionHandler: AutoCompleteHandler {
         conversationController?.autoCompletionView.estimatedSectionHeaderHeight = TopicSelectionTableCell.estimatedHeaderHeight
         conversationController?.autoCompletionView.sectionHeaderHeight = UITableViewAutomaticDimension
         
-        // make the autocompletion filter include all alphanumeric characters
-        
-        // swiftlint:disable force_unwrapping
-        let upperCase = (0...26).map({ String(UnicodeScalar("A".unicodeScalars.first!.value + $0)!) })
-        let lowerCase = (0...26).map({ String(UnicodeScalar("a".unicodeScalars.first!.value + $0)!) })
-        // swiftlint:enable force_unwrapping
-        conversationController?.registerPrefixes(forAutoCompletion: upperCase + lowerCase)
-        
         conversationController?.textView.isTypingSuggestionEnabled = false
         conversationController?.textView.placeholder = NSLocalizedString("Type your question...", comment: "Placeholder text for input field when user is matching a topic")
         conversationController?.rightButton.setTitle(NSLocalizedString("Search", comment: "Right button title in topic selection"), for: UIControlState())
@@ -110,6 +108,7 @@ class TopicSelectionHandler: AutoCompleteHandler {
     }
     
     func searchTopics(_ searchString: String, forceMenu: Bool = false) {
+        let searchString = searchString.trimmingCharacters(in: CharacterSet(charactersIn: " \t"))
         chatterbox.sessionAPI?.suggestTopics(searchText: searchString, completionHandler: { topics in
             self.isAllTopics = false
             self.topics = topics

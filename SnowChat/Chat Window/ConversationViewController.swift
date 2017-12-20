@@ -113,14 +113,35 @@ extension ConversationViewController {
     // MARK: SLKTextViewController overrides
     
     override func didChangeAutoCompletionPrefix(_ prefix: String, andWord word: String) {
+        super.didChangeAutoCompletionPrefix(prefix, andWord: word)
+        
         autocompleteHandler?.didChangeAutoCompletionText(withPrefix: prefix, andWord: word)
     }
     
-    override func didPressRightButton(_ sender: Any?) {
-        let searchText: String = textView.text ?? ""
+    override func textDidUpdate(_ animated: Bool) {
+        super.textDidUpdate(animated)
         
         switch inputState {
         case .inTopicSelection:
+            let searchText: String = textView.text ?? ""
+            if let handler = autocompleteHandler {
+                handler.textDidChange(searchText)
+            }
+        default:
+            Logger.default.logDebug("Right button or enter pressed: state=\(inputState)")
+        }
+    }
+    
+    override func didPressRightButton(_ sender: Any?) {
+        didCommitTextEditing(sender)
+    }
+    
+    override func didCommitTextEditing(_ sender: Any) {
+        super.didCommitTextEditing(sender)
+        
+        switch inputState {
+        case .inTopicSelection:
+            let searchText: String = textView.text ?? ""
             if let handler = autocompleteHandler {
                 handler.didCommitEditing(searchText)
             }
