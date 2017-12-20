@@ -1,0 +1,3 @@
+git_url "https://gitlab-deo.devsnc.com/mobile/Certificates-iOS.git"
+username "mobileadmin@servicenow.com"
+app_identifier ["com.servicenow.kangaroo"]
