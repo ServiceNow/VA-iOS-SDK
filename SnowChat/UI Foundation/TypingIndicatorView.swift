@@ -14,20 +14,36 @@ class TypingIndicatorView: UIView {
     let dotDiameter: Int = 10
     let dotSpacing: Int = 15
     
-    var color: UIColor? {
-        return UIColor.red
+    var color: UIColor = UIColor.userBubbleTextColor {
+        didSet {
+            (layer as! CAReplicatorLayer).instanceColor = color.cgColor
+        }
     }
     
-    var isAnimating: Bool {
-        return false
-    }
+    private let sourceLayer = CAShapeLayer()
+    
+    var isAnimating: Bool = false
     
     func startAnimating() {
+        let indicatorLayer = layer as! CAReplicatorLayer
+        let animationDuration = 1.2
+        let delay = animationDuration / Double(dotCount)
+        indicatorLayer.instanceDelay = delay
         
+        // add opacity animation
+        let opacityAnimation = CABasicAnimation(keyPath: "opacity")
+        opacityAnimation.fromValue = 1.0
+        opacityAnimation.toValue = 0.45
+        opacityAnimation.duration = animationDuration * 0.5
+        opacityAnimation.autoreverses = true
+        opacityAnimation.repeatCount = Float.infinity
+        sourceLayer.add(opacityAnimation, forKey: "opacityAnimation")
+        isAnimating = true
     }
     
     func stopAnimating() {
-        
+        sourceLayer.removeAllAnimations()
+        isAnimating = false
     }
     
     override var intrinsicContentSize: CGSize {
@@ -55,16 +71,15 @@ class TypingIndicatorView: UIView {
     private func setupIndicatorLayer() {
         let indicatorLayer = layer as! CAReplicatorLayer
         
-        let circleLayer = CAShapeLayer()
-        circleLayer.fillColor = color?.cgColor
+        sourceLayer.fillColor = color.cgColor
         let dotSize = CGSize(width: dotDiameter, height: dotDiameter)
         let circlePath = UIBezierPath(ovalIn: CGRect(origin: CGPoint.zero, size: dotSize)).cgPath
-        circleLayer.path = circlePath
-        circleLayer.frame = CGRect(origin: CGPoint.zero, size: dotSize)
+        sourceLayer.path = circlePath
+        sourceLayer.frame = CGRect(origin: CGPoint.zero, size: dotSize)
         
         indicatorLayer.instanceCount = dotCount
         indicatorLayer.instanceTransform = CATransform3DMakeTranslation(CGFloat(dotSpacing), 0, 0)
-        indicatorLayer.addSublayer(circleLayer)
+        indicatorLayer.addSublayer(sourceLayer)
     }
     
     override func layoutSublayers(of layer: CALayer) {
