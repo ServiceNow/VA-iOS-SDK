@@ -10,24 +10,39 @@ import Foundation
 
 class TextControl: ControlProtocol {
     
+    // Private class to handle custom view controller for Text Control.
+    private class TextViewController: UIViewController {
+        
+        let textView = UITextView()
+        
+        override func loadView() {
+            self.view = textView
+        }
+        
+        override func viewDidLoad() {
+            super.viewDidLoad()
+            textView.setContentHuggingPriority(.required, for: .horizontal)
+            textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+            textView.isScrollEnabled = false // to turn on autoresizing
+            textView.isEditable = false
+            textView.font = UIFont.preferredFont(forTextStyle: .body)
+        }
+    }
+    
     var model: ControlViewModel
     
-    var viewController: UIViewController
+    let viewController: UIViewController
     
     weak var delegate: ControlDelegate?
     
     required init(model: ControlViewModel) {
-        self.model = model
-        self.viewController = UIViewController()
-        setupTextView()
-    }
-    
-    private func setupTextView() {
-        let textView = UITextView()
-        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        textView.isScrollEnabled = false
-        textView.font = UIFont.preferredFont(forTextStyle: .body)
-        textView.text = model.title
-        viewController.view = textView
+        guard let textModel = model as? TextControlViewModel else {
+            fatalError("Wrong model class")
+        }
+        
+        self.model = textModel   
+        let textViewController = TextViewController()
+        textViewController.textView.text = textModel.value
+        self.viewController = textViewController
     }
 }

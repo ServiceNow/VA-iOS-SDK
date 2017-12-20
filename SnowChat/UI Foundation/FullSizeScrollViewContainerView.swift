@@ -10,9 +10,19 @@ import UIKit
 
 class FullSizeScrollViewContainerView: UIView {
     
+    var observer: NSKeyValueObservation?
+    
+    override var backgroundColor: UIColor? {
+        didSet {
+            scrollView?.backgroundColor = backgroundColor
+        }
+    }
+    
     var scrollView: UIScrollView? {
         didSet {
-            invalidateIntrinsicContentSize()
+            observer = scrollView?.observe(\UIScrollView.bounds) { [weak self] (scrollView, change) in
+                self?.invalidateIntrinsicContentSize()
+            }
         }
     }
     
@@ -28,7 +38,7 @@ class FullSizeScrollViewContainerView: UIView {
                 return super.intrinsicContentSize
         }
         
-        let width = scrollView.bounds.width
+        let width = scrollView.contentSize.width
         return CGSize(width: width, height: height)
     }
 }

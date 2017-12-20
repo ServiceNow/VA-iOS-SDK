@@ -21,4 +21,20 @@ extension UIColor {
     class var controlTextColor: UIColor {
         return UIColor(red: 72 / 255, green: 159 / 255, blue: 250 / 255, alpha: 1)
     }
+    
+    class var agentBubbleBackgroundColor: UIColor {
+        return UIColor(red: 233 / 255, green: 237 / 255, blue: 240 / 255, alpha: 1)
+    }
+    
+    class var agentBubbleTextColor: UIColor {
+        return UIColor(red: 112 / 255, green: 143 / 255, blue: 180 / 255, alpha: 1)
+    }
+    
+    class var userBubbleBackgroundColor: UIColor {
+        return UIColor(red: 190 / 255, green: 221 / 255, blue: 239 / 255, alpha: 1)
+    }
+    
+    class var userBubbleTextColor: UIColor {
+        return UIColor(red: 135 / 255, green: 136 / 255, blue: 150 / 255, alpha: 1)
+    }
 }
