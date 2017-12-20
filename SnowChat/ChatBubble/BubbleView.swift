@@ -10,12 +10,20 @@ import UIKit
 
 class BubbleView: UIView {
     
-    enum ArrowDirection : Int {
+    enum ArrowDirection {
         case left
         case right
     }
     
-    var arrowDirection: ArrowDirection = .left
+    var arrowDirection: ArrowDirection = .left {
+        didSet {
+            if arrowDirection == .left {
+                contentViewInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 0)
+            } else {
+                contentViewInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 10)
+            }
+        }
+    }
     
     var insetConstraints = [NSLayoutConstraint]()
     
@@ -34,18 +42,6 @@ class BubbleView: UIView {
         }
     }
     
-    override var intrinsicContentSize: CGSize {
-        // if bubble view has some control - calculate its intrinsicContentSize and size Bubble accordingly
-        var contentSize = super.intrinsicContentSize
-        guard let subview = contentView.subviews.first else {
-            return contentSize
-        }
-        
-        subview.invalidateIntrinsicContentSize()
-        contentSize.height = subview.intrinsicContentSize.height
-        return contentSize
-    }
-    
     private lazy var borderLayer: CAShapeLayer = {
         let borderLayer = CAShapeLayer()
         borderLayer.fillColor = nil
@@ -57,6 +53,11 @@ class BubbleView: UIView {
         layer.addSublayer(borderLayer)
         return borderLayer
     }()
+
+    convenience init(arrowDirection: ArrowDirection = .left) {
+        self.init(frame: CGRect.zero)
+        self.arrowDirection = arrowDirection
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -65,7 +66,11 @@ class BubbleView: UIView {
     }
     
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
+        arrowDirection = .left
+        contentViewInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 0)
+        setupContentView()
+        setupShapeLayer()
     }
     
     private func setupContentView() {
@@ -78,7 +83,7 @@ class BubbleView: UIView {
         NSLayoutConstraint.deactivate(insetConstraints)
         insetConstraints.removeAll()
         
-        insetConstraints.append(contentView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10 + contentViewInsets.left))
+        insetConstraints.append(contentView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: contentViewInsets.left))
         insetConstraints.append(contentView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -contentViewInsets.right))
         insetConstraints.append(contentView.topAnchor.constraint(equalTo: topAnchor, constant: contentViewInsets.top))
         insetConstraints.append(contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -contentViewInsets.bottom))
@@ -96,7 +101,7 @@ class BubbleView: UIView {
             return
         }
         
-        let bubblePath = chatBubblePath(forBounds: bounds)
+        let bubblePath = chatBubblePath(forBounds: bounds, leftSide: (arrowDirection == .left))
         (layer.mask as? CAShapeLayer)?.path = bubblePath
         layer.mask?.frame = bounds
         borderLayer.frame = bounds

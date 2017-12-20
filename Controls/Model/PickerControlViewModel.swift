@@ -6,60 +6,37 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-// base class for item model
-class SelectableItemViewModel: ControlViewModel {
-    
-    let id: String
-    
-    let title: String
-    
-    let isRequired: Bool
-    
-    var isSelected: Bool = false
-    
-    var displayValue: String? {
-        return title
-    }
-    
-    var type: CBControlType = .unknown
-    
-    required init(id: String = "selectable_item", title: String, required: Bool = true) {
-        self.title = title
-        self.id = id
-        self.isRequired = required
-    }
-}
-
 protocol PickerControlViewModel: ControlViewModel {
     
     // can user select mutliple items?
     var isMultiSelect: Bool { get }
     
     // collection of item models
-    var items: [SelectableItemViewModel] { get }
+    var items: [PickerItem] { get }
     
-    // represents items as a string
-    var displayValues: [String?]? { get }
+    var selectedItems: [PickerItem] { get }
     
-    var selectedItems: [SelectableItemViewModel]? { get }
+    var selectedItem: PickerItem? { get }
     
-    init(id: String, title: String, required: Bool, items: [SelectableItemViewModel], multiSelect: Bool)
+    func select(itemAt index: Int)
 }
 
-// Provides default implementation for displayValues and selectedItems
+// MARK: - Items selection: provides default implementation for selecting items
 extension PickerControlViewModel {
     
-    init(id: String, title: String, required: Bool) {
-        self.init(id: id, title: title, required: required, items: [SelectableItemViewModel](), multiSelect: false)
-    }
-    
-    var displayValues: [String?]? {
-        let values = items.map({ $0.displayValue })
-        return values
-    }
-    
-    var selectedItems: [SelectableItemViewModel]? {
+    var selectedItems: [PickerItem] {
         let values = items.filter({ $0.isSelected })
         return values
+    }
+    
+    var selectedItem: PickerItem? {
+        return selectedItems.first
+    }
+    
+    func select(itemAt index: Int) {
+        // clear out all the items first
+        items.forEach({ $0.isSelected = false })
+        let item = items[index]
+        item.isSelected = true
     }
 }

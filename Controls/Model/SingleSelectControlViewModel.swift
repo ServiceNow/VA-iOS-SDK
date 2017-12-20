@@ -1,12 +1,12 @@
 //
-//  BooleanControlViewModel.swift
+//  SingleSelectControlViewModel.swift
 //  SnowChat
 //
-//  Created by Michael Borowiec on 11/13/17.
+//  Created by Michael Borowiec on 12/12/17.
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-class BooleanControlViewModel: PickerControlViewModel, ValueRepresentable {
+class SingleSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     let id: String
     
@@ -17,15 +17,14 @@ class BooleanControlViewModel: PickerControlViewModel, ValueRepresentable {
     let isMultiSelect: Bool
     
     var items = [PickerItem]()
-
+    
     var type: ControlType {
-        return .boolean
+        return .multiSelect
     }
     
     var direction: ControlDirection
     
-    init(id: String, label: String, required: Bool, direction: ControlDirection) {
-        let items = [PickerItem.yesItem(), PickerItem.noItem()]
+    init(id: String, label: String, required: Bool, direction: ControlDirection, items: [PickerItem]) {
         self.id = id
         self.label = label
         self.isRequired = required
@@ -40,21 +39,12 @@ class BooleanControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     // MARK: - ValueRepresentable
     
-    var resultValue: Bool? {
+    var resultValue: String? {
         guard let selectedItem = selectedItem, selectedItem.type != .skip else {
             return nil
         }
         
         // is Yes selected?
-        return selectedItem.type == .yes
-    }
-}
-
-// little helper to return Yes/No based on bool value. Probably might be done different way. Also needs localization.
-
-extension Bool {
-    
-    public var chatDescription: String {
-        return self ? "Yes" : "No"
+        return selectedItem.value
     }
 }

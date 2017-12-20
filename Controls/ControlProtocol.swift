@@ -6,10 +6,27 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
+enum ControlType {
+    
+    case multiSelect
+    
+    case text
+    
+    case boolean
+    
+    case singleSelect
+    
+    case unknown
+}
+
+// MARK: ControlDelegate
+
 protocol ControlDelegate: AnyObject {
     
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel)
 }
+
+// MARK: Control Protocol
 
 protocol ControlProtocol: AnyObject {
     

@@ -22,7 +22,7 @@ class SessionAPITests: XCTestCase {
         super.tearDown()
     }
     
-    func testtopicsFromResult() throws {
+    func testTopicsFromResult() throws {
         let jsonString = """
         {
             "root": [

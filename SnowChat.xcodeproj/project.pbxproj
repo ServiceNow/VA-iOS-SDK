@@ -21,31 +21,45 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		57067C8D1FE62EE900812266 /* FakeChatViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57067C8C1FE62EE900812266 /* FakeChatViewCell.swift */; };
+		5706C5791FE43FB3008D70D1 /* SnowControlUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706C5781FE43FB3008D70D1 /* SnowControlUtils.swift */; };
+		5706C57B1FE499A0008D70D1 /* FakeChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706C57A1FE499A0008D70D1 /* FakeChatViewController.swift */; };
+		5706C5811FE49F78008D70D1 /* MessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706C5801FE49F78008D70D1 /* MessageViewController.swift */; };
 		572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572A4E3B1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift */; };
 		572A4E401FCF06320081318D /* PickerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 572A4E3F1FCF06320081318D /* PickerTableViewCell.xib */; };
 		572A4E421FCF07150081318D /* PickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572A4E411FCF07150081318D /* PickerTableViewCell.swift */; };
 		572A4E441FCF70070081318D /* BubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572A4E431FCF70070081318D /* BubbleView.swift */; };
-		572FAC181FC47A9C00B0B956 /* MultiselectPickerControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC171FC47A9C00B0B956 /* MultiselectPickerControl.swift */; };
+		572FAC181FC47A9C00B0B956 /* MultiSelectControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */; };
 		572FAC1A1FC47B5600B0B956 /* MultiSelectControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC191FC47B5600B0B956 /* MultiSelectControlViewModel.swift */; };
 		57532BAB1FD777AC001D674C /* PickerControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57532BAA1FD777AC001D674C /* PickerControl.swift */; };
 		57532BAD1FD777FA001D674C /* TextControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57532BAC1FD777FA001D674C /* TextControl.swift */; };
 		57532BAF1FD79F4D001D674C /* ChatterboxMessageAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57532BAE1FD79F4D001D674C /* ChatterboxMessageAdapter.swift */; };
 		5760B91F1FD5C8C100591C06 /* UIImageUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760B91E1FD5C8C100591C06 /* UIImageUtils.swift */; };
-		5760C8CE1FBF4C920055B73D /* PickerTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760C8CD1FBF4C920055B73D /* PickerTableViewController.swift */; };
+		5760C8CE1FBF4C920055B73D /* PickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760C8CD1FBF4C920055B73D /* PickerViewController.swift */; };
+		5763F3C81FE20FF90035764A /* PickerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5763F3C71FE20FF90035764A /* PickerItem.swift */; };
+		5778CF981FDEE767004F77D8 /* BooleanControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5778CF971FDEE767004F77D8 /* BooleanControlTests.swift */; };
+		5778CF9A1FE05A3F004F77D8 /* MultiSelectControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5778CF991FE05A3F004F77D8 /* MultiSelectControlTests.swift */; };
+		5778CF9C1FE06F08004F77D8 /* SingleSelectControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5778CF9B1FE06F08004F77D8 /* SingleSelectControl.swift */; };
+		5778CF9E1FE07023004F77D8 /* SingleSelectControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5778CF9D1FE07023004F77D8 /* SingleSelectControlViewModel.swift */; };
+		5778CFA01FE07764004F77D8 /* SingleSelectControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5778CF9F1FE07764004F77D8 /* SingleSelectControlTests.swift */; };
 		5786320B1FBB571E00FA0282 /* BubbleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578632071FBB571D00FA0282 /* BubbleViewController.swift */; };
 		578632161FBB9E0300FA0282 /* ControlProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578632151FBB9E0300FA0282 /* ControlProtocol.swift */; };
 		5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5788B2A61FBB38FD00846F33 /* ControlViewModel.swift */; };
-		5796E4481FD0B3E0009D2035 /* CGPathUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5796E4471FD0B3E0009D2035 /* CGPathUtils.swift */; };
-		57B7E2C31FBA25A200196BA9 /* BooleanPickerControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2BB1FBA25A200196BA9 /* BooleanPickerControl.swift */; };
+		5796E4481FD0B3E0009D2035 /* CGPath+Bubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5796E4471FD0B3E0009D2035 /* CGPath+Bubble.swift */; };
+		57B7E2C31FBA25A200196BA9 /* BooleanControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2BB1FBA25A200196BA9 /* BooleanControl.swift */; };
 		57B7E2C61FBA25A200196BA9 /* SelectableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2BE1FBA25A200196BA9 /* SelectableViewCell.swift */; };
 		57B7E2C81FBA25A200196BA9 /* SelectableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2C11FBA25A200196BA9 /* SelectableView.swift */; };
 		57B7E2C91FBA25A200196BA9 /* SelectableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57B7E2C21FBA25A200196BA9 /* SelectableView.xib */; };
 		57B7E2CD1FBA3C8400196BA9 /* UIView+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2CB1FBA3C8400196BA9 /* UIView+Additions.swift */; };
 		57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2CF1FBA6DA500196BA9 /* BooleanControlViewModel.swift */; };
 		57B7E2D21FBA75B100196BA9 /* PickerControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */; };
+		57CBFE001FE849D0006396E8 /* vagent-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 57CBFDFF1FE849D0006396E8 /* vagent-icon.png */; };
+		57CBFE021FE8D921006396E8 /* UILayoutPriority+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57CBFE011FE8D921006396E8 /* UILayoutPriority+Additions.swift */; };
+		57D997AB1FE5B00000394A6D /* MessageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57D997AA1FE5B00000394A6D /* MessageViewController.xib */; };
 		57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1EA321FC33D1C009FC76D /* RoundedView.swift */; };
 		57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */; };
-		57EDCEA41FD5DA7A009A9A35 /* UIColor+Control.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EDCEA31FD5DA7A009A9A35 /* UIColor+Control.swift */; };
+		57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */; };
+		57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F7B2531FE17823006D917C /* TextControlViewModel.swift */; };
 		BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = BE2925A01FC3391D005E55CA /* .swiftlint.yml */; };
 		BE29E0C91FDEF74C0029D1F0 /* SlackTextViewController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */; };
 		BE29E0CC1FDEFA5B0029D1F0 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */; };
@@ -67,7 +81,6 @@
 		BEB6C8681FB92CD700B1D497 /* SnowChat.h in Headers */ = {isa = PBXBuildFile; fileRef = BEB6C85A1FB92CD700B1D497 /* SnowChat.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C40565CB1FBE283C004BD28C /* AMBChatClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565CA1FBE283C004BD28C /* AMBChatClient.swift */; };
 		C40565CD1FBE292B004BD28C /* ChatDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565CC1FBE292B004BD28C /* ChatDataStore.swift */; };
-		C40565D11FBE32F3004BD28C /* CBStoreNotificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565D01FBE32F3004BD28C /* CBStoreNotificationTests.swift */; };
 		C40565F01FC491DA004BD28C /* ActionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565EF1FC491DA004BD28C /* ActionMessage.swift */; };
 		C40565F21FC49CD8004BD28C /* InitMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565F11FC49CD8004BD28C /* InitMessage.swift */; };
 		C40565F81FC4F4D3004BD28C /* BooleanControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565F71FC4F4D3004BD28C /* BooleanControlMessage.swift */; };
@@ -90,6 +103,7 @@
 		C489073D1FCC8209008D9521 /* AMBTestPanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C489073B1FCC8209008D9521 /* AMBTestPanelViewController.swift */; };
 		C489073E1FCC8209008D9521 /* AMBTestPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C489073C1FCC8209008D9521 /* AMBTestPanelViewController.xib */; };
 		C4A774A91FDF22E200B6DF68 /* ChatEventListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A774A81FDF22E200B6DF68 /* ChatEventListener.swift */; };
+		C4B6A9521FE22208007DBEED /* ChatDataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */; };
 		C4A774AD1FE0607D00B6DF68 /* ChatServiceAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A774AC1FE0607D00B6DF68 /* ChatServiceAppDelegate.swift */; };
 		C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA21FBCF2F8007007F5 /* CBData.swift */; };
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
@@ -115,31 +129,45 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		57067C8C1FE62EE900812266 /* FakeChatViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeChatViewCell.swift; sourceTree = "<group>"; };
+		5706C5781FE43FB3008D70D1 /* SnowControlUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowControlUtils.swift; sourceTree = "<group>"; };
+		5706C57A1FE499A0008D70D1 /* FakeChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeChatViewController.swift; sourceTree = "<group>"; };
+		5706C5801FE49F78008D70D1 /* MessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewController.swift; sourceTree = "<group>"; };
 		572A4E3B1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullSizeScrollViewContainerView.swift; sourceTree = "<group>"; };
 		572A4E3F1FCF06320081318D /* PickerTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PickerTableViewCell.xib; sourceTree = "<group>"; };
 		572A4E411FCF07150081318D /* PickerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerTableViewCell.swift; sourceTree = "<group>"; };
 		572A4E431FCF70070081318D /* BubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleView.swift; sourceTree = "<group>"; };
-		572FAC171FC47A9C00B0B956 /* MultiselectPickerControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiselectPickerControl.swift; sourceTree = "<group>"; };
+		572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectControl.swift; sourceTree = "<group>"; };
 		572FAC191FC47B5600B0B956 /* MultiSelectControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectControlViewModel.swift; sourceTree = "<group>"; };
 		57532BAA1FD777AC001D674C /* PickerControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControl.swift; sourceTree = "<group>"; };
 		57532BAC1FD777FA001D674C /* TextControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControl.swift; sourceTree = "<group>"; };
 		57532BAE1FD79F4D001D674C /* ChatterboxMessageAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatterboxMessageAdapter.swift; sourceTree = "<group>"; };
 		5760B91E1FD5C8C100591C06 /* UIImageUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageUtils.swift; sourceTree = "<group>"; };
-		5760C8CD1FBF4C920055B73D /* PickerTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerTableViewController.swift; sourceTree = "<group>"; };
+		5760C8CD1FBF4C920055B73D /* PickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerViewController.swift; sourceTree = "<group>"; };
+		5763F3C71FE20FF90035764A /* PickerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerItem.swift; sourceTree = "<group>"; };
+		5778CF971FDEE767004F77D8 /* BooleanControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooleanControlTests.swift; sourceTree = "<group>"; };
+		5778CF991FE05A3F004F77D8 /* MultiSelectControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectControlTests.swift; sourceTree = "<group>"; };
+		5778CF9B1FE06F08004F77D8 /* SingleSelectControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleSelectControl.swift; sourceTree = "<group>"; };
+		5778CF9D1FE07023004F77D8 /* SingleSelectControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleSelectControlViewModel.swift; sourceTree = "<group>"; };
+		5778CF9F1FE07764004F77D8 /* SingleSelectControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleSelectControlTests.swift; sourceTree = "<group>"; };
 		578632071FBB571D00FA0282 /* BubbleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BubbleViewController.swift; sourceTree = "<group>"; };
 		578632151FBB9E0300FA0282 /* ControlProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlProtocol.swift; sourceTree = "<group>"; };
 		5788B2A61FBB38FD00846F33 /* ControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlViewModel.swift; sourceTree = "<group>"; };
-		5796E4471FD0B3E0009D2035 /* CGPathUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPathUtils.swift; sourceTree = "<group>"; };
-		57B7E2BB1FBA25A200196BA9 /* BooleanPickerControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BooleanPickerControl.swift; sourceTree = "<group>"; };
+		5796E4471FD0B3E0009D2035 /* CGPath+Bubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPath+Bubble.swift"; sourceTree = "<group>"; };
+		57B7E2BB1FBA25A200196BA9 /* BooleanControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BooleanControl.swift; sourceTree = "<group>"; };
 		57B7E2BE1FBA25A200196BA9 /* SelectableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectableViewCell.swift; sourceTree = "<group>"; };
 		57B7E2C11FBA25A200196BA9 /* SelectableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectableView.swift; sourceTree = "<group>"; };
 		57B7E2C21FBA25A200196BA9 /* SelectableView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SelectableView.xib; sourceTree = "<group>"; };
 		57B7E2CB1FBA3C8400196BA9 /* UIView+Additions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Additions.swift"; sourceTree = "<group>"; };
 		57B7E2CF1FBA6DA500196BA9 /* BooleanControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooleanControlViewModel.swift; sourceTree = "<group>"; };
 		57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControlViewModel.swift; sourceTree = "<group>"; };
+		57CBFDFF1FE849D0006396E8 /* vagent-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vagent-icon.png"; sourceTree = "<group>"; };
+		57CBFE011FE8D921006396E8 /* UILayoutPriority+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILayoutPriority+Additions.swift"; sourceTree = "<group>"; };
+		57D997AA1FE5B00000394A6D /* MessageViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageViewController.xib; sourceTree = "<group>"; };
 		57E1EA321FC33D1C009FC76D /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
 		57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ControlsViewController.xib; sourceTree = "<group>"; };
-		57EDCEA31FD5DA7A009A9A35 /* UIColor+Control.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Control.swift"; sourceTree = "<group>"; };
+		57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Utils.swift"; sourceTree = "<group>"; };
+		57F7B2531FE17823006D917C /* TextControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControlViewModel.swift; sourceTree = "<group>"; };
 		BE2925A01FC3391D005E55CA /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .swiftlint.yml; sourceTree = SOURCE_ROOT; };
 		BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SlackTextViewController.framework; path = Carthage/Build/iOS/SlackTextViewController.framework; sourceTree = "<group>"; };
 		BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
@@ -164,7 +192,6 @@
 		BEB6C8671FB92CD700B1D497 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C40565CA1FBE283C004BD28C /* AMBChatClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBChatClient.swift; sourceTree = "<group>"; };
 		C40565CC1FBE292B004BD28C /* ChatDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataStore.swift; sourceTree = "<group>"; };
-		C40565D01FBE32F3004BD28C /* CBStoreNotificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBStoreNotificationTests.swift; sourceTree = "<group>"; };
 		C40565EF1FC491DA004BD28C /* ActionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionMessage.swift; sourceTree = "<group>"; };
 		C40565F11FC49CD8004BD28C /* InitMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitMessage.swift; sourceTree = "<group>"; };
 		C40565F71FC4F4D3004BD28C /* BooleanControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooleanControlMessage.swift; sourceTree = "<group>"; };
@@ -185,6 +212,7 @@
 		C489073B1FCC8209008D9521 /* AMBTestPanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBTestPanelViewController.swift; sourceTree = "<group>"; };
 		C489073C1FCC8209008D9521 /* AMBTestPanelViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AMBTestPanelViewController.xib; sourceTree = "<group>"; };
 		C4A774A81FDF22E200B6DF68 /* ChatEventListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEventListener.swift; sourceTree = "<group>"; };
+		C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataStoreTests.swift; sourceTree = "<group>"; };
 		C4A774AC1FE0607D00B6DF68 /* ChatServiceAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceAppDelegate.swift; sourceTree = "<group>"; };
 		C4CAFEA21FBCF2F8007007F5 /* CBData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBData.swift; sourceTree = "<group>"; };
 		C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataTests.swift; sourceTree = "<group>"; };
@@ -223,6 +251,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5706C5771FE43F8A008D70D1 /* SnowControls */ = {
+			isa = PBXGroup;
+			children = (
+				5706C5781FE43FB3008D70D1 /* SnowControlUtils.swift */,
+			);
+			path = SnowControls;
+			sourceTree = "<group>";
+		};
 		57532BB01FD8561E001D674C /* Chatterbox Adapters */ = {
 			isa = PBXGroup;
 			children = (
@@ -231,9 +267,20 @@
 			path = "Chatterbox Adapters";
 			sourceTree = "<group>";
 		};
+		5778CF961FDEE6A6004F77D8 /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+				5778CF971FDEE767004F77D8 /* BooleanControlTests.swift */,
+				5778CF991FE05A3F004F77D8 /* MultiSelectControlTests.swift */,
+				5778CF9F1FE07764004F77D8 /* SingleSelectControlTests.swift */,
+			);
+			path = Controls;
+			sourceTree = "<group>";
+		};
 		57860EA51FD1C51800612E34 /* ChatBubble */ = {
 			isa = PBXGroup;
 			children = (
+				5796E4471FD0B3E0009D2035 /* CGPath+Bubble.swift */,
 				578632071FBB571D00FA0282 /* BubbleViewController.swift */,
 				572A4E431FCF70070081318D /* BubbleView.swift */,
 			);
@@ -243,24 +290,26 @@
 		57B7E2B91FBA24A600196BA9 /* Controls */ = {
 			isa = PBXGroup;
 			children = (
+				5706C5771FE43F8A008D70D1 /* SnowControls */,
 				57532BB01FD8561E001D674C /* Chatterbox Adapters */,
 				578632151FBB9E0300FA0282 /* ControlProtocol.swift */,
 				57532BAC1FD777FA001D674C /* TextControl.swift */,
 				57532BAA1FD777AC001D674C /* PickerControl.swift */,
-				57B7E2BB1FBA25A200196BA9 /* BooleanPickerControl.swift */,
-				572FAC171FC47A9C00B0B956 /* MultiselectPickerControl.swift */,
+				57B7E2BB1FBA25A200196BA9 /* BooleanControl.swift */,
+				5778CF9B1FE06F08004F77D8 /* SingleSelectControl.swift */,
+				572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */,
 				57B7E2CE1FBA6B1300196BA9 /* Model */,
 				57B7E2BA1FBA25A200196BA9 /* ViewController */,
 				57B7E2BF1FBA25A200196BA9 /* View */,
-				57860EA51FD1C51800612E34 /* ChatBubble */,
 			);
-			path = Controls;
+			name = Controls;
+			path = ../Controls;
 			sourceTree = "<group>";
 		};
 		57B7E2BA1FBA25A200196BA9 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				5760C8CD1FBF4C920055B73D /* PickerTableViewController.swift */,
+				5760C8CD1FBF4C920055B73D /* PickerViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -281,24 +330,27 @@
 			isa = PBXGroup;
 			children = (
 				5788B2A61FBB38FD00846F33 /* ControlViewModel.swift */,
+				57F7B2531FE17823006D917C /* TextControlViewModel.swift */,
 				57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */,
+				5763F3C71FE20FF90035764A /* PickerItem.swift */,
+				5778CF9D1FE07023004F77D8 /* SingleSelectControlViewModel.swift */,
 				57B7E2CF1FBA6DA500196BA9 /* BooleanControlViewModel.swift */,
 				572FAC191FC47B5600B0B956 /* MultiSelectControlViewModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
 		};
-		57B7E2D31FBA7FB300196BA9 /* Foundation */ = {
+		57B7E2D31FBA7FB300196BA9 /* UI Foundation */ = {
 			isa = PBXGroup;
 			children = (
 				57B7E2CB1FBA3C8400196BA9 /* UIView+Additions.swift */,
+				57CBFE011FE8D921006396E8 /* UILayoutPriority+Additions.swift */,
 				5760B91E1FD5C8C100591C06 /* UIImageUtils.swift */,
-				5796E4471FD0B3E0009D2035 /* CGPathUtils.swift */,
 				57E1EA321FC33D1C009FC76D /* RoundedView.swift */,
 				572A4E3B1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift */,
-				57EDCEA31FD5DA7A009A9A35 /* UIColor+Control.swift */,
+				57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */,
 			);
-			path = Foundation;
+			path = "UI Foundation";
 			sourceTree = "<group>";
 		};
 		BE29259F1FC33889005E55CA /* Supporting Files */ = {
@@ -346,13 +398,18 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		BE5974C01FC392A300959406 /* Controls */ = {
+		BE5974C01FC392A300959406 /* Controls Menu */ = {
 			isa = PBXGroup;
 			children = (
+				57CBFDFF1FE849D0006396E8 /* vagent-icon.png */,
 				BE5974C31FC392FB00959406 /* ControlsViewController.swift */,
 				57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */,
+				5706C57A1FE499A0008D70D1 /* FakeChatViewController.swift */,
+				57067C8C1FE62EE900812266 /* FakeChatViewCell.swift */,
+				5706C5801FE49F78008D70D1 /* MessageViewController.swift */,
+				57D997AA1FE5B00000394A6D /* MessageViewController.xib */,
 			);
-			path = Controls;
+			path = "Controls Menu";
 			sourceTree = "<group>";
 		};
 		BE6B9D8E1FC38ABF00B9F47A /* Debug */ = {
@@ -407,8 +464,6 @@
 			children = (
 				BE50E2221FB9305300948FBC /* Deployment */,
 				BEB6C8581FB92CD700B1D497 /* Products */,
-				57B7E2D31FBA7FB300196BA9 /* Foundation */,
-				57B7E2B91FBA24A600196BA9 /* Controls */,
 				BEB6C8591FB92CD700B1D497 /* SnowChat */,
 				BEB6C8641FB92CD700B1D497 /* SnowChatTests */,
 				BE50E2251FB9337D00948FBC /* Frameworks */,
@@ -427,13 +482,16 @@
 		BEB6C8591FB92CD700B1D497 /* SnowChat */ = {
 			isa = PBXGroup;
 			children = (
+				57B7E2D31FBA7FB300196BA9 /* UI Foundation */,
+				57B7E2B91FBA24A600196BA9 /* Controls */,
+				57860EA51FD1C51800612E34 /* ChatBubble */,
 				BE876FDB1FDF4F64008EEF04 /* Chat Service */,
 				BE29E0CD1FDF06990029D1F0 /* Chat Data Controller */,
 				BE29E0CA1FDEF79B0029D1F0 /* Chat Window */,
 				C4F3AF301FD601EA00B27B0D /* Util */,
 				C420ED7B1FC5F467002476C0 /* Logger */,
 				BE6FBE441FBFBC210062A0EB /* AMB Test */,
-				BE5974C01FC392A300959406 /* Controls */,
+				BE5974C01FC392A300959406 /* Controls Menu */,
 				BE6B9D8E1FC38ABF00B9F47A /* Debug */,
 				BE9E8B9B1FBF7F1700499960 /* Networking */,
 				BE29259F1FC33889005E55CA /* Supporting Files */,
@@ -447,6 +505,7 @@
 		BEB6C8641FB92CD700B1D497 /* SnowChatTests */ = {
 			isa = PBXGroup;
 			children = (
+				5778CF961FDEE6A6004F77D8 /* Controls */,
 				C4CAFEA41FBCF485007007F5 /* Chatterbox */,
 				C420ED7E1FC5F488002476C0 /* LoggerTests.swift */,
 				BEB6C8671FB92CD700B1D497 /* Info.plist */,
@@ -553,8 +612,8 @@
 			isa = PBXGroup;
 			children = (
 				C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */,
-				C40565D01FBE32F3004BD28C /* CBStoreNotificationTests.swift */,
 				C4CED93F1FD74479008E3E25 /* SessionAPITests.swift */,
+				C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */,
 			);
 			path = Chatterbox;
 			sourceTree = "<group>";
@@ -668,6 +727,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57CBFE001FE849D0006396E8 /* vagent-icon.png in Resources */,
 				BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */,
 				572A4E401FCF06320081318D /* PickerTableViewCell.xib in Resources */,
 				57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */,
@@ -675,6 +735,7 @@
 				C489073E1FCC8209008D9521 /* AMBTestPanelViewController.xib in Resources */,
 				57B7E2C91FBA25A200196BA9 /* SelectableView.xib in Resources */,
 				BE50E2241FB9305C00948FBC /* Cartfile in Resources */,
+				57D997AB1FE5B00000394A6D /* MessageViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -746,8 +807,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5763F3C81FE20FF90035764A /* PickerItem.swift in Sources */,
 				572A4E421FCF07150081318D /* PickerTableViewCell.swift in Sources */,
-				572FAC181FC47A9C00B0B956 /* MultiselectPickerControl.swift in Sources */,
+				572FAC181FC47A9C00B0B956 /* MultiSelectControl.swift in Sources */,
 				C4A774A91FDF22E200B6DF68 /* ChatEventListener.swift in Sources */,
 				BE9E8BA91FBF826300499960 /* APIManager.swift in Sources */,
 				C43479EC1FE460700091806D /* TopicSelection.swift in Sources */,
@@ -755,6 +817,7 @@
 				BE5974C41FC392FB00959406 /* ControlsViewController.swift in Sources */,
 				5760B91F1FD5C8C100591C06 /* UIImageUtils.swift in Sources */,
 				57532BAF1FD79F4D001D674C /* ChatterboxMessageAdapter.swift in Sources */,
+				5778CF9C1FE06F08004F77D8 /* SingleSelectControl.swift in Sources */,
 				BE6B9D911FC38AD400B9F47A /* DebugViewController.swift in Sources */,
 				BE29E0CC1FDEFA5B0029D1F0 /* ChatViewController.swift in Sources */,
 				C4F3AF2F1FD235D100B27B0D /* Chatterbox.swift in Sources */,
@@ -764,16 +827,21 @@
 				BE29E0CF1FDF06C20029D1F0 /* ChatDataController.swift in Sources */,
 				BE6FBE401FBFB3060062A0EB /* AMBHTTPClient.swift in Sources */,
 				C4F3AF361FD6291E00B27B0D /* SystemTopicPickerMessage.swift in Sources */,
+				57067C8D1FE62EE900812266 /* FakeChatViewCell.swift in Sources */,
 				C46A7D881FCE23D300DC12AC /* ActionMessageData.swift in Sources */,
 				572FAC1A1FC47B5600B0B956 /* MultiSelectControlViewModel.swift in Sources */,
+				5706C57B1FE499A0008D70D1 /* FakeChatViewController.swift in Sources */,
 				BE9E8BA11FBF7F3600499960 /* AMBClient.swift in Sources */,
 				C420ED7D1FC5F473002476C0 /* Logger.swift in Sources */,
 				C41EF5D41FDB284600707F45 /* InputControlMessage.swift in Sources */,
 				C40565FA1FC4F71D004BD28C /* ControlMessage.swift in Sources */,
 				C41EF5DC1FDB4CA400707F45 /* OutputTextMessage.swift in Sources */,
+				57CBFE021FE8D921006396E8 /* UILayoutPriority+Additions.swift in Sources */,
 				C4F3AF381FD6293F00B27B0D /* UserTopicPickerMessage.swift in Sources */,
 				C4F3AF321FD601FE00B27B0D /* Util.swift in Sources */,
+				5706C5791FE43FB3008D70D1 /* SnowControlUtils.swift in Sources */,
 				C40565F21FC49CD8004BD28C /* InitMessage.swift in Sources */,
+				57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */,
 				C41EF5DA1FDB490F00707F45 /* TopicFinishedMessage.swift in Sources */,
 				C4CED93C1FD713AA008E3E25 /* StartUserTopicMessage.swift in Sources */,
 				C40565F01FC491DA004BD28C /* ActionMessage.swift in Sources */,
@@ -795,16 +863,18 @@
 				578632161FBB9E0300FA0282 /* ControlProtocol.swift in Sources */,
 				BE876FDF1FDF5177008EEF04 /* ConversationViewController.swift in Sources */,
 				57B7E2C81FBA25A200196BA9 /* SelectableView.swift in Sources */,
+				57B7E2C31FBA25A200196BA9 /* BooleanControl.swift in Sources */,
 				BE876FDD1FDF4F75008EEF04 /* ChatService.swift in Sources */,
-				57B7E2C31FBA25A200196BA9 /* BooleanPickerControl.swift in Sources */,
-				5760C8CE1FBF4C920055B73D /* PickerTableViewController.swift in Sources */,
+				5760C8CE1FBF4C920055B73D /* PickerViewController.swift in Sources */,
 				57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */,
 				572A4E441FCF70070081318D /* BubbleView.swift in Sources */,
 				57B7E2C61FBA25A200196BA9 /* SelectableViewCell.swift in Sources */,
 				5786320B1FBB571E00FA0282 /* BubbleViewController.swift in Sources */,
-				5796E4481FD0B3E0009D2035 /* CGPathUtils.swift in Sources */,
+				5796E4481FD0B3E0009D2035 /* CGPath+Bubble.swift in Sources */,
+				5706C5811FE49F78008D70D1 /* MessageViewController.swift in Sources */,
 				57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */,
-				57EDCEA41FD5DA7A009A9A35 /* UIColor+Control.swift in Sources */,
+				5778CF9E1FE07023004F77D8 /* SingleSelectControlViewModel.swift in Sources */,
+				57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */,
 				572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */,
 				5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */,
 				C43479EE1FE850D20091806D /* AutoCompleteHandler.swift in Sources */,
@@ -817,9 +887,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				C420ED7F1FC5F488002476C0 /* LoggerTests.swift in Sources */,
+				C4B6A9521FE22208007DBEED /* ChatDataStoreTests.swift in Sources */,
+				5778CF9A1FE05A3F004F77D8 /* MultiSelectControlTests.swift in Sources */,
 				C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */,
-				C40565D11FBE32F3004BD28C /* CBStoreNotificationTests.swift in Sources */,
+				5778CFA01FE07764004F77D8 /* SingleSelectControlTests.swift in Sources */,
 				C4CED9401FD74479008E3E25 /* SessionAPITests.swift in Sources */,
+				5778CF981FDEE767004F77D8 /* BooleanControlTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

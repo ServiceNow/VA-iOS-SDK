@@ -12,22 +12,22 @@ enum PickerControlStyle: Int {
     case inline
     
     // is presented at the bottom of the screen
-    case bottom
+//    case bottom
     
     // classic actionSheet
-    case actionSheet
+//    case actionSheet
 }
 
 // MARK: - PickerViewControllerDelegate
-// Common interface for all picker view controller (either Table style or Carousel)
 
+// Common interface for all picker view controller (either Table style or Carousel)
 protocol PickerViewControllerDelegate: AnyObject {
     
     // pickerTable:didSelectItemWithModel: is called when touch comes down on an item
-    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: SelectableItemViewModel, forPickerModel pickerModel: PickerControlViewModel)
+    func pickerViewController(_ viewController: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel)
     
     // pickerTable:didFinishWithModel: is called when touch comes down on Done button if one exists
-    func pickerTable(_ pickerTable: PickerTableViewController, didFinishWithModel model: PickerControlViewModel)
+    func pickerViewController(_ viewController: PickerViewController, didFinishWithModel model: PickerControlViewModel)
 }
 
 // MARK: - PickerControlProtocol
@@ -39,6 +39,8 @@ protocol PickerControlProtocol: ControlProtocol, PickerViewControllerDelegate {
     func viewController(forStyle style: PickerControlStyle, model: ControlViewModel) -> UIViewController
 }
 
+// MARK: - Default PickerControl implementation
+
 extension PickerControlProtocol {
     
     // default implementation of protocol method. returns viewController based on provided style of the picker
@@ -49,20 +51,15 @@ extension PickerControlProtocol {
         
         switch style {
         case .inline:
-            let tableViewController = PickerTableViewController(model: model)
+            let tableViewController = PickerViewController(model: model)
             tableViewController.delegate = self
             return tableViewController
-            
-        // FIXME: need to add proper stuff in here
-        case .bottom, .actionSheet:
-            let actionSheet = UIAlertController()
-            return actionSheet
         }
     }
     
     // MARK: - PickerTableDelegate
     
-    func pickerTable(_ pickerTable: PickerTableViewController, didFinishWithModel model: PickerControlViewModel) {
+    func pickerViewController(_ viewController: PickerViewController, didFinishWithModel model: PickerControlViewModel) {
         delegate?.control(self, didFinishWithModel: model)
     }
 }

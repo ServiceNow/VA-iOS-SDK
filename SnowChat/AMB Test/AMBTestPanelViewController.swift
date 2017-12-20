@@ -11,33 +11,42 @@ import UIKit
 let consumerAccountId = UUID().uuidString
 let consumerId = "marc.attinasi"
 
+func booleanControlFromBooleanViewModel(viewModel: BooleanControlViewModel) -> BooleanControlMessage {
+    let controlData = ControlWrapper<Bool?, UIMetadata>(model: nil, uiType: "Boolean", uiMetadata: UIMetadata(), value: viewModel.resultValue)
+    let boolData = RichControlData<ControlWrapper<Bool?, UIMetadata>>(sessionId: "", conversationId: "", controlData: controlData)
+    return BooleanControlMessage(withData: boolData)
+}
+
 class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventListener, ControlDelegate {
+    
+    // MARK: ControlDelegate
+    
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
-        switch model.type {
-        case .boolean:
-            if let boolModel = model as? BooleanControlViewModel {
-                self.chatterbox?.update(control:  boolModel.id, ofType: .boolean, withValue: boolModel.value)
-                bubbleViewController?.removeCurrentUIControl()
-                bubbleViewController?.view.isHidden = true
-            }
-        default:
-            Logger.default.logInfo("unhandled control type \(model.type)")
-        }
+        handleControlMessageResponse(model)
         
+        bubbleViewController?.removeCurrentUIControl()
+        bubbleViewController?.view.isHidden = true
     }
     
-    func chatterbox(_ chatterbox: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
-        appendContent(message: "Successfully started User Topic \(topic.data.actionMessage.topicName)")
+    // MARK: ChatEventListener
+    
+    func chatterbox(_: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
+        appendContent(message: "Successfully started User Topic \(topic.data.actionMessage.topicName): comnversationID=\(topic.data.conversationId ?? "nil")")
+        
+        conversationId = topic.data.actionMessage.vendorTopicId
+        // NOTE: why the conversationID is encoded into the vendorTopicId of the StartTopic message is unclear, but it is
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String) {
         appendContent(message: "\n\nTopic is OVER! Thanks for playing...")
     }
     
+    // MARK: ChatDataListener
+    
     func chatterbox(_: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String) {
         if message.data.direction == MessageConstants.directionFromServer.rawValue {
             let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
-            appendContent(message: "\nooleanControl received: \(label)")
+            appendContent(message: "\nBooleanControl received: \(label)")
 
             presentBooleanAlert(message)
         }
@@ -68,6 +77,23 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
         }
     }
 
+    // MARK: internal implementation
+    
+    private func handleControlMessageResponse(_ model: ControlViewModel) {
+        if let conversationId = self.conversationId, let pendingControl = chatterbox?.lastPendingControlMessage(forConversation: conversationId) {
+            switch model.type {
+            case .boolean:
+                if let boolViewModel = model as? BooleanControlViewModel, let boolValue = boolViewModel.resultValue, let requestMessage = pendingControl as? BooleanControlMessage {
+                    self.chatterbox?.update(control: BooleanControlMessage(withValue: boolValue, fromMessage: requestMessage), ofType: .boolean)
+                }
+            default:
+                Logger.default.logInfo("unhandled control type \(model.type)")
+            }
+        } else {
+            Logger.default.logError("*** Response received with no pending message - inconsistent state! ***")
+        }
+    }
+    
     private func addBubbleViewController() {
         let bubbleViewController = BubbleViewController()
         bubbleViewController.willMove(toParentViewController: self)
@@ -89,8 +115,9 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     func presentBooleanAlert(_ message: BooleanControlMessage) {
         var uiControl: ControlProtocol
         if let booleanModel = BooleanControlViewModel.model(withMessage: message) {
-            uiControl = BooleanPickerControl(model: booleanModel)
+            uiControl = BooleanControl(model: booleanModel)
             uiControl.delegate = self
+            
             bubbleViewController?.addUIControl(uiControl)
             bubbleViewController?.view.isHidden = false
         } else {
@@ -100,44 +127,57 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     
     func presentTextInput(_ message: InputControlMessage) {
         let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
-        let alert = UIAlertController(title: "SnowChat", message: label, preferredStyle: .alert)
         
-        alert.addTextField { (textField) in
-            textField.text = "My computer is broken..."
-        }
-        
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in
-            if let fields = alert.textFields {
-                let textField = fields[0]
-                print("User entered: \(textField.text ?? "")")
-                self.chatterbox?.update(control: message.id, ofType: .input, withValue: textField.text ?? "")
+        if let conversationId = self.conversationId {
+            let alert = UIAlertController(title: "SnowChat", message: label, preferredStyle: .alert)
+            alert.addTextField { (textField) in
+                textField.text = "My computer is broken..."
             }
-        }))
-
-        self.present(alert, animated: true, completion: nil)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in
+                if let fields = alert.textFields {
+                    let textField = fields[0]
+                    print("User entered: \(textField.text ?? "")")
+                    
+                    if let requestMessage = self.chatterbox?.lastPendingControlMessage(forConversation: conversationId) as? InputControlMessage {
+                        self.chatterbox?.update(control: InputControlMessage(withValue: textField.text ?? "", fromMessage: requestMessage), ofType: .input)
+                    } else {
+                        Logger.default.logError("*** TextInput updated with no pending input message - internal inconsistency ***")
+                    }
+                }
+            }))
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 
     func presentPickerAlert(_ message: PickerControlMessage) {
         let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
-        let alertController = UIAlertController(title: "SnowChat", message: label, preferredStyle: .alert)
         
-        // actions
-        if let options = message.data.richControl?.uiMetadata?.options {
-            for option in options {
-                let action = UIAlertAction(title: option.label, style: .default) { (action:UIAlertAction!) in
-                    self.chatterbox?.update(control: message.id, ofType: .picker, withValue: option.value)
+        if let conversationId = self.conversationId {
+            let alertController = UIAlertController(title: "SnowChat", message: label, preferredStyle: .alert)
+            if let options = message.data.richControl?.uiMetadata?.options {
+                for option in options {
+                    let action = UIAlertAction(title: option.label, style: .default) { (action:UIAlertAction!) in
+                        print("User Selected: \(option.value)")
+                        
+                        if let requestMessage = self.chatterbox?.lastPendingControlMessage(forConversation: conversationId) as? PickerControlMessage {
+                            self.chatterbox?.update(control: PickerControlMessage(withValue: option.value, fromMessage: requestMessage), ofType: .picker)
+                        } else {
+                            Logger.default.logError("*** Picker updated with no pending picker message - internal inconsistency ***")
+                        }
+                    }
+                    alertController.addAction(action)
                 }
-                alertController.addAction(action)
             }
+            self.present(alertController, animated: true, completion:nil)
         }
-        // Present Dialog message
-        self.present(alertController, animated: true, completion:nil)
     }
     
     let user = CBUser(id: "9927", token: "938457hge98", name: "maint", consumerId: consumerId, consumerAccountId: consumerAccountId, password: "maint")
     let vendor = CBVendor(name: "ServiceNow", vendorId: "c2f0b8f187033200246ddd4c97cb0bb9", consumerId: consumerId, consumerAccountId: consumerAccountId)
     
     var chatterbox: Chatterbox?
+    var conversationId: String?
+    
     private var notificationObserver: NSObjectProtocol?
     var bubbleViewController: BubbleViewController?
     
@@ -145,7 +185,6 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     @IBOutlet weak var startTopicBtn: UIButton!
     
     @IBAction func onInitiateHandshake(_ sender: Any) {
-        
         chatterbox?.initializeSession(forUser: user, vendor: vendor,
                              success: { [weak self] (topicChoices) in
                                 if let options = topicChoices.data.richControl?.uiMetadata?.inputControls[0].uiMetadata?.options {
