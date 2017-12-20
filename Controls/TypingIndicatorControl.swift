@@ -22,25 +22,11 @@ class TypingIndicatorViewModel: ControlViewModel {
 
 class TypingIndicatorControl: ControlProtocol {
     
-    class TypingIndicatorViewController: UIViewController {
-        
-        let typingIndicatorView = TypingIndicatorView()
-        
-        override func loadView() {
-            view = typingIndicatorView
-        }
-        
-        override func viewWillAppear(_ animated: Bool) {
-            super.viewWillAppear(animated)
-            typingIndicatorView.startAnimating()
-        }
-    }
-    
     var model: ControlViewModel
     
     var viewController: UIViewController
     
-    var delegate: ControlDelegate?
+    weak var delegate: ControlDelegate?
     
     required init(model: ControlViewModel) {
         guard let typingIndicatorModel = model as? TypingIndicatorViewModel else {
@@ -48,10 +34,25 @@ class TypingIndicatorControl: ControlProtocol {
         }
         
         self.model = typingIndicatorModel
-        self.viewController = TypingIndicatorViewController()
+        self.viewController = UIViewController()
+        setupTypingIndicator()
     }
     
     convenience init() {
         self.init(model: TypingIndicatorViewModel())
+    }
+    
+    private func setupTypingIndicator() {
+        let typingIndicatorView = TypingIndicatorView()
+        typingIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        viewController.view.addSubview(typingIndicatorView)
+        NSLayoutConstraint.activate([typingIndicatorView.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor, constant: 10),
+                                     typingIndicatorView.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor, constant: -10),
+                                     typingIndicatorView.topAnchor.constraint(equalTo: viewController.view.topAnchor, constant: 10),
+                                     typingIndicatorView.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor, constant: -10)])
+        typingIndicatorView.setContentHuggingPriority(.required, for: .horizontal)
+        typingIndicatorView.setContentHuggingPriority(.required, for: .vertical)
+        
+        typingIndicatorView.startAnimating()
     }
 }

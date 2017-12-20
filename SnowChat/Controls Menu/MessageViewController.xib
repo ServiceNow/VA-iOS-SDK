@@ -30,7 +30,7 @@
                     <rect key="frame" x="55" y="3" width="579" height="85"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="vagent-icon.png" translatesAutoresizingMaskIntoConstraints="NO" id="TbH-h7-fly">
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalCompressionResistancePriority="751" image="vagent-icon.png" translatesAutoresizingMaskIntoConstraints="NO" id="TbH-h7-fly">
                     <rect key="frame" x="0.0" y="41" width="50" height="50"/>
                     <constraints>
                         <constraint firstAttribute="width" secondItem="TbH-h7-fly" secondAttribute="height" multiplier="1:1" id="Iq1-ys-0MQ"/>
@@ -45,7 +45,8 @@
                 <constraint firstItem="TbH-h7-fly" firstAttribute="bottom" secondItem="sE2-NG-Z0e" secondAttribute="bottom" id="VIa-ku-AGG"/>
                 <constraint firstItem="sE2-NG-Z0e" firstAttribute="leading" secondItem="TbH-h7-fly" secondAttribute="leading" id="abd-r6-HuA"/>
                 <constraint firstItem="zQD-cm-Q41" firstAttribute="leading" secondItem="TbH-h7-fly" secondAttribute="trailing" priority="750" constant="5" id="bFc-Gq-72f"/>
-                <constraint firstItem="zQD-cm-Q41" firstAttribute="top" secondItem="sE2-NG-Z0e" secondAttribute="top" constant="3" id="rKb-Z1-ZnA"/>
+                <constraint firstItem="TbH-h7-fly" firstAttribute="top" relation="greaterThanOrEqual" secondItem="sE2-NG-Z0e" secondAttribute="top" priority="999" id="lSH-w5-aR5"/>
+                <constraint firstItem="zQD-cm-Q41" firstAttribute="top" secondItem="sE2-NG-Z0e" secondAttribute="top" priority="750" constant="3" id="rKb-Z1-ZnA"/>
                 <constraint firstItem="sE2-NG-Z0e" firstAttribute="trailing" secondItem="zQD-cm-Q41" secondAttribute="trailing" priority="750" constant="10" id="xMf-vP-2K3"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>

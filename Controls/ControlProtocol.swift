@@ -22,12 +22,18 @@ enum ControlType {
     
     func description() -> String {
         switch self {
-        case .multiSelect: return "Multiselect"
-        case .text: return "Text"
-        case .boolean: return "Boolean"
-        case .singleSelect: return "Single Select"
-        case .typingIndicator: return "Typing Indicator"
-        case .unknown: return "WTF"
+        case .multiSelect:
+            return "Multiselect"
+        case .text:
+            return "Text"
+        case .boolean:
+            return "Boolean"
+        case .singleSelect:
+            return "Single Select"
+        case .typingIndicator:
+            return "Typing Indicator"
+        case .unknown:
+            return "Uknown Control"
         }
     }
 }
