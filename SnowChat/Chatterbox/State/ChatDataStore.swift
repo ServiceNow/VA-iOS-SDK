@@ -43,7 +43,7 @@ class ChatDataStore {
     // pendingMessage: get the lat pendng message for a conversation, if any
     //
     func lastPendingMessage(forConversation conversationId: String) -> CBStorable? {
-        return conversations.filter({ $0.uniqueId() == conversationId }).first?.lastPendingMessage()
+        return conversations.first(where: { $0.uniqueId() == conversationId })?.lastPendingMessage()
     }
     
     func conversationIds() -> [String] {
@@ -51,7 +51,7 @@ class ChatDataStore {
     }
     
     func conversation(forId id: String) -> Conversation? {
-        return conversations.filter({ $0.uniqueId() == id }).first
+        return conversations.first(where: { $0.uniqueId() == id })
     }
     
     private let id: String

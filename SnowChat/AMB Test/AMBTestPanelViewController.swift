@@ -12,7 +12,7 @@ let consumerAccountId = UUID().uuidString
 let consumerId = "marc.attinasi"
 
 func booleanControlFromBooleanViewModel(viewModel: BooleanControlViewModel) -> BooleanControlMessage {
-    let controlData = ControlWrapper<Bool?, UIMetadata>(model: nil, uiType: "Boolean", uiMetadata: UIMetadata(), value: viewModel.value)
+    let controlData = ControlWrapper<Bool?, UIMetadata>(model: nil, uiType: "Boolean", uiMetadata: UIMetadata(), value: viewModel.resultValue)
     let boolData = RichControlData<ControlWrapper<Bool?, UIMetadata>>(sessionId: "", conversationId: "", controlData: controlData)
     return BooleanControlMessage(withData: boolData)
 }
@@ -82,8 +82,8 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
         if let conversationId = self.conversationId, let pendingControl = chatterbox?.lastPendingControlMessage(forConversation: conversationId) {
             switch model.type {
             case .boolean:
-                if let boolViewModel = model as? BooleanControlViewModel, let requestMessage = pendingControl as? BooleanControlMessage {
-                    self.chatterbox?.update(control: BooleanControlMessage(withValue: boolViewModel.value, fromMessage: requestMessage), ofType: .boolean)
+                if let boolViewModel = model as? BooleanControlViewModel, let boolValue = boolViewModel.resultValue, let requestMessage = pendingControl as? BooleanControlMessage {
+                    self.chatterbox?.update(control: BooleanControlMessage(withValue: boolValue, fromMessage: requestMessage), ofType: .boolean)
                 }
             default:
                 Logger.default.logInfo("unhandled control type \(model.type)")
@@ -114,7 +114,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     func presentBooleanAlert(_ message: BooleanControlMessage) {
         var uiControl: ControlProtocol
         if let booleanModel = BooleanControlViewModel.model(withMessage: message) {
-            uiControl = BooleanPickerControl(model: booleanModel)
+            uiControl = BooleanControl(model: booleanModel)
             uiControl.delegate = self
             
             bubbleViewController?.addUIControl(uiControl)

@@ -1,5 +1,5 @@
 //
-//  PickerTableViewController.swift
+//  PickerViewController.swift
 //  SnowChat
 //
 //  Created by Michael Borowiec on 11/17/17.
@@ -8,19 +8,19 @@
 
 import UIKit
 
-class PickerTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class PickerViewController: UIViewController {
     
     weak var delegate: PickerViewControllerDelegate?
     
     let headerTextColor = UIColor.controlHeaderTextColor
     
-    var fullSizeContainer: FullSizeScrollViewContainerView?
+    let fullSizeContainer = FullSizeScrollViewContainerView()
     
-    var tableView: UITableView?
+    let tableView = UITableView()
     
     var model: PickerControlViewModel {
         didSet {
-            tableView?.reloadData()
+            tableView.reloadData()
         }
     }
     
@@ -38,37 +38,30 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
     // MARK: - View Life Cycle
     
     override func loadView() {
-        let fullSizeContainer = FullSizeScrollViewContainerView(frame: CGRect.zero)
         self.view = fullSizeContainer
-        self.fullSizeContainer = fullSizeContainer
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupTableView()
+        setupPickerView()
     }
     
-    private func setupTableView() {
-        guard let fullSizeContainer = fullSizeContainer else {
-            return
-        }
+    private func setupPickerView() {
+        tableView.sectionHeaderHeight = UITableViewAutomaticDimension
+        tableView.sectionFooterHeight = UITableViewAutomaticDimension
+        tableView.estimatedSectionHeaderHeight = 50
+        tableView.estimatedSectionFooterHeight = model.isMultiSelect ? 50 : 0
+        tableView.tableFooterView = model.isMultiSelect ? nil : UIView()
         
-        let tableView = UITableView()
-        tableView.estimatedSectionFooterHeight = model.isMultiSelect ? 30 : 0
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 50
         
-        let bundle = Bundle(for: PickerTableViewController.self)
         if model.isMultiSelect {
             tableView.register(SelectableViewCell.self, forCellReuseIdentifier: SelectableViewCell.cellIdentifier)
         } else {
+            let bundle = Bundle(for: PickerViewController.self)
             tableView.register(UINib(nibName: "PickerTableViewCell", bundle: bundle), forCellReuseIdentifier: PickerTableViewCell.cellIdentifier)
         }
-        
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        fullSizeContainer.addSubview(tableView)
-        NSLayoutConstraint.activate([tableView.leadingAnchor.constraint(equalTo: fullSizeContainer.leadingAnchor),
-                                     tableView.trailingAnchor.constraint(equalTo: fullSizeContainer.trailingAnchor),
-                                     tableView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
-                                     tableView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor)])
         
         // FIXME: upcoming lots of changes here
         tableView.delegate = self
@@ -76,20 +69,24 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.showsVerticalScrollIndicator = false
         tableView.showsHorizontalScrollIndicator = false
         
-        tableView.sectionHeaderHeight = 30
-        tableView.estimatedRowHeight = 30
-        tableView.rowHeight = UITableViewAutomaticDimension
-        
         // TODO: need to adjust based on the number of items, display style etc
         tableView.isScrollEnabled = false
-        self.tableView = tableView
         
         fullSizeContainer.scrollView = tableView
-        fullSizeContainer.maxHeight = 200
-        self.fullSizeContainer = fullSizeContainer
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        fullSizeContainer.addSubview(tableView)
+        NSLayoutConstraint.activate([tableView.leadingAnchor.constraint(equalTo: fullSizeContainer.leadingAnchor),
+                                     tableView.trailingAnchor.constraint(equalTo: fullSizeContainer.trailingAnchor),
+                                     tableView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
+                                     tableView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor)])
         
         tableView.reloadData()
     }
+}
+
+// MARK: - PickerViewController + UITableView
+
+extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return model.items.count
@@ -111,15 +108,15 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedItemModel = model.items[indexPath.row]
-        selectedItemModel.isSelected = !selectedItemModel.isSelected
+        model.select(itemAt: indexPath.row)
         tableView.reloadRows(at: [indexPath], with: .none)
         
         // for non-multiselect control we are just done here. Otherwise we just send didSelectItem: callback
         if !model.isMultiSelect {
-            delegate?.pickerTable(self, didFinishWithModel: model)
+            delegate?.pickerViewController(self, didFinishWithModel: model)
         } else {
-            delegate?.pickerTable(self, didSelectItem: selectedItemModel, forPickerModel: model)
+            let selectedItemModel = model.items[indexPath.row]
+            delegate?.pickerViewController(self, didSelectItem: selectedItemModel, forPickerModel: model)
         }
     }
     
@@ -127,7 +124,7 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
         let headerView = UIView()
         let titleLabel = UILabel()
         titleLabel.adjustsFontSizeToFitWidth = true
-        titleLabel.text = model.title
+        titleLabel.text = model.label
         titleLabel.textColor = headerTextColor
         headerView.backgroundColor = UIColor.controlHeaderBackgroundColor
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -154,20 +151,19 @@ class PickerTableViewController: UIViewController, UITableViewDelegate, UITableV
         doneButton.backgroundColor = UIColor.controlHeaderBackgroundColor
         doneButton.translatesAutoresizingMaskIntoConstraints = false
         footerView.addSubview(doneButton)
-        
         NSLayoutConstraint.activate([doneButton.leftAnchor.constraint(equalTo: footerView.leftAnchor),
                                      doneButton.rightAnchor.constraint(equalTo: footerView.rightAnchor),
-                                     doneButton.heightAnchor.constraint(equalTo: footerView.heightAnchor),
-                                     doneButton.bottomAnchor.constraint(equalTo: footerView.bottomAnchor, constant: 0)])
+                                     doneButton.topAnchor.constraint(equalTo: footerView.topAnchor),
+                                     doneButton.bottomAnchor.constraint(equalTo: footerView.bottomAnchor)])
         return footerView
     }
     
     @objc func doneButtonSelected(_ sender: UIButton) {
-        guard let selectedItemsCount = model.selectedItems?.count, selectedItemsCount != 0 else {
+        guard model.selectedItems.count != 0 else {
             Logger.default.logDebug("Didn't select any item!")
             return
         }
         
-        delegate?.pickerTable(self, didFinishWithModel: model)
+        delegate?.pickerViewController(self, didFinishWithModel: model)
     }
 }

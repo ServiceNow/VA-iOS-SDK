@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BooleanPickerControl: PickerControlProtocol {
+class BooleanControl: PickerControlProtocol {
     
     var style: PickerControlStyle = .inline
     
@@ -27,7 +27,7 @@ class BooleanPickerControl: PickerControlProtocol {
     
     // MARK: - PickerTableDelegate
     
-    func pickerTable(_ pickerTable: PickerTableViewController, didSelectItem item: SelectableItemViewModel, forPickerModel pickerModel: PickerControlViewModel) {
-        // FIXME: Add something in here
+    func pickerViewController(_ viewController: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
+
     }
 }
