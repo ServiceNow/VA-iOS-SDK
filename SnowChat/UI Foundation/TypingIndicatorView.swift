@@ -81,9 +81,4 @@ class TypingIndicatorView: UIView {
         indicatorLayer.instanceTransform = CATransform3DMakeTranslation(CGFloat(dotSpacing), 0, 0)
         indicatorLayer.addSublayer(sourceLayer)
     }
-    
-    override func layoutSublayers(of layer: CALayer) {
-        super.layoutSublayers(of: layer)
-        invalidateIntrinsicContentSize()
-    }
 }
