@@ -201,6 +201,7 @@ extension ConversationViewController {
             cell.messageView = messageView
             
             let control = SnowControlUtils.uiControlForViewModel(model)
+            control.delegate = self
             messageViewController.addUIControl(control)
             messageViewController.didMove(toParentViewController: self)
             
@@ -242,5 +243,14 @@ extension ConversationViewController: ChatEventListener {
             inputState = .inTopicSelection
             setupInputForState()
         }
+    }
+}
+
+// MARK: Control Delegate
+
+extension ConversationViewController: ControlDelegate {
+    
+    func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
+        // TODO: Add some stuff in here!
     }
 }
