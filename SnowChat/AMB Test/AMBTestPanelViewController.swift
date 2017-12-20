@@ -32,11 +32,12 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     
     func chatterbox(_: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
         appendContent(message: "Successfully started User Topic \(topic.data.actionMessage.topicName): comnversationID=\(topic.data.conversationId ?? "nil")")
+        
         conversationId = topic.data.actionMessage.vendorTopicId
         // NOTE: why the conversationID is encoded into the vendorTopicId of the StartTopic message is unclear, but it is
     }
     
-    func chatterbox(_: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String) {
         appendContent(message: "\n\nTopic is OVER! Thanks for playing...")
     }
     
