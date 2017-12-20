@@ -192,31 +192,24 @@ extension ConversationViewController {
             return handler.cellForRowAt(indexPath)
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
-            cell.selectionStyle = .none
-            
-            let model = dataController.controlData[indexPath.row]
-            
-            let messageViewController = self.messageViewController(atIndex: indexPath.row)
-            let messageView: UIView = messageViewController.view
-            cell.messageView = messageView
-            
-            let control = SnowControlUtils.uiControlForViewModel(model)
-            control.delegate = self
-            messageViewController.addUIControl(control)
-            messageViewController.didMove(toParentViewController: self)
-            
-            cell.transform = self.tableView.transform
+            configureConversationCell(cell, at: indexPath)
             return cell
         }
     }
     
-    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let messageViewController = messageViewControllers[indexPath.row]
-        messageViewController.didMove(toParentViewController: self)
-    }
-    
-    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    private func configureConversationCell(_ cell: ConversationViewCell, at indexPath:IndexPath) {
+        cell.selectionStyle = .none
         
+        let model = dataController.controlData[indexPath.row]
+        let messageViewController = self.messageViewController(atIndex: indexPath.row)
+        let messageView: UIView = messageViewController.view
+        cell.messageView = messageView
+        
+        let control = SnowControlUtils.uiControlForViewModel(model)
+        control.delegate = self
+        messageViewController.addUIControl(control)
+        messageViewController.didMove(toParentViewController: self)
+        cell.transform = self.tableView.transform
     }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
