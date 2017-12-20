@@ -9,7 +9,7 @@
 import Foundation
 import SlackTextViewController
 
-class ConversationViewController: SLKTextViewController {
+class ConversationViewController: SLKTextViewController, ViewDataChangeListener {
     
     private let dataController: ChatDataController
     
@@ -22,9 +22,12 @@ class ConversationViewController: SLKTextViewController {
     
     init(chatterbox: Chatterbox) {
         dataController = ChatDataController(chatterbox: chatterbox)
-        
+
+        // NOTE: this failable initializer cannot really fail, so keeping it clean and forcing
         // swiftlint:disable:next force_unwrapping
         super.init(tableViewStyle: .plain)!
+        
+        dataController.changeListener = self
     }
     
     required init?(coder decoder: NSCoder) {
@@ -39,10 +42,19 @@ class ConversationViewController: SLKTextViewController {
         setupTableView()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+    }
+
     // MARK: - View Setup
     
     private func setupTableView() {
         tableView.separatorStyle = .none
     }
-    
+
+    func chatDataController(_ dataController: ChatDataController, didChangeModel model: ControlViewModel, atIndex index: Int) {
+        tableView.reloadData()
+        
+        // TODO: optimize to update changed rows if possible...
+    }
 }

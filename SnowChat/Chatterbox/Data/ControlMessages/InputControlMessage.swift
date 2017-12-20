@@ -29,4 +29,10 @@ struct InputControlMessage: Codable, CBControlData {
     init(withData: RichControlData<ControlWrapper<String?, UIMetadata>>) {
         data = withData
     }
+    
+    init(withValue value: String, fromMessage message: InputControlMessage) {
+        data = message.data
+        data.sendTime = Date()
+        data.richControl?.value = value
+    }
 }
