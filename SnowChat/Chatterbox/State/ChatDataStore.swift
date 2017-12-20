@@ -19,10 +19,7 @@ class ChatDataStore {
     func storeControlData(_ data: CBControlData, expectResponse: Bool, forConversation conversationId: String, fromChat source: Chatterbox) {
         let messageExchange = MessageExchange(withMessage: data, isComplete: !expectResponse)
         
-        var index = conversations.index { (conversation) -> Bool in
-            return conversation.uniqueId() == conversationId
-        }
-
+        var index = conversations.index { $0.uniqueId() == conversationId }
         if index == nil {
             index = conversations.count
             conversations.append(Conversation(withConversationId: conversationId))
@@ -36,9 +33,7 @@ class ChatDataStore {
     // storeResponseData: find the conversation and add the response to it's pending MessageExchange, completing it
     //
     func storeResponseData(_ data: CBControlData, forConversation conversationId: String) {
-        let index = conversations.index { (conversation) -> Bool in
-            return conversation.uniqueId() == conversationId
-        }
+        let index = conversations.index { $0.uniqueId() == conversationId }
         
         if let index = index {
             conversations[index].didReceiveResponse(data)
@@ -48,32 +43,15 @@ class ChatDataStore {
     // pendingMessage: get the lat pendng message for a conversation, if any
     //
     func lastPendingMessage(forConversation conversationId: String) -> CBStorable? {
-        let index = conversations.index { conversation in
-                return conversation.uniqueId() == conversationId
-            }
-        
-        if let index = index {
-            return conversations[index].lastPendingMessage()
-        }
-        
-        return nil
+        return conversations.filter({ $0.uniqueId() == conversationId }).first?.lastPendingMessage()
     }
     
     func conversationIds() -> [String] {
-        return conversations.map({ conversation in
-            return conversation.uniqueId()
-        })
+        return conversations.map({ $0.uniqueId() })
     }
     
     func conversation(forId id: String) -> Conversation? {
-        var result: Conversation?
-        
-        conversations.forEach { (conversation) in
-            if conversation.uniqueId() == id {
-                result = conversation
-            }
-        }
-        return result
+        return conversations.filter({ $0.uniqueId() == id }).first
     }
     
     private let id: String
@@ -109,18 +87,13 @@ struct Conversation: CBStorable {
     }
     
     func lastPendingMessage() -> CBStorable? {
-        if let last = exchanges.last {
-            if !last.complete {
-                return last.message
-            }
-        }
-        return nil
+        guard let last = exchanges.last, !last.complete else { return nil }
+    
+        return last.message
     }
     
     func messageExchanges() -> [MessageExchange] {
-        return exchanges.map({ exchange in
-            return exchange
-        })
+        return exchanges
     }
     
     enum ConversationState {
