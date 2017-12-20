@@ -33,4 +33,19 @@ class SnowControlUtils {
         return [questionTextControl, answerTextControl]
     }
     
+    // FIXME: Should I make it associated object on enum? I feel like that could be improved/moved somewhere else ¯\_(ツ)_/¯
+    static func uiControlForViewModel(_ model: ControlViewModel) -> ControlProtocol {
+        switch model.type {
+        case .multiSelect:
+            return MultiSelectControl(model: model)
+        case .text:
+            return TextControl(model: model)
+        case .boolean:
+            return BooleanControl(model: model)
+        case .singleSelect:
+            fatalError("Not implemented yet")
+        case .unknown:
+            fatalError("Uknown model type, couldn't build UIControl")
+        }
+    }
 }
