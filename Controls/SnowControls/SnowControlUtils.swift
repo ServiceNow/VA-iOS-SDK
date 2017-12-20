@@ -43,7 +43,7 @@ class SnowControlUtils {
         case .boolean:
             return BooleanControl(model: model)
         case .singleSelect:
-            fatalError("Not yet implemented")
+            fatalError("Not implemented yet")
         case .unknown:
             fatalError("Uknown model type, couldn't build UIControl")
         }
