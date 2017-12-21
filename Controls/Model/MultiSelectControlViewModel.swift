@@ -22,12 +22,13 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     var direction: ControlDirection
     
-    init(id: String, label: String, required: Bool, direction: ControlDirection, items: [PickerItem]) {
+    init(id: String, label: String, required: Bool, direction: ControlDirection, items: [PickerItem], resultValue: [String]? = nil) {
         self.id = id
         self.label = label
         self.isRequired = required
         self.items = items
         self.direction = direction
+        self.resultValue = resultValue
         
         if !required {
             self.items.append(PickerItem.skipItem())
@@ -48,12 +49,30 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     // MARK: - ValueRepresentable
     
     var resultValue: [String]? {
-        guard selectedItems.count != 0, selectedItems.first?.type != .skip else {
-            return nil
+        set {
+            // select items whose value matches resultValues
+            if let resultValue = resultValue {
+                items.filter({ resultValue.contains($0.value) }).forEach({ $0.isSelected = true })
+            }
         }
-        
-        // Array of selected values
-        let values = selectedItems.map({ $0.value })
-        return values
+        get {
+            guard selectedItems.count != 0, selectedItems.first?.type != .skip else {
+                return nil
+            }
+            
+            // Array of selected values
+            let values = selectedItems.map({ $0.value })
+            return values
+        }
+    }
+    
+    var displayValue: String? {
+        return resultValue?.joined(separator: ", ")
+    }
+}
+
+extension Array {
+    func contains<T : Equatable>(_ object: T) -> Bool {
+        return self.filter({$0 as? T == object}).count > 0
     }
 }

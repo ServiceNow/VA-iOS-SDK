@@ -18,13 +18,11 @@ class BooleanControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     var items = [PickerItem]()
 
-    var type: ControlType {
-        return .boolean
-    }
+    let type: ControlType = .boolean
     
     var direction: ControlDirection
     
-    init(id: String, label: String, required: Bool, direction: ControlDirection) {
+    init(id: String, label: String, required: Bool, direction: ControlDirection, resultValue: Bool? = nil) {
         let items = [PickerItem.yesItem(), PickerItem.noItem()]
         self.id = id
         self.label = label
@@ -32,6 +30,7 @@ class BooleanControlViewModel: PickerControlViewModel, ValueRepresentable {
         self.isMultiSelect = false
         self.items = items
         self.direction = direction
+        self.resultValue = resultValue
         
         if !required {
             self.items.append(PickerItem.skipItem())
@@ -40,20 +39,41 @@ class BooleanControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     // MARK: - ValueRepresentable
     
-    var resultValue: Bool? {
-        guard let selectedItem = selectedItem, selectedItem.type != .skip else {
-            return nil
+    private func selectItemForResultValue(_ value: Bool) {
+        let item: PickerItem?
+        if value == true {
+            item = items.first(where: { $0.type == .yes })
+        } else {
+            item = items.first(where: { $0.type == .no })
         }
         
-        // is Yes selected?
-        return selectedItem.type == .yes
+        item?.isSelected = true
+    }
+    
+    var resultValue: Bool? {
+        set {
+            if let resultValue = resultValue {
+                selectItemForResultValue(resultValue)
+            }
+        }
+        get {
+            guard let selectedItem = selectedItem, selectedItem.type != .skip else {
+                return nil
+            }
+            
+            // is Yes selected?
+            return selectedItem.type == .yes
+        }
+    }
+    
+    var displayValue: String? {
+        return resultValue?.chatDescription
     }
 }
 
 // little helper to return Yes/No based on bool value. Probably might be done different way. Also needs localization.
 
 extension Bool {
-    
     public var chatDescription: String {
         return self ? "Yes" : "No"
     }

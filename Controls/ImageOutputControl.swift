@@ -34,7 +34,7 @@ class ImageOutputControl: ControlProtocol {
     
     var viewController: UIViewController = UIViewController()
     
-    var delegate: ControlDelegate?
+    weak var delegate: ControlDelegate?
     
     required init(model: ControlViewModel) {
         guard let imageModel = model as? ImageOutputViewModel else {
