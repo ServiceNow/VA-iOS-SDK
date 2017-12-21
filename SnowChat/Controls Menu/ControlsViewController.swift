@@ -14,7 +14,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     
     @IBOutlet weak var controlContainerView: UIView!
     
-    private var controls = [CBControlType.boolean, CBControlType.multiSelect, CBControlType.text]
+    private var controls = [ControlType.boolean, ControlType.multiSelect, ControlType.text, ControlType.typingIndicator]
     
     private var fakeChatViewController: FakeChatViewController?
     
@@ -49,7 +49,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.textLabel?.text = controls[indexPath.row].rawValue
+        cell.textLabel?.text = controls[indexPath.row].description()
         return cell
     }
     
@@ -68,6 +68,8 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         case .text:
             let textModel = TextControlViewModel(label: "Text View", value: "Some random text that is longer than one line........", direction: .inbound)
             uiControl = TextControl(model: textModel)
+        case .typingIndicator:
+            uiControl = TypingIndicatorControl()
         default:
             fatalError("This control doesnt exist!")
         }

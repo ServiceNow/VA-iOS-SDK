@@ -43,6 +43,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		5704EA321FEAAD46001020E6 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5704EA311FEAAD46001020E6 /* TypingIndicatorView.swift */; };
+		5704EA341FEAAE4B001020E6 /* TypingIndicatorControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5704EA331FEAAE4B001020E6 /* TypingIndicatorControl.swift */; };
 		57067C8D1FE62EE900812266 /* FakeChatViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57067C8C1FE62EE900812266 /* FakeChatViewCell.swift */; };
 		5706C5791FE43FB3008D70D1 /* SnowControlUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706C5781FE43FB3008D70D1 /* SnowControlUtils.swift */; };
 		5706C57B1FE499A0008D70D1 /* FakeChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706C57A1FE499A0008D70D1 /* FakeChatViewController.swift */; };
@@ -152,6 +154,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5704EA311FEAAD46001020E6 /* TypingIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorView.swift; sourceTree = "<group>"; };
+		5704EA331FEAAE4B001020E6 /* TypingIndicatorControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorControl.swift; sourceTree = "<group>"; };
 		57067C8C1FE62EE900812266 /* FakeChatViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeChatViewCell.swift; sourceTree = "<group>"; };
 		5706C5781FE43FB3008D70D1 /* SnowControlUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowControlUtils.swift; sourceTree = "<group>"; };
 		5706C57A1FE499A0008D70D1 /* FakeChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeChatViewController.swift; sourceTree = "<group>"; };
@@ -322,6 +326,7 @@
 				57B7E2BB1FBA25A200196BA9 /* BooleanControl.swift */,
 				5778CF9B1FE06F08004F77D8 /* SingleSelectControl.swift */,
 				572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */,
+				5704EA331FEAAE4B001020E6 /* TypingIndicatorControl.swift */,
 				57B7E2CE1FBA6B1300196BA9 /* Model */,
 				57B7E2BA1FBA25A200196BA9 /* ViewController */,
 				57B7E2BF1FBA25A200196BA9 /* View */,
@@ -373,6 +378,7 @@
 				57E1EA321FC33D1C009FC76D /* RoundedView.swift */,
 				572A4E3B1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift */,
 				57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */,
+				5704EA311FEAAD46001020E6 /* TypingIndicatorView.swift */,
 			);
 			path = "UI Foundation";
 			sourceTree = "<group>";
@@ -883,6 +889,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5704EA341FEAAE4B001020E6 /* TypingIndicatorControl.swift in Sources */,
 				5763F3C81FE20FF90035764A /* PickerItem.swift in Sources */,
 				572A4E421FCF07150081318D /* PickerTableViewCell.swift in Sources */,
 				572FAC181FC47A9C00B0B956 /* MultiSelectControl.swift in Sources */,
@@ -938,6 +945,7 @@
 				57B7E2D21FBA75B100196BA9 /* PickerControlViewModel.swift in Sources */,
 				57B7E2CD1FBA3C8400196BA9 /* UIView+Additions.swift in Sources */,
 				578632161FBB9E0300FA0282 /* ControlProtocol.swift in Sources */,
+				5704EA321FEAAD46001020E6 /* TypingIndicatorView.swift in Sources */,
 				BE876FDF1FDF5177008EEF04 /* ConversationViewController.swift in Sources */,
 				57B7E2C81FBA25A200196BA9 /* SelectableView.swift in Sources */,
 				57B7E2C31FBA25A200196BA9 /* BooleanControl.swift in Sources */,
