@@ -15,7 +15,7 @@ extension APIManager {
         sessionManager.request("\(CBData.config.url)/api/now/v1/cs/topics/suggest",
             method: .get,
             parameters: ["sysparm_message" : searchText],
-            encoding: URLEncoding.default).responseJSON { response in
+            encoding: URLEncoding.queryString).validate().responseJSON { response in
                 var topics = [CBTopic]()
                 
                 if response.error == nil {
@@ -30,7 +30,7 @@ extension APIManager {
     func allTopics(completionHandler: @escaping ([CBTopic]) -> Void) {
         sessionManager.request("\(CBData.config.url)/api/now/v1/cs/topics/tree",
             method: .get,
-            encoding: JSONEncoding.default).responseJSON { response in
+            encoding: JSONEncoding.default).validate().responseJSON { response in
                 var topics = [CBTopic]()
                 if response.error == nil {
                     if let result = response.result.value {

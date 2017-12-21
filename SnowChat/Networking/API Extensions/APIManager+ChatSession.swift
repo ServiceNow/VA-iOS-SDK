@@ -28,7 +28,7 @@ extension APIManager {
         sessionManager.request("\(CBData.config.url)/api/now/v1/cs/session",
             method: .post,
             parameters: parameters,
-            encoding: JSONEncoding.default).responseJSON { response in
+            encoding: JSONEncoding.default).validate().responseJSON { response in
                 
                 if let error = response.error {
                     Logger.default.logError("Error from response: \(error)")
@@ -57,7 +57,7 @@ extension APIManager {
     func retrieve(conversation conversationId: String, completionHandler: @escaping ([CBControlData]) -> Void) {
         sessionManager.request("\(CBData.config.url)/api/now/v1/cs/conversation/\(conversationId)/message",
             method: .get,
-            encoding: JSONEncoding.default).responseJSON { response in
+            encoding: JSONEncoding.default).validate().responseJSON { response in
                 var messages = [CBControlData]()
                 if response.error == nil {
                     if let result = response.result.value {
