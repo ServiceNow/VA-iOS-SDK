@@ -28,14 +28,14 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
         self.isRequired = required
         self.items = items
         self.direction = direction
-        self.resultValue = resultValue
         
         if !required {
             self.items.append(PickerItem.skipItem())
         }
+        selectItems(withValues: resultValue)
     }
     
-    func select(itemAt index: Int) {
+    func selectItem(at index: Int) {
         let item = items[index]
         
         // if .skip item is selected - unselect all other items
@@ -46,24 +46,24 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
         item.isSelected = !item.isSelected
     }
     
+    private func selectItems(withValues values: [String]?) {
+        items.forEach({ $0.isSelected = false })
+        
+        if let values = values {
+            items.filter({ values.contains($0.value) }).forEach({ $0.isSelected = true })
+        }
+    }
+    
     // MARK: - ValueRepresentable
     
     var resultValue: [String]? {
-        set {
-            // select items whose value matches resultValues
-            if let resultValue = resultValue {
-                items.filter({ resultValue.contains($0.value) }).forEach({ $0.isSelected = true })
-            }
+        guard selectedItems.count != 0, selectedItems.first?.type != .skip else {
+            return nil
         }
-        get {
-            guard selectedItems.count != 0, selectedItems.first?.type != .skip else {
-                return nil
-            }
-            
-            // Array of selected values
-            let values = selectedItems.map({ $0.value })
-            return values
-        }
+        
+        // Array of selected values
+        let values = selectedItems.map({ $0.value })
+        return values
     }
     
     var displayValue: String? {
@@ -73,6 +73,6 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
 
 extension Array {
     func contains<T : Equatable>(_ object: T) -> Bool {
-        return self.filter({$0 as? T == object}).count > 0
+        return self.filter({ $0 as? T == object }).count > 0
     }
 }

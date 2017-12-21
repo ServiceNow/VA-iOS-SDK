@@ -11,7 +11,7 @@ protocol ValueRepresentable {
     
     associatedtype ResultType
     
-    var resultValue: ResultType? { get set }
+    var resultValue: ResultType? { get }
     
     var displayValue: String? { get }
 }

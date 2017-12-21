@@ -30,16 +30,20 @@ class BooleanControlViewModel: PickerControlViewModel, ValueRepresentable {
         self.isMultiSelect = false
         self.items = items
         self.direction = direction
-        self.resultValue = resultValue
         
         if !required {
             self.items.append(PickerItem.skipItem())
         }
+        selectItemForResultValue(resultValue)
     }
     
     // MARK: - ValueRepresentable
     
-    private func selectItemForResultValue(_ value: Bool) {
+    private func selectItemForResultValue(_ value: Bool?) {
+        guard let value = value else {
+            return
+        }
+        
         let item: PickerItem?
         if value == true {
             item = items.first(where: { $0.type == .yes })
@@ -51,19 +55,12 @@ class BooleanControlViewModel: PickerControlViewModel, ValueRepresentable {
     }
     
     var resultValue: Bool? {
-        set {
-            if let resultValue = resultValue {
-                selectItemForResultValue(resultValue)
-            }
+        guard let selectedItem = selectedItem, selectedItem.type != .skip else {
+            return nil
         }
-        get {
-            guard let selectedItem = selectedItem, selectedItem.type != .skip else {
-                return nil
-            }
-            
-            // is Yes selected?
-            return selectedItem.type == .yes
-        }
+        
+        // is Yes selected?
+        return selectedItem.type == .yes
     }
     
     var displayValue: String? {

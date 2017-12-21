@@ -29,29 +29,31 @@ class SingleSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
         self.isMultiSelect = false
         self.items = items
         self.direction = direction
-        self.resultValue = resultValue
         
         if !required {
             self.items.append(PickerItem.skipItem())
         }
+        
+        selectItem(withValue: resultValue)
+    }
+    
+    private func selectItem(withValue value: String?) {
+        guard let value = value else {
+            return
+        }
+        
+        let item = items.first(where: { $0.value == value })
+        item?.isSelected = true
     }
     
     // MARK: - ValueRepresentable
     
     var resultValue: String? {
-        set {
-            if let resultValue = resultValue {
-                let item = items.first(where: { $0.value == resultValue })
-                item?.isSelected = true
-            }
+        guard let selectedItem = selectedItem, selectedItem.type != .skip else {
+            return nil
         }
-        get {
-            guard let selectedItem = selectedItem, selectedItem.type != .skip else {
-                return nil
-            }
-            
-            return selectedItem.value
-        }
+        
+        return selectedItem.value
     }
     
     var displayValue: String? {
