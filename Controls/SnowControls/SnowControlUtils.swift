@@ -40,10 +40,14 @@ class SnowControlUtils {
             return MultiSelectControl(model: model)
         case .text:
             return TextControl(model: model)
+        case .imageOutput:
+            return ImageOutputControl(model: model)
         case .boolean:
             return BooleanControl(model: model)
         case .singleSelect:
             fatalError("Not implemented yet")
+        case .typingIndicator:
+            return TypingIndicatorControl()
         case .unknown:
             fatalError("Uknown model type, couldn't build UIControl")
         }
