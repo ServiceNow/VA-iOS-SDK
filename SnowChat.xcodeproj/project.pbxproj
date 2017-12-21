@@ -89,12 +89,16 @@
 		BE29E0C91FDEF74C0029D1F0 /* SlackTextViewController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */; };
 		BE29E0CC1FDEFA5B0029D1F0 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */; };
 		BE29E0CF1FDF06C20029D1F0 /* ChatDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE29E0CE1FDF06C20029D1F0 /* ChatDataController.swift */; };
+		BE3F1AB21FEC315100DCC21B /* APIManager+ChatTopics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE3F1AB11FEC315100DCC21B /* APIManager+ChatTopics.swift */; };
+		BE3F1AB61FEC480D00DCC21B /* APIManagerChatTopicsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE3F1AB51FEC480D00DCC21B /* APIManagerChatTopicsTest.swift */; };
 		BE50E2241FB9305C00948FBC /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = BE50E2231FB9305C00948FBC /* Cartfile */; };
 		BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
 		BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE5974BE1FC38ECB00959406 /* Debug.storyboard */; };
 		BE5974C41FC392FB00959406 /* ControlsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5974C31FC392FB00959406 /* ControlsViewController.swift */; };
 		BE6B9D911FC38AD400B9F47A /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6B9D8F1FC38AD400B9F47A /* DebugViewController.swift */; };
 		BE6FBE401FBFB3060062A0EB /* AMBHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6FBE3F1FBFB3060062A0EB /* AMBHTTPClient.swift */; };
+		BE782DB51FEB203700F848F5 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE782DB41FEB203700F848F5 /* Result.swift */; };
+		BE782DB81FEB205200F848F5 /* APIManager+ChatSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE782DB71FEB205200F848F5 /* APIManager+ChatSession.swift */; };
 		BE876FDD1FDF4F75008EEF04 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE876FDC1FDF4F75008EEF04 /* ChatService.swift */; };
 		BE876FDF1FDF5177008EEF04 /* ConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */; };
 		BE9E8B631FBF5AEC00499960 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9E8B621FBF5AEC00499960 /* AMBClient.framework */; };
@@ -104,7 +108,6 @@
 		BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8BAA1FBF828E00499960 /* ServerInstance.swift */; };
 		BEB6C8611FB92CD700B1D497 /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEB6C8571FB92CD700B1D497 /* SnowChat.framework */; };
 		BEB6C8681FB92CD700B1D497 /* SnowChat.h in Headers */ = {isa = PBXBuildFile; fileRef = BEB6C85A1FB92CD700B1D497 /* SnowChat.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C40565CB1FBE283C004BD28C /* AMBChatClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565CA1FBE283C004BD28C /* AMBChatClient.swift */; };
 		C40565CD1FBE292B004BD28C /* ChatDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565CC1FBE292B004BD28C /* ChatDataStore.swift */; };
 		C40565F01FC491DA004BD28C /* ActionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565EF1FC491DA004BD28C /* ActionMessage.swift */; };
 		C40565F21FC49CD8004BD28C /* InitMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40565F11FC49CD8004BD28C /* InitMessage.swift */; };
@@ -116,7 +119,6 @@
 		C41EF5D61FDB327800707F45 /* PickerControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41EF5D51FDB327800707F45 /* PickerControlMessage.swift */; };
 		C41EF5DA1FDB490F00707F45 /* TopicFinishedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41EF5D91FDB490F00707F45 /* TopicFinishedMessage.swift */; };
 		C41EF5DC1FDB4CA400707F45 /* OutputTextMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41EF5DB1FDB4CA400707F45 /* OutputTextMessage.swift */; };
-		C420ED771FC5DB9F002476C0 /* SessionAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C420ED761FC5DB9F002476C0 /* SessionAPI.swift */; };
 		C420ED7D1FC5F473002476C0 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C420ED7C1FC5F473002476C0 /* Logger.swift */; };
 		C420ED7F1FC5F488002476C0 /* LoggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C420ED7E1FC5F488002476C0 /* LoggerTests.swift */; };
 		C420ED821FC6031C002476C0 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
@@ -135,7 +137,6 @@
 		C4CAFEA81FBD0912007007F5 /* CBDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */; };
 		C4CED93C1FD713AA008E3E25 /* StartUserTopicMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CED93B1FD713AA008E3E25 /* StartUserTopicMessage.swift */; };
 		C4CED93E1FD72544008E3E25 /* StartedUserTopicMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CED93D1FD72544008E3E25 /* StartedUserTopicMessage.swift */; };
-		C4CED9401FD74479008E3E25 /* SessionAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CED93F1FD74479008E3E25 /* SessionAPITests.swift */; };
 		C4F3AF2F1FD235D100B27B0D /* Chatterbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4F3AF2E1FD235D100B27B0D /* Chatterbox.swift */; };
 		C4F3AF321FD601FE00B27B0D /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4F3AF311FD601FE00B27B0D /* Util.swift */; };
 		C4F3AF341FD6144800B27B0D /* StartTopicMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4F3AF331FD6144800B27B0D /* StartTopicMessage.swift */; };
@@ -200,12 +201,16 @@
 		BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SlackTextViewController.framework; path = Carthage/Build/iOS/SlackTextViewController.framework; sourceTree = "<group>"; };
 		BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		BE29E0CE1FDF06C20029D1F0 /* ChatDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataController.swift; sourceTree = "<group>"; };
+		BE3F1AB11FEC315100DCC21B /* APIManager+ChatTopics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIManager+ChatTopics.swift"; sourceTree = "<group>"; };
+		BE3F1AB51FEC480D00DCC21B /* APIManagerChatTopicsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManagerChatTopicsTest.swift; sourceTree = "<group>"; };
 		BE50E2231FB9305C00948FBC /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		BE50E2261FB9337D00948FBC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
 		BE5974BE1FC38ECB00959406 /* Debug.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Debug.storyboard; sourceTree = "<group>"; };
 		BE5974C31FC392FB00959406 /* ControlsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlsViewController.swift; sourceTree = "<group>"; };
 		BE6B9D8F1FC38AD400B9F47A /* DebugViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugViewController.swift; sourceTree = "<group>"; };
 		BE6FBE3F1FBFB3060062A0EB /* AMBHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBHTTPClient.swift; sourceTree = "<group>"; };
+		BE782DB41FEB203700F848F5 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Result.swift; path = SnowChat/Foundation/Result.swift; sourceTree = SOURCE_ROOT; };
+		BE782DB71FEB205200F848F5 /* APIManager+ChatSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "APIManager+ChatSession.swift"; path = "SnowChat/Networking/API Extensions/APIManager+ChatSession.swift"; sourceTree = SOURCE_ROOT; };
 		BE876FDC1FDF4F75008EEF04 /* ChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatService.swift; sourceTree = "<group>"; };
 		BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewController.swift; sourceTree = "<group>"; };
 		BE9E8B621FBF5AEC00499960 /* AMBClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AMBClient.framework; path = Carthage/Build/iOS/AMBClient.framework; sourceTree = "<group>"; };
@@ -218,7 +223,6 @@
 		BEB6C85B1FB92CD700B1D497 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BEB6C8601FB92CD700B1D497 /* SnowChatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnowChatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BEB6C8671FB92CD700B1D497 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C40565CA1FBE283C004BD28C /* AMBChatClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBChatClient.swift; sourceTree = "<group>"; };
 		C40565CC1FBE292B004BD28C /* ChatDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataStore.swift; sourceTree = "<group>"; };
 		C40565EF1FC491DA004BD28C /* ActionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionMessage.swift; sourceTree = "<group>"; };
 		C40565F11FC49CD8004BD28C /* InitMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitMessage.swift; sourceTree = "<group>"; };
@@ -230,7 +234,6 @@
 		C41EF5D51FDB327800707F45 /* PickerControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControlMessage.swift; sourceTree = "<group>"; };
 		C41EF5D91FDB490F00707F45 /* TopicFinishedMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicFinishedMessage.swift; sourceTree = "<group>"; };
 		C41EF5DB1FDB4CA400707F45 /* OutputTextMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputTextMessage.swift; sourceTree = "<group>"; };
-		C420ED761FC5DB9F002476C0 /* SessionAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionAPI.swift; sourceTree = "<group>"; };
 		C420ED7C1FC5F473002476C0 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Logger.swift; path = Logger/Logger.swift; sourceTree = "<group>"; };
 		C420ED7E1FC5F488002476C0 /* LoggerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoggerTests.swift; sourceTree = "<group>"; };
 		C43479EB1FE460700091806D /* TopicSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicSelection.swift; sourceTree = "<group>"; };
@@ -247,7 +250,6 @@
 		C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataFactory.swift; sourceTree = "<group>"; };
 		C4CED93B1FD713AA008E3E25 /* StartUserTopicMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartUserTopicMessage.swift; sourceTree = "<group>"; };
 		C4CED93D1FD72544008E3E25 /* StartedUserTopicMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartedUserTopicMessage.swift; sourceTree = "<group>"; };
-		C4CED93F1FD74479008E3E25 /* SessionAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionAPITests.swift; sourceTree = "<group>"; };
 		C4F3AF2E1FD235D100B27B0D /* Chatterbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chatterbox.swift; sourceTree = "<group>"; };
 		C4F3AF311FD601FE00B27B0D /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 		C4F3AF331FD6144800B27B0D /* StartTopicMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartTopicMessage.swift; sourceTree = "<group>"; };
@@ -470,6 +472,25 @@
 			path = "AMB Test";
 			sourceTree = "<group>";
 		};
+		BE782DB31FEB201A00F848F5 /* Foundation */ = {
+			isa = PBXGroup;
+			children = (
+				BE782DB41FEB203700F848F5 /* Result.swift */,
+			);
+			name = Foundation;
+			path = "New Group";
+			sourceTree = "<group>";
+		};
+		BE782DB61FEB204200F848F5 /* API Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				BE782DB71FEB205200F848F5 /* APIManager+ChatSession.swift */,
+				BE3F1AB11FEC315100DCC21B /* APIManager+ChatTopics.swift */,
+			);
+			name = "API Extensions";
+			path = "New Group";
+			sourceTree = "<group>";
+		};
 		BE876FDB1FDF4F64008EEF04 /* Chat Service */ = {
 			isa = PBXGroup;
 			children = (
@@ -483,6 +504,7 @@
 			isa = PBXGroup;
 			children = (
 				BE6FBE411FBFBAD10062A0EB /* AMB */,
+				BE782DB61FEB204200F848F5 /* API Extensions */,
 				BE9E8BA81FBF826300499960 /* APIManager.swift */,
 				BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */,
 				BE9E8BAA1FBF828E00499960 /* ServerInstance.swift */,
@@ -513,22 +535,23 @@
 		BEB6C8591FB92CD700B1D497 /* SnowChat */ = {
 			isa = PBXGroup;
 			children = (
-				57B7E2D31FBA7FB300196BA9 /* UI Foundation */,
-				57B7E2B91FBA24A600196BA9 /* Controls */,
-				57860EA51FD1C51800612E34 /* ChatBubble */,
-				BE876FDB1FDF4F64008EEF04 /* Chat Service */,
-				BE29E0CD1FDF06990029D1F0 /* Chat Data Controller */,
-				BE29E0CA1FDEF79B0029D1F0 /* Chat Window */,
-				C4F3AF301FD601EA00B27B0D /* Util */,
-				C420ED7B1FC5F467002476C0 /* Logger */,
 				BE6FBE441FBFBC210062A0EB /* AMB Test */,
+				BE29E0CD1FDF06990029D1F0 /* Chat Data Controller */,
+				BE876FDB1FDF4F64008EEF04 /* Chat Service */,
+				BE29E0CA1FDEF79B0029D1F0 /* Chat Window */,
+				57860EA51FD1C51800612E34 /* ChatBubble */,
+				C4CAFE9C1FBCF018007007F5 /* Chatterbox */,
+				57B7E2B91FBA24A600196BA9 /* Controls */,
 				BE5974C01FC392A300959406 /* Controls Menu */,
 				BE6B9D8E1FC38ABF00B9F47A /* Debug */,
-				BE9E8B9B1FBF7F1700499960 /* Networking */,
-				BE29259F1FC33889005E55CA /* Supporting Files */,
-				C4CAFE9C1FBCF018007007F5 /* Chatterbox */,
-				BEB6C85A1FB92CD700B1D497 /* SnowChat.h */,
+				BE782DB31FEB201A00F848F5 /* Foundation */,
 				BEB6C85B1FB92CD700B1D497 /* Info.plist */,
+				C420ED7B1FC5F467002476C0 /* Logger */,
+				BE9E8B9B1FBF7F1700499960 /* Networking */,
+				BEB6C85A1FB92CD700B1D497 /* SnowChat.h */,
+				BE29259F1FC33889005E55CA /* Supporting Files */,
+				57B7E2D31FBA7FB300196BA9 /* UI Foundation */,
+				C4F3AF301FD601EA00B27B0D /* Util */,
 			);
 			path = SnowChat;
 			sourceTree = "<group>";
@@ -542,14 +565,6 @@
 				BEB6C8671FB92CD700B1D497 /* Info.plist */,
 			);
 			path = SnowChatTests;
-			sourceTree = "<group>";
-		};
-		C40565C91FBE2822004BD28C /* AMB */ = {
-			isa = PBXGroup;
-			children = (
-				C40565CA1FBE283C004BD28C /* AMBChatClient.swift */,
-			);
-			path = AMB;
 			sourceTree = "<group>";
 		};
 		C40565FD1FC4FF15004BD28C /* MessageComponents */ = {
@@ -603,20 +618,10 @@
 				C41EF5D11FDB0F2500707F45 /* ChatDataListener.swift */,
 				C4A774A81FDF22E200B6DF68 /* ChatEventListener.swift */,
 				C4F3AF2E1FD235D100B27B0D /* Chatterbox.swift */,
-				C40565C91FBE2822004BD28C /* AMB */,
 				C4CAFE9F1FBCF057007007F5 /* Data */,
 				C4CAFE9E1FBCF047007007F5 /* State */,
-				C4CAFE9D1FBCF039007007F5 /* Session */,
 			);
 			path = Chatterbox;
-			sourceTree = "<group>";
-		};
-		C4CAFE9D1FBCF039007007F5 /* Session */ = {
-			isa = PBXGroup;
-			children = (
-				C420ED761FC5DB9F002476C0 /* SessionAPI.swift */,
-			);
-			path = Session;
 			sourceTree = "<group>";
 		};
 		C4CAFE9E1FBCF047007007F5 /* State */ = {
@@ -643,8 +648,8 @@
 			isa = PBXGroup;
 			children = (
 				C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */,
-				C4CED93F1FD74479008E3E25 /* SessionAPITests.swift */,
 				C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */,
+				BE3F1AB51FEC480D00DCC21B /* APIManagerChatTopicsTest.swift */,
 			);
 			path = Chatterbox;
 			sourceTree = "<group>";
@@ -900,6 +905,7 @@
 				BE5974C41FC392FB00959406 /* ControlsViewController.swift in Sources */,
 				5760B91F1FD5C8C100591C06 /* UIImageUtils.swift in Sources */,
 				57532BAF1FD79F4D001D674C /* ChatterboxMessageAdapter.swift in Sources */,
+				BE782DB51FEB203700F848F5 /* Result.swift in Sources */,
 				5778CF9C1FE06F08004F77D8 /* SingleSelectControl.swift in Sources */,
 				BE6B9D911FC38AD400B9F47A /* DebugViewController.swift in Sources */,
 				BE29E0CC1FDEFA5B0029D1F0 /* ChatViewController.swift in Sources */,
@@ -926,15 +932,15 @@
 				5706C5791FE43FB3008D70D1 /* SnowControlUtils.swift in Sources */,
 				C40565F21FC49CD8004BD28C /* InitMessage.swift in Sources */,
 				57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */,
+				BE3F1AB21FEC315100DCC21B /* APIManager+ChatTopics.swift in Sources */,
 				C41EF5DA1FDB490F00707F45 /* TopicFinishedMessage.swift in Sources */,
 				C4CED93C1FD713AA008E3E25 /* StartUserTopicMessage.swift in Sources */,
 				C40565F01FC491DA004BD28C /* ActionMessage.swift in Sources */,
 				C489073D1FCC8209008D9521 /* AMBTestPanelViewController.swift in Sources */,
 				C4F3AF341FD6144800B27B0D /* StartTopicMessage.swift in Sources */,
+				BE782DB81FEB205200F848F5 /* APIManager+ChatSession.swift in Sources */,
 				C41EF5D21FDB0F2500707F45 /* ChatDataListener.swift in Sources */,
 				C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */,
-				C420ED771FC5DB9F002476C0 /* SessionAPI.swift in Sources */,
-				C40565CB1FBE283C004BD28C /* AMBChatClient.swift in Sources */,
 				C4CED93E1FD72544008E3E25 /* StartedUserTopicMessage.swift in Sources */,
 				C41EF5D61FDB327800707F45 /* PickerControlMessage.swift in Sources */,
 				C40565F81FC4F4D3004BD28C /* BooleanControlMessage.swift in Sources */,
@@ -971,12 +977,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE3F1AB61FEC480D00DCC21B /* APIManagerChatTopicsTest.swift in Sources */,
 				C420ED7F1FC5F488002476C0 /* LoggerTests.swift in Sources */,
 				C4B6A9521FE22208007DBEED /* ChatDataStoreTests.swift in Sources */,
 				5778CF9A1FE05A3F004F77D8 /* MultiSelectControlTests.swift in Sources */,
 				C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */,
 				5778CFA01FE07764004F77D8 /* SingleSelectControlTests.swift in Sources */,
-				C4CED9401FD74479008E3E25 /* SessionAPITests.swift in Sources */,
 				5778CF981FDEE767004F77D8 /* BooleanControlTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

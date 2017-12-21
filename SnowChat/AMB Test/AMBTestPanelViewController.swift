@@ -204,7 +204,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
 
     @IBAction func onTopicSearchChanged(_ sender: Any) {
         if let field = sender as? UITextField, let val = field.text {
-            chatterbox?.sessionAPI?.suggestTopics(searchText: val, completionHandler: { (topics) in
+            chatterbox?.apiManager.suggestTopics(searchText: val, completionHandler: { (topics) in
                 for t in topics {
                     self.appendContent(message: "Topic: \(t.title) [\(t.name)]")
                 }
@@ -215,7 +215,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     @IBAction func onStartTopic(_ sender: Any) {
         var topicName: String?
         
-        chatterbox?.sessionAPI?.allTopics(completionHandler: { (topics) in
+        chatterbox?.apiManager.allTopics(completionHandler: { (topics) in
             if let t = topics.first {
                 self.appendContent(message: "Topic: \(t.title) [\(t.name)]")
                 topicName = t.name

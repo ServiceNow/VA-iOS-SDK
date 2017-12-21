@@ -13,7 +13,7 @@ import AMBClient
 class APIManager: NSObject {
     
     private let instance: ServerInstance
-    private let sessionManager = SessionManager()
+    internal let sessionManager = SessionManager()
     
     internal let ambClient: AMBClient
     
