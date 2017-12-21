@@ -8,15 +8,30 @@
 
 import UIKit
 
+@IBDesignable
 class TypingIndicatorView: UIView {
     
-    let dotCount: Int = 3
-    let dotDiameter: Int = 10
-    let dotSpacing: Int = 15
-    
-    var color: UIColor = UIColor.userBubbleTextColor {
+    @IBInspectable var dotCount: Int = 3 {
         didSet {
-            (layer as! CAReplicatorLayer).instanceColor = color.cgColor
+            (layer as! CAReplicatorLayer).instanceCount = dotCount
+        }
+    }
+    
+    @IBInspectable var dotDiameter: Int = 10 {
+        didSet {
+            updateCircleLayerWithDiameter(dotDiameter)
+        }
+    }
+    
+    @IBInspectable var dotSpacing: Int = 15 {
+        didSet {
+            (layer as! CAReplicatorLayer).instanceTransform = CATransform3DMakeTranslation(CGFloat(dotSpacing), 0, 0)
+        }
+    }
+    
+    @IBInspectable var color: UIColor = UIColor.userBubbleTextColor {
+        didSet {
+            layer.sublayers?.forEach({ ($0 as? CAShapeLayer)?.fillColor = color.cgColor })
         }
     }
     
@@ -68,14 +83,18 @@ class TypingIndicatorView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupIndicatorLayer() {
-        let indicatorLayer = layer as! CAReplicatorLayer
-        
-        sourceLayer.fillColor = color.cgColor
+    private func updateCircleLayerWithDiameter(_ diameter: Int) {
         let dotSize = CGSize(width: dotDiameter, height: dotDiameter)
         let circlePath = UIBezierPath(ovalIn: CGRect(origin: CGPoint.zero, size: dotSize)).cgPath
         sourceLayer.path = circlePath
         sourceLayer.frame = CGRect(origin: CGPoint.zero, size: dotSize)
+    }
+    
+    private func setupIndicatorLayer() {
+        let indicatorLayer = layer as! CAReplicatorLayer
+        
+        sourceLayer.fillColor = color.cgColor
+        updateCircleLayerWithDiameter(dotDiameter)
         
         indicatorLayer.instanceCount = dotCount
         indicatorLayer.instanceTransform = CATransform3DMakeTranslation(CGFloat(dotSpacing), 0, 0)
