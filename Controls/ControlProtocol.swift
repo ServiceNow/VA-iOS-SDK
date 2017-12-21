@@ -12,6 +12,8 @@ enum ControlType {
     
     case text
     
+    case imageOutput
+    
     case boolean
     
     case singleSelect
@@ -26,6 +28,8 @@ enum ControlType {
             return "Multiselect"
         case .text:
             return "Text"
+        case .imageOutput:
+            return "Image Output"
         case .boolean:
             return "Boolean"
         case .singleSelect:

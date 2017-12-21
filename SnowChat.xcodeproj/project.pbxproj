@@ -80,6 +80,7 @@
 		57CBFE001FE849D0006396E8 /* vagent-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 57CBFDFF1FE849D0006396E8 /* vagent-icon.png */; };
 		57CBFE021FE8D921006396E8 /* UILayoutPriority+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57CBFE011FE8D921006396E8 /* UILayoutPriority+Additions.swift */; };
 		57D1DB6B1FEAC94A00082F78 /* ConversationViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB6A1FEAC94A00082F78 /* ConversationViewCell.swift */; };
+		57D1DB6D1FEB592D00082F78 /* ImageOutputControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB6C1FEB592D00082F78 /* ImageOutputControl.swift */; };
 		57D997AB1FE5B00000394A6D /* MessageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57D997AA1FE5B00000394A6D /* MessageViewController.xib */; };
 		57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1EA321FC33D1C009FC76D /* RoundedView.swift */; };
 		57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */; };
@@ -191,6 +192,7 @@
 		57CBFDFF1FE849D0006396E8 /* vagent-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vagent-icon.png"; sourceTree = "<group>"; };
 		57CBFE011FE8D921006396E8 /* UILayoutPriority+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILayoutPriority+Additions.swift"; sourceTree = "<group>"; };
 		57D1DB6A1FEAC94A00082F78 /* ConversationViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewCell.swift; sourceTree = "<group>"; };
+		57D1DB6C1FEB592D00082F78 /* ImageOutputControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageOutputControl.swift; sourceTree = "<group>"; };
 		57D997AA1FE5B00000394A6D /* MessageViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageViewController.xib; sourceTree = "<group>"; };
 		57E1EA321FC33D1C009FC76D /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
 		57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ControlsViewController.xib; sourceTree = "<group>"; };
@@ -322,6 +324,7 @@
 				57532BB01FD8561E001D674C /* Chatterbox Adapters */,
 				578632151FBB9E0300FA0282 /* ControlProtocol.swift */,
 				57532BAC1FD777FA001D674C /* TextControl.swift */,
+				57D1DB6C1FEB592D00082F78 /* ImageOutputControl.swift */,
 				57532BAA1FD777AC001D674C /* PickerControl.swift */,
 				57B7E2BB1FBA25A200196BA9 /* BooleanControl.swift */,
 				5778CF9B1FE06F08004F77D8 /* SingleSelectControl.swift */,
@@ -921,6 +924,7 @@
 				C40565FA1FC4F71D004BD28C /* ControlMessage.swift in Sources */,
 				C41EF5DC1FDB4CA400707F45 /* OutputTextMessage.swift in Sources */,
 				57CBFE021FE8D921006396E8 /* UILayoutPriority+Additions.swift in Sources */,
+				57D1DB6D1FEB592D00082F78 /* ImageOutputControl.swift in Sources */,
 				C4F3AF381FD6293F00B27B0D /* UserTopicPickerMessage.swift in Sources */,
 				C4F3AF321FD601FE00B27B0D /* Util.swift in Sources */,
 				5706C5791FE43FB3008D70D1 /* SnowControlUtils.swift in Sources */,
