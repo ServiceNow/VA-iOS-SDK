@@ -1,12 +1,12 @@
 //
-//  ImageOutputControl.swift
+//  OutputImageControl.swift
 //  SnowChat
 //
 //  Created by Michael Borowiec on 12/20/17.
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-class ImageOutputViewModel: ControlViewModel {
+class OutputImageViewModel: ControlViewModel {
     
     let label: String
     
@@ -14,7 +14,7 @@ class ImageOutputViewModel: ControlViewModel {
     
     let id: String
     
-    let type: ControlType = .imageOutput
+    let type: ControlType = .outputImage
     
     let direction: ControlDirection
     
@@ -28,7 +28,7 @@ class ImageOutputViewModel: ControlViewModel {
     }
 }
 
-class ImageOutputControl: ControlProtocol {
+class OutputImageControl: ControlProtocol {
     
     var model: ControlViewModel
     
@@ -37,7 +37,7 @@ class ImageOutputControl: ControlProtocol {
     weak var delegate: ControlDelegate?
     
     required init(model: ControlViewModel) {
-        guard let imageModel = model as? ImageOutputViewModel else {
+        guard let imageModel = model as? OutputImageViewModel else {
             fatalError("Wrong model class")
         }
         
