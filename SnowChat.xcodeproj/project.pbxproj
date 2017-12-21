@@ -7,16 +7,38 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		BE50E4321FB9FAB700948FBC /* Bootstrap */ = {
+		BE5C65881FE88F53001A3EEE /* Carthage Bootstrap */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = BE50E4331FB9FAB700948FBC /* Build configuration list for PBXAggregateTarget "Bootstrap" */;
+			buildConfigurationList = BE5C65891FE88F53001A3EEE /* Build configuration list for PBXAggregateTarget "Carthage Bootstrap" */;
 			buildPhases = (
-				BE50E4361FB9FABC00948FBC /* ShellScript */,
+				BE5C658C1FE88F62001A3EEE /* ShellScript */,
 			);
 			dependencies = (
 			);
-			name = Bootstrap;
-			productName = Bootstrap;
+			name = "Carthage Bootstrap";
+			productName = "Carthage Bootstrap";
+		};
+		BE5C658D1FE88FA6001A3EEE /* Install Certificates */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = BE5C658E1FE88FA6001A3EEE /* Build configuration list for PBXAggregateTarget "Install Certificates" */;
+			buildPhases = (
+				BE5C65911FE890B7001A3EEE /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = "Install Certificates";
+			productName = Certificates;
+		};
+		BE6F4E371FE9740A007294BA /* Deploy Staging */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = BE6F4E381FE9740A007294BA /* Build configuration list for PBXAggregateTarget "Deploy Staging" */;
+			buildPhases = (
+				BE6F4E3B1FE97415007294BA /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = "Deploy Staging";
+			productName = "Deploy Staging";
 		};
 /* End PBXAggregateTarget section */
 
@@ -57,6 +79,7 @@
 		57B7E2D21FBA75B100196BA9 /* PickerControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */; };
 		57CBFE001FE849D0006396E8 /* vagent-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 57CBFDFF1FE849D0006396E8 /* vagent-icon.png */; };
 		57CBFE021FE8D921006396E8 /* UILayoutPriority+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57CBFE011FE8D921006396E8 /* UILayoutPriority+Additions.swift */; };
+		57D1DB6B1FEAC94A00082F78 /* ConversationViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB6A1FEAC94A00082F78 /* ConversationViewCell.swift */; };
 		57D997AB1FE5B00000394A6D /* MessageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57D997AA1FE5B00000394A6D /* MessageViewController.xib */; };
 		57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1EA321FC33D1C009FC76D /* RoundedView.swift */; };
 		57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */; };
@@ -98,6 +121,8 @@
 		C420ED7F1FC5F488002476C0 /* LoggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C420ED7E1FC5F488002476C0 /* LoggerTests.swift */; };
 		C420ED821FC6031C002476C0 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
 		C420ED831FC6031C002476C0 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9E8B621FBF5AEC00499960 /* AMBClient.framework */; };
+		C43479EC1FE460700091806D /* TopicSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43479EB1FE460700091806D /* TopicSelection.swift */; };
+		C43479EE1FE850D20091806D /* AutoCompleteHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */; };
 		C46A7D881FCE23D300DC12AC /* ActionMessageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46A7D871FCE23D300DC12AC /* ActionMessageData.swift */; };
 		C46A7D8A1FD0BD8900DC12AC /* ContextualActionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46A7D891FD0BD8900DC12AC /* ContextualActionMessage.swift */; };
 		C489073D1FCC8209008D9521 /* AMBTestPanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C489073B1FCC8209008D9521 /* AMBTestPanelViewController.swift */; };
@@ -165,6 +190,7 @@
 		57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControlViewModel.swift; sourceTree = "<group>"; };
 		57CBFDFF1FE849D0006396E8 /* vagent-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vagent-icon.png"; sourceTree = "<group>"; };
 		57CBFE011FE8D921006396E8 /* UILayoutPriority+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILayoutPriority+Additions.swift"; sourceTree = "<group>"; };
+		57D1DB6A1FEAC94A00082F78 /* ConversationViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewCell.swift; sourceTree = "<group>"; };
 		57D997AA1FE5B00000394A6D /* MessageViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageViewController.xib; sourceTree = "<group>"; };
 		57E1EA321FC33D1C009FC76D /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
 		57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ControlsViewController.xib; sourceTree = "<group>"; };
@@ -207,6 +233,8 @@
 		C420ED761FC5DB9F002476C0 /* SessionAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionAPI.swift; sourceTree = "<group>"; };
 		C420ED7C1FC5F473002476C0 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Logger.swift; path = Logger/Logger.swift; sourceTree = "<group>"; };
 		C420ED7E1FC5F488002476C0 /* LoggerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoggerTests.swift; sourceTree = "<group>"; };
+		C43479EB1FE460700091806D /* TopicSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicSelection.swift; sourceTree = "<group>"; };
+		C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoCompleteHandler.swift; sourceTree = "<group>"; };
 		C46A7D871FCE23D300DC12AC /* ActionMessageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionMessageData.swift; sourceTree = "<group>"; };
 		C46A7D891FD0BD8900DC12AC /* ContextualActionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextualActionMessage.swift; sourceTree = "<group>"; };
 		C489073B1FCC8209008D9521 /* AMBTestPanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBTestPanelViewController.swift; sourceTree = "<group>"; };
@@ -368,6 +396,11 @@
 			children = (
 				BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */,
 				BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */,
+				57D1DB6A1FEAC94A00082F78 /* ConversationViewCell.swift */,
+				C43479EB1FE460700091806D /* TopicSelection.swift */,
+				C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */,
+				5706C5801FE49F78008D70D1 /* MessageViewController.swift */,
+				57D997AA1FE5B00000394A6D /* MessageViewController.xib */,
 			);
 			path = "Chat Window";
 			sourceTree = "<group>";
@@ -406,8 +439,6 @@
 				57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */,
 				5706C57A1FE499A0008D70D1 /* FakeChatViewController.swift */,
 				57067C8C1FE62EE900812266 /* FakeChatViewCell.swift */,
-				5706C5801FE49F78008D70D1 /* MessageViewController.swift */,
-				57D997AA1FE5B00000394A6D /* MessageViewController.xib */,
 			);
 			path = "Controls Menu";
 			sourceTree = "<group>";
@@ -644,6 +675,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BEB6C86B1FB92CD700B1D497 /* Build configuration list for PBXNativeTarget "SnowChat" */;
 			buildPhases = (
+				BE04BA691FE9BAA400422B5E /* Carthage Pre-Check */,
 				BEB6C8521FB92CD700B1D497 /* Sources */,
 				BEB6C8531FB92CD700B1D497 /* Frameworks */,
 				BEB6C8541FB92CD700B1D497 /* Headers */,
@@ -688,18 +720,26 @@
 				LastUpgradeCheck = 0910;
 				ORGANIZATIONNAME = ServiceNow;
 				TargetAttributes = {
-					BE50E4321FB9FAB700948FBC = {
+					BE5C65881FE88F53001A3EEE = {
+						CreatedOnToolsVersion = 9.1;
+						ProvisioningStyle = Automatic;
+					};
+					BE5C658D1FE88FA6001A3EEE = {
+						CreatedOnToolsVersion = 9.1;
+						ProvisioningStyle = Automatic;
+					};
+					BE6F4E371FE9740A007294BA = {
 						CreatedOnToolsVersion = 9.1;
 						ProvisioningStyle = Automatic;
 					};
 					BEB6C8561FB92CD700B1D497 = {
 						CreatedOnToolsVersion = 9.1;
 						LastSwiftMigration = 0910;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					BEB6C85F1FB92CD700B1D497 = {
 						CreatedOnToolsVersion = 9.1;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -717,7 +757,9 @@
 			targets = (
 				BEB6C8561FB92CD700B1D497 /* SnowChat */,
 				BEB6C85F1FB92CD700B1D497 /* SnowChatTests */,
-				BE50E4321FB9FAB700948FBC /* Bootstrap */,
+				BE5C65881FE88F53001A3EEE /* Carthage Bootstrap */,
+				BE5C658D1FE88FA6001A3EEE /* Install Certificates */,
+				BE6F4E371FE9740A007294BA /* Deploy Staging */,
 			);
 		};
 /* End PBXProject section */
@@ -749,6 +791,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		BE04BA691FE9BAA400422B5E /* Carthage Pre-Check */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Carthage Pre-Check";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ! -d ${PROJECT_DIR}/Carthage/Build ]; then\necho \"error: The carthage folder is missing. Try running the Carthage Bootstrap scheme.\"\nexit 1\nfi\n";
+		};
 		BE50E21A1FB92F5800948FBC /* Copy Carthage Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -769,7 +825,7 @@
 			shellPath = /bin/sh;
 			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
 		};
-		BE50E4361FB9FABC00948FBC /* ShellScript */ = {
+		BE5C658C1FE88F62001A3EEE /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -780,7 +836,33 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "carthage bootstrap --platform iOS";
+			shellScript = "source ${PROJECT_DIR}/scripts/ensure_carthage.sh\n\ncarthage bootstrap --platform iOS";
+		};
+		BE5C65911FE890B7001A3EEE /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "source ${PROJECT_DIR}/scripts/ensure_fastlane.sh\n\nsource ${PROJECT_DIR}/scripts/certificates.sh";
+		};
+		BE6F4E3B1FE97415007294BA /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "source ${PROJECT_DIR}/scripts/force-push-deploy-staging.sh";
 		};
 		C420ED811FC60250002476C0 /* Copy Carthage Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -813,6 +895,7 @@
 				572FAC181FC47A9C00B0B956 /* MultiSelectControl.swift in Sources */,
 				C4A774A91FDF22E200B6DF68 /* ChatEventListener.swift in Sources */,
 				BE9E8BA91FBF826300499960 /* APIManager.swift in Sources */,
+				C43479EC1FE460700091806D /* TopicSelection.swift in Sources */,
 				57532BAD1FD777FA001D674C /* TextControl.swift in Sources */,
 				BE5974C41FC392FB00959406 /* ControlsViewController.swift in Sources */,
 				5760B91F1FD5C8C100591C06 /* UIImageUtils.swift in Sources */,
@@ -824,6 +907,7 @@
 				57532BAB1FD777AC001D674C /* PickerControl.swift in Sources */,
 				BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */,
 				BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */,
+				57D1DB6B1FEAC94A00082F78 /* ConversationViewCell.swift in Sources */,
 				BE29E0CF1FDF06C20029D1F0 /* ChatDataController.swift in Sources */,
 				BE6FBE401FBFB3060062A0EB /* AMBHTTPClient.swift in Sources */,
 				C4F3AF361FD6291E00B27B0D /* SystemTopicPickerMessage.swift in Sources */,
@@ -878,6 +962,7 @@
 				57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */,
 				572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */,
 				5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */,
+				C43479EE1FE850D20091806D /* AutoCompleteHandler.swift in Sources */,
 				C4A774AD1FE0607D00B6DF68 /* ChatServiceAppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -907,20 +992,50 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		BE50E4341FB9FAB700948FBC /* Debug */ = {
+		BE5C658A1FE88F53001A3EEE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = AS2BZHDV7Q;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
-		BE50E4351FB9FAB700948FBC /* Release */ = {
+		BE5C658B1FE88F53001A3EEE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		BE5C658F1FE88FA6001A3EEE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		BE5C65901FE88FA6001A3EEE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		BE6F4E391FE9740A007294BA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		BE6F4E3A1FE9740A007294BA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -1043,9 +1158,9 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -1058,6 +1173,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowChat;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
@@ -1070,9 +1186,9 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = AS2BZHDV7Q;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -1085,6 +1201,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowChat;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1095,7 +1212,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = AS2BZHDV7Q;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1105,6 +1222,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowChatTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1114,7 +1232,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = AS2BZHDV7Q;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1124,6 +1242,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowChatTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1132,11 +1251,29 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BE50E4331FB9FAB700948FBC /* Build configuration list for PBXAggregateTarget "Bootstrap" */ = {
+		BE5C65891FE88F53001A3EEE /* Build configuration list for PBXAggregateTarget "Carthage Bootstrap" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BE50E4341FB9FAB700948FBC /* Debug */,
-				BE50E4351FB9FAB700948FBC /* Release */,
+				BE5C658A1FE88F53001A3EEE /* Debug */,
+				BE5C658B1FE88F53001A3EEE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BE5C658E1FE88FA6001A3EEE /* Build configuration list for PBXAggregateTarget "Install Certificates" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BE5C658F1FE88FA6001A3EEE /* Debug */,
+				BE5C65901FE88FA6001A3EEE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BE6F4E381FE9740A007294BA /* Build configuration list for PBXAggregateTarget "Deploy Staging" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BE6F4E391FE9740A007294BA /* Debug */,
+				BE6F4E3A1FE9740A007294BA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

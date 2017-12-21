@@ -59,8 +59,8 @@ public class BubbleViewController: UIViewController {
         
         NSLayoutConstraint.activate([messageView.leadingAnchor.constraint(equalTo: bubbleView.contentView.leadingAnchor),
                                      messageView.trailingAnchor.constraint(equalTo: bubbleView.contentView.trailingAnchor),
-                                     messageView.centerYAnchor.constraint(equalTo: bubbleView.contentView.centerYAnchor)])
-        
+                                     messageView.topAnchor.constraint(equalTo: bubbleView.contentView.topAnchor),
+                                     messageView.bottomAnchor.constraint(equalTo: bubbleView.contentView.bottomAnchor)])
         view.setNeedsLayout()
         view.layoutIfNeeded()
         bubbleView.invalidateIntrinsicContentSize()

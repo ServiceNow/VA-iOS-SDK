@@ -1,0 +1,77 @@
+fastlane_version "2.69.0"
+default_platform :ios
+
+platform :ios do
+
+  # MARK: - General Development Automation
+
+  desc "Bootstraps carthage"
+  lane :carthage_bootstrap do
+    carthage(platform: "iOS")
+  end
+
+  desc "Downloads development profile and certificate"
+  lane :certificates do
+    match(type: "development", team_id: "AS2BZHDV7Q", readonly: true)
+  end
+
+  # MARK: - Admin Automation
+
+  desc "Register new device"
+  lane :register_new_device do
+      device_name = prompt(text: "Enter device name: ")
+      device_udid = prompt(text: "Enter device UDID: ")
+      device_map = {}
+      device_map[device_name] = device_udid
+      
+      register_devices(devices: device_map, team_id: "AS2BZHDV7Q")
+
+      ensure_certificates
+  end
+
+  # MARK: - Jenkins Automation
+
+  desc "Submit a new enterprise build to Hockey"
+  lane :enterprise do
+    ensure_certificates
+    
+    carthage_bootstrap
+
+    sh "cd .. && ./scripts/enterprise-project.sh"
+
+    build_app(scheme: "SnowKangaroo",
+      export_method: "enterprise",
+      codesigning_identity: "iPhone Distribution: ServiceNow INC",
+      xcargs: 'DEVELOPMENT_TEAM="NV85HZ2543"'
+    )
+
+    hockey(
+      public_identifier: "c5bc531ef6cf48558deec1bf85e5844c",
+      ipa: "./SnowKangaroo.ipa",
+      dsym: "SnowKangaroo.app.dSYM.zip"
+    )
+  end
+
+  desc "Ensures all profiles and certificates are up to date"
+  lane :ensure_certificates do
+    match(type: "adhoc", team_id: "AS2BZHDV7Q", force_for_new_devices: true)
+    match(type: "development", team_id: "AS2BZHDV7Q", force_for_new_devices: true)
+
+    match(type: "appstore", team_id: "AS2BZHDV7Q")
+
+    match(
+      app_identifier: "com.servicenow.kangaroo-internal",
+      git_branch: "enterprise",
+      team_id: "NV85HZ2543",
+      type: "enterprise"
+    )
+
+    match(
+      app_identifier: "com.servicenow.kangaroo-internal",
+      git_branch: "enterprise",
+      team_id: "NV85HZ2543",
+      type: "development"
+    )
+  end
+
+end
