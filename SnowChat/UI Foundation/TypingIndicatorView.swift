@@ -37,7 +37,7 @@ class TypingIndicatorView: UIView {
     
     private let sourceLayer = CAShapeLayer()
     
-    var isAnimating: Bool = false
+    private(set) var isAnimating: Bool = false
     
     func startAnimating() {
         let indicatorLayer = layer as! CAReplicatorLayer
