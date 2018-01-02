@@ -192,7 +192,7 @@ class Chatterbox {
         
         apiManager.startChatSession(with: session, chatId: chatId) { [weak self] result in
             switch result {
-            case .success:
+            case .success(let session):
                 self?.session = session
             case .failure:
                 self?.logger.logError("getSession failed!")
