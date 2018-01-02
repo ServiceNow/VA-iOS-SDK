@@ -13,7 +13,9 @@ import AMBClient
 class APIManager: NSObject {
     
     private let instance: ServerInstance
-    internal let sessionManager = SessionManager()
+    
+    // Each API Manager instance has a private session. That's why we use an ephemeral configuration.
+    internal let sessionManager = SessionManager(configuration: .ephemeral)
     
     internal let ambClient: AMBClient
     
