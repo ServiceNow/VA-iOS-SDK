@@ -23,8 +23,11 @@ class OutputImageControl: ControlProtocol {
         
         let bundle = Bundle(for: OutputImageViewController.self)
         let imageController = OutputImageViewController()
-        let image = UIImage(named: "mark.png", in: bundle, compatibleWith: nil)
-        imageController.setImage(image!)
+        guard let image = UIImage(named: "mark.png", in: bundle, compatibleWith: nil) else {
+            fatalError("Couldn't load image")
+        }
+        
+        imageController.image = image
         self.viewController = imageController
     }
 }

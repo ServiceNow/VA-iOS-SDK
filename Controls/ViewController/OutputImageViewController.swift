@@ -10,13 +10,15 @@ import UIKit
 
 class OutputImageViewController: UIViewController {
     
+    // Putting these constraints on image for now
+    let maxImageSize = CGSize(width: 250, height: 250)
     let outputImageView = UIImageView()
-    
     var imageViewWidthToHeightConstraint: NSLayoutConstraint?
+    var imageViewSideConstraint: NSLayoutConstraint?
     
     var image: UIImage? {
         didSet {
-            
+            updateImageConstraints()
         }
     }
     
@@ -30,13 +32,26 @@ class OutputImageViewController: UIViewController {
                                      outputImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
     }
     
-    func setImage(_ image: UIImage) {
-        // reset width to height constraint
+    private func updateImageConstraints() {
         imageViewWidthToHeightConstraint?.isActive = false
+        imageViewSideConstraint?.isActive = false
+        guard let image = image else {
+            return
+        }
+        
+        // if image is landscape - we will limit it horizontally. otherwise vertically.
+        if image.size.height > image.size.width {
+            imageViewSideConstraint = outputImageView.heightAnchor.constraint(lessThanOrEqualToConstant: maxImageSize.height)
+        } else {
+            imageViewSideConstraint = outputImageView.widthAnchor.constraint(lessThanOrEqualToConstant: maxImageSize.width)
+        }
+        
+        // set width/height proportion
         let ratio = image.size.width / image.size.height
         imageViewWidthToHeightConstraint = outputImageView.heightAnchor.constraint(equalTo: outputImageView.widthAnchor, multiplier: ratio)
         imageViewWidthToHeightConstraint?.priority = .veryHigh
         imageViewWidthToHeightConstraint?.isActive = true
+        imageViewSideConstraint?.isActive = true
         outputImageView.image = image
     }
 }
