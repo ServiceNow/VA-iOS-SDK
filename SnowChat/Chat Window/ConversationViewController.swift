@@ -154,9 +154,7 @@ extension ConversationViewController {
         switch inputState {
         case .inTopicSelection:
             let searchText: String = textView.text ?? ""
-            if let handler = autocompleteHandler {
-                handler.textDidChange(searchText)
-            }
+            autocompleteHandler?.textDidChange(searchText)
         default:
             Logger.default.logDebug("Right button or enter pressed: state=\(inputState)")
         }
@@ -172,9 +170,7 @@ extension ConversationViewController {
         switch inputState {
         case .inTopicSelection:
             let searchText: String = textView.text ?? ""
-            if let handler = autocompleteHandler {
-                handler.didCommitEditing(searchText)
-            }
+            autocompleteHandler?.didCommitEditing(searchText)
         default:
             Logger.default.logDebug("Right button or enter pressed: state=\(inputState)")
         }

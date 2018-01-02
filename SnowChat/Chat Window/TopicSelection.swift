@@ -25,9 +25,9 @@ class TopicSelectionHandler: AutoCompleteHandler {
     }
     
     func textDidChange(_ text: String) {
-        conversationController?.rightButton.isEnabled = text.count > 2
+        conversationController?.rightButton.isEnabled = isValid(text: text)
         
-        if text.count > 2 {
+        if isValid(text: text) {
             searchTopics(text)
         }
     }
@@ -129,6 +129,10 @@ class TopicSelectionHandler: AutoCompleteHandler {
         cell.topicLabel?.textColor = UIColor.blue
         
         return cell
+    }
+    
+    private func isValid(text: String) -> Bool {
+        return text.count > 2
     }
 }
 
