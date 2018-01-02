@@ -3,10 +3,33 @@ default_platform :ios
 
 platform :ios do
 
+  # MARK: - General Development Automation
+
   desc "Bootstraps carthage"
   lane :carthage_bootstrap do
     carthage(platform: "iOS")
   end
+
+  desc "Downloads development profile and certificate"
+  lane :certificates do
+    match(type: "development", team_id: "AS2BZHDV7Q", readonly: true)
+  end
+
+  # MARK: - Admin Automation
+
+  desc "Register new device"
+  lane :register_new_device do
+      device_name = prompt(text: "Enter device name: ")
+      device_udid = prompt(text: "Enter device UDID: ")
+      device_map = {}
+      device_map[device_name] = device_udid
+      
+      register_devices(devices: device_map, team_id: "AS2BZHDV7Q")
+
+      ensure_certificates
+  end
+
+  # MARK: - Jenkins Automation
 
   desc "Submit a new enterprise build to Hockey"
   lane :enterprise do
@@ -29,15 +52,11 @@ platform :ios do
     )
   end
 
-  desc "Downloads development profile and certificate"
-  lane :certificates do
-    match(type: "development", team_id: "AS2BZHDV7Q", readonly: true)
-  end
-
   desc "Ensures all profiles and certificates are up to date"
   lane :ensure_certificates do
-    match(type: "adhoc", team_id: "AS2BZHDV7Q")
-    match(type: "development", team_id: "AS2BZHDV7Q")
+    match(type: "adhoc", team_id: "AS2BZHDV7Q", force_for_new_devices: true)
+    match(type: "development", team_id: "AS2BZHDV7Q", force_for_new_devices: true)
+
     match(type: "appstore", team_id: "AS2BZHDV7Q")
 
     match(

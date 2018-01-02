@@ -1,17 +1,16 @@
 //
-//  SessionAPITests.swift
+//  APIManagerChatTopicsTest.swift
 //  SnowChatTests
 //
-//  Created by Marc Attinasi on 12/5/17.
+//  Created by Will Lisac on 12/21/17.
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-import Foundation
 import XCTest
 
 @testable import SnowChat
 
-class SessionAPITests: XCTestCase {
+class APIManagerChatTopicsTest: XCTestCase {
     
     override func setUp() {
         super.setUp()
@@ -44,7 +43,7 @@ class SessionAPITests: XCTestCase {
         do {
             let jsonData = jsonString.data(using: .utf8)
             let result = try JSONSerialization.jsonObject(with: jsonData!, options: .allowFragments)
-            let topics = SessionAPI.topicsFromResult(result)
+            let topics = APIManager.topicsFromResult(result)
             XCTAssertEqual(topics.count, 3)
             XCTAssertEqual(topics[0].name, "ITEM1")
             XCTAssertEqual(topics[1].name, "ITEM2")
@@ -78,7 +77,7 @@ class SessionAPITests: XCTestCase {
         do {
             let jsonData = jsonString.data(using: .utf8)
             let result = try JSONSerialization.jsonObject(with: jsonData!, options: .allowFragments)
-            let topics = SessionAPI.topicsFromResult(result)
+            let topics = APIManager.topicsFromResult(result)
             XCTAssertEqual(topics.count, 2)
             XCTAssertEqual(topics[0].name, "ITEM1")
             XCTAssertEqual(topics[1].name, "ITEM3")
@@ -89,3 +88,4 @@ class SessionAPITests: XCTestCase {
         }
     }
 }
+

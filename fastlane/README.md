@@ -23,16 +23,21 @@ xcode-select --install
 fastlane ios carthage_bootstrap
 ```
 Bootstraps carthage
-### ios enterprise
-```
-fastlane ios enterprise
-```
-Submit a new enterprise build to Hockey
 ### ios certificates
 ```
 fastlane ios certificates
 ```
 Downloads development profile and certificate
+### ios register_new_device
+```
+fastlane ios register_new_device
+```
+Register new device
+### ios enterprise
+```
+fastlane ios enterprise
+```
+Submit a new enterprise build to Hockey
 ### ios ensure_certificates
 ```
 fastlane ios ensure_certificates

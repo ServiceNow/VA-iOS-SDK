@@ -100,7 +100,7 @@ class TopicSelectionHandler: AutoCompleteHandler {
     }
 
     func showAllTopics() {
-        chatterbox.sessionAPI?.allTopics { topics in
+        chatterbox.apiManager.allTopics { topics in
             self.topics = topics
             self.isAllTopics = true
             self.conversationController?.showAutoCompletionView(topics.count > 0)
@@ -109,7 +109,7 @@ class TopicSelectionHandler: AutoCompleteHandler {
     
     func searchTopics(_ searchString: String, forceMenu: Bool = false) {
         let searchString = searchString.trimmingCharacters(in: CharacterSet(charactersIn: " \t"))
-        chatterbox.sessionAPI?.suggestTopics(searchText: searchString, completionHandler: { topics in
+        chatterbox.apiManager.suggestTopics(searchText: searchString, completionHandler: { topics in
             self.isAllTopics = false
             self.topics = topics
             self.conversationController?.showAutoCompletionView(forceMenu || topics.count > 0)
