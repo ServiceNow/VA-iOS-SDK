@@ -14,7 +14,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     
     @IBOutlet weak var controlContainerView: UIView!
     
-    private var controls = [ControlType.boolean, ControlType.multiSelect, ControlType.text, ControlType.typingIndicator]
+    private var controls = [ControlType.boolean, ControlType.multiSelect, ControlType.text, ControlType.outputImage, ControlType.typingIndicator]
     
     private var fakeChatViewController: FakeChatViewController?
     
@@ -70,8 +70,13 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             uiControl = TextControl(model: textModel)
         case .typingIndicator:
             uiControl = TypingIndicatorControl()
-        default:
-            fatalError("This control doesnt exist!")
+        case .outputImage:
+            let imageModel = OutputImageViewModel(label: "mark_image", value: URL(fileURLWithPath: "mark.png"), direction: .inbound)
+            uiControl = OutputImageControl(model: imageModel)
+        case .singleSelect:
+            fatalError("Single select not implemented yet")
+        case .unknown:
+            fatalError("Unknown")
         }
         
         uiControl.delegate = self
