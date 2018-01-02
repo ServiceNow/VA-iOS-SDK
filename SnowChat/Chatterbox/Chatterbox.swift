@@ -188,12 +188,12 @@ class Chatterbox {
             return
         }
 
-        let session = CBSession(id: UUID().uuidString, user: user, vendor: vendor)
+        let sessionInfo = CBSession(id: UUID().uuidString, user: user, vendor: vendor)
         
-        apiManager.startChatSession(with: session, chatId: chatId) { [weak self] result in
+        apiManager.startChatSession(with: sessionInfo, chatId: chatId) { [weak self] result in
             switch result {
-            case .success(let session):
-                self?.session = session
+            case .success(let resultSession):
+                self?.session = resultSession
             case .failure:
                 self?.logger.logError("getSession failed!")
             }
