@@ -71,6 +71,8 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     }
 }
 
+// FIXME: move to some foundation class
+
 extension Array {
     func contains<T : Equatable>(_ object: T) -> Bool {
         return self.filter({ $0 as? T == object }).count > 0

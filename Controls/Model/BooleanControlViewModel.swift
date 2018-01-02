@@ -68,8 +68,7 @@ class BooleanControlViewModel: PickerControlViewModel, ValueRepresentable {
     }
 }
 
-// little helper to return Yes/No based on bool value. Probably might be done different way. Also needs localization.
-
+// FIXME: little helper to return Yes/No based on bool value. Probably might be done different way. Also needs localization.
 extension Bool {
     public var chatDescription: String {
         return self ? "Yes" : "No"

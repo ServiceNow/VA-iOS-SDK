@@ -27,7 +27,6 @@ class OutputImageControl: ControlProtocol {
     
     weak var imageDownloader: ImageDownloader? {
         didSet {
-            
             guard let urlRequest = imageURLRequest else {
                 fatalError("Image url request doesn't exist")
             }
