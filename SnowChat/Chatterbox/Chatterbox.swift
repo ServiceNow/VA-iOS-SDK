@@ -25,6 +25,7 @@
 //
 
 import Foundation
+import AMBClient
 
 enum ChatterboxError: Error {
     case invalidParameter(details: String)
@@ -32,12 +33,8 @@ enum ChatterboxError: Error {
     case unknown
 }
 
-class Chatterbox: AMBListener {
+class Chatterbox {
     let id = CBData.uuidString()
-
-    var chatId: String {
-        return sessionAPI?.chatId ?? "0"
-    }
     
     var user: CBUser?
     var vendor: CBVendor?
@@ -58,7 +55,7 @@ class Chatterbox: AMBListener {
         self.user = forUser
         self.vendor = vendor
         
-        initializeAMB { error in
+        logIn { error in
             if error == nil {
                 self.createChatSession { error in
                     if error == nil {
@@ -84,11 +81,11 @@ class Chatterbox: AMBListener {
     func startTopic(withName: String) throws {
         conversationContext.topicName = withName
         
-        if let sessionId = session?.id, let conversationId = conversationContext.conversationId, let amb = ambClient {
+        if let sessionId = session?.id, let conversationId = conversationContext.conversationId {
             messageHandler = startTopicHandler
             
             let startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
-            amb.publish(message: startTopic, toChannel: chatChannel)
+            apiManager.ambClient.sendMessage(startTopic, toChannel: chatChannel, encoder: CBData.jsonEncoder)
             
             // TODO: how do we signal an error?
         } else {
@@ -135,7 +132,7 @@ class Chatterbox: AMBListener {
     
     func storeAndPublish<T: CBControlData>(_ message: T, forConversation conversationId: String, ofType type: CBControlType) {
         chatStore.storeResponseData(message, forConversation: conversationId)
-        ambClient?.publish(message: message, toChannel: chatChannel)
+        apiManager.ambClient.sendMessage(message, toChannel: chatChannel, encoder: CBData.jsonEncoder)
     }
     
     // MARK: internal properties and methods
@@ -149,19 +146,25 @@ class Chatterbox: AMBListener {
 
     private let chatStore = ChatDataStore(storeId: "ChatterboxDataStore")
     private var session: CBSession?
-    private var ambClient: AMBChatClient?
-    private(set) var sessionAPI: SessionAPI?
     
     private var chatChannel: String {
         return "/cs/messages/\(chatId)"
     }
+    
+    private let chatId = CBData.uuidString()
+    private var chatSubscription: NOWAMBSubscription?
+    
+    private(set) internal lazy var apiManager: APIManager = {
+        let instance = ServerInstance(instanceURL: CBData.config.url)
+        return APIManager(instance: instance)
+    }()
 
     private var messageHandler: ((String) -> Void)?
     private var handshakeCompletedHandler: ((ContextualActionMessage) -> Void)?
     
     private let logger = Logger(forCategory: "Chatterbox", level: .Info)
     
-    private func initializeAMB(_ completion: @escaping (Error?) -> Void) {
+    private func logIn(_ completion: @escaping (Error?) -> Void) {
         guard  let user = user, vendor != nil else {
             let error = ChatterboxError.invalidParameter(details: "User and Vendor must be initialized first")
             logger.logError(error.localizedDescription)
@@ -169,18 +172,14 @@ class Chatterbox: AMBListener {
             return
         }
         
-        let url = CBData.config.url
-        
-        // swiftlint:disable:next force_unwrapping
-        ambClient = AMBChatClient(withEndpoint: URL(string: url)!)
-        ambClient?.login(userName: user.name, password: user.password ?? "", completion: { (error) in
-            if error == nil {
-                self.logger.logInfo("AMB Login succeeded")
+        apiManager.logIn(username: user.name, password: user.password ?? "") { [weak self] error in
+            if let error = error {
+                self?.logger.logInfo("AMB Login failed: \(error)")
             } else {
-                self.logger.logInfo("AMB Login failed: \(error.debugDescription)")
+                self?.logger.logInfo("Login succeeded")
             }
             completion(error)
-        })
+        }
     }
     
     private func createChatSession(_ completion: @escaping (Error?) -> Void) {
@@ -188,35 +187,40 @@ class Chatterbox: AMBListener {
             logger.logError("User and Vendor must be initialized to create a chat session")
             return
         }
-        
-        sessionAPI = SessionAPI()
 
-        if let sessionService = sessionAPI {
-            let session = CBSession(id: UUID().uuidString, user: user, vendor: vendor)
-            sessionService.chatSession(forSessionInfo: session) { session in
-                if session == nil {
-                    self.logger.logError("getSession failed!")
-                } else {
-                    self.session = session
-                }
-                completion(sessionService.lastError)
+        let session = CBSession(id: UUID().uuidString, user: user, vendor: vendor)
+        
+        apiManager.startChatSession(with: session, chatId: chatId) { [weak self] result in
+            switch result {
+            case .success:
+                self?.session = session
+            case .failure:
+                self?.logger.logError("getSession failed!")
             }
+            completion(result.error)
         }
     }
     
-    private func subscribeChatChannel() {
-        ambClient?.subscribe(self, toChannel: chatChannel)
+    private func setupChatSubscription() {
+        chatSubscription = apiManager.ambClient.subscribe(chatChannel) { [weak self] (subscription, message) in
+            self?.logger.logDebug(message)
+            
+            if let messageHandler = self?.messageHandler {
+                messageHandler(message)
+            } else {
+                self?.logger.logError("No handler set in Chatterbox onMessage!")
+            }
+        }
     }
     
     private func performChatHandshake(_ completion: @escaping (ContextualActionMessage) -> Void) {
         handshakeCompletedHandler = completion
         messageHandler = handshakeHandler
         
-        subscribeChatChannel()
+        setupChatSubscription()
 
         if let sessionId = session?.id {
-            ambClient?.publish(message: SystemTopicPickerMessage(forSession: sessionId),
-                               toChannel: chatChannel)
+            apiManager.ambClient.sendMessage(SystemTopicPickerMessage(forSession: sessionId), toChannel: chatChannel, encoder: CBData.jsonEncoder)
         }
     }
     
@@ -252,7 +256,7 @@ class Chatterbox: AMBListener {
     
     private func startUserSession(withInitEvent initEvent: InitMessage) {
         let initUserEvent = createUserSessionInitMessage(fromInitEvent: initEvent)
-        ambClient?.publish(message: initUserEvent, toChannel: chatChannel)
+        apiManager.ambClient.sendMessage(initUserEvent, toChannel: chatChannel, encoder: CBData.jsonEncoder)
     }
     
     private func createUserSessionInitMessage(fromInitEvent initEvent: InitMessage) -> InitMessage {
@@ -291,7 +295,7 @@ class Chatterbox: AMBListener {
                     outgoingMessage.data.richControl?.value = conversationContext.topicName
                     
                     messageHandler = startUserTopicHandshakeHandler
-                    ambClient?.publish(message: outgoingMessage, toChannel: chatChannel)
+                    apiManager.ambClient.sendMessage(outgoingMessage, toChannel: chatChannel, encoder: CBData.jsonEncoder)
                 }
             }
         }
@@ -308,7 +312,7 @@ class Chatterbox: AMBListener {
                 // client and server messages are the same, so only look at server responses!
                 if startUserTopic.data.direction == MessageConstants.directionFromServer.rawValue {
                     let startUserTopicReadyMessage = createStartTopicReadyMessage(startUserTopic: startUserTopic)
-                    ambClient?.publish(message: startUserTopicReadyMessage, toChannel: chatChannel)
+                    apiManager.ambClient.sendMessage(startUserTopicReadyMessage, toChannel: chatChannel, encoder: CBData.jsonEncoder)
                 }
             }
         } else if actionMessage.eventType == .startedUserTopic {
@@ -425,22 +429,7 @@ class Chatterbox: AMBListener {
         messageHandler = nil
         handshakeCompletedHandler = nil
     }
-    
-    private func unsubscribe() {
-        ambClient?.unsubscribe(self, fromChannel: self.chatChannel)
-    }
-    
-    // MARK: AMBListener protocol methods
-    
-    func client(_ client: AMBChatClient, didReceiveMessage message: String, fromChannel channel: String) {
-        logger.logDebug(message)
 
-        if let messageHandler = messageHandler {
-            messageHandler(message)
-        } else {
-            logger.logError("No handler set in Chatterbox onMessage!")
-        }
-    }
 }
 
 private func serverContextResponse(fromRequest request: [String: ContextItem]) -> [String: Bool] {

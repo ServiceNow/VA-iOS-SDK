@@ -38,10 +38,11 @@ class CBData {
         return UUID().uuidString.replacingOccurrences(of: "-", with: "")
     }
     
-    static var config: ChatBoxConfig = ChatBoxConfig(url: "http://localhost:8080") //ChatBoxConfig(url: "https://demonightlychatbot.service-now.com")
+    // swiftlint:disable:next force_unwrapping
+    static var config: ChatBoxConfig = ChatBoxConfig(url: URL(string: "http://localhost:8080")!)
     
     struct ChatBoxConfig {
-        var url: String
+        var url: URL
     }
 }
 
