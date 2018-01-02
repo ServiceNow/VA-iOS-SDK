@@ -12,7 +12,7 @@
 // ImageDownloader was added to make OutputImageControl independent of networking client
 public protocol ImageDownloader: AnyObject {
     
-    func downloadImage(forURLRequest request: URLRequest, completion: (UIImage?, Error?) -> Void)
+    func downloadImage(forURL url: URL, completion: (UIImage?, Error?) -> Void)
 }
 
 class OutputImageControl: ControlProtocol {
@@ -23,16 +23,14 @@ class OutputImageControl: ControlProtocol {
     
     weak var delegate: ControlDelegate?
     
-    private var imageURLRequest: URLRequest?
-    
     weak var imageDownloader: ImageDownloader? {
         didSet {
-            guard let urlRequest = imageURLRequest else {
-                fatalError("Image url request doesn't exist")
+            guard let imageModel = model as? OutputImageViewModel else {
+                Logger.default.logError("wrong model type")
+                return
             }
             
-            imageDownloader?.downloadImage(forURLRequest: urlRequest, completion: { [weak self] (image, error) in
-                
+            imageDownloader?.downloadImage(forURL: imageModel.value, completion: { [weak self] (image, error) in
                 if let error = error {
                     Logger.default.logError("Error loading image from URL \(error)")
                     return
@@ -49,7 +47,6 @@ class OutputImageControl: ControlProtocol {
         }
         
         self.model = imageModel
-        self.imageURLRequest = URLRequest(url: imageModel.value)
         self.viewController = OutputImageViewController()
     }
 }

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ControlsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ControlDelegate {
+class ControlsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ControlDelegate, ImageDownloader {
 
     @IBOutlet weak var tableView: UITableView!
     
@@ -71,8 +71,16 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         case .typingIndicator:
             uiControl = TypingIndicatorControl()
         case .outputImage:
-            let imageModel = OutputImageViewModel(label: "mark_image", value: URL(fileURLWithPath: "mark.png"), direction: .inbound)
-            uiControl = OutputImageControl(model: imageModel)
+            let bundle = Bundle(for: type(of: self))
+            guard let filePath = bundle.path(forResource: "mark", ofType: "png") else {
+                fatalError("Error getting image path")
+            }
+            
+            let url = URL(fileURLWithPath: filePath)
+            let imageModel = OutputImageViewModel(label: "Output Image", value: url, direction: .inbound)
+            let outputImageControl = OutputImageControl(model: imageModel)
+            outputImageControl.imageDownloader = self
+            uiControl = outputImageControl
         case .singleSelect:
             fatalError("Single select not implemented yet")
         case .unknown:
@@ -83,6 +91,17 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         
         // set the controls
         fakeChatViewController?.controls = [uiControl]
+    }
+    
+    // MARK: - ImageDownloader
+    
+    func downloadImage(forURL url: URL, completion: (UIImage?, Error?) -> Void) {
+        guard let data = try? Data(contentsOf: url) else {
+            return
+        }
+        
+        let image = UIImage(data: data)
+        completion(image, nil)
     }
     
     // MARK: - ControlDelegate
