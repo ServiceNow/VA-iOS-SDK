@@ -36,11 +36,11 @@ class ChatDataStore {
         let index = conversations.index { $0.uniqueId() == conversationId }
         
         if let index = index {
-            conversations[index].didReceiveResponse(data)
+            conversations[index].storeResponse(data)
         }
     }
     
-    // pendingMessage: get the lat pendng message for a conversation, if any
+    // pendingMessage: get the last pendng message for a conversation, if any
     //
     func lastPendingMessage(forConversation conversationId: String) -> CBStorable? {
         return conversations.first(where: { $0.uniqueId() == conversationId })?.lastPendingMessage()
@@ -76,7 +76,7 @@ struct Conversation: CBStorable {
         exchanges.append(item)
     }
     
-    mutating func didReceiveResponse(_ data: CBControlData) {
+    mutating func storeResponse(_ data: CBControlData?) {
         if let last = exchanges.last, last.complete != true {
             let index = exchanges.count - 1
             exchanges[index].response = data

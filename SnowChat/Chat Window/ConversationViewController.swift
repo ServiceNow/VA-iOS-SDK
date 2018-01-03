@@ -104,7 +104,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     // MARK: ViewDataChangeListener
     
     func chatDataController(_ dataController: ChatDataController, didChangeModel model: ControlViewModel, atIndex index: Int) {
-        // TODO: optimize to update changed rows if possible...
         tableView.reloadData()
         
         // Due to silly self-sizing problems with UITableViewCell I am forcing table to redraw itself after data are reloaded
@@ -166,15 +165,24 @@ extension ConversationViewController {
     
     override func didCommitTextEditing(_ sender: Any) {
         super.didCommitTextEditing(sender)
-        
+
+        let inputText: String = textView.text ?? ""
+
         switch inputState {
         case .inTopicSelection:
-            let searchText: String = textView.text ?? ""
-            autocompleteHandler?.didCommitEditing(searchText)
+            autocompleteHandler?.didCommitEditing(inputText)
+        case .inConversation:
+            processUserInput(inputText)
         default:
             Logger.default.logDebug("Right button or enter pressed: state=\(inputState)")
         }
         
+    }
+    
+    func processUserInput(_ inputText: String) {
+        // send the input as a control update
+        let model = TextControlViewModel(label: "", value: inputText, direction: ControlDirection.outbound)
+        dataController.updateControlData(model, isSkipped: false)
     }
     
     override func heightForAutoCompletionView() -> CGFloat {
@@ -195,7 +203,7 @@ extension ConversationViewController {
             return handler.numberOfRowsInSection(section)
         }
         
-        return dataController.controlData.count
+        return dataController.controlCount()
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -208,25 +216,40 @@ extension ConversationViewController {
         if tableView == autoCompletionView, let handler = autocompleteHandler {
             return handler.cellForRowAt(indexPath)
         } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
-            configureConversationCell(cell, at: indexPath)
-            return cell
+            
+           return conversationCellForRowAt(indexPath)
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let messageViewController = self.messageViewController(atIndex: indexPath.row)
+        messageViewController.removeFromParentViewController()
+    }
+    
+    private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
+        guard indexPath.row < dataController.controlCount() else {
+            return UITableViewCell()
+        }
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
+        configureConversationCell(cell, at: indexPath)
+        return cell
     }
     
     private func configureConversationCell(_ cell: ConversationViewCell, at indexPath:IndexPath) {
         cell.selectionStyle = .none
         
-        let model = dataController.controlData[indexPath.row]
-        let messageViewController = self.messageViewController(atIndex: indexPath.row)
-        let messageView: UIView = messageViewController.view
-        cell.messageView = messageView
-        
-        let control = SnowControlUtils.uiControlForViewModel(model)
-        control.delegate = self
-        messageViewController.addUIControl(control)
-        messageViewController.didMove(toParentViewController: self)
-        cell.transform = self.tableView.transform
+        if let model = dataController.controlForIndex(indexPath.row) {
+            let messageViewController = self.messageViewController(atIndex: indexPath.row)
+            let messageView: UIView = messageViewController.view
+            cell.messageView = messageView
+            
+            let control = SnowControlUtils.uiControlForViewModel(model)
+            control.delegate = self
+            messageViewController.addUIControl(control)
+            messageViewController.didMove(toParentViewController: self)
+            cell.transform = self.tableView.transform
+        }
     }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -241,6 +264,8 @@ extension ConversationViewController {
 extension ConversationViewController: ChatEventListener {
     func chatterbox(_ chatterbox: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
         if self.chatterbox.id == chatterbox.id {
+            
+            dataController.conversationId = topic.data.actionMessage.vendorTopicId
             
             inputState = .inConversation
             setupInputForState()
@@ -261,6 +286,7 @@ extension ConversationViewController: ChatEventListener {
 extension ConversationViewController: ControlDelegate {
     
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
-        // TODO: Add some stuff in here!
+        // TODO: how to determine if it was skipped?
+        dataController.updateControlData(model, isSkipped: false)
     }
 }
