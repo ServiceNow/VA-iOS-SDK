@@ -100,22 +100,35 @@ class Chatterbox {
     func update(control: CBControlData, ofType type: CBControlType) {
         
         // based on type, cast the value and push to the store, then send back to service via AMB
-        if type == .boolean {
+        switch type {
+        case .boolean:
             if var booleanControl = control as? BooleanControlMessage, let conversationId = booleanControl.data.conversationId {
                 booleanControl.data = updateMessage(booleanControl.data)
                 storeAndPublish(booleanControl, forConversation: conversationId, ofType: type)
+
+                if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
+                    chatDataListener?.chattebox(self, didCompleteBooleanExchange: lastExchange, forChat: conversationId)
+                }
             }
-        } else if type == .input {
+        case .input:
             if var inputControl = control as? InputControlMessage, let conversationId = inputControl.data.conversationId {
                 inputControl.data = updateMessage(inputControl.data)
                 storeAndPublish(inputControl, forConversation: conversationId, ofType: type)
+
+                if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
+                    chatDataListener?.chattebox(self, didCompleteInputExchange: lastExchange, forChat: conversationId)
+                }
             }
-        } else if type == .picker {
-            if var inputControl = control as? PickerControlMessage, let conversationId = inputControl.data.conversationId {
-                inputControl.data = updateMessage(inputControl.data)
-                storeAndPublish(inputControl, forConversation: conversationId, ofType: type)
+        case .picker:
+            if var pickerControl = control as? PickerControlMessage, let conversationId = pickerControl.data.conversationId {
+                pickerControl.data = updateMessage(pickerControl.data)
+                storeAndPublish(pickerControl, forConversation: conversationId, ofType: type)
+                
+                if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
+                    chatDataListener?.chattebox(self, didCompletePickerExchange: lastExchange, forChat: conversationId)
+                }
             }
-        } else {
+        default:
             logger.logInfo("Unrecognized control type - skipping: \(type.rawValue)")
             return
         }

@@ -117,13 +117,14 @@ class TopicSelectionHandler: AutoCompleteHandler {
     }
     
     func cellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
-        guard let controller = conversationController else {
+        let row = indexPath.row
+        
+        guard let controller = conversationController, row < topics.count else {
             return UITableViewCell()
         }
         
         let cell = controller.autoCompletionView.dequeueReusableCell(withIdentifier: TopicSelectionTableCell.cellIdentifier) as! TopicSelectionTableCell
         
-        let row = indexPath.row
         let text = topics[row].title
         cell.topicLabel?.text = text
         cell.topicLabel?.textColor = UIColor.blue

@@ -18,6 +18,18 @@ func booleanControlFromBooleanViewModel(viewModel: BooleanControlViewModel) -> B
 }
 
 class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventListener, ControlDelegate {
+    func chattebox(_: Chatterbox, didCompleteBooleanExchange messageExchange: MessageExchange, forChat chatId: String) {
+        Logger.default.logDebug("Boolean Message Completed")
+    }
+    
+    func chattebox(_: Chatterbox, didCompleteInputExchange messageExchange: MessageExchange, forChat chatId: String) {
+        Logger.default.logDebug("Input Message Completed")
+
+    }
+    
+    func chattebox(_: Chatterbox, didCompletePickerExchange messageExchange: MessageExchange, forChat chatId: String) {
+        Logger.default.logDebug("Picker Message Completed")
+    }
     
     // MARK: ControlDelegate
     
@@ -31,7 +43,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     // MARK: ChatEventListener
     
     func chatterbox(_: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
-        appendContent(message: "Successfully started User Topic \(topic.data.actionMessage.topicName): comnversationID=\(topic.data.conversationId ?? "nil")")
+        appendContent(message: "Successfully started User Topic \(topic.data.actionMessage.topicName): conversationID=\(topic.data.conversationId ?? "nil")")
         
         conversationId = topic.data.actionMessage.vendorTopicId
         // NOTE: why the conversationID is encoded into the vendorTopicId of the StartTopic message is unclear, but it is
