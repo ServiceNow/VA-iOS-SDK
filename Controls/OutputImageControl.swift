@@ -12,7 +12,7 @@
 // ImageDownloader was added to make OutputImageControl independent of networking client
 public protocol ImageDownloader: AnyObject {
     
-    func downloadImage(forURL url: URL, completion: (UIImage?, Error?) -> Void)
+    func downloadImage(forURL url: URL, completion: @escaping (UIImage?, Error?) -> Void)
 }
 
 class OutputImageControl: ControlProtocol {

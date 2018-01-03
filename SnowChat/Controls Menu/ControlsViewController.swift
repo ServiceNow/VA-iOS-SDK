@@ -95,13 +95,15 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     
     // MARK: - ImageDownloader
     
-    func downloadImage(forURL url: URL, completion: (UIImage?, Error?) -> Void) {
+    func downloadImage(forURL url: URL, completion: @escaping (UIImage?, Error?) -> Void) {
         guard let data = try? Data(contentsOf: url) else {
             return
         }
         
-        let image = UIImage(data: data)
-        completion(image, nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            let image = UIImage(data: data)
+            completion(image, nil)
+        }
     }
     
     // MARK: - ControlDelegate
