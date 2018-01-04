@@ -19,8 +19,10 @@ class TopicSelectionHandler: AutoCompleteHandler {
     }
     
     func heightForAutoCompletionView() -> CGFloat {
+        let hasTopics = topics.count > 0
+        
         let cellHeight:CGFloat = TopicSelectionTableCell.estimatedCellHeight
-        let headerHeight: CGFloat = TopicSelectionTableCell.estimatedHeaderHeight
+        let headerHeight: CGFloat = hasTopics ? TopicSelectionTableCell.estimatedHeaderHeight : cellHeight
         return (cellHeight * CGFloat(topics.count)) + headerHeight
     }
     
@@ -61,20 +63,36 @@ class TopicSelectionHandler: AutoCompleteHandler {
         containerView.backgroundColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
         
         let headerView = UILabel()
+        
+        // title has three modes: Some topics matched, no topics matched, or showing all topics
+        //  - if no matches we allow user to list all topics, so we make the header a little bigger
+        //    to create a good tap-target
+        
+        let hasTopics = topics.count > 0
+        let titleMargin: CGFloat = hasTopics ? 10 : 15
         let title = isAllTopics ?
             NSLocalizedString("All Topics", comment: "Header for all-topics list matches") :
-            topics.count > 0 ? NSLocalizedString("Matching Topics", comment: "Header for topic list matches") :
-                               NSLocalizedString("No Matching Topics", comment: "Header for topic list when no matches")
-        
+            hasTopics ? NSLocalizedString("Matching Topics", comment: "Header for topic list matches") :
+                        NSLocalizedString("No Matches - tap to see all topics", comment: "Header for topic list when no matches")
         headerView.text = title
         
         headerView.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(headerView)
-        NSLayoutConstraint.activate([headerView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10),
-                                     headerView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 10),
-                                     headerView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 10),
-                                     headerView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -10)])
+        NSLayoutConstraint.activate([headerView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: titleMargin),
+                                     headerView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: titleMargin),
+                                     headerView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: titleMargin),
+                                     headerView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: titleMargin * -1.0)])
+        
+        if !hasTopics && !isAllTopics {
+            let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(allTopicsTapped))
+            containerView.addGestureRecognizer(tapRecognizer)
+        }
+        
         return containerView
+    }
+    
+    @objc func allTopicsTapped(gestureRecognizer: UITapGestureRecognizer) {
+        showAllTopics()
     }
     
     private var topics = [CBTopic]()
