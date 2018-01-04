@@ -63,6 +63,7 @@ class MessageViewController: UIViewController {
         switch direction {
         case .inbound:
             uiControl?.viewController.view.backgroundColor = UIColor.userBubbleBackgroundColor
+            bubbleView.backgroundColor = UIColor.userBubbleBackgroundColor
             agentImageView.isHidden = false
             bubbleView.arrowDirection = .left
             agentBubbleLeadingConstraint.priority = .veryHigh
@@ -70,6 +71,7 @@ class MessageViewController: UIViewController {
             bubbleTrailingConstraint.priority = .defaultHigh
         case .outbound:
             uiControl?.viewController.view.backgroundColor = UIColor.agentBubbleBackgroundColor
+            bubbleView.backgroundColor = UIColor.agentBubbleBackgroundColor
             bubbleView.arrowDirection = .right
             agentBubbleLeadingConstraint.priority = .defaultLow
             bubbleLeadingConstraint.priority = .defaultHigh
