@@ -35,8 +35,6 @@ class MessageViewController: UIViewController {
         addChildViewController(controlViewController)
         
         let controlView: UIView = controlViewController.view
-        controlView.backgroundColor = UIColor.agentBubbleBackgroundColor
-        
         updateForControlDirection(control.model.direction)
         
         controlView.translatesAutoresizingMaskIntoConstraints = false
@@ -55,15 +53,23 @@ class MessageViewController: UIViewController {
     }
     
     // updates message view based on the direction of the message
+    
     private func updateForControlDirection(_ direction: ControlDirection) {
+        if uiControl?.model.type == .text,
+            let textView = uiControl?.viewController.view as? UITextView {
+            textView.textColor = (direction == .inbound) ? UIColor.userBubbleTextColor : UIColor.agentBubbleTextColor
+        }
+        
         switch direction {
         case .inbound:
+            uiControl?.viewController.view.backgroundColor = UIColor.userBubbleBackgroundColor
             agentImageView.isHidden = false
             bubbleView.arrowDirection = .left
             agentBubbleLeadingConstraint.priority = .veryHigh
             bubbleLeadingConstraint.priority = .defaultLow
             bubbleTrailingConstraint.priority = .defaultHigh
         case .outbound:
+            uiControl?.viewController.view.backgroundColor = UIColor.agentBubbleBackgroundColor
             bubbleView.arrowDirection = .right
             agentBubbleLeadingConstraint.priority = .defaultLow
             bubbleLeadingConstraint.priority = .defaultHigh

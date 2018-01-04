@@ -129,7 +129,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     // Puts on caller resposibility to invoke didMove(toParentViewController) on returned VC object
     func messageViewController(atIndex index: Int) -> MessageViewController {
         let messageViewController: MessageViewController
-        if messageViewControllers.count < index {
+        if messageViewControllers.count > index {
             messageViewController = messageViewControllers[index]
             messageViewController.removeUIControl()
             messageViewController.removeFromParentViewController()
