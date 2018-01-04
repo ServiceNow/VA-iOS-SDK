@@ -123,6 +123,19 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             tableView.beginUpdates()
             tableView.endUpdates()
         }
+        
+        manageInputControl()
+    }
+    
+    func manageInputControl() {
+        if inputState == .inConversation {
+            // during conversation we hide the input when displaying any control other than text as the last one
+            let count = dataController.controlCount()
+            if count > 0, let lastControl = dataController.controlForIndex(0) {
+                textView.text = ""
+                isTextInputbarHidden = lastControl.type != .text
+            }
+        }
     }
     
     // FIXME: This will be improved!
