@@ -22,8 +22,8 @@ enum BubbleLocation {
 
 class ChatMessageModel {
     
-    var controlModel: ControlViewModel
-    var location: BubbleLocation
+    let controlModel: ControlViewModel
+    let location: BubbleLocation
     
     init(model: ControlViewModel, location: BubbleLocation) {
         self.controlModel = model
