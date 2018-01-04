@@ -108,7 +108,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         textView.placeholder = NSLocalizedString("...", comment: "Placeholder text for input field when user is in a conversation")
     }
     
-    // MARK: ViewDataChangeListener
+    // MARK: - ViewDataChangeListener
     
     func chatDataController(_ dataController: ChatDataController, didChangeModel model: ControlViewModel, atIndex index: Int) {
         tableView.reloadData()
@@ -138,6 +138,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         }
     }
     
+    // MARK: - MessageViwController creation
+    
     // FIXME: This will be improved!
     // Puts on caller resposibility to invoke didMove(toParentViewController) on returned VC object
     func messageViewController(atIndex index: Int) -> MessageViewController {
@@ -159,7 +161,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
 
 extension ConversationViewController {
     
-    // MARK: SLKTextViewController overrides
+    // MARK: - SLKTextViewController overrides
     
     override func didChangeAutoCompletionPrefix(_ prefix: String, andWord word: String) {
         super.didChangeAutoCompletionPrefix(prefix, andWord: word)
@@ -209,6 +211,10 @@ extension ConversationViewController {
        return autocompleteHandler?.heightForAutoCompletionView() ?? 0
     }
     
+    override func maximumHeightForAutoCompletionView() -> CGFloat {
+        // default is 140, but even on iPhone SE 200 fits fine with keyboard up
+        return 200
+    }
     override func numberOfSections(in tableView: UITableView) -> Int {
         if tableView == autoCompletionView, let handler = autocompleteHandler {
             return handler.numberOfSections()
@@ -281,6 +287,9 @@ extension ConversationViewController {
 }
 
 extension ConversationViewController: ChatEventListener {
+    
+    // MARK: - ChatEventListener
+    
     func chatterbox(_ chatterbox: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
         guard self.chatterbox.id == chatterbox.id else {
                 return
@@ -304,9 +313,9 @@ extension ConversationViewController: ChatEventListener {
     }
 }
 
-// MARK: Control Delegate
-
 extension ConversationViewController: ControlDelegate {
+    
+    // MARK: - ControlDelegate
     
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
         // TODO: how to determine if it was skipped?
