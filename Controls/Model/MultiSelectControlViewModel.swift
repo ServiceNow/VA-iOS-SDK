@@ -22,7 +22,7 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     var direction: ControlDirection
     
-    init(id: String, label: String, required: Bool, direction: ControlDirection, items: [PickerItem]) {
+    init(id: String, label: String, required: Bool, direction: ControlDirection, items: [PickerItem], resultValue: [String]? = nil) {
         self.id = id
         self.label = label
         self.isRequired = required
@@ -32,9 +32,10 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
         if !required {
             self.items.append(PickerItem.skipItem())
         }
+        selectItems(withValues: resultValue)
     }
     
-    func select(itemAt index: Int) {
+    func selectItem(at index: Int) {
         let item = items[index]
         
         // if .skip item is selected - unselect all other items
@@ -43,6 +44,14 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
         }
         
         item.isSelected = !item.isSelected
+    }
+    
+    private func selectItems(withValues values: [String]?) {
+        items.forEach({ $0.isSelected = false })
+        
+        if let values = values {
+            items.filter({ values.contains($0.value) }).forEach({ $0.isSelected = true })
+        }
     }
     
     // MARK: - ValueRepresentable
@@ -55,5 +64,9 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
         // Array of selected values
         let values = selectedItems.map({ $0.value })
         return values
+    }
+    
+    var displayValue: String? {
+        return resultValue?.joined(separator: ", ")
     }
 }

@@ -184,7 +184,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
         }
     }
     
-    let user = CBUser(id: "9927", token: "938457hge98", name: "maint", consumerId: consumerId, consumerAccountId: consumerAccountId, password: "maint")
+    let user = CBUser(id: "9927", token: "938457hge98", name: "admin", consumerId: consumerId, consumerAccountId: consumerAccountId, password: "snow2004")
     let vendor = CBVendor(name: "ServiceNow", vendorId: "c2f0b8f187033200246ddd4c97cb0bb9", consumerId: consumerId, consumerAccountId: consumerAccountId)
     
     var chatterbox: Chatterbox?

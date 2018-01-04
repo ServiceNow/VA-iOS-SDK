@@ -52,8 +52,8 @@ public class DebugViewController: UITableViewController, ChatServiceAppDelegate 
     // MARK: ChatServiceAppDelegate methods
     
     func userCredentials() -> ChatUserCredentials {
-        return ChatUserCredentials(userName: "maint",
-                                   userPassword: "maint",
+        return ChatUserCredentials(userName: "admin",
+                                   userPassword: "snow2004",
                                    vendorId: "c2f0b8f187033200246ddd4c97cb0bb9",
                                    consumerId: CBData.uuidString(),
                                    consumerAccountId: CBData.uuidString())

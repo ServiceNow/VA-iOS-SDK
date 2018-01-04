@@ -12,6 +12,8 @@ protocol ValueRepresentable {
     associatedtype ResultType
     
     var resultValue: ResultType? { get }
+    
+    var displayValue: String? { get }
 }
 
 enum ControlDirection {
@@ -47,5 +49,5 @@ protocol ControlViewModel {
     
     var type: ControlType { get }
     
-    var direction: ControlDirection { get set }
+    var direction: ControlDirection { get }
 }

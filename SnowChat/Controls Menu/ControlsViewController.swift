@@ -8,13 +8,13 @@
 
 import UIKit
 
-class ControlsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ControlDelegate {
+class ControlsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ControlDelegate, ImageDownloader {
 
     @IBOutlet weak var tableView: UITableView!
     
     @IBOutlet weak var controlContainerView: UIView!
     
-    private var controls = [ControlType.boolean, ControlType.multiSelect, ControlType.text, ControlType.typingIndicator]
+    private var controls = [ControlType.boolean, ControlType.multiSelect, ControlType.text, ControlType.outputImage, ControlType.typingIndicator]
     
     private var fakeChatViewController: FakeChatViewController?
     
@@ -70,14 +70,43 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             uiControl = TextControl(model: textModel)
         case .typingIndicator:
             uiControl = TypingIndicatorControl()
-        default:
-            fatalError("This control doesnt exist!")
+        case .outputImage:
+            let bundle = Bundle(for: type(of: self))
+            guard let filePath = bundle.path(forResource: "mark", ofType: "png") else {
+                fatalError("Error getting image path")
+            }
+            
+            let url = URL(fileURLWithPath: filePath)
+            let imageModel = OutputImageViewModel(label: "Output Image", value: url, direction: .inbound)
+            let outputImageControl = OutputImageControl(model: imageModel)
+            outputImageControl.imageDownloader = self
+            uiControl = outputImageControl
+        case .singleSelect:
+            fatalError("Single select not implemented yet")
+        case .unknown:
+            fatalError("Unknown")
         }
         
         uiControl.delegate = self
         
         // set the controls
         fakeChatViewController?.controls = [uiControl]
+    }
+    
+    // MARK: - ImageDownloader
+    
+    func downloadImage(forURL url: URL, completion: @escaping (UIImage?, Error?) -> Void) {
+        guard let data = try? Data(contentsOf: url) else {
+            return
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            let image = UIImage(data: data)
+            completion(image, nil)
+            
+            self?.fakeChatViewController?.tableView.beginUpdates()
+            self?.fakeChatViewController?.tableView.endUpdates()
+        }
     }
     
     // MARK: - ControlDelegate
