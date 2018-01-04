@@ -11,12 +11,11 @@
 protocol ChatterboxMessageAdapter where Self: ControlViewModel {
     
     associatedtype T = CBControlData
-    associatedtype U = Self
-    static func model(withMessage message: T) -> U?
+    static func chatMessageModel(withMessage message: T) -> ChatMessageModel?
 }
 
 extension ChatterboxMessageAdapter {
-    static func model(withMessage message: T) -> U? {
+    static func chatMessageModel(withMessage message: T) -> ChatMessageModel? {
         fatalError("Needs to be implemented by subclasses")
     }
 }
@@ -24,29 +23,26 @@ extension ChatterboxMessageAdapter {
 // MARK: Boolean Model Adapter
 
 extension BooleanControlViewModel: ChatterboxMessageAdapter {
-    
     typealias T = BooleanControlMessage
-    typealias U = BooleanControlViewModel
     
-    static func model(withMessage message: T) -> U? {
+    static func chatMessageModel(withMessage message: T) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
             let required = message.data.richControl?.uiMetadata?.required else {
                 return nil
         }
         
         // FIXME: direction should be an enum. Talk to Marc about it
+        let booleanModel = BooleanControlViewModel(id: message.id, label: title, required: required)
         let direction = message.data.direction
-        let booleanModel = BooleanControlViewModel(id: message.id, label: title, required: required, direction: ControlDirection.direction(forStringValue: direction.rawValue))
-        return booleanModel
+        let snowViewModel = ChatMessageModel(model: booleanModel, location: BubbleLocation.location(for: direction))
+        return snowViewModel
     }
 }
 
 extension SingleSelectControlViewModel: ChatterboxMessageAdapter {
-    
     typealias T = PickerControlMessage
-    typealias U = SingleSelectControlViewModel
     
-    static func model(withMessage message: T) -> U? {
+    static func chatMessageModel(withMessage message: T) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
             let required = message.data.richControl?.uiMetadata?.required else {
                 return nil
@@ -59,16 +55,16 @@ extension SingleSelectControlViewModel: ChatterboxMessageAdapter {
             items.append(PickerItem(label: option.label, value: option.value))
         })
         
-        let pickerModel = SingleSelectControlViewModel(id: message.id, label: title, required: required, direction: ControlDirection.direction(forStringValue: direction.rawValue), items: items)
-        return pickerModel
+        let pickerModel = SingleSelectControlViewModel(id: message.id, label: title, required: required, items: items)
+        let snowViewModel = ChatMessageModel(model: pickerModel, location: BubbleLocation.location(for: direction))
+        return snowViewModel
     }
 }
 
 extension TextControlViewModel: ChatterboxMessageAdapter {
     typealias T = OutputTextMessage
-    typealias U = TextControlViewModel
     
-    static func model(withMessage message: T) -> U? {
+    static func chatMessageModel(withMessage message: T) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label else {
             return nil
         }
@@ -76,7 +72,8 @@ extension TextControlViewModel: ChatterboxMessageAdapter {
         // FIXME: direction should be an enum. Talk to Marc about it
         let value = message.data.richControl?.value ?? ""
         let direction = message.data.direction
-        let textModel = TextControlViewModel(id: message.id, label: title, value: value, direction: ControlDirection.direction(forStringValue: direction.rawValue))
-        return textModel
+        let textModel = TextControlViewModel(id: message.id, label: title, value: value)
+        let snowViewModel = ChatMessageModel(model: textModel, location: BubbleLocation.location(for: direction))
+        return snowViewModel
     }
 }

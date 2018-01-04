@@ -16,14 +16,11 @@ class OutputImageViewModel: ControlViewModel {
     
     let type: ControlType = .outputImage
     
-    let direction: ControlDirection
-    
     let value: URL
     
-    init(id: String = "image_output", label: String, value: URL, direction: ControlDirection) {
+    init(id: String = "image_output", label: String, value: URL) {
         self.label = label
         self.value = value
         self.id = id
-        self.direction = direction
     }
 }

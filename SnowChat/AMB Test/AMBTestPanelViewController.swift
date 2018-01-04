@@ -126,7 +126,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     
     func presentBooleanAlert(_ message: BooleanControlMessage) {
         var uiControl: ControlProtocol
-        if let booleanModel = BooleanControlViewModel.model(withMessage: message) {
+        if let booleanModel = BooleanControlViewModel.chatMessageModel(withMessage: message)?.controlModel {
             uiControl = BooleanControl(model: booleanModel)
             uiControl.delegate = self
             

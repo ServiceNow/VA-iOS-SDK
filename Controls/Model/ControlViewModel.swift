@@ -16,27 +16,6 @@ protocol ValueRepresentable {
     var displayValue: String? { get }
 }
 
-enum ControlDirection {
-
-    // inbound - for control/messages initiated by the user
-    case inbound
-    
-    // outbound - controls send by the agent
-    case outbound
-    
-    // FIXME: temporary because CB layer sends us string instead of enum
-    static func direction(forStringValue value: String) -> ControlDirection {
-        if value == "inbound" {
-            return .inbound
-        }
-        if value == "outbound" {
-            return .outbound
-        }
-        
-        fatalError("ooops not sure what this direction value means!")
-    }
-}
-
 // base model for all ui control models
 protocol ControlViewModel {
     
@@ -48,6 +27,4 @@ protocol ControlViewModel {
     var id: String { get }
     
     var type: ControlType { get }
-    
-    var direction: ControlDirection { get }
 }

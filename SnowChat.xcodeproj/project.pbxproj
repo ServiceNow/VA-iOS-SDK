@@ -46,7 +46,7 @@
 		5704EA321FEAAD46001020E6 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5704EA311FEAAD46001020E6 /* TypingIndicatorView.swift */; };
 		5704EA341FEAAE4B001020E6 /* TypingIndicatorControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5704EA331FEAAE4B001020E6 /* TypingIndicatorControl.swift */; };
 		57067C8D1FE62EE900812266 /* FakeChatViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57067C8C1FE62EE900812266 /* FakeChatViewCell.swift */; };
-		5706C5791FE43FB3008D70D1 /* SnowControlUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706C5781FE43FB3008D70D1 /* SnowControlUtils.swift */; };
+		5706C5791FE43FB3008D70D1 /* ControlsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706C5781FE43FB3008D70D1 /* ControlsUtil.swift */; };
 		5706C57B1FE499A0008D70D1 /* FakeChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706C57A1FE499A0008D70D1 /* FakeChatViewController.swift */; };
 		5706C5811FE49F78008D70D1 /* MessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706C5801FE49F78008D70D1 /* MessageViewController.swift */; };
 		572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572A4E3B1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift */; };
@@ -88,6 +88,7 @@
 		57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1EA321FC33D1C009FC76D /* RoundedView.swift */; };
 		57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */; };
 		57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */; };
+		57EE77DF1FFEC2B1001F689A /* ChatMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */; };
 		57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F7B2531FE17823006D917C /* TextControlViewModel.swift */; };
 		BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = BE2925A01FC3391D005E55CA /* .swiftlint.yml */; };
 		BE29E0C91FDEF74C0029D1F0 /* SlackTextViewController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */; };
@@ -162,7 +163,7 @@
 		5704EA311FEAAD46001020E6 /* TypingIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorView.swift; sourceTree = "<group>"; };
 		5704EA331FEAAE4B001020E6 /* TypingIndicatorControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorControl.swift; sourceTree = "<group>"; };
 		57067C8C1FE62EE900812266 /* FakeChatViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeChatViewCell.swift; sourceTree = "<group>"; };
-		5706C5781FE43FB3008D70D1 /* SnowControlUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowControlUtils.swift; sourceTree = "<group>"; };
+		5706C5781FE43FB3008D70D1 /* ControlsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlsUtil.swift; sourceTree = "<group>"; };
 		5706C57A1FE499A0008D70D1 /* FakeChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeChatViewController.swift; sourceTree = "<group>"; };
 		5706C5801FE49F78008D70D1 /* MessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewController.swift; sourceTree = "<group>"; };
 		572A4E3B1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullSizeScrollViewContainerView.swift; sourceTree = "<group>"; };
@@ -204,6 +205,7 @@
 		57E1EA321FC33D1C009FC76D /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
 		57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ControlsViewController.xib; sourceTree = "<group>"; };
 		57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Utils.swift"; sourceTree = "<group>"; };
+		57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageModel.swift; sourceTree = "<group>"; };
 		57F7B2531FE17823006D917C /* TextControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControlViewModel.swift; sourceTree = "<group>"; };
 		BE2925A01FC3391D005E55CA /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .swiftlint.yml; sourceTree = SOURCE_ROOT; };
 		BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SlackTextViewController.framework; path = Carthage/Build/iOS/SlackTextViewController.framework; sourceTree = "<group>"; };
@@ -289,20 +291,12 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5706C5771FE43F8A008D70D1 /* SnowControls */ = {
-			isa = PBXGroup;
-			children = (
-				5706C5781FE43FB3008D70D1 /* SnowControlUtils.swift */,
-			);
-			path = SnowControls;
-			sourceTree = "<group>";
-		};
-		57532BB01FD8561E001D674C /* Chatterbox Adapters */ = {
+		57532BB01FD8561E001D674C /* Adapter */ = {
 			isa = PBXGroup;
 			children = (
 				57532BAE1FD79F4D001D674C /* ChatterboxMessageAdapter.swift */,
 			);
-			path = "Chatterbox Adapters";
+			path = Adapter;
 			sourceTree = "<group>";
 		};
 		5778CF961FDEE6A6004F77D8 /* Controls */ = {
@@ -328,8 +322,7 @@
 		57B7E2B91FBA24A600196BA9 /* Controls */ = {
 			isa = PBXGroup;
 			children = (
-				5706C5771FE43F8A008D70D1 /* SnowControls */,
-				57532BB01FD8561E001D674C /* Chatterbox Adapters */,
+				5706C5781FE43FB3008D70D1 /* ControlsUtil.swift */,
 				578632151FBB9E0300FA0282 /* ControlProtocol.swift */,
 				57532BAC1FD777FA001D674C /* TextControl.swift */,
 				57D1DB6C1FEB592D00082F78 /* OutputImageControl.swift */,
@@ -412,6 +405,7 @@
 				57D1DB6A1FEAC94A00082F78 /* ConversationViewCell.swift */,
 				C43479EB1FE460700091806D /* TopicSelection.swift */,
 				C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */,
+				57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */,
 				5706C5801FE49F78008D70D1 /* MessageViewController.swift */,
 				57D997AA1FE5B00000394A6D /* MessageViewController.xib */,
 			);
@@ -627,6 +621,7 @@
 		C4CAFE9C1FBCF018007007F5 /* Chatterbox */ = {
 			isa = PBXGroup;
 			children = (
+				57532BB01FD8561E001D674C /* Adapter */,
 				C41EF5D11FDB0F2500707F45 /* ChatDataListener.swift */,
 				C4A774A81FDF22E200B6DF68 /* ChatEventListener.swift */,
 				C4F3AF2E1FD235D100B27B0D /* Chatterbox.swift */,
@@ -944,7 +939,7 @@
 				57D1DB6D1FEB592D00082F78 /* OutputImageControl.swift in Sources */,
 				C4F3AF381FD6293F00B27B0D /* UserTopicPickerMessage.swift in Sources */,
 				C4F3AF321FD601FE00B27B0D /* Util.swift in Sources */,
-				5706C5791FE43FB3008D70D1 /* SnowControlUtils.swift in Sources */,
+				5706C5791FE43FB3008D70D1 /* ControlsUtil.swift in Sources */,
 				C40565F21FC49CD8004BD28C /* InitMessage.swift in Sources */,
 				57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */,
 				BE3F1AB21FEC315100DCC21B /* APIManager+ChatTopics.swift in Sources */,
@@ -964,6 +959,7 @@
 				57D1DB791FEC88D200082F78 /* OutputImageViewController.swift in Sources */,
 				C4CAFEA81FBD0912007007F5 /* CBDataFactory.swift in Sources */,
 				C40565FF1FC508D3004BD28C /* RichControlData.swift in Sources */,
+				57EE77DF1FFEC2B1001F689A /* ChatMessageModel.swift in Sources */,
 				57B7E2D21FBA75B100196BA9 /* PickerControlViewModel.swift in Sources */,
 				57B7E2CD1FBA3C8400196BA9 /* UIView+Additions.swift in Sources */,
 				578632161FBB9E0300FA0282 /* ControlProtocol.swift in Sources */,
