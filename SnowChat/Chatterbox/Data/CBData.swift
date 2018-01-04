@@ -162,8 +162,8 @@ enum CBControlType: String, Codable {
 }
 
 enum MessageDirection: String, Codable {
-    case directionFromClient = "inbound"
-    case directionFromServer = "outbound"
+    case fromClient = "inbound"
+    case fromServer = "outbound"
 }
 
 enum MessageConstants: String, Codable {

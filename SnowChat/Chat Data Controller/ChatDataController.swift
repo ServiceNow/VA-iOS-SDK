@@ -150,7 +150,7 @@ extension ChatDataController: ChatDataListener {
     // MARK: Chatterbox control notifications: these are controls sent to the client from the virtual agent
     
     func chatterbox(_ chatterbox: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id, message.data.direction == .directionFromServer else {
+        guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
             return
         }
         
@@ -162,7 +162,7 @@ extension ChatDataController: ChatDataListener {
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didReceiveInputData message: InputControlMessage, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id, message.data.direction == .directionFromServer else {
+        guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
             return
         }
         
@@ -173,7 +173,7 @@ extension ChatDataController: ChatDataListener {
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didReceivePickerData message: PickerControlMessage, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id, message.data.direction == .directionFromServer else {
+        guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
             return
         }
         
@@ -185,7 +185,7 @@ extension ChatDataController: ChatDataListener {
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didReceiveTextData message: OutputTextMessage, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id, message.data.direction == .directionFromServer else {
+        guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
             return
         }
 

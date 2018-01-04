@@ -41,7 +41,7 @@ struct RichControlData<T: Codable>: Codable {
         self.sessionId = sessionId
         self.conversationId = conversationId
         self.sendTime = Date()
-        self.direction = .directionFromClient
+        self.direction = .fromClient
         self.richControl = controlData
     }
 }

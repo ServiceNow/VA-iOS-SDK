@@ -56,7 +56,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     // MARK: ChatDataListener
     
     func chatterbox(_: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String) {
-        if message.data.direction == .directionFromServer {
+        if message.data.direction == .fromServer {
             let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
             appendContent(message: "\nBooleanControl received: \(label)")
 
@@ -65,7 +65,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     }
     
     func chatterbox(_: Chatterbox, didReceiveInputData message: InputControlMessage, forChat chatId: String) {
-        if message.data.direction == .directionFromServer {
+        if message.data.direction == .fromServer {
             let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
             appendContent(message: "\nInputControl received: \(label)")
             
@@ -74,7 +74,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     }
     
     func chatterbox(_: Chatterbox, didReceivePickerData message: PickerControlMessage, forChat chatId: String) {
-        if message.data.direction == .directionFromServer {
+        if message.data.direction == .fromServer {
             let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
             appendContent(message: "\nPickerControl received: \(label)")
             
@@ -83,7 +83,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     }
 
     func chatterbox(_: Chatterbox, didReceiveTextData message: OutputTextMessage, forChat chatId: String) {
-        if message.data.direction == .directionFromServer {
+        if message.data.direction == .fromServer {
             let label = message.data.richControl?.value ?? "[missing value]"
             appendContent(message: "\nText Output received: \(label)")
         }

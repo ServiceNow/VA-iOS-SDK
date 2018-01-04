@@ -116,7 +116,7 @@ class Chatterbox {
     
     func updateMessage<T>(_ inputMessage: RichControlData<T>) -> RichControlData<T> {
         var message = inputMessage
-        message.direction = .directionFromClient
+        message.direction = .fromClient
         message.sendTime = Date()
         return message
     }
@@ -286,7 +286,7 @@ class Chatterbox {
     private func createUserSessionInitMessage(fromInitEvent initEvent: InitMessage) -> InitMessage {
         var initUserEvent = initEvent
         
-        initUserEvent.data.direction = .directionFromClient
+        initUserEvent.data.direction = .fromClient
         initUserEvent.data.sendTime = Date()
         initUserEvent.data.actionMessage.loginStage = MessageConstants.loginUserSession.rawValue
         initUserEvent.data.actionMessage.userId = user?.id
@@ -309,12 +309,12 @@ class Chatterbox {
         
         if picker.controlType == .topicPicker {
             if let topicPicker = picker as? UserTopicPickerMessage {
-                if topicPicker.data.direction == .directionFromServer {
+                if topicPicker.data.direction == .fromServer {
                     conversationContext.taskId = topicPicker.data.taskId
                     
                     var outgoingMessage = topicPicker
                     outgoingMessage.type = "consumerTextMessage"
-                    outgoingMessage.data.direction = .directionFromClient
+                    outgoingMessage.data.direction = .fromClient
                     outgoingMessage.data.richControl?.model = ControlModel(type:"field", name: "Topic")
                     outgoingMessage.data.richControl?.value = conversationContext.topicName
                     
@@ -334,7 +334,7 @@ class Chatterbox {
             if let startUserTopic = actionMessage as? StartUserTopicMessage {
                 
                 // client and server messages are the same, so only look at server responses!
-                if startUserTopic.data.direction == .directionFromServer {
+                if startUserTopic.data.direction == .fromServer {
                     let startUserTopicReadyMessage = createStartTopicReadyMessage(startUserTopic: startUserTopic)
                     apiManager.ambClient.sendMessage(startUserTopicReadyMessage, toChannel: chatChannel, encoder: CBData.jsonEncoder)
                 }
@@ -355,7 +355,7 @@ class Chatterbox {
         var startUserTopicReady = startUserTopic
         startUserTopicReady.data.messageId = CBData.uuidString()
         startUserTopicReady.data.sendTime = Date()
-        startUserTopicReady.data.direction = .directionFromClient
+        startUserTopicReady.data.direction = .fromClient
         startUserTopicReady.data.actionMessage.ready = true
         return startUserTopicReady
     }
