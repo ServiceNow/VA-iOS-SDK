@@ -100,9 +100,12 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             return
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             let image = UIImage(data: data)
             completion(image, nil)
+            
+            self?.fakeChatViewController?.tableView.beginUpdates()
+            self?.fakeChatViewController?.tableView.endUpdates()
         }
     }
     
