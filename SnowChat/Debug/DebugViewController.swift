@@ -13,6 +13,7 @@ public class DebugViewController: UITableViewController, ChatServiceAppDelegate 
     @IBOutlet private weak var ambTestCell: UITableViewCell!
     @IBOutlet private weak var uiControlsCell: UITableViewCell!
     @IBOutlet private weak var chatWindowCell: UITableViewCell!
+    @IBOutlet private weak var instanceSettingsCell: UITableViewCell!
     
     private var chatService: ChatService?
     
@@ -44,6 +45,8 @@ public class DebugViewController: UITableViewController, ChatServiceAppDelegate 
             pushControlsViewController()
         case chatWindowCell:
             pushChatController()
+        case instanceSettingsCell:
+            pushInstanceSettingsViewController()
         default:
             break // noop
         }
@@ -69,12 +72,17 @@ public class DebugViewController: UITableViewController, ChatServiceAppDelegate 
     }
     
     private func pushAMBViewController() {
-        let controller = AMBTestPanelViewController(nibName: "AMBTestPanelViewController", bundle: Bundle(for: type(of: self)))
+        let controller = AMBTestPanelViewController(nibName: nil, bundle: Bundle(for: AMBTestPanelViewController.self))
         navigationController?.pushViewController(controller, animated: true)
     }
     
     private func pushControlsViewController() {
-        let controller = ControlsViewController(nibName: "ControlsViewController", bundle: Bundle(for: ControlsViewController.self))
+        let controller = ControlsViewController(nibName: nil, bundle: Bundle(for: ControlsViewController.self))
+        navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    private func pushInstanceSettingsViewController() {
+        let controller = InstanceSettingsViewController(nibName: nil, bundle: Bundle(for: InstanceSettingsViewController.self))
         navigationController?.pushViewController(controller, animated: true)
     }
     

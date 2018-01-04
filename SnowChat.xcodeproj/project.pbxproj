@@ -99,6 +99,12 @@
 		BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
 		BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE5974BE1FC38ECB00959406 /* Debug.storyboard */; };
 		BE5974C41FC392FB00959406 /* ControlsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5974C31FC392FB00959406 /* ControlsViewController.swift */; };
+		BE6932721FFE9B5C00DD5A2A /* InstanceSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6932701FFE9B5C00DD5A2A /* InstanceSettingsViewController.swift */; };
+		BE6932731FFE9B5C00DD5A2A /* InstanceSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = BE6932711FFE9B5C00DD5A2A /* InstanceSettingsViewController.xib */; };
+		BE6932781FFE9F3F00DD5A2A /* DebugSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6932771FFE9F3F00DD5A2A /* DebugSettings.swift */; };
+		BE69327A1FFEA3C800DD5A2A /* DebugSettings+Instance.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6932791FFEA3C800DD5A2A /* DebugSettings+Instance.swift */; };
+		BE69327F1FFEB46100DD5A2A /* ServerInstance+URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE69327E1FFEB46100DD5A2A /* ServerInstance+URL.swift */; };
+		BE6932831FFEB49D00DD5A2A /* ServerInstanceURLTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6932821FFEB49D00DD5A2A /* ServerInstanceURLTests.swift */; };
 		BE6B9D911FC38AD400B9F47A /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6B9D8F1FC38AD400B9F47A /* DebugViewController.swift */; };
 		BE6FBE401FBFB3060062A0EB /* AMBHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6FBE3F1FBFB3060062A0EB /* AMBHTTPClient.swift */; };
 		BE782DB51FEB203700F848F5 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE782DB41FEB203700F848F5 /* Result.swift */; };
@@ -215,6 +221,12 @@
 		BE50E2261FB9337D00948FBC /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
 		BE5974BE1FC38ECB00959406 /* Debug.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Debug.storyboard; sourceTree = "<group>"; };
 		BE5974C31FC392FB00959406 /* ControlsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlsViewController.swift; sourceTree = "<group>"; };
+		BE6932701FFE9B5C00DD5A2A /* InstanceSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceSettingsViewController.swift; sourceTree = "<group>"; };
+		BE6932711FFE9B5C00DD5A2A /* InstanceSettingsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InstanceSettingsViewController.xib; sourceTree = "<group>"; };
+		BE6932771FFE9F3F00DD5A2A /* DebugSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSettings.swift; sourceTree = "<group>"; };
+		BE6932791FFEA3C800DD5A2A /* DebugSettings+Instance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebugSettings+Instance.swift"; sourceTree = "<group>"; };
+		BE69327E1FFEB46100DD5A2A /* ServerInstance+URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ServerInstance+URL.swift"; sourceTree = "<group>"; };
+		BE6932821FFEB49D00DD5A2A /* ServerInstanceURLTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerInstanceURLTests.swift; sourceTree = "<group>"; };
 		BE6B9D8F1FC38AD400B9F47A /* DebugViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugViewController.swift; sourceTree = "<group>"; };
 		BE6FBE3F1FBFB3060062A0EB /* AMBHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBHTTPClient.swift; sourceTree = "<group>"; };
 		BE782DB41FEB203700F848F5 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Result.swift; path = SnowChat/Foundation/Result.swift; sourceTree = SOURCE_ROOT; };
@@ -457,9 +469,29 @@
 			path = "Controls Menu";
 			sourceTree = "<group>";
 		};
+		BE6932741FFE9B6100DD5A2A /* Instance Settings */ = {
+			isa = PBXGroup;
+			children = (
+				BE6932701FFE9B5C00DD5A2A /* InstanceSettingsViewController.swift */,
+				BE6932711FFE9B5C00DD5A2A /* InstanceSettingsViewController.xib */,
+			);
+			path = "Instance Settings";
+			sourceTree = "<group>";
+		};
+		BE69327D1FFEB43200DD5A2A /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				BE6932821FFEB49D00DD5A2A /* ServerInstanceURLTests.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
 		BE6B9D8E1FC38ABF00B9F47A /* Debug */ = {
 			isa = PBXGroup;
 			children = (
+				BE6932771FFE9F3F00DD5A2A /* DebugSettings.swift */,
+				BE6932791FFEA3C800DD5A2A /* DebugSettings+Instance.swift */,
+				BE6932741FFE9B6100DD5A2A /* Instance Settings */,
 				BE6B9D8F1FC38AD400B9F47A /* DebugViewController.swift */,
 				BE5974BE1FC38ECB00959406 /* Debug.storyboard */,
 			);
@@ -520,6 +552,7 @@
 				BE9E8BA81FBF826300499960 /* APIManager.swift */,
 				BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */,
 				BE9E8BAA1FBF828E00499960 /* ServerInstance.swift */,
+				BE69327E1FFEB46100DD5A2A /* ServerInstance+URL.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -571,6 +604,7 @@
 		BEB6C8641FB92CD700B1D497 /* SnowChatTests */ = {
 			isa = PBXGroup;
 			children = (
+				BE69327D1FFEB43200DD5A2A /* Networking */,
 				5778CF961FDEE6A6004F77D8 /* Controls */,
 				C4CAFEA41FBCF485007007F5 /* Chatterbox */,
 				C420ED7E1FC5F488002476C0 /* LoggerTests.swift */,
@@ -788,6 +822,7 @@
 			files = (
 				57CBFE001FE849D0006396E8 /* vagent-icon.png in Resources */,
 				BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */,
+				BE6932731FFE9B5C00DD5A2A /* InstanceSettingsViewController.xib in Resources */,
 				572A4E401FCF06320081318D /* PickerTableViewCell.xib in Resources */,
 				57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */,
 				BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */,
@@ -914,6 +949,7 @@
 				C4A774A91FDF22E200B6DF68 /* ChatEventListener.swift in Sources */,
 				BE9E8BA91FBF826300499960 /* APIManager.swift in Sources */,
 				C43479EC1FE460700091806D /* TopicSelection.swift in Sources */,
+				BE6932721FFE9B5C00DD5A2A /* InstanceSettingsViewController.swift in Sources */,
 				57532BAD1FD777FA001D674C /* TextControl.swift in Sources */,
 				BE5974C41FC392FB00959406 /* ControlsViewController.swift in Sources */,
 				5760B91F1FD5C8C100591C06 /* UIImageUtils.swift in Sources */,
@@ -927,6 +963,7 @@
 				57532BAB1FD777AC001D674C /* PickerControl.swift in Sources */,
 				BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */,
 				BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */,
+				BE6932781FFE9F3F00DD5A2A /* DebugSettings.swift in Sources */,
 				57D1DB6B1FEAC94A00082F78 /* ConversationViewCell.swift in Sources */,
 				BE29E0CF1FDF06C20029D1F0 /* ChatDataController.swift in Sources */,
 				BE6FBE401FBFB3060062A0EB /* AMBHTTPClient.swift in Sources */,
@@ -935,6 +972,7 @@
 				C46A7D881FCE23D300DC12AC /* ActionMessageData.swift in Sources */,
 				572FAC1A1FC47B5600B0B956 /* MultiSelectControlViewModel.swift in Sources */,
 				5706C57B1FE499A0008D70D1 /* FakeChatViewController.swift in Sources */,
+				BE69327A1FFEA3C800DD5A2A /* DebugSettings+Instance.swift in Sources */,
 				BE9E8BA11FBF7F3600499960 /* AMBClient.swift in Sources */,
 				C420ED7D1FC5F473002476C0 /* Logger.swift in Sources */,
 				C41EF5D41FDB284600707F45 /* InputControlMessage.swift in Sources */,
@@ -976,6 +1014,7 @@
 				57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */,
 				572A4E441FCF70070081318D /* BubbleView.swift in Sources */,
 				57B7E2C61FBA25A200196BA9 /* SelectableViewCell.swift in Sources */,
+				BE69327F1FFEB46100DD5A2A /* ServerInstance+URL.swift in Sources */,
 				5786320B1FBB571E00FA0282 /* BubbleViewController.swift in Sources */,
 				5796E4481FD0B3E0009D2035 /* CGPath+Bubble.swift in Sources */,
 				5706C5811FE49F78008D70D1 /* MessageViewController.swift in Sources */,
@@ -994,6 +1033,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE3F1AB61FEC480D00DCC21B /* APIManagerChatTopicsTest.swift in Sources */,
+				BE6932831FFEB49D00DD5A2A /* ServerInstanceURLTests.swift in Sources */,
 				C420ED7F1FC5F488002476C0 /* LoggerTests.swift in Sources */,
 				C4B6A9521FE22208007DBEED /* ChatDataStoreTests.swift in Sources */,
 				5778CF9A1FE05A3F004F77D8 /* MultiSelectControlTests.swift in Sources */,
