@@ -8,7 +8,7 @@
 
 import UIKit
 
-public class DebugViewController: UITableViewController, ChatServiceAppDelegate {
+public class DebugViewController: UITableViewController, ChatServiceDelegate {
     
     @IBOutlet private weak var ambTestCell: UITableViewCell!
     @IBOutlet private weak var uiControlsCell: UITableViewCell!
@@ -52,11 +52,11 @@ public class DebugViewController: UITableViewController, ChatServiceAppDelegate 
         }
     }
     
-    // MARK: ChatServiceAppDelegate methods
+    // MARK: - ChatServiceDelegate
     
     func userCredentials() -> ChatUserCredentials {
-        return ChatUserCredentials(userName: "admin",
-                                   userPassword: "snow2004",
+        return ChatUserCredentials(username: DebugSettings.shared.username,
+                                   password: DebugSettings.shared.password,
                                    vendorId: "c2f0b8f187033200246ddd4c97cb0bb9",
                                    consumerId: CBData.uuidString(),
                                    consumerAccountId: CBData.uuidString())
@@ -65,7 +65,9 @@ public class DebugViewController: UITableViewController, ChatServiceAppDelegate 
     // MARK: - Navigation
     
     private func pushChatController() {
-        chatService = ChatService(delegate: self)
+        let instance = ServerInstance(instanceURL: DebugSettings.shared.instanceURL)
+        chatService = ChatService(instance: instance, delegate: self)
+        
         if let controller = chatService?.chatViewController() {
             navigationController?.pushViewController(controller, animated: true)
         }

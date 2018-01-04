@@ -25,7 +25,7 @@ extension APIManager {
                                        "direction" : "inbound",
                                        "deviceType" : "ios"]
         
-        sessionManager.request("\(CBData.config.url)/api/now/v1/cs/session",
+        sessionManager.request(apiURLWithPath("cs/session"),
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default).validate().responseJSON { response in
@@ -55,7 +55,7 @@ extension APIManager {
     }
     
     func retrieve(conversation conversationId: String, completionHandler: @escaping ([CBControlData]) -> Void) {
-        sessionManager.request("\(CBData.config.url)/api/now/v1/cs/conversation/\(conversationId)/message",
+        sessionManager.request(apiURLWithPath("cs/conversation/\(conversationId)/message"),
             method: .get,
             encoding: JSONEncoding.default).validate().responseJSON { response in
                 var messages = [CBControlData]()

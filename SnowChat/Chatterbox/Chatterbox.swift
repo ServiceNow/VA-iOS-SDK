@@ -44,7 +44,8 @@ class Chatterbox {
     
     // MARK: Client Callable methods
     
-    init(dataListener: ChatDataListener? = nil, eventListener: ChatEventListener? = nil) {
+    init(instance: ServerInstance, dataListener: ChatDataListener? = nil, eventListener: ChatEventListener? = nil) {
+        self.instance = instance
         chatDataListener = dataListener
         chatEventListener = eventListener
     }
@@ -178,8 +179,9 @@ class Chatterbox {
     private let chatId = CBData.uuidString()
     private var chatSubscription: NOWAMBSubscription?
     
+    private let instance: ServerInstance
+    
     private(set) internal lazy var apiManager: APIManager = {
-        let instance = ServerInstance(instanceURL: CBData.config.url)
         return APIManager(instance: instance)
     }()
 
@@ -196,7 +198,7 @@ class Chatterbox {
             return
         }
         
-        apiManager.logIn(username: user.name, password: user.password ?? "") { [weak self] error in
+        apiManager.logIn(username: user.username, password: user.password ?? "") { [weak self] error in
             if let error = error {
                 self?.logger.logInfo("AMB Login failed: \(error)")
             } else {
