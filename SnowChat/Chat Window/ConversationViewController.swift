@@ -89,6 +89,11 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     }
     
     private func setupForTopicSelection() {
+        dataController.presentWelcomeMessage()
+        
+        textView.text = ""
+        textView.placeholder = NSLocalizedString("Type your question here...", comment: "Placeholder text for input field when user is selecting a topic")
+
         self.autocompleteHandler = TopicSelectionHandler(withController: self, chatterbox: chatterbox)
     }
     
@@ -98,6 +103,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         
         rightButton.isHidden = false
         rightButton.setTitle(NSLocalizedString("Send", comment: "Right button label in conversation mode"), for: UIControlState())
+        
+        textView.text = ""
         textView.placeholder = NSLocalizedString("...", comment: "Placeholder text for input field when user is in a conversation")
     }
     
@@ -197,8 +204,7 @@ extension ConversationViewController {
         }
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {        
         if tableView == autoCompletionView, let handler = autocompleteHandler {
             return handler.numberOfRowsInSection(section)
         }
@@ -263,21 +269,25 @@ extension ConversationViewController {
 
 extension ConversationViewController: ChatEventListener {
     func chatterbox(_ chatterbox: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
-        if self.chatterbox.id == chatterbox.id {
-            
-            dataController.conversationId = topic.data.actionMessage.vendorTopicId
-            
-            inputState = .inConversation
-            setupInputForState()
+        guard self.chatterbox.id == chatterbox.id else {
+                return
         }
+
+        dataController.topicDidStart(topic)
+        
+        inputState = .inConversation
+        setupInputForState()
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String) {
-        if self.chatterbox.id == chatterbox.id {
-            
-            inputState = .inTopicSelection
-            setupInputForState()
+        guard self.chatterbox.id == chatterbox.id else {
+            return
         }
+
+        dataController.topicDidFinish(topic)
+        
+        inputState = .inTopicSelection
+        setupInputForState()
     }
 }
 

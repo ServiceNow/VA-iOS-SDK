@@ -161,10 +161,12 @@ enum CBControlType: String, Codable {
     case unknown = "unknownControl"
 }
 
-enum MessageConstants: String, Codable {
+enum MessageDirection: String, Codable {
     case directionFromClient = "inbound"
     case directionFromServer = "outbound"
-    
+}
+
+enum MessageConstants: String, Codable {
     case loginStart = "Start"
     case loginFinish = "Finish"
     case loginUserSession = "UserSession"

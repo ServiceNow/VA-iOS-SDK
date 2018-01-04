@@ -30,7 +30,7 @@ struct RichControlData<T: Codable>: Codable {
     let sessionId: String
     var conversationId: String?
     var taskId: String?
-    var direction: String
+    var direction: MessageDirection
     var sendTime: Date
     var receiveTime: Date?
 
@@ -41,7 +41,7 @@ struct RichControlData<T: Codable>: Codable {
         self.sessionId = sessionId
         self.conversationId = conversationId
         self.sendTime = Date()
-        self.direction = MessageConstants.directionFromClient.rawValue
+        self.direction = .directionFromClient
         self.richControl = controlData
     }
 }

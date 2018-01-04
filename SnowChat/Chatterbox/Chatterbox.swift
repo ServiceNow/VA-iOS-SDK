@@ -138,7 +138,7 @@ class Chatterbox {
     
     func updateMessage<T>(_ inputMessage: RichControlData<T>) -> RichControlData<T> {
         var message = inputMessage
-        message.direction = MessageConstants.directionFromClient.rawValue
+        message.direction = .directionFromClient
         message.sendTime = Date()
         return message
     }
@@ -158,7 +158,7 @@ class Chatterbox {
     private var conversationContext = ConversationContext()
 
     private let chatStore = ChatDataStore(storeId: "ChatterboxDataStore")
-    private var session: CBSession?
+    private(set) var session: CBSession?
     
     private var chatChannel: String {
         return "/cs/messages/\(chatId)"
@@ -275,7 +275,7 @@ class Chatterbox {
     private func createUserSessionInitMessage(fromInitEvent initEvent: InitMessage) -> InitMessage {
         var initUserEvent = initEvent
         
-        initUserEvent.data.direction = MessageConstants.directionFromClient.rawValue
+        initUserEvent.data.direction = .directionFromClient
         initUserEvent.data.sendTime = Date()
         initUserEvent.data.actionMessage.loginStage = MessageConstants.loginUserSession.rawValue
         initUserEvent.data.actionMessage.userId = user?.id
@@ -298,12 +298,12 @@ class Chatterbox {
         
         if picker.controlType == .topicPicker {
             if let topicPicker = picker as? UserTopicPickerMessage {
-                if topicPicker.data.direction == MessageConstants.directionFromServer.rawValue {
+                if topicPicker.data.direction == .directionFromServer {
                     conversationContext.taskId = topicPicker.data.taskId
                     
                     var outgoingMessage = topicPicker
                     outgoingMessage.type = "consumerTextMessage"
-                    outgoingMessage.data.direction = MessageConstants.directionFromClient.rawValue
+                    outgoingMessage.data.direction = .directionFromClient
                     outgoingMessage.data.richControl?.model = ControlModel(type:"field", name: "Topic")
                     outgoingMessage.data.richControl?.value = conversationContext.topicName
                     
@@ -323,7 +323,7 @@ class Chatterbox {
             if let startUserTopic = actionMessage as? StartUserTopicMessage {
                 
                 // client and server messages are the same, so only look at server responses!
-                if startUserTopic.data.direction == MessageConstants.directionFromServer.rawValue {
+                if startUserTopic.data.direction == .directionFromServer {
                     let startUserTopicReadyMessage = createStartTopicReadyMessage(startUserTopic: startUserTopic)
                     apiManager.ambClient.sendMessage(startUserTopicReadyMessage, toChannel: chatChannel, encoder: CBData.jsonEncoder)
                 }
@@ -344,7 +344,7 @@ class Chatterbox {
         var startUserTopicReady = startUserTopic
         startUserTopicReady.data.messageId = CBData.uuidString()
         startUserTopicReady.data.sendTime = Date()
-        startUserTopicReady.data.direction = MessageConstants.directionFromClient.rawValue
+        startUserTopicReady.data.direction = .directionFromClient
         startUserTopicReady.data.actionMessage.ready = true
         return startUserTopicReady
     }
@@ -398,7 +398,7 @@ class Chatterbox {
     fileprivate func handleBooleanControl(_ control: CBControlData) {
         if let booleanControl = control as? BooleanControlMessage, let conversationId = booleanControl.data.conversationId {
             var messageExchange = MessageExchange(withMessage: booleanControl)
-            messageExchange.complete = false
+            messageExchange.isComplete = false
             
             chatStore.storeControlData(booleanControl, expectResponse: true, forConversation: conversationId, fromChat: self)
             chatDataListener?.chatterbox(self, didReceiveBooleanData: booleanControl, forChat: chatId)
