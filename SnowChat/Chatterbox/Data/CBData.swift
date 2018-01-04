@@ -39,7 +39,7 @@ class CBData {
     }
     
     // swiftlint:disable:next force_unwrapping
-    static var config: ChatBoxConfig = ChatBoxConfig(url: URL(string: "http://localhost:8080")!)
+    static var config: ChatBoxConfig = ChatBoxConfig(url: URL(string: "https://demonightlychatbot.service-now.com")!)
     
     struct ChatBoxConfig {
         var url: URL
