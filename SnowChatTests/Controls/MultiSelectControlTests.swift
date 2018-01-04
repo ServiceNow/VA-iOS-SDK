@@ -30,24 +30,24 @@ class MultiSelectControlTests: XCTestCase {
         let model = MultiSelectControlViewModel(id: "123", label: "Choice", required: true, direction: .inbound, items: multiSelectItems!)
         
         XCTAssert(model.selectedItems.count == 0)
-        model.select(itemAt: 0)
+        model.selectItem(at: 0)
         
         let selectedItems = model.selectedItems
         XCTAssert(selectedItems.count == 1)
         
-        model.select(itemAt: 1)
-        model.select(itemAt: 2)
+        model.selectItem(at: 1)
+        model.selectItem(at: 2)
         XCTAssert(model.selectedItems.count == 3)
         
         // deselect item
-        model.select(itemAt: 2)
+        model.selectItem(at: 2)
         XCTAssert(model.selectedItems.count == 2)
     }
     
     func testResultWithRequiredTrue() {
         let model = MultiSelectControlViewModel(id: "123", label: "Choice", required: true, direction: .inbound, items: multiSelectItems!)
-        model.select(itemAt: 0)
-        model.select(itemAt: 1)
+        model.selectItem(at: 0)
+        model.selectItem(at: 1)
         
         let result = model.resultValue
         XCTAssert(result![0] == "1")
@@ -56,22 +56,40 @@ class MultiSelectControlTests: XCTestCase {
     
     func testMultiSelectSelectionWithRequiredFalse() {
         let model = MultiSelectControlViewModel(id: "123", label: "Choice", required: false, direction: .inbound, items: multiSelectItems!)
-        model.select(itemAt: 4)
+        model.selectItem(at: 4)
         XCTAssert(model.selectedItem!.type == .skip)
     }
     
     func testResultWithRequiredFalse() {
         let model = MultiSelectControlViewModel(id: "123", label: "Choice", required: false, direction: .inbound, items: multiSelectItems!)
-        model.select(itemAt: 0)
-        model.select(itemAt: 1)
+        model.selectItem(at: 0)
+        model.selectItem(at: 1)
         
         var result = model.resultValue
         XCTAssert(result![0] == "1")
         XCTAssert(result![1] == "2")
         
         // select Skip
-        model.select(itemAt: 4)
+        model.selectItem(at: 4)
         result = model.resultValue
         XCTAssertNil(result)
+    }
+    
+    func testMultiSelectReturnValue() {
+        var model = MultiSelectControlViewModel(id: "123", label: "Choice", required: false, direction: .inbound, items: multiSelectItems!, resultValue: ["1", "3"])
+        var result = model.resultValue
+        XCTAssert(result! == ["1", "3"])
+        
+        var displayValue = model.displayValue
+        XCTAssert(displayValue! == "1, 3")
+        
+        // try selecting item that is not part of model
+        model = MultiSelectControlViewModel(id: "123", label: "Choice", required: false, direction: .inbound, items: multiSelectItems!, resultValue: ["1", "5"])
+        
+        result = model.resultValue
+        XCTAssert(result! == ["1"])
+        
+        displayValue = model.displayValue
+        XCTAssert(displayValue! == "1")
     }
 }

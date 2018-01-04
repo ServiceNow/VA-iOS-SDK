@@ -18,7 +18,7 @@ protocol PickerControlViewModel: ControlViewModel {
     
     var selectedItem: PickerItem? { get }
     
-    func select(itemAt index: Int)
+    func selectItem(at index: Int)
 }
 
 // MARK: - Items selection: provides default implementation for selecting items
@@ -33,7 +33,7 @@ extension PickerControlViewModel {
         return selectedItems.first
     }
     
-    func select(itemAt index: Int) {
+    func selectItem(at index: Int) {
         // clear out all the items first
         items.forEach({ $0.isSelected = false })
         let item = items[index]

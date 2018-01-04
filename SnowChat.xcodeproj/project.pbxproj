@@ -80,6 +80,10 @@
 		57CBFE001FE849D0006396E8 /* vagent-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 57CBFDFF1FE849D0006396E8 /* vagent-icon.png */; };
 		57CBFE021FE8D921006396E8 /* UILayoutPriority+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57CBFE011FE8D921006396E8 /* UILayoutPriority+Additions.swift */; };
 		57D1DB6B1FEAC94A00082F78 /* ConversationViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB6A1FEAC94A00082F78 /* ConversationViewCell.swift */; };
+		57D1DB6D1FEB592D00082F78 /* OutputImageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB6C1FEB592D00082F78 /* OutputImageControl.swift */; };
+		57D1DB6F1FEC74E200082F78 /* OutputImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB6E1FEC74E200082F78 /* OutputImageViewModel.swift */; };
+		57D1DB731FEC83D000082F78 /* mark.png in Resources */ = {isa = PBXBuildFile; fileRef = 57D1DB721FEC83D000082F78 /* mark.png */; };
+		57D1DB791FEC88D200082F78 /* OutputImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB781FEC88D200082F78 /* OutputImageViewController.swift */; };
 		57D997AB1FE5B00000394A6D /* MessageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57D997AA1FE5B00000394A6D /* MessageViewController.xib */; };
 		57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1EA321FC33D1C009FC76D /* RoundedView.swift */; };
 		57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */; };
@@ -192,6 +196,10 @@
 		57CBFDFF1FE849D0006396E8 /* vagent-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vagent-icon.png"; sourceTree = "<group>"; };
 		57CBFE011FE8D921006396E8 /* UILayoutPriority+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILayoutPriority+Additions.swift"; sourceTree = "<group>"; };
 		57D1DB6A1FEAC94A00082F78 /* ConversationViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewCell.swift; sourceTree = "<group>"; };
+		57D1DB6C1FEB592D00082F78 /* OutputImageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputImageControl.swift; sourceTree = "<group>"; };
+		57D1DB6E1FEC74E200082F78 /* OutputImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputImageViewModel.swift; sourceTree = "<group>"; };
+		57D1DB721FEC83D000082F78 /* mark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mark.png; sourceTree = "<group>"; };
+		57D1DB781FEC88D200082F78 /* OutputImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputImageViewController.swift; sourceTree = "<group>"; };
 		57D997AA1FE5B00000394A6D /* MessageViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageViewController.xib; sourceTree = "<group>"; };
 		57E1EA321FC33D1C009FC76D /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
 		57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ControlsViewController.xib; sourceTree = "<group>"; };
@@ -324,6 +332,7 @@
 				57532BB01FD8561E001D674C /* Chatterbox Adapters */,
 				578632151FBB9E0300FA0282 /* ControlProtocol.swift */,
 				57532BAC1FD777FA001D674C /* TextControl.swift */,
+				57D1DB6C1FEB592D00082F78 /* OutputImageControl.swift */,
 				57532BAA1FD777AC001D674C /* PickerControl.swift */,
 				57B7E2BB1FBA25A200196BA9 /* BooleanControl.swift */,
 				5778CF9B1FE06F08004F77D8 /* SingleSelectControl.swift */,
@@ -341,6 +350,7 @@
 			isa = PBXGroup;
 			children = (
 				5760C8CD1FBF4C920055B73D /* PickerViewController.swift */,
+				57D1DB781FEC88D200082F78 /* OutputImageViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -362,6 +372,7 @@
 			children = (
 				5788B2A61FBB38FD00846F33 /* ControlViewModel.swift */,
 				57F7B2531FE17823006D917C /* TextControlViewModel.swift */,
+				57D1DB6E1FEC74E200082F78 /* OutputImageViewModel.swift */,
 				57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */,
 				5763F3C71FE20FF90035764A /* PickerItem.swift */,
 				5778CF9D1FE07023004F77D8 /* SingleSelectControlViewModel.swift */,
@@ -436,6 +447,7 @@
 		BE5974C01FC392A300959406 /* Controls Menu */ = {
 			isa = PBXGroup;
 			children = (
+				57D1DB721FEC83D000082F78 /* mark.png */,
 				57CBFDFF1FE849D0006396E8 /* vagent-icon.png */,
 				BE5974C31FC392FB00959406 /* ControlsViewController.swift */,
 				57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */,
@@ -780,6 +792,7 @@
 				57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */,
 				BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */,
 				C489073E1FCC8209008D9521 /* AMBTestPanelViewController.xib in Resources */,
+				57D1DB731FEC83D000082F78 /* mark.png in Resources */,
 				57B7E2C91FBA25A200196BA9 /* SelectableView.xib in Resources */,
 				BE50E2241FB9305C00948FBC /* Cartfile in Resources */,
 				57D997AB1FE5B00000394A6D /* MessageViewController.xib in Resources */,
@@ -909,6 +922,7 @@
 				5778CF9C1FE06F08004F77D8 /* SingleSelectControl.swift in Sources */,
 				BE6B9D911FC38AD400B9F47A /* DebugViewController.swift in Sources */,
 				BE29E0CC1FDEFA5B0029D1F0 /* ChatViewController.swift in Sources */,
+				57D1DB6F1FEC74E200082F78 /* OutputImageViewModel.swift in Sources */,
 				C4F3AF2F1FD235D100B27B0D /* Chatterbox.swift in Sources */,
 				57532BAB1FD777AC001D674C /* PickerControl.swift in Sources */,
 				BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */,
@@ -927,6 +941,7 @@
 				C40565FA1FC4F71D004BD28C /* ControlMessage.swift in Sources */,
 				C41EF5DC1FDB4CA400707F45 /* OutputTextMessage.swift in Sources */,
 				57CBFE021FE8D921006396E8 /* UILayoutPriority+Additions.swift in Sources */,
+				57D1DB6D1FEB592D00082F78 /* OutputImageControl.swift in Sources */,
 				C4F3AF381FD6293F00B27B0D /* UserTopicPickerMessage.swift in Sources */,
 				C4F3AF321FD601FE00B27B0D /* Util.swift in Sources */,
 				5706C5791FE43FB3008D70D1 /* SnowControlUtils.swift in Sources */,
@@ -946,6 +961,7 @@
 				C40565F81FC4F4D3004BD28C /* BooleanControlMessage.swift in Sources */,
 				C40565CD1FBE292B004BD28C /* ChatDataStore.swift in Sources */,
 				C46A7D8A1FD0BD8900DC12AC /* ContextualActionMessage.swift in Sources */,
+				57D1DB791FEC88D200082F78 /* OutputImageViewController.swift in Sources */,
 				C4CAFEA81FBD0912007007F5 /* CBDataFactory.swift in Sources */,
 				C40565FF1FC508D3004BD28C /* RichControlData.swift in Sources */,
 				57B7E2D21FBA75B100196BA9 /* PickerControlViewModel.swift in Sources */,

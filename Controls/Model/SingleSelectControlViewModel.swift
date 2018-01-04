@@ -18,13 +18,11 @@ class SingleSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     var items = [PickerItem]()
     
-    var type: ControlType {
-        return .multiSelect
-    }
+    let type: ControlType = .multiSelect
     
     var direction: ControlDirection
     
-    init(id: String, label: String, required: Bool, direction: ControlDirection, items: [PickerItem]) {
+    init(id: String, label: String, required: Bool, direction: ControlDirection, items: [PickerItem], resultValue: String? = nil) {
         self.id = id
         self.label = label
         self.isRequired = required
@@ -35,6 +33,17 @@ class SingleSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
         if !required {
             self.items.append(PickerItem.skipItem())
         }
+        
+        selectItem(withValue: resultValue)
+    }
+    
+    private func selectItem(withValue value: String?) {
+        guard let value = value else {
+            return
+        }
+        
+        let item = items.first(where: { $0.value == value })
+        item?.isSelected = true
     }
     
     // MARK: - ValueRepresentable
@@ -44,7 +53,10 @@ class SingleSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
             return nil
         }
         
-        // is Yes selected?
         return selectedItem.value
+    }
+    
+    var displayValue: String? {
+        return resultValue
     }
 }

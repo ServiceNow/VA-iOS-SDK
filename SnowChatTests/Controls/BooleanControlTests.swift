@@ -21,7 +21,7 @@ class BooleanControlTests: XCTestCase {
         let model = BooleanControlViewModel(id: "123", label: "?", required: true, direction: .inbound)
         
         // Select No
-        model.select(itemAt: 0)
+        model.selectItem(at: 0)
         var result = model.resultValue
         XCTAssert(result! == true)
 
@@ -30,7 +30,7 @@ class BooleanControlTests: XCTestCase {
         XCTAssert(selectedItems.count == 1)
 
         // Select Yes
-        model.select(itemAt: 1)
+        model.selectItem(at: 1)
         result = (model.resultValue)!
         XCTAssert(result == false)
 
@@ -44,7 +44,7 @@ class BooleanControlTests: XCTestCase {
         let model = BooleanControlViewModel(id: "123", label: "?", required: false, direction: .inbound)
         
         // Select Skip!
-        model.select(itemAt: 2)
+        model.selectItem(at: 2)
         let result = model.resultValue
         XCTAssert(result == nil)
     }
@@ -52,5 +52,23 @@ class BooleanControlTests: XCTestCase {
     func testBooleanMultiSelectVar() {
         let model = BooleanControlViewModel(id: "123", label: "?", required: true, direction: .inbound)
         XCTAssert(model.isMultiSelect == false)
+    }
+    
+    func testBooleanReturnValue() {
+        // result value coming from server set to true
+        var model = BooleanControlViewModel(id: "123", label: "?", required: true, direction: .inbound, resultValue: true)
+        var result = model.resultValue
+        XCTAssert(result! == true)
+        
+        var displayValue = model.displayValue
+        XCTAssert(displayValue! == "Yes")
+        
+        // result value set to false
+        model = BooleanControlViewModel(id: "123", label: "?", required: true, direction: .inbound, resultValue: false)
+        result = model.resultValue
+        XCTAssert(result! == false)
+        
+        displayValue = model.displayValue
+        XCTAssert(displayValue! == "No")
     }
 }

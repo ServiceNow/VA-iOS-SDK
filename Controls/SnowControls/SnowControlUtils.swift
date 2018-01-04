@@ -40,6 +40,8 @@ class SnowControlUtils {
             return MultiSelectControl(model: model)
         case .text:
             return TextControl(model: model)
+        case .outputImage:
+            return OutputImageControl(model: model)
         case .boolean:
             return BooleanControl(model: model)
         case .singleSelect:
