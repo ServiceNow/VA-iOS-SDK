@@ -122,7 +122,7 @@ class ChatDataController {
            var boolMessage = lastPendingMessage as? BooleanControlMessage {
             
             boolMessage.data.richControl?.value = booleanViewModel.resultValue ?? false
-            chatterbox.update(control: boolMessage, ofType: .boolean)
+            chatterbox.update(control: boolMessage)
         }
     }
     
@@ -131,7 +131,7 @@ class ChatDataController {
            var inputMessage = lastPendingMessage as? InputControlMessage {
             
             inputMessage.data.richControl?.value = textViewModel.value
-            chatterbox.update(control: inputMessage, ofType: .input)
+            chatterbox.update(control: inputMessage)
         }
     }
     
@@ -140,7 +140,7 @@ class ChatDataController {
            var pickerMessage = lastPendingMessage as? PickerControlMessage {
             
             pickerMessage.data.richControl?.value = pickerViewModel.resultValue
-            chatterbox.update(control: pickerMessage, ofType: .picker)
+            chatterbox.update(control: pickerMessage)
         }
     }
 }
