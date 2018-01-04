@@ -61,6 +61,22 @@ class ChatDataController {
         return controlData[index]
     }
     
+    func topicDidStart(_ topicMessage: StartedUserTopicMessage) {
+        conversationId = topicMessage.data.actionMessage.vendorTopicId
+    }
+
+    func topicDidFinish(_ topicMessage: TopicFinishedMessage) {
+        conversationId = nil
+        
+        // TODO: how to treat old messages visually?
+    }
+
+    func presentWelcomeMessage() {
+        let message = chatterbox.session?.welcomeMessage ?? "Welcome! What can we help you with?"
+        let welcomeTextControl = TextControlViewModel(label: "", value: message, direction: ControlDirection.inbound)
+        addControlDataAndNotify(welcomeTextControl)
+    }
+    
     fileprivate func replaceLastControl(with model: ControlViewModel) {
         guard controlData.count > 0 else {
             Logger.default.logError("Attempt to replace last control when no control is present!")
@@ -106,7 +122,7 @@ class ChatDataController {
            var boolMessage = lastPendingMessage as? BooleanControlMessage {
             
             boolMessage.data.richControl?.value = booleanViewModel.resultValue ?? false
-            chatterbox.update(control: boolMessage, ofType: .boolean)
+            chatterbox.update(control: boolMessage)
         }
     }
     
@@ -115,7 +131,7 @@ class ChatDataController {
            var inputMessage = lastPendingMessage as? InputControlMessage {
             
             inputMessage.data.richControl?.value = textViewModel.value
-            chatterbox.update(control: inputMessage, ofType: .input)
+            chatterbox.update(control: inputMessage)
         }
     }
     
@@ -124,7 +140,7 @@ class ChatDataController {
            var pickerMessage = lastPendingMessage as? PickerControlMessage {
             
             pickerMessage.data.richControl?.value = pickerViewModel.resultValue
-            chatterbox.update(control: pickerMessage, ofType: .picker)
+            chatterbox.update(control: pickerMessage)
         }
     }
 }
@@ -134,7 +150,7 @@ extension ChatDataController: ChatDataListener {
     // MARK: Chatterbox control notifications: these are controls sent to the client from the virtual agent
     
     func chatterbox(_ chatterbox: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id, message.data.direction == MessageConstants.directionFromServer.rawValue else {
+        guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
             return
         }
         
@@ -146,7 +162,7 @@ extension ChatDataController: ChatDataListener {
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didReceiveInputData message: InputControlMessage, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id, message.data.direction == MessageConstants.directionFromServer.rawValue else {
+        guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
             return
         }
         
@@ -157,7 +173,7 @@ extension ChatDataController: ChatDataListener {
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didReceivePickerData message: PickerControlMessage, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id, message.data.direction == MessageConstants.directionFromServer.rawValue else {
+        guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
             return
         }
         
@@ -169,7 +185,7 @@ extension ChatDataController: ChatDataListener {
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didReceiveTextData message: OutputTextMessage, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id, message.data.direction == MessageConstants.directionFromServer.rawValue else {
+        guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
             return
         }
 
@@ -186,38 +202,43 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if messageExchange.complete {
-            // a completed boolean exchange results in two text messages, one with the label and once with the value
-            
-            if let response = messageExchange.response as? BooleanControlMessage,
-               let message = messageExchange.message as? BooleanControlMessage {
-               
-                let label = message.data.richControl?.uiMetadata?.label ?? "???"
-                let value = response.data.richControl?.value ?? false
-                let valueString = (value ?? false) ? "Yes" : "No"
-                
-                let questionViewModel = TextControlViewModel(id: message.id, label: "", value: label, direction: ControlDirection.inbound)
-                let answerViewModel = TextControlViewModel(id: message.id, label: "", value: valueString, direction: ControlDirection.outbound)
-                
-                replaceLastControl(with: questionViewModel)
-                addControlDataAndNotify(answerViewModel)
-            }
+        guard messageExchange.isComplete else {
+            Logger.default.logError("MessageExchange is not complete in didCompleteMessageExchange method - skipping!")
+            return
         }
-    }
+        
+        // a completed boolean exchange results in two text messages, one with the label and once with the value
+        
+        if let response = messageExchange.response as? BooleanControlMessage,
+           let message = messageExchange.message as? BooleanControlMessage {
+           
+            let label = message.data.richControl?.uiMetadata?.label ?? "???"
+            let value = response.data.richControl?.value ?? false
+            let valueString = (value ?? false) ? "Yes" : "No"
+            
+            let questionViewModel = TextControlViewModel(id: message.id, label: "", value: label, direction: ControlDirection.inbound)
+            let answerViewModel = TextControlViewModel(id: message.id, label: "", value: valueString, direction: ControlDirection.outbound)
+            
+            replaceLastControl(with: questionViewModel)
+            addControlDataAndNotify(answerViewModel)
+        }
+   }
     
     func chattebox(_: Chatterbox, didCompleteInputExchange messageExchange: MessageExchange, forChat chatId: String) {
         guard chatterbox.id == self.chatterbox.id else {
             return
         }
         
-        if messageExchange.complete {
-            // a completed exchange simply adds a new text output representing the users answer
-            if let response = messageExchange.response as? InputControlMessage {
-                if let value: String = response.data.richControl?.value ?? "" {
-                    let responseViewModel = TextControlViewModel(id: response.id, label: "", value: value, direction: ControlDirection.outbound)
-                    addControlDataAndNotify(responseViewModel)
-                }
-            }
+        guard messageExchange.isComplete else {
+            Logger.default.logError("MessageExchange is not complete in didCompleteMessageExchange method - skipping!")
+            return
+        }
+
+        // a completed exchange simply adds a new text output representing the users answer
+        if let response = messageExchange.response as? InputControlMessage,
+            let value: String = response.data.richControl?.value ?? "" {
+                let responseViewModel = TextControlViewModel(id: response.id, label: "", value: value, direction: ControlDirection.outbound)
+                addControlDataAndNotify(responseViewModel)
         }
     }
     
@@ -226,22 +247,25 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if messageExchange.complete {
-            // replace the picker with the picker's label, and add the response
+        guard messageExchange.isComplete else {
+            Logger.default.logError("MessageExchange is not complete in didCompleteMessageExchange method - skipping!")
+            return
+        }
+
+        // replace the picker with the picker's label, and add the response
+        
+        if let response = messageExchange.response as? PickerControlMessage,
+            let message = messageExchange.message as? PickerControlMessage,
+            let label = message.data.richControl?.uiMetadata?.label,
+            let value: String = response.data.richControl?.value ?? "" {
+                let selectedOption = response.data.richControl?.uiMetadata?.options.first(where: { option -> Bool in
+                    option.value == value
+                })
+                let questionModel = TextControlViewModel(label: "", value: label, direction: ControlDirection.inbound)
+                let answerModel = TextControlViewModel(label: "", value: selectedOption?.label ?? value, direction: ControlDirection.outbound)
             
-            if let response = messageExchange.response as? PickerControlMessage,
-               let message = messageExchange.message as? PickerControlMessage {
-               
-                if let label = message.data.richControl?.uiMetadata?.label,
-                    let value: String = response.data.richControl?.value ?? "" {
-                
-                    let questionModel = TextControlViewModel(label: "", value: label, direction: ControlDirection.inbound)
-                    let answerModel = TextControlViewModel(label: "", value: value, direction: ControlDirection.outbound)
-                    
-                    replaceLastControl(with: questionModel)
-                    addControlDataAndNotify(answerModel)
-                }
-            }
+                replaceLastControl(with: questionModel)
+                addControlDataAndNotify(answerModel)
         }
     }
     

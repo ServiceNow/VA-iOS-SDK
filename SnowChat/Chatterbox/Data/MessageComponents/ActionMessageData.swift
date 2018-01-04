@@ -15,7 +15,7 @@ struct ActionMessageData<T: Codable>: Codable {
     var messageId: String
     let sessionId: String
     
-    var direction: String
+    var direction: MessageDirection
     var sendTime: Date
     var receiveTime: Date?
     

@@ -77,17 +77,17 @@ struct Conversation: CBStorable {
     }
     
     mutating func storeResponse(_ data: CBControlData?) {
-        if let last = exchanges.last, last.complete != true {
+        if let last = exchanges.last, last.isComplete != true {
             let index = exchanges.count - 1
             exchanges[index].response = data
-            exchanges[index].complete = true
+            exchanges[index].isComplete = true
         } else {
             Logger.default.logError("Response received for conversationID \(id) with no pending message exchange!")
         }
     }
     
     func lastPendingMessage() -> CBStorable? {
-        guard let last = exchanges.last, !last.complete else { return nil }
+        guard let last = exchanges.last, !last.isComplete else { return nil }
     
         return last.message
     }
@@ -104,13 +104,13 @@ struct Conversation: CBStorable {
 }
 
 struct MessageExchange {
-    var complete: Bool
+    var isComplete: Bool
     
     var message: CBStorable
     var response: CBStorable?
     
-    init(withMessage message: CBStorable, isComplete: Bool = false) {
+    init(withMessage message: CBStorable, isComplete complete: Bool = false) {
         self.message = message
-        complete = isComplete
+        isComplete = complete
     }
 }

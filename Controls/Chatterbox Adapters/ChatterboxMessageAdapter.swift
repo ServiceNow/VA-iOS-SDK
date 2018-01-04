@@ -36,7 +36,7 @@ extension BooleanControlViewModel: ChatterboxMessageAdapter {
         
         // FIXME: direction should be an enum. Talk to Marc about it
         let direction = message.data.direction
-        let booleanModel = BooleanControlViewModel(id: message.id, label: title, required: required, direction: ControlDirection.direction(forStringValue: direction))
+        let booleanModel = BooleanControlViewModel(id: message.id, label: title, required: required, direction: ControlDirection.direction(forStringValue: direction.rawValue))
         return booleanModel
     }
 }
@@ -59,7 +59,7 @@ extension SingleSelectControlViewModel: ChatterboxMessageAdapter {
             items.append(PickerItem(label: option.label, value: option.value))
         })
         
-        let pickerModel = SingleSelectControlViewModel(id: message.id, label: title, required: required, direction: ControlDirection.direction(forStringValue: direction), items: items)
+        let pickerModel = SingleSelectControlViewModel(id: message.id, label: title, required: required, direction: ControlDirection.direction(forStringValue: direction.rawValue), items: items)
         return pickerModel
     }
 }
@@ -76,7 +76,7 @@ extension TextControlViewModel: ChatterboxMessageAdapter {
         // FIXME: direction should be an enum. Talk to Marc about it
         let value = message.data.richControl?.value ?? ""
         let direction = message.data.direction
-        let textModel = TextControlViewModel(id: message.id, label: title, value: value, direction: ControlDirection.direction(forStringValue: direction))
+        let textModel = TextControlViewModel(id: message.id, label: title, value: value, direction: ControlDirection.direction(forStringValue: direction.rawValue))
         return textModel
     }
 }

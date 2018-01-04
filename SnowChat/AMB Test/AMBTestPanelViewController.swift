@@ -56,7 +56,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     // MARK: ChatDataListener
     
     func chatterbox(_: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String) {
-        if message.data.direction == MessageConstants.directionFromServer.rawValue {
+        if message.data.direction == .fromServer {
             let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
             appendContent(message: "\nBooleanControl received: \(label)")
 
@@ -65,7 +65,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     }
     
     func chatterbox(_: Chatterbox, didReceiveInputData message: InputControlMessage, forChat chatId: String) {
-        if message.data.direction == MessageConstants.directionFromServer.rawValue {
+        if message.data.direction == .fromServer {
             let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
             appendContent(message: "\nInputControl received: \(label)")
             
@@ -74,7 +74,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     }
     
     func chatterbox(_: Chatterbox, didReceivePickerData message: PickerControlMessage, forChat chatId: String) {
-        if message.data.direction == MessageConstants.directionFromServer.rawValue {
+        if message.data.direction == .fromServer {
             let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
             appendContent(message: "\nPickerControl received: \(label)")
             
@@ -83,7 +83,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     }
 
     func chatterbox(_: Chatterbox, didReceiveTextData message: OutputTextMessage, forChat chatId: String) {
-        if message.data.direction == MessageConstants.directionFromServer.rawValue {
+        if message.data.direction == .fromServer {
             let label = message.data.richControl?.value ?? "[missing value]"
             appendContent(message: "\nText Output received: \(label)")
         }
@@ -96,7 +96,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
             switch model.type {
             case .boolean:
                 if let boolViewModel = model as? BooleanControlViewModel, let boolValue = boolViewModel.resultValue, let requestMessage = pendingControl as? BooleanControlMessage {
-                    self.chatterbox?.update(control: BooleanControlMessage(withValue: boolValue, fromMessage: requestMessage), ofType: .boolean)
+                    self.chatterbox?.update(control: BooleanControlMessage(withValue: boolValue, fromMessage: requestMessage))
                 }
             default:
                 Logger.default.logInfo("unhandled control type \(model.type)")
@@ -151,7 +151,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
                     print("User entered: \(textField.text ?? "")")
                     
                     if let requestMessage = self.chatterbox?.lastPendingControlMessage(forConversation: conversationId) as? InputControlMessage {
-                        self.chatterbox?.update(control: InputControlMessage(withValue: textField.text ?? "", fromMessage: requestMessage), ofType: .input)
+                        self.chatterbox?.update(control: InputControlMessage(withValue: textField.text ?? "", fromMessage: requestMessage))
                     } else {
                         Logger.default.logError("*** TextInput updated with no pending input message - internal inconsistency ***")
                     }
@@ -172,7 +172,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
                         print("User Selected: \(option.value)")
                         
                         if let requestMessage = self.chatterbox?.lastPendingControlMessage(forConversation: conversationId) as? PickerControlMessage {
-                            self.chatterbox?.update(control: PickerControlMessage(withValue: option.value, fromMessage: requestMessage), ofType: .picker)
+                            self.chatterbox?.update(control: PickerControlMessage(withValue: option.value, fromMessage: requestMessage))
                         } else {
                             Logger.default.logError("*** Picker updated with no pending picker message - internal inconsistency ***")
                         }
