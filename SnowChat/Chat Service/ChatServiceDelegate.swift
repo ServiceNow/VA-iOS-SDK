@@ -1,5 +1,5 @@
 //
-//  ChatServiceAppDelegate.swift
+//  ChatServiceDelegate.swift
 //  SnowChat
 //
 //  Created by Marc Attinasi on 12/12/17.
@@ -9,15 +9,15 @@
 import Foundation
 
 struct ChatUserCredentials {
-    var userName: String
-    var userPassword: String
+    var username: String
+    var password: String
     
     var vendorId: String
     var consumerId: String
     var consumerAccountId: String
 }
 
-protocol ChatServiceAppDelegate: AnyObject {
+protocol ChatServiceDelegate: AnyObject {
     
     func userCredentials() -> ChatUserCredentials
 }

@@ -8,11 +8,12 @@
 
 import UIKit
 
-public class DebugViewController: UITableViewController, ChatServiceAppDelegate {
+public class DebugViewController: UITableViewController, ChatServiceDelegate {
     
     @IBOutlet private weak var ambTestCell: UITableViewCell!
     @IBOutlet private weak var uiControlsCell: UITableViewCell!
     @IBOutlet private weak var chatWindowCell: UITableViewCell!
+    @IBOutlet private weak var instanceSettingsCell: UITableViewCell!
     
     private var chatService: ChatService?
     
@@ -44,16 +45,18 @@ public class DebugViewController: UITableViewController, ChatServiceAppDelegate 
             pushControlsViewController()
         case chatWindowCell:
             pushChatController()
+        case instanceSettingsCell:
+            pushInstanceSettingsViewController()
         default:
             break // noop
         }
     }
     
-    // MARK: ChatServiceAppDelegate methods
+    // MARK: - ChatServiceDelegate
     
     func userCredentials() -> ChatUserCredentials {
-        return ChatUserCredentials(userName: "admin",
-                                   userPassword: "snow2004",
+        return ChatUserCredentials(username: DebugSettings.shared.username,
+                                   password: DebugSettings.shared.password,
                                    vendorId: "c2f0b8f187033200246ddd4c97cb0bb9",
                                    consumerId: CBData.uuidString(),
                                    consumerAccountId: CBData.uuidString())
@@ -62,19 +65,26 @@ public class DebugViewController: UITableViewController, ChatServiceAppDelegate 
     // MARK: - Navigation
     
     private func pushChatController() {
-        chatService = ChatService(delegate: self)
+        let instance = ServerInstance(instanceURL: DebugSettings.shared.instanceURL)
+        chatService = ChatService(instance: instance, delegate: self)
+        
         if let controller = chatService?.chatViewController() {
             navigationController?.pushViewController(controller, animated: true)
         }
     }
     
     private func pushAMBViewController() {
-        let controller = AMBTestPanelViewController(nibName: "AMBTestPanelViewController", bundle: Bundle(for: type(of: self)))
+        let controller = AMBTestPanelViewController(nibName: nil, bundle: Bundle(for: AMBTestPanelViewController.self))
         navigationController?.pushViewController(controller, animated: true)
     }
     
     private func pushControlsViewController() {
-        let controller = ControlsViewController(nibName: "ControlsViewController", bundle: Bundle(for: ControlsViewController.self))
+        let controller = ControlsViewController(nibName: nil, bundle: Bundle(for: ControlsViewController.self))
+        navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    private func pushInstanceSettingsViewController() {
+        let controller = InstanceSettingsViewController(nibName: nil, bundle: Bundle(for: InstanceSettingsViewController.self))
         navigationController?.pushViewController(controller, animated: true)
     }
     

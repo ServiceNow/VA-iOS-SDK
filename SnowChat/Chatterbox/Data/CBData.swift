@@ -38,18 +38,12 @@ class CBData {
         return UUID().uuidString.replacingOccurrences(of: "-", with: "")
     }
     
-    // swiftlint:disable:next force_unwrapping
-    static var config: ChatBoxConfig = ChatBoxConfig(url: URL(string: "https://demonightlychatbot.service-now.com")!)
-    
-    struct ChatBoxConfig {
-        var url: URL
-    }
 }
 
 struct CBUser: Codable {
     var id: String
     var token: String
-    var name: String
+    var username: String
     var consumerId: String
     var consumerAccountId: String
     

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="InstanceSettingsViewController" customModule="SnowChat" customModuleProvider="target">
+            <connections>
+                <outlet property="instanceTextField" destination="rYU-s5-gXo" id="cde-Dk-jPi"/>
+                <outlet property="passwordTextField" destination="ZsQ-Rc-5ym" id="7PW-hB-eKo"/>
+                <outlet property="usernameTextField" destination="0VT-8k-h3p" id="QMq-Ku-BN5"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Configure your ServiceNow instance" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d0V-2R-pJ3">
+                    <rect key="frame" x="47" y="40" width="280" height="41"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="280" id="mI8-Ko-S3l"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
+                    <color key="textColor" red="0.20981839299999999" green="0.25902864339999998" blue="0.31813263889999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Instance" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="rYU-s5-gXo">
+                    <rect key="frame" x="16" y="108" width="343" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="dVA-KT-Abk"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="next" enablesReturnKeyAutomatically="YES"/>
+                </textField>
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Username" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0VT-8k-h3p">
+                    <rect key="frame" x="16" y="156" width="343" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="5aJ-sC-g9N"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="next" enablesReturnKeyAutomatically="YES"/>
+                </textField>
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ZsQ-Rc-5ym">
+                    <rect key="frame" x="16" y="204" width="343" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="dB8-0k-63n"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" enablesReturnKeyAutomatically="YES" secureTextEntry="YES"/>
+                </textField>
+            </subviews>
+            <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="0VT-8k-h3p" firstAttribute="top" secondItem="rYU-s5-gXo" secondAttribute="bottom" constant="8" id="KJ3-fF-BPE"/>
+                <constraint firstItem="d0V-2R-pJ3" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="20" id="QH6-Fi-8tZ"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="ZsQ-Rc-5ym" secondAttribute="trailing" constant="16" id="T3X-9r-d9O"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="0VT-8k-h3p" secondAttribute="trailing" constant="16" id="o2p-jG-EAS"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="rYU-s5-gXo" secondAttribute="trailing" constant="16" id="psX-kI-tJi"/>
+                <constraint firstItem="ZsQ-Rc-5ym" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="tE9-Ht-Spc"/>
+                <constraint firstItem="rYU-s5-gXo" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="88" id="uy7-Bl-cxE"/>
+                <constraint firstItem="0VT-8k-h3p" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="vWw-H4-Dc0"/>
+                <constraint firstItem="ZsQ-Rc-5ym" firstAttribute="top" secondItem="0VT-8k-h3p" secondAttribute="bottom" constant="8" id="wtO-6u-cNo"/>
+                <constraint firstItem="rYU-s5-gXo" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="y6e-nH-MGg"/>
+                <constraint firstItem="d0V-2R-pJ3" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="yCL-s6-DS9"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <point key="canvasLocation" x="-50.5" y="34.5"/>
+        </view>
+    </objects>
+</document>

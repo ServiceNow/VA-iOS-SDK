@@ -9,12 +9,13 @@
 import Foundation
 
 public class ChatService {
-    private let chatterbox = Chatterbox()
-    private weak var delegate: ChatServiceAppDelegate?
+    private let chatterbox: Chatterbox
+    private weak var delegate: ChatServiceDelegate?
     private weak var viewController: ChatViewController?
     
-    init(delegate: ChatServiceAppDelegate) {
+    init(instance: ServerInstance, delegate: ChatServiceDelegate) {
         self.delegate = delegate
+        self.chatterbox = Chatterbox(instance: instance)
         self.chatterbox.chatEventListener = self
         
         establishUserSession()
@@ -38,7 +39,7 @@ public class ChatService {
             return
         }
  
-        let user = CBUser(id: CBData.uuidString(), token: "123abd", name: userCredentials.userName, consumerId: userCredentials.consumerId, consumerAccountId: userCredentials.consumerAccountId, password: userCredentials.userPassword)
+        let user = CBUser(id: CBData.uuidString(), token: "123abd", username: userCredentials.username, consumerId: userCredentials.consumerId, consumerAccountId: userCredentials.consumerAccountId, password: userCredentials.password)
         let vendor = CBVendor(name: "acme", vendorId: userCredentials.vendorId, consumerId: userCredentials.consumerId, consumerAccountId: userCredentials.consumerAccountId)
         
         chatterbox.initializeSession(forUser: user, vendor: vendor, success: { message in

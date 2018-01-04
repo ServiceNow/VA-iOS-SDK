@@ -12,7 +12,7 @@ import AMBClient
 
 class APIManager: NSObject {
     
-    private let instance: ServerInstance
+    internal let instance: ServerInstance
     
     // Each API Manager instance has a private session. That's why we use an ephemeral configuration.
     internal let sessionManager = SessionManager(configuration: .ephemeral)
@@ -34,16 +34,17 @@ class APIManager: NSObject {
     func logIn(username: String, password: String, completionHandler: @escaping (Error?) -> Void) {
         sessionManager.adapter = AuthHeadersAdapter(username: username, password: password)
         
-        // FIXME: Don't construct URLs by hand. Need to define a new pattern in this project similar to SN iOS app.
-        let authURL = instance.instanceURL.appendingPathComponent("/api/now/mobile/app_bootstrap/post_auth")
-        
-        sessionManager.request(authURL, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil)
+        sessionManager.request(apiURLWithPath("mobile/app_bootstrap/post_auth"),
+                               method: .get,
+                               parameters: nil,
+                               encoding: JSONEncoding.default,
+                               headers: nil)
             .validate()
             .responseJSON { [weak self] response in
                 guard let strongSelf = self else { return }
                 
                 var loginError: APIManagerError?
-
+                
                 switch response.result {
                 case .success:
                     strongSelf.ambClient.connect()
@@ -51,7 +52,7 @@ class APIManager: NSObject {
                     loginError = APIManagerError.loginError(message: "Login failed: \(error.localizedDescription)")
                 }
                 completionHandler(loginError)
-            }
+        }
     }
     
 }

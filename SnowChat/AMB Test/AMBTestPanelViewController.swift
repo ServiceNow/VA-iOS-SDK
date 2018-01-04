@@ -184,7 +184,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
         }
     }
     
-    let user = CBUser(id: "9927", token: "938457hge98", name: "admin", consumerId: consumerId, consumerAccountId: consumerAccountId, password: "snow2004")
+    let user = CBUser(id: "9927", token: "938457hge98", username: DebugSettings.shared.username, consumerId: consumerId, consumerAccountId: consumerAccountId, password: DebugSettings.shared.password)
     let vendor = CBVendor(name: "ServiceNow", vendorId: "c2f0b8f187033200246ddd4c97cb0bb9", consumerId: consumerId, consumerAccountId: consumerAccountId)
     
     var chatterbox: Chatterbox?
@@ -255,7 +255,9 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        chatterbox = Chatterbox(dataListener: self, eventListener: self)
+        let instance = ServerInstance(instanceURL: DebugSettings.shared.instanceURL)
+        
+        chatterbox = Chatterbox(instance: instance, dataListener: self, eventListener: self)
         addBubbleViewController()
     }
 

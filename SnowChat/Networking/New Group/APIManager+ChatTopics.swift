@@ -12,7 +12,7 @@ import Alamofire
 extension APIManager {
     
     func suggestTopics(searchText: String, completionHandler: @escaping([CBTopic]) -> Void) {
-        sessionManager.request("\(CBData.config.url)/api/now/v1/cs/topics/suggest",
+        sessionManager.request(apiURLWithPath("cs/topics/suggest"),
             method: .get,
             parameters: ["sysparm_message" : searchText],
             encoding: URLEncoding.queryString).validate().responseJSON { response in
@@ -28,7 +28,7 @@ extension APIManager {
     }
     
     func allTopics(completionHandler: @escaping ([CBTopic]) -> Void) {
-        sessionManager.request("\(CBData.config.url)/api/now/v1/cs/topics/tree",
+        sessionManager.request(apiURLWithPath("cs/topics/tree"),
             method: .get,
             encoding: JSONEncoding.default).validate().responseJSON { response in
                 var topics = [CBTopic]()
