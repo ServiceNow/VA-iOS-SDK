@@ -20,8 +20,10 @@ class OutputImageViewController: UIViewController {
     var image: UIImage? {
         didSet {
             outputImageView.image = image
-            updateImageConstraints()
             activityIndicatorView?.stopAnimating()
+            activityIndicatorView?.removeFromSuperview()
+            updateImageConstraints()
+            view.layoutIfNeeded()
         }
     }
     
@@ -34,8 +36,10 @@ class OutputImageViewController: UIViewController {
     private func setupOutputImageView() {
         outputImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(outputImageView)
-        NSLayoutConstraint.activate([outputImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                                     outputImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor)])
+        NSLayoutConstraint.activate([outputImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                                     outputImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                                     outputImageView.topAnchor.constraint(equalTo: view.topAnchor),
+                                     outputImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
         updateImageConstraints()
     }
     
