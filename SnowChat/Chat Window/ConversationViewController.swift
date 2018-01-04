@@ -108,7 +108,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         textView.placeholder = NSLocalizedString("...", comment: "Placeholder text for input field when user is in a conversation")
     }
     
-    // MARK: ViewDataChangeListener
+    // MARK: - ViewDataChangeListener
     
     func chatDataController(_ dataController: ChatDataController, didChangeModel model: ControlViewModel, atIndex index: Int) {
         tableView.reloadData()
