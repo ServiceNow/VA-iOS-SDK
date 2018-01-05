@@ -14,13 +14,13 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     var items = [PickerItem]()
     
-    let label: String
+    let label: String?
     
     let id: String
     
     let type: ControlType = .multiSelect
     
-    init(id: String, label: String, required: Bool, items: [PickerItem], resultValue: [String]? = nil) {
+    init(id: String, label: String? = nil, required: Bool, items: [PickerItem], resultValue: [String]? = nil) {
         self.id = id
         self.label = label
         self.isRequired = required

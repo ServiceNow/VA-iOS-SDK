@@ -8,7 +8,7 @@
 
 class OutputImageViewModel: ControlViewModel {
     
-    let label: String
+    let label: String?
     
     var isRequired: Bool = true
     
@@ -18,7 +18,7 @@ class OutputImageViewModel: ControlViewModel {
     
     let value: URL
     
-    init(id: String = "image_output", label: String, value: URL) {
+    init(id: String = "image_output", label: String? = nil, value: URL) {
         self.label = label
         self.value = value
         self.id = id

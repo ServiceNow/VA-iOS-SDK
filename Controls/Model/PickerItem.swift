@@ -16,7 +16,7 @@ class PickerItem {
         case custom
     }
     
-    let label: String
+    let label: String?
     
     var value: String
     
@@ -24,7 +24,7 @@ class PickerItem {
     
     let type: ItemType
     
-    init(type: ItemType = .custom, label: String, value: String) {
+    init(type: ItemType = .custom, label: String? = nil, value: String) {
         self.label = label
         self.value = value
         self.type = type
