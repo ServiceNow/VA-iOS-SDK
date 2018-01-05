@@ -12,13 +12,13 @@
 // ChatDataController is also responsible for mapping from Chatterbox control messages to specific UI
 // controls that should be displayed. For example, if a Boolean message is received from Chatterbox
 // the ChatDataController puts a BooleanControl in it's list of controls to display. If a Boolean
-// response is received, then it removes the BooleanControl and makes two TextControls, one with the
+// _response_ is received, then it removes the BooleanControl and makes two TextControls: one with the
 // original label of the BooleanControl, and one with the user-selected value.
 //
-// The control that ChatDataController maintains are in an inverted array, with the last element in
-// the 0th position, and the first element at the end. this is to facilitate a rendering style where
-// familiar to chat UI's, where the latest message is at the bottom and the older ones scroll off the
-// top of the screen.
+// The controls that ChatDataController maintains are ChatMessageModels, stored in an inverted array
+// with the last element in the 0th position, and the first element at the end. This is to facilitate
+// a rendering style familiar to chat users, where the latest message is at the bottom and the older
+// ones scroll off the top of the screen.
 
 import Foundation
 
@@ -28,26 +28,23 @@ protocol ViewDataChangeListener {
 
 class ChatDataController {
     
-    var conversationId: String?
-    public var changeListener: ViewDataChangeListener?
+    private(set) var conversationId: String?
     private let chatterbox: Chatterbox
     private var controlData: [ChatMessageModel] = []
-    
-    init(chatterbox: Chatterbox) {
+    private var changeListener: ViewDataChangeListener?
+
+    init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
-        
         chatterbox.chatDataListener = self
+        
+        self.changeListener = changeListener
     }
     
-    public func updateControlData(_ data: ControlViewModel, isSkipped: Bool = false) {
-        guard controlData.count > 0 else {
-            Logger.default.logError("No control data exists, so updating is probably incorrect")
-            return
-        }
-        
-        // TODO: how to handle skip?
-        updateChatterbox(data)
+    func setChangeListener(_ listener: ViewDataChangeListener) {
+        changeListener = listener
     }
+    
+    // MARK: - access to controls
     
     func controlCount() -> Int {
         Logger.default.logDebug("DataController Count: \(controlData.count)")
@@ -60,21 +57,16 @@ class ChatDataController {
         }
         return controlData[index]
     }
-    
-    func topicDidStart(_ topicMessage: StartedUserTopicMessage) {
-        conversationId = topicMessage.data.actionMessage.vendorTopicId
-    }
 
-    func topicDidFinish(_ topicMessage: TopicFinishedMessage) {
-        conversationId = nil
+    // updateControlData: called by view layer when a UI control has updated its value
+    //
+    public func updateControlData(_ data: ControlViewModel, isSkipped: Bool = false) {
+        guard controlData.count > 0 else {
+            Logger.default.logError("No control data exists, so updating is probably incorrect")
+            return
+        }
         
-        // TODO: how to treat old messages visually?
-    }
-
-    func presentWelcomeMessage() {
-        let message = chatterbox.session?.welcomeMessage ?? "Welcome! What can we help you with?"
-        let welcomeTextControl = TextControlViewModel(label: "", value: message)
-        addControlDataAndNotify(ChatMessageModel(model: welcomeTextControl, location: .left))
+        updateChatterbox(data)
     }
     
     fileprivate func replaceLastControl(with model: ChatMessageModel) {
@@ -119,16 +111,16 @@ class ChatDataController {
     
     fileprivate func updateBooleanData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
         if let booleanViewModel = data as? BooleanControlViewModel,
-           var boolMessage = lastPendingMessage as? BooleanControlMessage {
+            var boolMessage = lastPendingMessage as? BooleanControlMessage {
             
-            boolMessage.data.richControl?.value = booleanViewModel.resultValue ?? false
+            boolMessage.data.richControl?.value = booleanViewModel.resultValue
             chatterbox.update(control: boolMessage)
         }
     }
     
     fileprivate func updateInputData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
         if let textViewModel = data as? TextControlViewModel,
-           var inputMessage = lastPendingMessage as? InputControlMessage {
+            var inputMessage = lastPendingMessage as? InputControlMessage {
             
             inputMessage.data.richControl?.value = textViewModel.value
             chatterbox.update(control: inputMessage)
@@ -137,17 +129,35 @@ class ChatDataController {
     
     fileprivate func updatePickerData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
         if let pickerViewModel = data as? SingleSelectControlViewModel,
-           var pickerMessage = lastPendingMessage as? PickerControlMessage {
+            var pickerMessage = lastPendingMessage as? PickerControlMessage {
             
             pickerMessage.data.richControl?.value = pickerViewModel.resultValue
             chatterbox.update(control: pickerMessage)
         }
     }
+
+    // MARK: - Topic Notifications
+    
+    func topicDidStart(_ topicMessage: StartedUserTopicMessage) {
+        conversationId = topicMessage.data.actionMessage.vendorTopicId
+    }
+
+    func topicDidFinish(_ topicMessage: TopicFinishedMessage) {
+        conversationId = nil
+        
+        // TODO: how to treat old messages visually?
+    }
+
+    func presentWelcomeMessage() {
+        let message = chatterbox.session?.welcomeMessage ?? "Welcome! What can we help you with?"
+        let welcomeTextControl = TextControlViewModel(label: "", value: message)
+        addControlDataAndNotify(ChatMessageModel(model: welcomeTextControl, location: .left))
+    }
 }
 
 extension ChatDataController: ChatDataListener {
     
-    // MARK: Chatterbox control notifications: these are controls sent to the client from the virtual agent
+    // MARK: - ChatDataListener (from service)
     
     func chatterbox(_ chatterbox: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String) {
         guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
@@ -194,7 +204,11 @@ extension ChatDataController: ChatDataListener {
         }
     }
     
-    // MARK: Chatterbox response notifications: these are user-entered responses to controls sent previously
+    private func dataConversionError(controlId: String, controlType: CBControlType) {
+        Logger.default.logError("Data Conversion Error: \(controlId) : \(controlType)")
+    }
+    
+    // MARK: - ChatDataListener (from client)
     
     func chattebox(_ chatterbox: Chatterbox, didCompleteBooleanExchange messageExchange: MessageExchange, forChat chatId: String) {
         guard chatterbox.id == self.chatterbox.id else {
@@ -266,9 +280,5 @@ extension ChatDataController: ChatDataListener {
                 replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
                 addControlDataAndNotify(ChatMessageModel(model: answerModel, location: .right))
         }
-    }
-    
-    private func dataConversionError(controlId: String, controlType: CBControlType) {
-        Logger.default.logError("Data Conversion Error: \(controlId) : \(controlType)")
     }
 }

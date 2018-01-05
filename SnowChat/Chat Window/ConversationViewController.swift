@@ -18,11 +18,11 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     }
     
     private var inputState = InputState.inTopicSelection
+    private var autocompleteHandler: AutoCompleteHandler?
+
     private let dataController: ChatDataController
     private let chatterbox: Chatterbox
-    
-    private var autocompleteHandler: AutoCompleteHandler?
-    
+
     // Each cell will have its own view controller to handle each message
     // It will need to be definitely improved. I just added simple solution. No caching of VC at this moment.
     // More on it: http://khanlou.com/2015/04/view-controllers-in-cells/
@@ -41,9 +41,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
 
         // NOTE: this failable initializer cannot really fail, so keeping it clean and forcing
         // swiftlint:disable:next force_unwrapping
-        super.init(tableViewStyle: .plain)!
-        
-        self.dataController.changeListener = self
+        super.init(tableViewStyle: .plain)!        
+
+        self.dataController.setChangeListener(self)
     }
     
     required init?(coder decoder: NSCoder) {
@@ -247,9 +247,11 @@ extension ConversationViewController {
     }
     
     override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let messageViewController = self.messageViewController(atIndex: indexPath.row)
-        messageViewController.removeUIControl()
-        messageViewController.removeFromParentViewController()
+        if tableView != autoCompletionView {
+            let messageViewController = self.messageViewController(atIndex: indexPath.row)
+            messageViewController.removeUIControl()
+            messageViewController.removeFromParentViewController()
+        }
     }
     
     private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
