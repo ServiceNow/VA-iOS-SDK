@@ -133,7 +133,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             let count = dataController.controlCount()
             if count > 0, let lastControl = dataController.controlForIndex(0) {
                 textView.text = ""
-                isTextInputbarHidden = lastControl.type != .text
+                isTextInputbarHidden = lastControl.controlModel.type != .text
             }
         }
     }
