@@ -10,14 +10,13 @@ import UIKit
 
 class MessageViewController: UIViewController {
     
+    let controlMaxWidth: CGFloat = 200
+    
     @IBOutlet weak var bubbleView: BubbleView!
-    
     @IBOutlet weak var agentImageView: UIImageView!
-    
     @IBOutlet weak var agentBubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var bubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var bubbleTrailingConstraint: NSLayoutConstraint!
-    private var controlWidthConstraint: NSLayoutConstraint?
     
     private(set) var uiControl: ControlProtocol?
     
@@ -58,9 +57,9 @@ class MessageViewController: UIViewController {
                                      controlView.bottomAnchor.constraint(equalTo: bubbleView.contentView.bottomAnchor)])
         
         // all controls but text will be limited to 250 points of width.
-        // For now doing it across all class sizes. Might be adjusted when we get specs.
+        // For now doing it across all class sizes. Might get adjusted when we get specs.
         if control.model.type != .text {
-            controlView.widthAnchor.constraint(lessThanOrEqualToConstant: 200).isActive = true
+            controlView.widthAnchor.constraint(lessThanOrEqualToConstant: controlMaxWidth).isActive = true
         }
         
         uiControl = control
