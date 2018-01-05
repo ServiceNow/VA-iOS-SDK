@@ -113,6 +113,7 @@ class ChatDataController {
         if let booleanViewModel = data as? BooleanControlViewModel,
             var boolMessage = lastPendingMessage as? BooleanControlMessage {
             
+            boolMessage.id = booleanViewModel.id
             boolMessage.data.richControl?.value = booleanViewModel.resultValue
             chatterbox.update(control: boolMessage)
         }
@@ -122,6 +123,7 @@ class ChatDataController {
         if let textViewModel = data as? TextControlViewModel,
             var inputMessage = lastPendingMessage as? InputControlMessage {
             
+            inputMessage.id = textViewModel.id
             inputMessage.data.richControl?.value = textViewModel.value
             chatterbox.update(control: inputMessage)
         }
@@ -131,6 +133,7 @@ class ChatDataController {
         if let pickerViewModel = data as? SingleSelectControlViewModel,
             var pickerMessage = lastPendingMessage as? PickerControlMessage {
             
+            pickerMessage.id = pickerViewModel.id
             pickerMessage.data.richControl?.value = pickerViewModel.resultValue
             chatterbox.update(control: pickerMessage)
         }
@@ -164,7 +167,9 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if let messageModel = ChatMessageModel.makeModel(withMessage: message) {
+        var messageClone = message
+        messageClone.id = CBData.uuidString()
+        if let messageModel = ChatMessageModel.makeModel(withMessage: messageClone) {
             addControlDataAndNotify(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
@@ -176,8 +181,10 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if let textViewModel = ChatMessageModel.makeModel(withMessage: message) {
-            addControlDataAndNotify(textViewModel)
+        var messageClone = message
+        messageClone.id = CBData.uuidString()
+        if let messageModel = ChatMessageModel.makeModel(withMessage: messageClone) {
+            addControlDataAndNotify(messageModel)
         }
     }
     
@@ -186,7 +193,9 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if let messageModel = ChatMessageModel.makeModel(withMessage: message) {
+        var messageClone = message
+        messageClone.id = CBData.uuidString()
+        if let messageModel = ChatMessageModel.makeModel(withMessage: messageClone) {
             addControlDataAndNotify(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
