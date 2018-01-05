@@ -16,8 +16,6 @@ class TypingIndicatorViewModel: ControlViewModel {
     let id: String = "typing_indicator"
     
     let type: ControlType = .typingIndicator
-    
-    var direction: ControlDirection = .inbound
 }
 
 class TypingIndicatorControl: ControlProtocol {

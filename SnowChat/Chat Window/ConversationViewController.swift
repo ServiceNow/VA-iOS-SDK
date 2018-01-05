@@ -110,7 +110,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     // MARK: - ViewDataChangeListener
     
-    func chatDataController(_ dataController: ChatDataController, didChangeModel model: ControlViewModel, atIndex index: Int) {
+    func chatDataController(_ dataController: ChatDataController, didChangeModel model: ChatMessageModel, atIndex index: Int) {
         tableView.reloadData()
         
         // Due to silly self-sizing problems with UITableViewCell I am forcing table to redraw itself after data are reloaded
@@ -203,7 +203,7 @@ extension ConversationViewController {
     
     func processUserInput(_ inputText: String) {
         // send the input as a control update
-        let model = TextControlViewModel(label: "", value: inputText, direction: ControlDirection.outbound)
+        let model = TextControlViewModel(label: "", value: inputText)
         dataController.updateControlData(model, isSkipped: false)
     }
     
@@ -248,6 +248,7 @@ extension ConversationViewController {
     
     override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let messageViewController = self.messageViewController(atIndex: indexPath.row)
+        messageViewController.removeUIControl()
         messageViewController.removeFromParentViewController()
     }
     
@@ -264,14 +265,13 @@ extension ConversationViewController {
     private func configureConversationCell(_ cell: ConversationViewCell, at indexPath:IndexPath) {
         cell.selectionStyle = .none
         
-        if let model = dataController.controlForIndex(indexPath.row) {
+        if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
             let messageViewController = self.messageViewController(atIndex: indexPath.row)
             let messageView: UIView = messageViewController.view
             cell.messageView = messageView
             
-            let control = SnowControlUtils.uiControlForViewModel(model)
-            control.delegate = self
-            messageViewController.addUIControl(control)
+            messageViewController.model = chatMessageModel
+            messageViewController.uiControl?.delegate = self
             messageViewController.didMove(toParentViewController: self)
             cell.transform = self.tableView.transform
         }

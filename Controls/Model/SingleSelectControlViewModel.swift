@@ -20,15 +20,12 @@ class SingleSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     let type: ControlType = .multiSelect
     
-    var direction: ControlDirection
-    
-    init(id: String, label: String, required: Bool, direction: ControlDirection, items: [PickerItem], resultValue: String? = nil) {
+    init(id: String, label: String, required: Bool, items: [PickerItem], resultValue: String? = nil) {
         self.id = id
         self.label = label
         self.isRequired = required
         self.isMultiSelect = false
         self.items = items
-        self.direction = direction
         
         if !required {
             self.items.append(PickerItem.skipItem())

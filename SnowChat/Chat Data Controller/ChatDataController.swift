@@ -23,7 +23,7 @@
 import Foundation
 
 protocol ViewDataChangeListener {
-    func chatDataController(_ dataController: ChatDataController, didChangeModel model: ControlViewModel, atIndex index: Int)
+    func chatDataController(_ dataController: ChatDataController, didChangeModel model: ChatMessageModel, atIndex index: Int)
 }
 
 class ChatDataController {
@@ -31,7 +31,7 @@ class ChatDataController {
     var conversationId: String?
     public var changeListener: ViewDataChangeListener?
     private let chatterbox: Chatterbox
-    private var controlData: [ControlViewModel] = []
+    private var controlData: [ChatMessageModel] = []
     
     init(chatterbox: Chatterbox) {
         self.chatterbox = chatterbox
@@ -54,7 +54,7 @@ class ChatDataController {
         return controlData.count
     }
     
-    func controlForIndex(_ index: Int) -> ControlViewModel? {
+    func controlForIndex(_ index: Int) -> ChatMessageModel? {
         guard index < controlData.count else {
             return nil
         }
@@ -73,11 +73,11 @@ class ChatDataController {
 
     func presentWelcomeMessage() {
         let message = chatterbox.session?.welcomeMessage ?? "Welcome! What can we help you with?"
-        let welcomeTextControl = TextControlViewModel(label: "", value: message, direction: ControlDirection.inbound)
-        addControlDataAndNotify(welcomeTextControl)
+        let welcomeTextControl = TextControlViewModel(label: "", value: message)
+        addControlDataAndNotify(ChatMessageModel(model: welcomeTextControl, location: .left))
     }
     
-    fileprivate func replaceLastControl(with model: ControlViewModel) {
+    fileprivate func replaceLastControl(with model: ChatMessageModel) {
         guard controlData.count > 0 else {
             Logger.default.logError("Attempt to replace last control when no control is present!")
             return
@@ -87,12 +87,12 @@ class ChatDataController {
         controlData[0] = model
     }
     
-    fileprivate func addControlData(_ data: ControlViewModel) {
+    fileprivate func addControlData(_ data: ChatMessageModel) {
         // add prepends to the front of the array, as our list is reversed
         controlData = [data] + controlData
     }
     
-    fileprivate func addControlDataAndNotify(_ data: ControlViewModel) {
+    fileprivate func addControlDataAndNotify(_ data: ChatMessageModel) {
         addControlData(data)
         changeListener?.chatDataController(self, didChangeModel: data, atIndex: controlData.count - 1)
     }
@@ -154,8 +154,8 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if let booleanViewModel = BooleanControlViewModel.model(withMessage: message) {
-            addControlDataAndNotify(booleanViewModel)
+        if let messageModel = ChatMessageModel.makeModel(withMessage: message) {
+            addControlDataAndNotify(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
         }
@@ -166,8 +166,7 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if let value = message.data.richControl?.uiMetadata?.label {
-            let textViewModel = TextControlViewModel(label: "", value: value, direction: ControlDirection.inbound)
+        if let textViewModel = ChatMessageModel.makeModel(withMessage: message) {
             addControlDataAndNotify(textViewModel)
         }
     }
@@ -177,8 +176,8 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if let pickerViewModel = SingleSelectControlViewModel.model(withMessage: message) {
-            addControlDataAndNotify(pickerViewModel)
+        if let messageModel = ChatMessageModel.makeModel(withMessage: message) {
+            addControlDataAndNotify(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
         }
@@ -190,8 +189,8 @@ extension ChatDataController: ChatDataListener {
         }
 
         if let value = message.data.richControl?.value {
-            let textViewModel = TextControlViewModel(label: "", value: value, direction: ControlDirection.inbound)
-            addControlDataAndNotify(textViewModel)
+            let textViewModel = TextControlViewModel(label: "", value: value)
+            addControlDataAndNotify(ChatMessageModel(model: textViewModel, location: .left))
         }
     }
     
@@ -216,11 +215,11 @@ extension ChatDataController: ChatDataListener {
             let value = response.data.richControl?.value ?? false
             let valueString = (value ?? false) ? "Yes" : "No"
             
-            let questionViewModel = TextControlViewModel(id: message.id, label: "", value: label, direction: ControlDirection.inbound)
-            let answerViewModel = TextControlViewModel(id: message.id, label: "", value: valueString, direction: ControlDirection.outbound)
+            let questionViewModel = TextControlViewModel(id: message.id, label: "", value: label)
+            let answerViewModel = TextControlViewModel(id: message.id, label: "", value: valueString)
             
-            replaceLastControl(with: questionViewModel)
-            addControlDataAndNotify(answerViewModel)
+            replaceLastControl(with: ChatMessageModel(model: questionViewModel, location: .left))
+            addControlDataAndNotify(ChatMessageModel(model: answerViewModel, location: .right))
         }
    }
     
@@ -237,8 +236,8 @@ extension ChatDataController: ChatDataListener {
         // a completed exchange simply adds a new text output representing the users answer
         if let response = messageExchange.response as? InputControlMessage,
             let value: String = response.data.richControl?.value ?? "" {
-                let responseViewModel = TextControlViewModel(id: response.id, label: "", value: value, direction: ControlDirection.outbound)
-                addControlDataAndNotify(responseViewModel)
+                let responseViewModel = TextControlViewModel(id: response.id, label: "", value: value)
+                addControlDataAndNotify(ChatMessageModel(model: responseViewModel, location: .right))
         }
     }
     
@@ -261,11 +260,11 @@ extension ChatDataController: ChatDataListener {
                 let selectedOption = response.data.richControl?.uiMetadata?.options.first(where: { option -> Bool in
                     option.value == value
                 })
-                let questionModel = TextControlViewModel(label: "", value: label, direction: ControlDirection.inbound)
-                let answerModel = TextControlViewModel(label: "", value: selectedOption?.label ?? value, direction: ControlDirection.outbound)
+                let questionModel = TextControlViewModel(label: "", value: label)
+                let answerModel = TextControlViewModel(label: "", value: selectedOption?.label ?? value)
             
-                replaceLastControl(with: questionModel)
-                addControlDataAndNotify(answerModel)
+                replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
+                addControlDataAndNotify(ChatMessageModel(model: answerModel, location: .right))
         }
     }
     

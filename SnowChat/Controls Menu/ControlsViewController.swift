@@ -60,13 +60,17 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         switch controlType {
         case .boolean:
             let booleanMessage = BooleanControlMessage(withData: newControlData())
-            uiControl = SnowControlUtils.booleanControl(forBooleanMessage: booleanMessage)
+            guard let booleanModel = ChatMessageModel.makeModel(withMessage: booleanMessage)?.controlModel else {
+                fatalError("whoops")
+            }
+            
+            uiControl = BooleanControl(model: booleanModel)
         case .multiSelect:
             let items = [PickerItem(label: "Item 1", value: "1"), PickerItem(label: "Item 2", value: "2"), PickerItem(label: "Item 3", value: "3"), PickerItem(label: "Item 4", value: "4")]
-            let multiselectModel = MultiSelectControlViewModel(id: "multi_1234", label: "What is your issue?", required: true, direction: .inbound, items: items)
+            let multiselectModel = MultiSelectControlViewModel(id: "multi_1234", label: "What is your issue?", required: true, items: items)
             uiControl = MultiSelectControl(model: multiselectModel)
         case .text:
-            let textModel = TextControlViewModel(label: "Text View", value: "Some random text that is longer than one line........", direction: .inbound)
+            let textModel = TextControlViewModel(label: "Text View", value: "Some random text that is longer than one line........")
             uiControl = TextControl(model: textModel)
         case .typingIndicator:
             uiControl = TypingIndicatorControl()
@@ -77,7 +81,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             }
             
             let url = URL(fileURLWithPath: filePath)
-            let imageModel = OutputImageViewModel(label: "Output Image", value: url, direction: .inbound)
+            let imageModel = OutputImageViewModel(label: "Output Image", value: url)
             let outputImageControl = OutputImageControl(model: imageModel)
             outputImageControl.imageDownloader = self
             uiControl = outputImageControl
@@ -112,13 +116,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     // MARK: - ControlDelegate
     
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
-        
-        // update boolean control to 2 text controls when selected
-        if model.type == .boolean {
-            let booleanMessage = BooleanControlMessage(withData: newControlData())
-            let textControls = SnowControlUtils.textControls(forBooleanMessage: booleanMessage)
-            fakeChatViewController?.controls = textControls
-        }
+        // ¯\_(ツ)_/¯
     }
     
     // Copy-pasted from Marc's code - needs to be removed

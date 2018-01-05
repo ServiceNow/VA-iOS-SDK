@@ -12,13 +12,13 @@ import XCTest
 class BooleanControlTests: XCTestCase {
     
     func testBooleanPickerVCDefaultPresentationStyle() {
-        let model = BooleanControlViewModel(id: "123", label: "?", required: true, direction: .inbound)
+        let model = BooleanControlViewModel(id: "123", label: "?", required: true)
         let booleanControl = BooleanControl(model: model)
         XCTAssert(booleanControl.style == .inline)
     }
     
     func testBooleanControlValueSetting() {
-        let model = BooleanControlViewModel(id: "123", label: "?", required: true, direction: .inbound)
+        let model = BooleanControlViewModel(id: "123", label: "?", required: true)
         
         // Select No
         model.selectItem(at: 0)
@@ -41,7 +41,7 @@ class BooleanControlTests: XCTestCase {
     
     // Required = false will introduce a "Skip" button to the picker
     func testNonRequiredBooleanControlValueHasSkipItem() {
-        let model = BooleanControlViewModel(id: "123", label: "?", required: false, direction: .inbound)
+        let model = BooleanControlViewModel(id: "123", label: "?", required: false)
         
         // Select Skip!
         model.selectItem(at: 2)
@@ -50,13 +50,13 @@ class BooleanControlTests: XCTestCase {
     }
     
     func testBooleanMultiSelectVar() {
-        let model = BooleanControlViewModel(id: "123", label: "?", required: true, direction: .inbound)
+        let model = BooleanControlViewModel(id: "123", label: "?", required: true)
         XCTAssert(model.isMultiSelect == false)
     }
     
     func testBooleanReturnValue() {
         // result value coming from server set to true
-        var model = BooleanControlViewModel(id: "123", label: "?", required: true, direction: .inbound, resultValue: true)
+        var model = BooleanControlViewModel(id: "123", label: "?", required: true, resultValue: true)
         var result = model.resultValue
         XCTAssert(result! == true)
         
@@ -64,7 +64,7 @@ class BooleanControlTests: XCTestCase {
         XCTAssert(displayValue! == "Yes")
         
         // result value set to false
-        model = BooleanControlViewModel(id: "123", label: "?", required: true, direction: .inbound, resultValue: false)
+        model = BooleanControlViewModel(id: "123", label: "?", required: true, resultValue: false)
         result = model.resultValue
         XCTAssert(result! == false)
         

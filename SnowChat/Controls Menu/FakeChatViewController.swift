@@ -85,7 +85,7 @@ class FakeChatViewController: UIViewController, UITableViewDelegate, UITableView
         let messageViewController = messageViewControllers[indexPath.row]
         let messageView: UIView = messageViewController.view
         cell.messageView = messageView
-        messageViewController.addUIControl(control)
+        messageViewController.addUIControl(control, at: .left)
         
         return cell
     }

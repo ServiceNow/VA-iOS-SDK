@@ -18,7 +18,18 @@ class MessageViewController: UIViewController {
     @IBOutlet weak var bubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var bubbleTrailingConstraint: NSLayoutConstraint!
     
-    var uiControl: ControlProtocol?
+    private(set) var uiControl: ControlProtocol?
+    
+    var model: ChatMessageModel? {
+        didSet {
+            guard let messageModel = model else {
+                return
+            }
+            
+            let control = ControlsUtil.controlForViewModel(messageModel.controlModel)
+            addUIControl(control, at: messageModel.location)
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,7 +37,7 @@ class MessageViewController: UIViewController {
         bubbleView.backgroundColor = UIColor.agentBubbleBackgroundColor
     }
     
-    func addUIControl(_ control: ControlProtocol) {
+    func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
         removeUIControl()
         uiControl = control
         
@@ -35,7 +46,7 @@ class MessageViewController: UIViewController {
         addChildViewController(controlViewController)
         
         let controlView: UIView = controlViewController.view
-        updateForControlDirection(control.model.direction)
+        updateForLocation(location)
         
         controlView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(controlView)
@@ -54,22 +65,24 @@ class MessageViewController: UIViewController {
     
     // updates message view based on the direction of the message
     
-    private func updateForControlDirection(_ direction: ControlDirection) {
+    private func updateForLocation(_ location: BubbleLocation) {
         if uiControl?.model.type == .text,
             let textView = uiControl?.viewController.view as? UITextView {
-            textView.textColor = (direction == .inbound) ? UIColor.userBubbleTextColor : UIColor.agentBubbleTextColor
+            textView.textColor = (location == .right) ? UIColor.userBubbleTextColor : UIColor.agentBubbleTextColor
         }
         
-        switch direction {
-        case .inbound:
-            uiControl?.viewController.view.backgroundColor = UIColor.userBubbleBackgroundColor
+        switch location {
+        case .left:
+            uiControl?.viewController.view.backgroundColor = UIColor.agentBubbleBackgroundColor
+            bubbleView.backgroundColor = UIColor.agentBubbleBackgroundColor
             agentImageView.isHidden = false
             bubbleView.arrowDirection = .left
             agentBubbleLeadingConstraint.priority = .veryHigh
             bubbleLeadingConstraint.priority = .defaultLow
             bubbleTrailingConstraint.priority = .defaultHigh
-        case .outbound:
-            uiControl?.viewController.view.backgroundColor = UIColor.agentBubbleBackgroundColor
+        case .right:
+            uiControl?.viewController.view.backgroundColor = UIColor.userBubbleBackgroundColor
+            bubbleView.backgroundColor = UIColor.userBubbleBackgroundColor
             bubbleView.arrowDirection = .right
             agentBubbleLeadingConstraint.priority = .defaultLow
             bubbleLeadingConstraint.priority = .defaultHigh
