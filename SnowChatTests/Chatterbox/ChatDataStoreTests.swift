@@ -38,7 +38,7 @@ class DataStoreTests: XCTestCase {
         """
 
     override func setUp() {
-        chatterbox = Chatterbox(dataListener: nil, eventListener: nil)
+        chatterbox = Chatterbox(instance: ServerInstance(instanceURL: URL(fileURLWithPath: "")), dataListener: nil, eventListener: nil)
     }
     
     func testNoMessages() {
@@ -62,19 +62,25 @@ class DataStoreTests: XCTestCase {
             XCTAssertEqual(1, store.conversation(forId: id)?.messageExchanges().count)
         }
         
-        // make sure the messave ID in the exchanges are correct
+        // make sure the message ID in the exchanges are correct
         conversationIds.forEach { id in
             XCTAssertEqual(control.id, store.conversation(forId: id)?.messageExchanges().last?.message.uniqueId())
         }
 
     }
     
-    func testAddMessage() {
+    func testAddMessagesWithAndWithoutResponses() {
         let store = ChatDataStore(storeId: "test-store")
         let control = CBDataFactory.controlFromJSON(jsonBoolean)
         
         store.storeControlData(control, expectResponse: true, forConversation: "testConversationID1", fromChat: chatterbox!)
         store.storeControlData(control, expectResponse: false, forConversation: "testConversationID2", fromChat: chatterbox!)
+        
+        XCTAssertEqual(control.uniqueId(), store.conversation(forId: "testConversationID1")?.messageExchanges().first?.message.uniqueId())
+        XCTAssertEqual(control.uniqueId(), store.conversation(forId: "testConversationID2")?.messageExchanges().first?.message.uniqueId())
+
+        XCTAssertFalse((store.conversation(forId: "testConversationID1")?.messageExchanges().first?.isComplete)!)
+        XCTAssertTrue((store.conversation(forId: "testConversationID2")?.messageExchanges().first?.isComplete)!)
         
         XCTAssertEqual(control.id, store.lastPendingMessage(forConversation: "testConversationID1")?.uniqueId())
         XCTAssertNil(store.lastPendingMessage(forConversation: "testConversationID2"))
