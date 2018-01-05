@@ -124,6 +124,7 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         let headerView = UIView()
         let titleLabel = UILabel()
         titleLabel.adjustsFontSizeToFitWidth = true
+        titleLabel.numberOfLines = 0
         titleLabel.text = model.label
         titleLabel.textColor = headerTextColor
         headerView.backgroundColor = UIColor.controlHeaderBackgroundColor

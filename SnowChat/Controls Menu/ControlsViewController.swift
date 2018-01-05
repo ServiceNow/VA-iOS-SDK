@@ -126,7 +126,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
                                               conversationId: nil,
                                               controlData: ControlWrapper(model: ControlModel(type: "Boolean", name: "Boolean"),
                                                                          uiType: "BooleanControl",
-                                                                         uiMetadata: UIMetadata(label:"Test",
+                                                                         uiMetadata: UIMetadata(label:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eleifend dapibus lacus, faucibus efficitur enim malesuada vel.",
                                                                                                required: false,
                                                                                                error: nil),
                                                                          value: nil))

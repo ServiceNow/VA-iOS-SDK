@@ -17,6 +17,7 @@ class MessageViewController: UIViewController {
     @IBOutlet weak var agentBubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var bubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var bubbleTrailingConstraint: NSLayoutConstraint!
+    private var controlWidthConstraint: NSLayoutConstraint?
     
     private(set) var uiControl: ControlProtocol?
     
@@ -39,7 +40,6 @@ class MessageViewController: UIViewController {
     
     func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
         removeUIControl()
-        uiControl = control
         
         let controlViewController = control.viewController
         controlViewController.willMove(toParentViewController: self)
@@ -56,6 +56,14 @@ class MessageViewController: UIViewController {
                                      controlView.trailingAnchor.constraint(equalTo: bubbleView.contentView.trailingAnchor),
                                      controlView.topAnchor.constraint(equalTo: bubbleView.contentView.topAnchor),
                                      controlView.bottomAnchor.constraint(equalTo: bubbleView.contentView.bottomAnchor)])
+        
+        // all controls but text will be limited to 250 points of width.
+        // For now doing it across all class sizes. Might be adjusted when we get specs.
+        if control.model.type != .text {
+            controlView.widthAnchor.constraint(lessThanOrEqualToConstant: 200).isActive = true
+        }
+        
+        uiControl = control
     }
     
     func removeUIControl() {
