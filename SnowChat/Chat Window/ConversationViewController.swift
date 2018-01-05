@@ -246,12 +246,12 @@ extension ConversationViewController {
     private func configureConversationCell(_ cell: ConversationViewCell, at indexPath:IndexPath) {
         cell.selectionStyle = .none
         
-        if let chatMesasgeModel = dataController.controlForIndex(indexPath.row) {
+        if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
             let messageViewController = self.messageViewController(atIndex: indexPath.row)
             let messageView: UIView = messageViewController.view
             cell.messageView = messageView
             
-            messageViewController.model = chatMesasgeModel
+            messageViewController.model = chatMessageModel
             messageViewController.uiControl?.delegate = self
             messageViewController.didMove(toParentViewController: self)
             cell.transform = self.tableView.transform

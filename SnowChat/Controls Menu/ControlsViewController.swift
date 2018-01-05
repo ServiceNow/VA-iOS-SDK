@@ -60,7 +60,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         switch controlType {
         case .boolean:
             let booleanMessage = BooleanControlMessage(withData: newControlData())
-            guard let booleanModel = BooleanControlViewModel.chatMessageModel(withMessage: booleanMessage)?.controlModel else {
+            guard let booleanModel = ChatMessageModel.makeModel(withMessage: booleanMessage)?.controlModel else {
                 fatalError("whoops")
             }
             

@@ -154,7 +154,7 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if let messageModel = BooleanControlViewModel.chatMessageModel(withMessage: message) {
+        if let messageModel = ChatMessageModel.makeModel(withMessage: message) {
             addControlDataAndNotify(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
@@ -166,9 +166,8 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if let value = message.data.richControl?.uiMetadata?.label {
-            let textViewModel = TextControlViewModel(label: "", value: value)
-            addControlDataAndNotify(ChatMessageModel(model: textViewModel, location: .left))
+        if let textViewModel = ChatMessageModel.makeModel(withMessage: message) {
+            addControlDataAndNotify(textViewModel)
         }
     }
     
@@ -177,7 +176,7 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if let messageModel = SingleSelectControlViewModel.chatMessageModel(withMessage: message) {
+        if let messageModel = ChatMessageModel.makeModel(withMessage: message) {
             addControlDataAndNotify(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
