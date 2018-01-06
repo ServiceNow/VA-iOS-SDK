@@ -16,7 +16,10 @@ class ConversationViewCell: UITableViewCell {
         }
         
         didSet {
-            guard let messageView = messageView else { return }
+            guard let messageView = messageView else {
+                return
+            }
+
             messageView.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview(messageView)
             NSLayoutConstraint.activate([messageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -29,5 +32,6 @@ class ConversationViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         messageView?.removeFromSuperview()
+        messageView = nil
     }
 }

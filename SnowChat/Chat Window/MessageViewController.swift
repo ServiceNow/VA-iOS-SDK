@@ -10,7 +10,7 @@ import UIKit
 
 class MessageViewController: UIViewController {
     
-    let controlMaxWidth: CGFloat = 200
+    let controlMaxWidth: CGFloat = 250
     
     @IBOutlet weak var bubbleView: BubbleView!
     @IBOutlet weak var agentImageView: UIImageView!
@@ -25,9 +25,10 @@ class MessageViewController: UIViewController {
             guard let messageModel = model else {
                 return
             }
-            
+
             let control = ControlsUtil.controlForViewModel(messageModel.controlModel)
             addUIControl(control, at: messageModel.location)
+            self.view.layoutIfNeeded()
         }
     }
     
@@ -38,7 +39,7 @@ class MessageViewController: UIViewController {
     }
     
     func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
-        removeUIControl()
+        uiControl = control
         
         let controlViewController = control.viewController
         controlViewController.willMove(toParentViewController: self)
@@ -61,13 +62,17 @@ class MessageViewController: UIViewController {
         if control.model.type != .text {
             controlView.widthAnchor.constraint(lessThanOrEqualToConstant: controlMaxWidth).isActive = true
         }
-        
-        uiControl = control
     }
     
-    func removeUIControl() {
+    func prepareForReuse() {
+        removeUIControl()
+        model = nil
+    }
+    
+    private func removeUIControl() {
         uiControl?.viewController.removeFromParentViewController()
         uiControl?.viewController.view.removeFromSuperview()
+        uiControl = nil
     }
     
     // updates message view based on the direction of the message
@@ -96,7 +101,5 @@ class MessageViewController: UIViewController {
             bubbleTrailingConstraint.priority = .veryHigh
             agentImageView.isHidden = true
         }
-        
-        self.view.layoutIfNeeded()
     }
 }

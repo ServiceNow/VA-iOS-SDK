@@ -26,7 +26,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     // Each cell will have its own view controller to handle each message
     // It will need to be definitely improved. I just added simple solution. No caching of VC at this moment.
     // More on it: http://khanlou.com/2015/04/view-controllers-in-cells/
-    private var messageViewControllers = [MessageViewController]()
+    private var messageViewControllersByIndexPath = [IndexPath : MessageViewController]()
+    private var messageViewControllersToReuse = Set<MessageViewController>()
     
     override var tableView: UITableView {
         // swiftlint:disable:next force_unwrapping
@@ -142,15 +143,14 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     // FIXME: This will be improved!
     // Puts on caller resposibility to invoke didMove(toParentViewController) on returned VC object
-    func messageViewController(atIndex index: Int) -> MessageViewController {
+    func makeOrReuseMessageViewController() -> MessageViewController {
         let messageViewController: MessageViewController
-        if messageViewControllers.count > index {
-            messageViewController = messageViewControllers[index]
-            messageViewController.removeUIControl()
-            messageViewController.removeFromParentViewController()
+        if let firstUnusedController = messageViewControllersToReuse.first {
+            messageViewController = firstUnusedController
+            messageViewController.prepareForReuse()
+            messageViewControllersToReuse.remove(messageViewController)
         } else {
             messageViewController = MessageViewController(nibName: "MessageViewController", bundle: Bundle(for: type(of: self)))
-            messageViewControllers.append(messageViewController)
         }
         
         messageViewController.willMove(toParentViewController: self)
@@ -198,7 +198,6 @@ extension ConversationViewController {
         default:
             Logger.default.logDebug("Right button or enter pressed: state=\(inputState)")
         }
-        
     }
     
     func processUserInput(_ inputText: String) {
@@ -247,9 +246,20 @@ extension ConversationViewController {
     }
     
     override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let messageViewController = self.messageViewController(atIndex: indexPath.row)
-        messageViewController.removeUIControl()
+        if tableView == autoCompletionView {
+            return
+        }
+        
+        guard let messageViewController = messageViewControllersByIndexPath[indexPath] else {
+            return
+        }
+        
+        // prepareForReuse on UITableViewCell is called later than this method, so we need to make sure we will nil-out messageView (that is a view on MessageViewController)
+        // otherwise we will end up in a weird state where view is being added to a new cell and then old cell will call prepareForReuse..
+        (cell as? ConversationViewCell)?.messageView = nil
         messageViewController.removeFromParentViewController()
+        messageViewControllersByIndexPath.removeValue(forKey: indexPath)
+        messageViewControllersToReuse.insert(messageViewController)
     }
     
     private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
@@ -266,10 +276,9 @@ extension ConversationViewController {
         cell.selectionStyle = .none
         
         if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
-            let messageViewController = self.messageViewController(atIndex: indexPath.row)
-            let messageView: UIView = messageViewController.view
-            cell.messageView = messageView
-            
+            let messageViewController = makeOrReuseMessageViewController()
+            messageViewControllersByIndexPath[indexPath] = messageViewController
+            cell.messageView = messageViewController.view
             messageViewController.model = chatMessageModel
             messageViewController.uiControl?.delegate = self
             messageViewController.didMove(toParentViewController: self)
