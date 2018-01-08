@@ -70,7 +70,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             let multiselectModel = MultiSelectControlViewModel(id: "multi_1234", label: "What is your issue?", required: true, items: items)
             uiControl = MultiSelectControl(model: multiselectModel)
         case .text:
-            let textModel = TextControlViewModel(label: "Text View", value: "Some random text that is longer than one line........")
+            let textModel = TextControlViewModel(id: "Text View", value: "Some random text that is longer than one line........")
             uiControl = TextControl(model: textModel)
         case .typingIndicator:
             uiControl = TypingIndicatorControl()

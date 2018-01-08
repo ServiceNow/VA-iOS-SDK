@@ -150,7 +150,7 @@ class ChatDataController {
 
     func presentWelcomeMessage() {
         let message = chatterbox.session?.welcomeMessage ?? "Welcome! What can we help you with?"
-        let welcomeTextControl = TextControlViewModel(label: "", value: message)
+        let welcomeTextControl = TextControlViewModel(id: CBData.uuidString(), value: message)
         addControlDataAndNotify(ChatMessageModel(model: welcomeTextControl, location: .left))
     }
 }
@@ -199,7 +199,7 @@ extension ChatDataController: ChatDataListener {
         }
 
         if let value = message.data.richControl?.value {
-            let textViewModel = TextControlViewModel(label: "", value: value)
+            let textViewModel = TextControlViewModel(id: CBData.uuidString(), value: value)
             addControlDataAndNotify(ChatMessageModel(model: textViewModel, location: .left))
         }
     }
@@ -274,8 +274,8 @@ extension ChatDataController: ChatDataListener {
                 let selectedOption = response.data.richControl?.uiMetadata?.options.first(where: { option -> Bool in
                     option.value == value
                 })
-                let questionModel = TextControlViewModel(label: "", value: label)
-                let answerModel = TextControlViewModel(label: "", value: selectedOption?.label ?? value)
+                let questionModel = TextControlViewModel(id: CBData.uuidString(), value: label)
+                let answerModel = TextControlViewModel(id: CBData.uuidString(), value: selectedOption?.label ?? value)
             
                 replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
                 addControlDataAndNotify(ChatMessageModel(model: answerModel, location: .right))

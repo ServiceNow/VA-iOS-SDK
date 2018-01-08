@@ -23,10 +23,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     private let dataController: ChatDataController
     private let chatterbox: Chatterbox
 
-    // Each cell will have its own view controller to handle each message
-    // Caching of VC based on: http://khanlou.com/2015/04/view-controllers-in-cells/
-    private var messageViewControllersByIndexPath = [IndexPath : MessageViewController]()
-    private var messageViewControllersToReuse = Set<MessageViewController>()
+    private var messageViewControllerCache = ChatMessageViewControllerCache()
     
     override var tableView: UITableView {
         // swiftlint:disable:next force_unwrapping
@@ -136,23 +133,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             }
         }
     }
-    
-    // MARK: - MessageViwController reuse
-
-    func makeOrReuseMessageViewController() -> MessageViewController {
-        let messageViewController: MessageViewController
-        if let firstUnusedController = messageViewControllersToReuse.first {
-            messageViewController = firstUnusedController
-            messageViewController.prepareForReuse()
-            messageViewControllersToReuse.remove(messageViewController)
-        } else {
-            messageViewController = MessageViewController(nibName: "MessageViewController", bundle: Bundle(for: type(of: self)))
-        }
-        
-        messageViewController.willMove(toParentViewController: self)
-        addChildViewController(messageViewController)
-        return messageViewController
-    }
 }
 
 extension ConversationViewController {
@@ -198,7 +178,7 @@ extension ConversationViewController {
     
     func processUserInput(_ inputText: String) {
         // send the input as a control update
-        let model = TextControlViewModel(label: "", value: inputText)
+        let model = TextControlViewModel(id: CBData.uuidString(), value: inputText)
         dataController.updateControlData(model, isSkipped: false)
     }
     
@@ -246,16 +226,10 @@ extension ConversationViewController {
             return
         }
         
-        guard let messageViewController = messageViewControllersByIndexPath[indexPath] else {
-            return
-        }
-        
         // prepareForReuse on UITableViewCell is called later than this method, so we need to make sure we will nil-out messageView (that is a view on MessageViewController)
         // otherwise we will end up in a weird state where view is being added to a new cell and then old cell will call prepareForReuse..
         (cell as? ConversationViewCell)?.messageView = nil
-        messageViewController.removeFromParentViewController()
-        messageViewControllersByIndexPath.removeValue(forKey: indexPath)
-        messageViewControllersToReuse.insert(messageViewController)
+        messageViewControllerCache.removeViewController(at: indexPath)
     }
     
     private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
@@ -272,8 +246,7 @@ extension ConversationViewController {
         cell.selectionStyle = .none
         
         if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
-            let messageViewController = makeOrReuseMessageViewController()
-            messageViewControllersByIndexPath[indexPath] = messageViewController
+            let messageViewController = messageViewControllerCache.getViewController(for: indexPath, movedToParentViewController: self)
             cell.messageView = messageViewController.view
             messageViewController.didMove(toParentViewController: self)
             messageViewController.model = chatMessageModel
