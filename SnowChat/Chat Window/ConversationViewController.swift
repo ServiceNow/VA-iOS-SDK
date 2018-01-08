@@ -112,6 +112,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     // MARK: - ViewDataChangeListener
     
     func chatDataController(_ dataController: ChatDataController, didChangeModel model: ChatMessageModel, atIndex index: Int) {
+        manageInputControl()
         tableView.reloadData()
         
         // Due to silly self-sizing problems with UITableViewCell I am forcing table to redraw itself after data are reloaded
@@ -124,8 +125,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             tableView.beginUpdates()
             tableView.endUpdates()
         }
-        
-        manageInputControl()
     }
     
     func manageInputControl() {
@@ -140,9 +139,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     }
     
     // MARK: - MessageViwController creation
-    
-    // FIXME: This will be improved!
-    // Puts on caller resposibility to invoke didMove(toParentViewController) on returned VC object
+
     func makeOrReuseMessageViewController() -> MessageViewController {
         let messageViewController: MessageViewController
         if let firstUnusedController = messageViewControllersToReuse.first {
@@ -279,9 +276,9 @@ extension ConversationViewController {
             let messageViewController = makeOrReuseMessageViewController()
             messageViewControllersByIndexPath[indexPath] = messageViewController
             cell.messageView = messageViewController.view
+            messageViewController.didMove(toParentViewController: self)
             messageViewController.model = chatMessageModel
             messageViewController.uiControl?.delegate = self
-            messageViewController.didMove(toParentViewController: self)
             cell.transform = self.tableView.transform
         }
     }
