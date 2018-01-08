@@ -81,7 +81,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             }
             
             let url = URL(fileURLWithPath: filePath)
-            let imageModel = OutputImageViewModel(label: "Output Image", value: url)
+            let imageModel = OutputImageViewModel(id: "image_output_blah_blah_blah", value: url)
             let outputImageControl = OutputImageControl(model: imageModel)
             outputImageControl.imageDownloader = self
             uiControl = outputImageControl

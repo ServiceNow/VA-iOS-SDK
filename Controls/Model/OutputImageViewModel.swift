@@ -18,7 +18,7 @@ class OutputImageViewModel: ControlViewModel {
     
     let value: URL
     
-    init(id: String = "image_output", label: String? = nil, value: URL) {
+    init(id: String, label: String? = nil, value: URL) {
         self.label = label
         self.value = value
         self.id = id
