@@ -510,8 +510,7 @@
 			children = (
 				BE782DB41FEB203700F848F5 /* Result.swift */,
 			);
-			name = Foundation;
-			path = "New Group";
+			path = Foundation;
 			sourceTree = "<group>";
 		};
 		BE782DB61FEB204200F848F5 /* API Extensions */ = {
