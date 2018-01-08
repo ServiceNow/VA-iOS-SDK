@@ -55,6 +55,6 @@
         </view>
     </objects>
     <resources>
-        <image name="vagent-icon.png" width="156" height="145"/>
+        <image name="vagent-icon.png" width="156" height="142"/>
     </resources>
 </document>

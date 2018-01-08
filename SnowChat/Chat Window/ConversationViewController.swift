@@ -18,11 +18,11 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     }
     
     private var inputState = InputState.inTopicSelection
+    private var autocompleteHandler: AutoCompleteHandler?
+
     private let dataController: ChatDataController
     private let chatterbox: Chatterbox
-    
-    private var autocompleteHandler: AutoCompleteHandler?
-    
+
     // Each cell will have its own view controller to handle each message
     // Caching of VC based on: http://khanlou.com/2015/04/view-controllers-in-cells/
     private var messageViewControllersByIndexPath = [IndexPath : MessageViewController]()
@@ -41,9 +41,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
 
         // NOTE: this failable initializer cannot really fail, so keeping it clean and forcing
         // swiftlint:disable:next force_unwrapping
-        super.init(tableViewStyle: .plain)!
-        
-        self.dataController.changeListener = self
+        super.init(tableViewStyle: .plain)!        
+
+        self.dataController.setChangeListener(self)
     }
     
     required init?(coder decoder: NSCoder) {
