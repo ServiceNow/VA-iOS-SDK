@@ -10,7 +10,7 @@ class BooleanControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     let id: String
     
-    let label: String
+    let label: String?
     
     let isRequired: Bool
     
@@ -20,7 +20,7 @@ class BooleanControlViewModel: PickerControlViewModel, ValueRepresentable {
 
     let type: ControlType = .boolean
     
-    init(id: String, label: String, required: Bool, resultValue: Bool? = nil) {
+    init(id: String, label: String? = nil, required: Bool, resultValue: Bool? = nil) {
         let items = [PickerItem.yesItem(), PickerItem.noItem()]
         self.id = id
         self.label = label

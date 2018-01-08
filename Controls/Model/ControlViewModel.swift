@@ -19,7 +19,7 @@ protocol ValueRepresentable {
 // base model for all ui control models
 protocol ControlViewModel {
     
-    var label: String { get }
+    var label: String? { get }
     
     // indicates whether user input is required or not (i.e if isRequired = false, "Skip" button is presented)
     var isRequired: Bool { get }

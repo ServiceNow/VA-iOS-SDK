@@ -8,7 +8,7 @@
 
 class TextControlViewModel: ControlViewModel {
     
-    let label: String
+    let label: String?
     
     let isRequired: Bool = true
     
@@ -18,7 +18,7 @@ class TextControlViewModel: ControlViewModel {
     
     let value: String
     
-    init(id: String = "text_control", label: String, value: String) {
+    init(id: String, label: String? = nil, value: String) {
         self.label = label
         self.value = value
         self.id = id

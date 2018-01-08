@@ -10,10 +10,10 @@ import UIKit
 
 class MessageViewController: UIViewController {
     
+    let controlMaxWidth: CGFloat = 250
+    
     @IBOutlet weak var bubbleView: BubbleView!
-    
     @IBOutlet weak var agentImageView: UIImageView!
-    
     @IBOutlet weak var agentBubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var bubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var bubbleTrailingConstraint: NSLayoutConstraint!
@@ -25,9 +25,10 @@ class MessageViewController: UIViewController {
             guard let messageModel = model else {
                 return
             }
-            
+
             let control = ControlsUtil.controlForViewModel(messageModel.controlModel)
             addUIControl(control, at: messageModel.location)
+            self.view.layoutIfNeeded()
         }
     }
     
@@ -38,7 +39,6 @@ class MessageViewController: UIViewController {
     }
     
     func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
-        removeUIControl()
         uiControl = control
         
         let controlViewController = control.viewController
@@ -56,11 +56,23 @@ class MessageViewController: UIViewController {
                                      controlView.trailingAnchor.constraint(equalTo: bubbleView.contentView.trailingAnchor),
                                      controlView.topAnchor.constraint(equalTo: bubbleView.contentView.topAnchor),
                                      controlView.bottomAnchor.constraint(equalTo: bubbleView.contentView.bottomAnchor)])
+        
+        // all controls but text will be limited to 250 points of width.
+        // For now doing it across all class sizes. Might get adjusted when we get specs.
+        if control.model.type != .text {
+            controlView.widthAnchor.constraint(lessThanOrEqualToConstant: controlMaxWidth).isActive = true
+        }
     }
     
-    func removeUIControl() {
+    func prepareForReuse() {
+        removeUIControl()
+        model = nil
+    }
+    
+    private func removeUIControl() {
         uiControl?.viewController.removeFromParentViewController()
         uiControl?.viewController.view.removeFromSuperview()
+        uiControl = nil
     }
     
     // updates message view based on the direction of the message
@@ -89,7 +101,5 @@ class MessageViewController: UIViewController {
             bubbleTrailingConstraint.priority = .veryHigh
             agentImageView.isHidden = true
         }
-        
-        self.view.layoutIfNeeded()
     }
 }

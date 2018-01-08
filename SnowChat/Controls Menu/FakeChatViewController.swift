@@ -23,7 +23,7 @@ class FakeChatViewController: UIViewController, UITableViewDelegate, UITableView
             // It will need to be definitely improved. I just added simple solution
             // More on it: http://khanlou.com/2015/04/view-controllers-in-cells/
             messageViewControllers.forEach({
-                $0.removeUIControl()
+                $0.prepareForReuse()
                 $0.removeFromParentViewController()
             })
             messageViewControllers.removeAll()

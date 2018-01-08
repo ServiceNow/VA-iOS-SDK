@@ -22,6 +22,8 @@ class TextControl: ControlProtocol {
         override func viewDidLoad() {
             super.viewDidLoad()
             textView.setContentHuggingPriority(.required, for: .horizontal)
+            textView.setContentHuggingPriority(.required, for: .vertical)
+            textView.setContentCompressionResistancePriority(.required, for: .vertical)
             textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
             textView.isScrollEnabled = false // to turn on autoresizing
             textView.isEditable = false

@@ -10,7 +10,7 @@ class SingleSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     let id: String
     
-    let label: String
+    let label: String?
     
     let isRequired: Bool
     
@@ -20,7 +20,7 @@ class SingleSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     let type: ControlType = .multiSelect
     
-    init(id: String, label: String, required: Bool, items: [PickerItem], resultValue: String? = nil) {
+    init(id: String, label: String? = nil, required: Bool, items: [PickerItem], resultValue: String? = nil) {
         self.id = id
         self.label = label
         self.isRequired = required

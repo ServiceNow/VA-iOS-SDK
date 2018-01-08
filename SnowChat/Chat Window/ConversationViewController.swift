@@ -23,10 +23,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     private let dataController: ChatDataController
     private let chatterbox: Chatterbox
 
-    // Each cell will have its own view controller to handle each message
-    // It will need to be definitely improved. I just added simple solution. No caching of VC at this moment.
-    // More on it: http://khanlou.com/2015/04/view-controllers-in-cells/
-    private var messageViewControllers = [MessageViewController]()
+    private var messageViewControllerCache = ChatMessageViewControllerCache()
     
     override var tableView: UITableView {
         // swiftlint:disable:next force_unwrapping
@@ -111,6 +108,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     // MARK: - ViewDataChangeListener
     
     func chatDataController(_ dataController: ChatDataController, didChangeModel model: ChatMessageModel, atIndex index: Int) {
+        manageInputControl()
         tableView.reloadData()
         
         // Due to silly self-sizing problems with UITableViewCell I am forcing table to redraw itself after data are reloaded
@@ -123,8 +121,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             tableView.beginUpdates()
             tableView.endUpdates()
         }
-        
-        manageInputControl()
     }
     
     func manageInputControl() {
@@ -136,26 +132,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                 isTextInputbarHidden = lastControl.controlModel.type != .text
             }
         }
-    }
-    
-    // MARK: - MessageViwController creation
-    
-    // FIXME: This will be improved!
-    // Puts on caller resposibility to invoke didMove(toParentViewController) on returned VC object
-    func messageViewController(atIndex index: Int) -> MessageViewController {
-        let messageViewController: MessageViewController
-        if messageViewControllers.count > index {
-            messageViewController = messageViewControllers[index]
-            messageViewController.removeUIControl()
-            messageViewController.removeFromParentViewController()
-        } else {
-            messageViewController = MessageViewController(nibName: "MessageViewController", bundle: Bundle(for: type(of: self)))
-            messageViewControllers.append(messageViewController)
-        }
-        
-        messageViewController.willMove(toParentViewController: self)
-        addChildViewController(messageViewController)
-        return messageViewController
     }
 }
 
@@ -198,12 +174,11 @@ extension ConversationViewController {
         default:
             Logger.default.logDebug("Right button or enter pressed: state=\(inputState)")
         }
-        
     }
     
     func processUserInput(_ inputText: String) {
         // send the input as a control update
-        let model = TextControlViewModel(label: "", value: inputText)
+        let model = TextControlViewModel(id: CBData.uuidString(), value: inputText)
         dataController.updateControlData(model, isSkipped: false)
     }
     
@@ -247,11 +222,14 @@ extension ConversationViewController {
     }
     
     override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if tableView != autoCompletionView {
-            let messageViewController = self.messageViewController(atIndex: indexPath.row)
-            messageViewController.removeUIControl()
-            messageViewController.removeFromParentViewController()
+        if tableView == autoCompletionView {
+            return
         }
+        
+        // prepareForReuse on UITableViewCell is called later than this method, so we need to make sure we will nil-out messageView (that is a view on MessageViewController)
+        // otherwise we will end up in a weird state where view is being added to a new cell and then old cell will call prepareForReuse..
+        (cell as? ConversationViewCell)?.messageView = nil
+        messageViewControllerCache.removeViewController(at: indexPath)
     }
     
     private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
@@ -268,13 +246,11 @@ extension ConversationViewController {
         cell.selectionStyle = .none
         
         if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
-            let messageViewController = self.messageViewController(atIndex: indexPath.row)
-            let messageView: UIView = messageViewController.view
-            cell.messageView = messageView
-            
+            let messageViewController = messageViewControllerCache.getViewController(for: indexPath, movedToParentViewController: self)
+            cell.messageView = messageViewController.view
+            messageViewController.didMove(toParentViewController: self)
             messageViewController.model = chatMessageModel
             messageViewController.uiControl?.delegate = self
-            messageViewController.didMove(toParentViewController: self)
             cell.transform = self.tableView.transform
         }
     }

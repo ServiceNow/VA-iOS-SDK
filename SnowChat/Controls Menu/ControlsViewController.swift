@@ -70,7 +70,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             let multiselectModel = MultiSelectControlViewModel(id: "multi_1234", label: "What is your issue?", required: true, items: items)
             uiControl = MultiSelectControl(model: multiselectModel)
         case .text:
-            let textModel = TextControlViewModel(label: "Text View", value: "Some random text that is longer than one line........")
+            let textModel = TextControlViewModel(id: "Text View", value: "Some random text that is longer than one line........")
             uiControl = TextControl(model: textModel)
         case .typingIndicator:
             uiControl = TypingIndicatorControl()
@@ -81,7 +81,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             }
             
             let url = URL(fileURLWithPath: filePath)
-            let imageModel = OutputImageViewModel(label: "Output Image", value: url)
+            let imageModel = OutputImageViewModel(id: "image_output_blah_blah_blah", value: url)
             let outputImageControl = OutputImageControl(model: imageModel)
             outputImageControl.imageDownloader = self
             uiControl = outputImageControl
@@ -126,7 +126,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
                                               conversationId: nil,
                                               controlData: ControlWrapper(model: ControlModel(type: "Boolean", name: "Boolean"),
                                                                          uiType: "BooleanControl",
-                                                                         uiMetadata: UIMetadata(label:"Test",
+                                                                         uiMetadata: UIMetadata(label:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eleifend dapibus lacus, faucibus efficitur enim malesuada vel.",
                                                                                                required: false,
                                                                                                error: nil),
                                                                          value: nil))
