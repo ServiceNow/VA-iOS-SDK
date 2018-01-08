@@ -24,8 +24,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     private var autocompleteHandler: AutoCompleteHandler?
     
     // Each cell will have its own view controller to handle each message
-    // It will need to be definitely improved. I just added simple solution. No caching of VC at this moment.
-    // More on it: http://khanlou.com/2015/04/view-controllers-in-cells/
+    // Caching of VC based on: http://khanlou.com/2015/04/view-controllers-in-cells/
     private var messageViewControllersByIndexPath = [IndexPath : MessageViewController]()
     private var messageViewControllersToReuse = Set<MessageViewController>()
     
@@ -138,7 +137,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         }
     }
     
-    // MARK: - MessageViwController creation
+    // MARK: - MessageViwController reuse
 
     func makeOrReuseMessageViewController() -> MessageViewController {
         let messageViewController: MessageViewController
