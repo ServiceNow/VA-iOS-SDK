@@ -135,7 +135,7 @@ class Chatterbox {
             storeAndPublish(booleanControl, forConversation: conversationId)
             
             if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
-                chatDataListener?.chattebox(self, didCompleteBooleanExchange: lastExchange, forChat: conversationId)
+                chatDataListener?.chatterbox(self, didCompleteBooleanExchange: lastExchange, forChat: conversationId)
             }
         }
     }
@@ -146,7 +146,7 @@ class Chatterbox {
             storeAndPublish(inputControl, forConversation: conversationId)
             
             if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
-                chatDataListener?.chattebox(self, didCompleteInputExchange: lastExchange, forChat: conversationId)
+                chatDataListener?.chatterbox(self, didCompleteInputExchange: lastExchange, forChat: conversationId)
             }
         }
     }
@@ -157,7 +157,7 @@ class Chatterbox {
             storeAndPublish(pickerControl, forConversation: conversationId)
             
             if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
-                chatDataListener?.chattebox(self, didCompletePickerExchange: lastExchange, forChat: conversationId)
+                chatDataListener?.chatterbox(self, didCompletePickerExchange: lastExchange, forChat: conversationId)
             }
         }
     }

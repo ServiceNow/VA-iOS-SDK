@@ -18,16 +18,16 @@ func booleanControlFromBooleanViewModel(viewModel: BooleanControlViewModel) -> B
 }
 
 class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventListener, ControlDelegate {
-    func chattebox(_: Chatterbox, didCompleteBooleanExchange messageExchange: MessageExchange, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, didCompleteBooleanExchange messageExchange: MessageExchange, forChat chatId: String) {
         Logger.default.logDebug("Boolean Message Completed")
     }
     
-    func chattebox(_: Chatterbox, didCompleteInputExchange messageExchange: MessageExchange, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, didCompleteInputExchange messageExchange: MessageExchange, forChat chatId: String) {
         Logger.default.logDebug("Input Message Completed")
 
     }
     
-    func chattebox(_: Chatterbox, didCompletePickerExchange messageExchange: MessageExchange, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, didCompletePickerExchange messageExchange: MessageExchange, forChat chatId: String) {
         Logger.default.logDebug("Picker Message Completed")
     }
     
