@@ -10,6 +10,8 @@ import UIKit
 
 class MultiSelectControl: PickerControlProtocol {
     
+    var visibleItemCount: Int = PickerConstants.visibleItemCount
+    
     var model: ControlViewModel
     
     var style: PickerControlStyle

@@ -18,6 +18,10 @@ enum PickerControlStyle: Int {
 //    case actionSheet
 }
 
+struct PickerConstants {
+    static let visibleItemCount = 3
+}
+
 // MARK: - PickerViewControllerDelegate
 
 // Common interface for all picker view controller (either Table style or Carousel)
@@ -33,6 +37,8 @@ protocol PickerViewControllerDelegate: AnyObject {
 // MARK: - PickerControlProtocol
 
 protocol PickerControlProtocol: ControlProtocol, PickerViewControllerDelegate {
+    
+    var visibleItemCount: Int { get set }
     
     var style: PickerControlStyle { get set }
     

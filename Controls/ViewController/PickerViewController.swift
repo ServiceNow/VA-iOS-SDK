@@ -10,11 +10,15 @@ import UIKit
 
 class PickerViewController: UIViewController {
     
+    let headerFooterViewIdentifier = "HeaderFooterView"
+    
     weak var delegate: PickerViewControllerDelegate?
     
     let headerTextColor = UIColor.controlHeaderTextColor
     
     let fullSizeContainer = FullSizeScrollViewContainerView()
+    
+    var visibleItemCount: Int = 3
     
     let tableView = UITableView()
     
@@ -63,6 +67,8 @@ class PickerViewController: UIViewController {
             tableView.register(UINib(nibName: "PickerTableViewCell", bundle: bundle), forCellReuseIdentifier: PickerTableViewCell.cellIdentifier)
         }
         
+        tableView.register(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: headerFooterViewIdentifier)
+        
         // FIXME: upcoming lots of changes here
         tableView.delegate = self
         tableView.dataSource = self
@@ -72,6 +78,7 @@ class PickerViewController: UIViewController {
         // TODO: need to adjust based on the number of items, display style etc
         tableView.isScrollEnabled = false
         
+        fullSizeContainer.maxVisibleItemCount = visibleItemCount
         fullSizeContainer.scrollView = tableView
         tableView.translatesAutoresizingMaskIntoConstraints = false
         fullSizeContainer.addSubview(tableView)
@@ -121,29 +128,30 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView = UIView()
+        guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: headerFooterViewIdentifier) else { return nil }
+        headerView.contentView.backgroundColor = UIColor.controlHeaderBackgroundColor
         let titleLabel = UILabel()
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.numberOfLines = 0
         titleLabel.text = model.label
         titleLabel.textColor = headerTextColor
-        headerView.backgroundColor = UIColor.controlHeaderBackgroundColor
+        titleLabel.backgroundColor = UIColor.controlHeaderBackgroundColor
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(titleLabel)
+        headerView.contentView.addSubview(titleLabel)
         
-        NSLayoutConstraint.activate([titleLabel.leftAnchor.constraint(equalTo: headerView.leftAnchor, constant: 10),
-                                     titleLabel.rightAnchor.constraint(equalTo: headerView.rightAnchor, constant: -10),
-                                     titleLabel.heightAnchor.constraint(equalTo: headerView.heightAnchor, multiplier: 0.8),
-                                     titleLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 0)])
+        NSLayoutConstraint.activate([titleLabel.leftAnchor.constraint(equalTo: headerView.contentView.leftAnchor, constant: 10),
+                                     titleLabel.rightAnchor.constraint(equalTo: headerView.contentView.rightAnchor, constant: -10),
+                                     titleLabel.topAnchor.constraint(equalTo: headerView.contentView.topAnchor, constant: 10),
+                                     titleLabel.bottomAnchor.constraint(equalTo: headerView.contentView.bottomAnchor, constant: -10)])
         return headerView
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let footerView = UIView()
-        guard model.isMultiSelect else {
-            return footerView
-        }
         
+        guard model.isMultiSelect else { return nil }
+        
+        guard let footerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: headerFooterViewIdentifier) else { return nil }
+        footerView.contentView.backgroundColor = UIColor.controlHeaderBackgroundColor
         let doneButton = UIButton(type: .custom)
         doneButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
         doneButton.setTitle("Done", for: .normal)
@@ -151,11 +159,11 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         doneButton.titleLabel?.adjustsFontSizeToFitWidth = true
         doneButton.backgroundColor = UIColor.controlHeaderBackgroundColor
         doneButton.translatesAutoresizingMaskIntoConstraints = false
-        footerView.addSubview(doneButton)
-        NSLayoutConstraint.activate([doneButton.leftAnchor.constraint(equalTo: footerView.leftAnchor),
-                                     doneButton.rightAnchor.constraint(equalTo: footerView.rightAnchor),
-                                     doneButton.topAnchor.constraint(equalTo: footerView.topAnchor),
-                                     doneButton.bottomAnchor.constraint(equalTo: footerView.bottomAnchor)])
+        footerView.contentView.addSubview(doneButton)
+        NSLayoutConstraint.activate([doneButton.leftAnchor.constraint(equalTo: footerView.contentView.leftAnchor),
+                                     doneButton.rightAnchor.constraint(equalTo: footerView.contentView.rightAnchor),
+                                     doneButton.topAnchor.constraint(equalTo: footerView.contentView.topAnchor),
+                                     doneButton.bottomAnchor.constraint(equalTo: footerView.contentView.bottomAnchor)])
         return footerView
     }
     

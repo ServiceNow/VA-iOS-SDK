@@ -10,6 +10,8 @@ import UIKit
 
 class SingleSelectControl: PickerControlProtocol {
     
+    var visibleItemCount: Int = PickerConstants.visibleItemCount
+    
     public lazy var viewController: UIViewController = {
         let vc = self.viewController(forStyle: style, model: model)
         return vc
