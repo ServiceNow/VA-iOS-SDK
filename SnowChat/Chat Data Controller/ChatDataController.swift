@@ -173,6 +173,8 @@ class ChatDataController {
     
     func topicDidStart(_ topicMessage: StartedUserTopicMessage) {
         conversationId = topicMessage.data.actionMessage.vendorTopicId
+        
+        pushTypingIndicator()
     }
 
     func topicDidFinish(_ topicMessage: TopicFinishedMessage) {
