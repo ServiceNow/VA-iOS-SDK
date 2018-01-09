@@ -32,7 +32,8 @@ class ChatDataController {
     private let chatterbox: Chatterbox
     private var controlData: [ChatMessageModel] = []
     private var changeListener: ViewDataChangeListener?
-
+    private let typingIndicator = TypingIndicatorViewModel()
+    
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
         chatterbox.chatDataListener = self
@@ -85,8 +86,23 @@ class ChatDataController {
     }
     
     fileprivate func addControlDataAndNotify(_ data: ChatMessageModel) {
-        addControlData(data)
-        changeListener?.chatDataController(self, didChangeModel: data, atIndex: controlData.count - 1)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.popTypingIndicator()
+
+            self.addControlData(data)
+            self.changeListener?.chatDataController(self, didChangeModel: data, atIndex: self.controlData.count - 1)
+        }
+    }
+    
+    fileprivate func pushTypingIndicator() {
+        addControlData(ChatMessageModel(model: typingIndicator, location: BubbleLocation.left))
+        self.changeListener?.chatDataController(self, didChangeModel: typingIndicator, atIndex: self.controlData.count - 1)
+    }
+    
+    fileprivate func popTypingIndicator() {
+        if controlData.count > 0, controlData[0].controlModel as? TypingIndicatorViewModel != nil {
+            controlData.remove(at: 0)
+        }
     }
     
     fileprivate func updateChatterbox(_ data: ControlViewModel) {
@@ -94,6 +110,8 @@ class ChatDataController {
             Logger.default.logError("No ConversationID in updateChatterbox!")
             return
         }
+        
+        pushTypingIndicator()
         
         if let lastPendingMessage = chatterbox.lastPendingControlMessage(forConversation: conversationId) {
             switch lastPendingMessage.controlType {
