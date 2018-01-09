@@ -28,6 +28,8 @@ protocol ViewDataChangeListener {
 
 class ChatDataController {
     
+    private let chatbotDisplayThrottle = 1.25
+    
     private(set) var conversationId: String?
     private let chatterbox: Chatterbox
     private var controlData: [ChatMessageModel] = []
@@ -48,7 +50,6 @@ class ChatDataController {
     // MARK: - access to controls
     
     func controlCount() -> Int {
-        Logger.default.logDebug("DataController Count: \(controlData.count)")
         return controlData.count
     }
     
@@ -80,29 +81,38 @@ class ChatDataController {
         controlData[0] = model
     }
     
-    fileprivate func addControlData(_ data: ChatMessageModel) {
+    fileprivate func addControlToCollection(_ data: ChatMessageModel) {
         // add prepends to the front of the array, as our list is reversed
         controlData = [data] + controlData
     }
     
-    fileprivate func addControlDataAndNotify(_ data: ChatMessageModel) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.popTypingIndicator()
+    fileprivate func presentControlData(_ data: ChatMessageModel) {
+        var delay = 0.0
+        
+        // if we are showing the typing indicator, pop it off and set a delay in updating the UI (so the user sees the indicator)
+        if popTypingIndicator() {
+            delay = chatbotDisplayThrottle
+        }
 
-            self.addControlData(data)
+        self.addControlToCollection(data)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
             self.changeListener?.chatDataController(self, didChangeModel: data, atIndex: self.controlData.count - 1)
         }
     }
     
     fileprivate func pushTypingIndicator() {
-        addControlData(ChatMessageModel(model: typingIndicator, location: BubbleLocation.left))
-        self.changeListener?.chatDataController(self, didChangeModel: typingIndicator, atIndex: self.controlData.count - 1)
+        addControlToCollection(ChatMessageModel(model: typingIndicator, location: BubbleLocation.left))
+        self.changeListener?.chatDataController(self, didChangeModel: ChatMessageModel(model: typingIndicator, location: BubbleLocation.left), atIndex: self.controlData.count - 1)
     }
     
-    fileprivate func popTypingIndicator() {
-        if controlData.count > 0, controlData[0].controlModel as? TypingIndicatorViewModel != nil {
-            controlData.remove(at: 0)
+    fileprivate func popTypingIndicator() -> Bool {
+        guard controlData.count > 0, controlData[0].controlModel as? TypingIndicatorViewModel != nil else {
+            return false
+            
         }
+        controlData.remove(at: 0)
+        return true
     }
     
     fileprivate func updateChatterbox(_ data: ControlViewModel) {
@@ -110,8 +120,6 @@ class ChatDataController {
             Logger.default.logError("No ConversationID in updateChatterbox!")
             return
         }
-        
-        pushTypingIndicator()
         
         if let lastPendingMessage = chatterbox.lastPendingControlMessage(forConversation: conversationId) {
             switch lastPendingMessage.controlType {
@@ -123,8 +131,12 @@ class ChatDataController {
                 updatePickerData(data, lastPendingMessage)
             default:
                 Logger.default.logDebug("Unhandled control type: \(lastPendingMessage.controlType)")
+                return
             }
         }
+        
+        // AFTER updating the controls, push the typing indicator onto the display stack
+        pushTypingIndicator()
     }
     
     fileprivate func updateBooleanData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
@@ -172,7 +184,7 @@ class ChatDataController {
     func presentWelcomeMessage() {
         let message = chatterbox.session?.welcomeMessage ?? "Welcome! What can we help you with?"
         let welcomeTextControl = TextControlViewModel(id: CBData.uuidString(), value: message)
-        addControlDataAndNotify(ChatMessageModel(model: welcomeTextControl, location: .left))
+        presentControlData(ChatMessageModel(model: welcomeTextControl, location: .left))
     }
 }
 
@@ -188,7 +200,7 @@ extension ChatDataController: ChatDataListener {
         var messageClone = message
         messageClone.id = CBData.uuidString()
         if let messageModel = ChatMessageModel.makeModel(withMessage: messageClone) {
-            addControlDataAndNotify(messageModel)
+            presentControlData(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
         }
@@ -202,7 +214,7 @@ extension ChatDataController: ChatDataListener {
         var messageClone = message
         messageClone.id = CBData.uuidString()
         if let messageModel = ChatMessageModel.makeModel(withMessage: messageClone) {
-            addControlDataAndNotify(messageModel)
+            presentControlData(messageModel)
         }
     }
     
@@ -214,7 +226,7 @@ extension ChatDataController: ChatDataListener {
         var messageClone = message
         messageClone.id = CBData.uuidString()
         if let messageModel = ChatMessageModel.makeModel(withMessage: messageClone) {
-            addControlDataAndNotify(messageModel)
+            presentControlData(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
         }
@@ -227,7 +239,7 @@ extension ChatDataController: ChatDataListener {
 
         if let value = message.data.richControl?.value {
             let textViewModel = TextControlViewModel(id: CBData.uuidString(), value: value)
-            addControlDataAndNotify(ChatMessageModel(model: textViewModel, location: .left))
+            presentControlData(ChatMessageModel(model: textViewModel, location: .left))
         }
     }
     
@@ -260,7 +272,7 @@ extension ChatDataController: ChatDataListener {
             let answerViewModel = TextControlViewModel(id: message.id, label: "", value: valueString)
             
             replaceLastControl(with: ChatMessageModel(model: questionViewModel, location: .left))
-            addControlDataAndNotify(ChatMessageModel(model: answerViewModel, location: .right))
+            presentControlData(ChatMessageModel(model: answerViewModel, location: .right))
         }
    }
     
@@ -278,7 +290,7 @@ extension ChatDataController: ChatDataListener {
         if let response = messageExchange.response as? InputControlMessage,
             let value: String = response.data.richControl?.value ?? "" {
                 let responseViewModel = TextControlViewModel(id: response.id, label: "", value: value)
-                addControlDataAndNotify(ChatMessageModel(model: responseViewModel, location: .right))
+                presentControlData(ChatMessageModel(model: responseViewModel, location: .right))
         }
     }
     
@@ -305,7 +317,7 @@ extension ChatDataController: ChatDataListener {
                 let answerModel = TextControlViewModel(id: CBData.uuidString(), value: selectedOption?.label ?? value)
             
                 replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
-                addControlDataAndNotify(ChatMessageModel(model: answerModel, location: .right))
+                presentControlData(ChatMessageModel(model: answerModel, location: .right))
         }
     }
 }
