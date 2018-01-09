@@ -42,16 +42,16 @@ class FullSizeScrollViewContainerView: UIView {
     
     private func maxHeightForTableView(_ tableView: UITableView, visibleItemCount count: Int) -> CGFloat {
         var totalHeight: CGFloat = 0
+        
+        if let headerHeight = tableView.headerView(forSection: 0)?.bounds.height {
+            totalHeight += headerHeight
+        }
+        
+        if let footerHeight = tableView.footerView(forSection: 0)?.bounds.height {
+            totalHeight += footerHeight
+        }
+        
         for rowIndex in 0..<count {
-            
-            if let headerHeight = tableView.headerView(forSection: 0)?.bounds.height {
-                totalHeight += headerHeight
-            }
-            
-            if let footerHeight = tableView.footerView(forSection: 0)?.bounds.height {
-                totalHeight += footerHeight
-            }
-            
             if let rowHeight = tableView.cellForRow(at: IndexPath(row: rowIndex, section: 0))?.bounds.height {
                 totalHeight += rowHeight
             }

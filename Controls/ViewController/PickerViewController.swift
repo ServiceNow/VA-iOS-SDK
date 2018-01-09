@@ -18,7 +18,14 @@ class PickerViewController: UIViewController {
     
     let fullSizeContainer = FullSizeScrollViewContainerView()
     
-    var visibleItemCount: Int = 3
+    var visibleItemCount: Int = 3 {
+        didSet {
+            fullSizeContainer.maxVisibleItemCount = visibleItemCount
+
+            tableView.beginUpdates()
+            tableView.endUpdates()
+        }
+    }
     
     let tableView = UITableView()
     
@@ -74,6 +81,7 @@ class PickerViewController: UIViewController {
         tableView.dataSource = self
         tableView.showsVerticalScrollIndicator = false
         tableView.showsHorizontalScrollIndicator = false
+        tableView.bounces = false
         
         // TODO: need to adjust based on the number of items, display style etc
         tableView.isScrollEnabled = false
