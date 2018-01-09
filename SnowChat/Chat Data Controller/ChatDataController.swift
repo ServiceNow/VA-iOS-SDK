@@ -180,7 +180,16 @@ class ChatDataController {
     func topicDidFinish(_ topicMessage: TopicFinishedMessage) {
         conversationId = nil
         
+        // TEMPORARY: add a completion message. This will eventually come from the service but for now we synthesize it
+        presentCompletionMessage()
+        
         // TODO: how to treat old messages visually?
+    }
+
+    func presentCompletionMessage() {
+        let message = NSLocalizedString("Thanks for visiting. If you need anything else, just ask!", comment: "Default end of topic message to show to user")
+        let welcomeTextControl = TextControlViewModel(id: CBData.uuidString(), value: message)
+        presentControlData(ChatMessageModel(model: welcomeTextControl, location: .left))
     }
 
     func presentWelcomeMessage() {
