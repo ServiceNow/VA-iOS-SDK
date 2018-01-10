@@ -55,6 +55,7 @@ class PickerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupPickerView()
+        view.setContentHuggingPriority(.required, for: .vertical)
     }
     
     private func setupPickerView() {

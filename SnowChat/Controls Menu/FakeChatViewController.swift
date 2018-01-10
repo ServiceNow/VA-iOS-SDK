@@ -37,17 +37,6 @@ class FakeChatViewController: UIViewController, UITableViewDelegate, UITableView
             }
             
             tableView.reloadData()
-            
-            // Due to silly self-sizing problems with UITableViewCell I am forcing table to draw itself after data are reloaded
-            // This will trigger UIControl to be placed in the cell and update its height
-            // Then we need to call beginUpdates() endUpdates() on cell to refresh cell height
-            tableView.setNeedsLayout()
-            tableView.layoutIfNeeded()
-            
-            UIView.performWithoutAnimation {
-                tableView.beginUpdates()
-                tableView.endUpdates()
-            }
         }
     }
     
@@ -86,6 +75,10 @@ class FakeChatViewController: UIViewController, UITableViewDelegate, UITableView
         let messageView: UIView = messageViewController.view
         cell.messageView = messageView
         messageViewController.addUIControl(control, at: .left)
+        if let pickerVC = messageViewController.uiControl?.viewController as? PickerViewController {
+            pickerVC.tableView.setNeedsLayout()
+            pickerVC.tableView.layoutIfNeeded()
+        }
         
         return cell
     }

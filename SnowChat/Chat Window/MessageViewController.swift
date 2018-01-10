@@ -28,7 +28,7 @@ class MessageViewController: UIViewController {
 
             let control = ControlsUtil.controlForViewModel(messageModel.controlModel)
             addUIControl(control, at: messageModel.location)
-            self.view.layoutIfNeeded()
+            view.layoutIfNeeded()
         }
     }
     

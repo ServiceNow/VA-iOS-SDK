@@ -24,7 +24,6 @@ class FullSizeScrollViewContainerView: UIView {
     var scrollView: UIScrollView? {
         didSet {
             observer = scrollView?.observe(\UIScrollView.bounds) { [weak self] (scrollView, change) in
-                self?.updateMaxHeightForScrollViewIfNeeded(scrollView)
                 self?.invalidateIntrinsicContentSize()
             }
         }
@@ -34,7 +33,8 @@ class FullSizeScrollViewContainerView: UIView {
         // set maxHeight based on the height of visible cell items
         if let tableView = scrollView as? UITableView,
             let visibleItemCount = maxVisibleItemCount,
-            tableView.visibleCells.count > visibleItemCount {
+            tableView.visibleCells.count > visibleItemCount,
+            tableView.contentOffset.y < 0.01 {
             maxHeight = maxHeightForTableView(tableView, visibleItemCount: visibleItemCount)
             scrollView.isScrollEnabled = true
         }
@@ -67,9 +67,11 @@ class FullSizeScrollViewContainerView: UIView {
     }
     
     override var intrinsicContentSize: CGSize {
-        guard let scrollView = scrollView,
-            let height = [scrollView.contentSize.height, maxHeight].min() else {
-                return super.intrinsicContentSize
+        guard let scrollView = scrollView else { return super.intrinsicContentSize }
+        
+        updateMaxHeightForScrollViewIfNeeded(scrollView)
+        guard let height = [scrollView.contentSize.height, maxHeight].min() else {
+            return super.intrinsicContentSize
         }
         
         let width = scrollView.contentSize.width

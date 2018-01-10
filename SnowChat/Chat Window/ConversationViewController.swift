@@ -110,17 +110,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     func chatDataController(_ dataController: ChatDataController, didChangeModel model: ChatMessageModel, atIndex index: Int) {
         manageInputControl()
         tableView.reloadData()
-        
-        // Due to silly self-sizing problems with UITableViewCell I am forcing table to redraw itself after data are reloaded
-        // This will trigger UIControl to be placed in the cell and update its height
-        // Then we need to call beginUpdates() endUpdates() on cell to refresh cell height
-        tableView.setNeedsLayout()
-        tableView.layoutIfNeeded()
-        
-        UIView.performWithoutAnimation {
-            tableView.beginUpdates()
-            tableView.endUpdates()
-        }
     }
     
     func manageInputControl() {
@@ -244,6 +233,7 @@ extension ConversationViewController {
     
     private func configureConversationCell(_ cell: ConversationViewCell, at indexPath:IndexPath) {
         cell.selectionStyle = .none
+        cell.transform = self.tableView.transform
         
         if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
             let messageViewController = messageViewControllerCache.getViewController(for: indexPath, movedToParentViewController: self)
@@ -251,7 +241,10 @@ extension ConversationViewController {
             messageViewController.didMove(toParentViewController: self)
             messageViewController.model = chatMessageModel
             messageViewController.uiControl?.delegate = self
-            cell.transform = self.tableView.transform
+            if let pickerVC = messageViewController.uiControl?.viewController as? PickerViewController {
+                pickerVC.tableView.setNeedsLayout()
+                pickerVC.tableView.layoutIfNeeded()
+            }
         }
     }
 
