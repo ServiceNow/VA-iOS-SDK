@@ -63,7 +63,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         // NOTE: making section header height very tiny as 0 make it default size in iOS11
         //  see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
         tableView.sectionHeaderHeight = CGFloat(0.01)
-        tableView.estimatedRowHeight = 50
+        tableView.estimatedRowHeight = 200
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
         
@@ -233,18 +233,19 @@ extension ConversationViewController {
     
     private func configureConversationCell(_ cell: ConversationViewCell, at indexPath:IndexPath) {
         cell.selectionStyle = .none
-        cell.transform = self.tableView.transform
+        cell.transform = tableView.transform
         
         if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
             let messageViewController = messageViewControllerCache.getViewController(for: indexPath, movedToParentViewController: self)
             cell.messageView = messageViewController.view
             messageViewController.didMove(toParentViewController: self)
             messageViewController.model = chatMessageModel
-            messageViewController.uiControl?.delegate = self
             if let pickerVC = messageViewController.uiControl?.viewController as? PickerViewController {
                 pickerVC.tableView.setNeedsLayout()
                 pickerVC.tableView.layoutIfNeeded()
             }
+            
+            messageViewController.uiControl?.delegate = self
         }
     }
 

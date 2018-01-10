@@ -10,7 +10,8 @@ import UIKit
 
 class PickerViewController: UIViewController {
     
-    let headerFooterViewIdentifier = "HeaderFooterView"
+    let headerViewIdentifier = "HeaderView"
+    let footerViewIdentifier = "FooterView"
     
     weak var delegate: PickerViewControllerDelegate?
     
@@ -75,7 +76,8 @@ class PickerViewController: UIViewController {
             tableView.register(UINib(nibName: "PickerTableViewCell", bundle: bundle), forCellReuseIdentifier: PickerTableViewCell.cellIdentifier)
         }
         
-        tableView.register(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: headerFooterViewIdentifier)
+        tableView.register(PickerHeaderView.self, forHeaderFooterViewReuseIdentifier: headerViewIdentifier)
+        tableView.register(PickerFooterView.self, forHeaderFooterViewReuseIdentifier: footerViewIdentifier)
         
         // FIXME: upcoming lots of changes here
         tableView.delegate = self
@@ -137,7 +139,7 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: headerFooterViewIdentifier) else { return nil }
+        let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: headerViewIdentifier) as! PickerHeaderView
         headerView.contentView.backgroundColor = UIColor.controlHeaderBackgroundColor
         let titleLabel = UILabel()
         titleLabel.adjustsFontSizeToFitWidth = true
@@ -147,11 +149,11 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         titleLabel.backgroundColor = UIColor.controlHeaderBackgroundColor
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         headerView.contentView.addSubview(titleLabel)
-        
-        NSLayoutConstraint.activate([titleLabel.leftAnchor.constraint(equalTo: headerView.contentView.leftAnchor, constant: 10),
-                                     titleLabel.rightAnchor.constraint(equalTo: headerView.contentView.rightAnchor, constant: -10),
+        NSLayoutConstraint.activate([titleLabel.leadingAnchor.constraint(equalTo: headerView.contentView.leadingAnchor, constant: 10),
+                                     titleLabel.trailingAnchor.constraint(equalTo: headerView.contentView.trailingAnchor, constant: -10),
                                      titleLabel.topAnchor.constraint(equalTo: headerView.contentView.topAnchor, constant: 10),
                                      titleLabel.bottomAnchor.constraint(equalTo: headerView.contentView.bottomAnchor, constant: -10)])
+        headerView.titleLabel = titleLabel
         return headerView
     }
     
@@ -159,7 +161,7 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         
         guard model.isMultiSelect else { return nil }
         
-        guard let footerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: headerFooterViewIdentifier) else { return nil }
+        let footerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: footerViewIdentifier) as! PickerFooterView
         footerView.contentView.backgroundColor = UIColor.controlHeaderBackgroundColor
         let doneButton = UIButton(type: .custom)
         doneButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
@@ -169,10 +171,11 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         doneButton.backgroundColor = UIColor.controlHeaderBackgroundColor
         doneButton.translatesAutoresizingMaskIntoConstraints = false
         footerView.contentView.addSubview(doneButton)
-        NSLayoutConstraint.activate([doneButton.leftAnchor.constraint(equalTo: footerView.contentView.leftAnchor),
-                                     doneButton.rightAnchor.constraint(equalTo: footerView.contentView.rightAnchor),
+        NSLayoutConstraint.activate([doneButton.leadingAnchor.constraint(equalTo: footerView.contentView.leadingAnchor),
+                                     doneButton.trailingAnchor.constraint(equalTo: footerView.contentView.trailingAnchor),
                                      doneButton.topAnchor.constraint(equalTo: footerView.contentView.topAnchor),
                                      doneButton.bottomAnchor.constraint(equalTo: footerView.contentView.bottomAnchor)])
+        footerView.doneButton = doneButton
         return footerView
     }
     
@@ -183,5 +186,29 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         delegate?.pickerViewController(self, didFinishWithModel: model)
+    }
+}
+
+// MARK: - Picker header view
+
+class PickerHeaderView: UITableViewHeaderFooterView {
+    var titleLabel: UILabel?
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        titleLabel?.removeFromSuperview()
+        titleLabel = nil
+    }
+}
+
+// MARK: - Picker footer view
+
+class PickerFooterView: UITableViewHeaderFooterView {
+    var doneButton: UIButton?
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        doneButton?.removeFromSuperview()
+        doneButton = nil
     }
 }

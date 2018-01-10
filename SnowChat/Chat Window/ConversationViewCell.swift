@@ -26,6 +26,7 @@ class ConversationViewCell: UITableViewCell {
                                          messageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
                                          messageView.topAnchor.constraint(equalTo: contentView.topAnchor),
                                          messageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)])
+            layoutIfNeeded()
         }
     }
     

@@ -23,7 +23,8 @@ class FullSizeScrollViewContainerView: UIView {
     
     var scrollView: UIScrollView? {
         didSet {
-            observer = scrollView?.observe(\UIScrollView.bounds) { [weak self] (scrollView, change) in
+            observer = scrollView?.observe(\UIScrollView.contentSize) { [weak self] (scrollView, change) in
+                self?.updateMaxHeightForScrollViewIfNeeded(scrollView)
                 self?.invalidateIntrinsicContentSize()
             }
         }
@@ -32,9 +33,7 @@ class FullSizeScrollViewContainerView: UIView {
     private func updateMaxHeightForScrollViewIfNeeded(_ scrollView: UIScrollView) {
         // set maxHeight based on the height of visible cell items
         if let tableView = scrollView as? UITableView,
-            let visibleItemCount = maxVisibleItemCount,
-            tableView.visibleCells.count > visibleItemCount,
-            tableView.contentOffset.y < 0.01 {
+            let visibleItemCount = maxVisibleItemCount {
             maxHeight = maxHeightForTableView(tableView, visibleItemCount: visibleItemCount)
             scrollView.isScrollEnabled = true
         }
@@ -43,18 +42,11 @@ class FullSizeScrollViewContainerView: UIView {
     private func maxHeightForTableView(_ tableView: UITableView, visibleItemCount count: Int) -> CGFloat {
         var totalHeight: CGFloat = 0
         
-        if let headerHeight = tableView.headerView(forSection: 0)?.bounds.height {
-            totalHeight += headerHeight
-        }
-        
-        if let footerHeight = tableView.footerView(forSection: 0)?.bounds.height {
-            totalHeight += footerHeight
-        }
+        totalHeight += tableView.rectForHeader(inSection: 0).height
+        totalHeight += tableView.rectForFooter(inSection: 0).height
         
         for rowIndex in 0..<count {
-            if let rowHeight = tableView.cellForRow(at: IndexPath(row: rowIndex, section: 0))?.bounds.height {
-                totalHeight += rowHeight
-            }
+            totalHeight += tableView.rectForRow(at: IndexPath(row: rowIndex, section: 0)).height
         }
         
         return totalHeight
@@ -68,8 +60,7 @@ class FullSizeScrollViewContainerView: UIView {
     
     override var intrinsicContentSize: CGSize {
         guard let scrollView = scrollView else { return super.intrinsicContentSize }
-        
-        updateMaxHeightForScrollViewIfNeeded(scrollView)
+
         guard let height = [scrollView.contentSize.height, maxHeight].min() else {
             return super.intrinsicContentSize
         }
