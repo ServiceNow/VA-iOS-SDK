@@ -33,7 +33,8 @@ class FullSizeScrollViewContainerView: UIView {
     private func updateMaxHeightForScrollViewIfNeeded(_ scrollView: UIScrollView) {
         // set maxHeight based on the height of visible cell items
         if let tableView = scrollView as? UITableView,
-            let visibleItemCount = maxVisibleItemCount {
+            let visibleItemCount = maxVisibleItemCount,
+            !scrollView.bounds.isEmpty {
             maxHeight = maxHeightForTableView(tableView, visibleItemCount: visibleItemCount)
             scrollView.isScrollEnabled = true
         }
