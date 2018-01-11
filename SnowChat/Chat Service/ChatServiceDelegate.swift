@@ -13,8 +13,6 @@ struct ChatUserCredentials {
     var password: String
     
     var vendorId: String
-    var consumerId: String
-    var consumerAccountId: String
 }
 
 protocol ChatServiceDelegate: AnyObject {

@@ -156,7 +156,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         me.response = mockChatterbox?.updatedControl
         me.isComplete = true
         
-        controller?.chatterbox(_ chatterbox: mockChatterbox!, didCompleteBooleanExchange: me, forChat: "ChatID")
+        controller?.chatterbox(mockChatterbox!, didCompleteBooleanExchange: me, forChat: "ChatID")
         
         // make sure there are 2 controls, both of type text
         XCTAssertEqual(2, controller?.controlCount())

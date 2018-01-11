@@ -57,9 +57,7 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
     func userCredentials() -> ChatUserCredentials {
         return ChatUserCredentials(username: DebugSettings.shared.username,
                                    password: DebugSettings.shared.password,
-                                   vendorId: "c2f0b8f187033200246ddd4c97cb0bb9",
-                                   consumerId: CBData.uuidString(),
-                                   consumerAccountId: CBData.uuidString())
+                                   vendorId: "c2f0b8f187033200246ddd4c97cb0bb9")
     }
     
     // MARK: - Navigation

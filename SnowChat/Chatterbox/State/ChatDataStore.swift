@@ -5,10 +5,16 @@
 //  Created by Marc Attinasi on 11/16/17.
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
+// Stores all of the data needed to rehydrate a consumer's conversations.
+//  - includes the consumerAccountID, used to fetch the consumer's messages from the server
+//  - local copy of each message, grouped by conversation, for eventual local persistence
 
 import Foundation
 
 class ChatDataStore {
+    private let id: String
+    private var conversations = [Conversation]()
+    var consumerAccountId: String?
     
     init(storeId: String) {
         id = storeId
@@ -53,9 +59,6 @@ class ChatDataStore {
     func conversation(forId id: String) -> Conversation? {
         return conversations.first(where: { $0.uniqueId() == id })
     }
-    
-    private let id: String
-    private var conversations = [Conversation]()
 }
 
 struct Conversation: CBStorable {

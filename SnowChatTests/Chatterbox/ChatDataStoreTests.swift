@@ -110,4 +110,26 @@ class DataStoreTests: XCTestCase {
         XCTAssertNil(store.lastPendingMessage(forConversation: "testConversationID"))
         XCTAssertNotNil(store.lastPendingMessage(forConversation: "testConversationID2")?.uniqueId())
     }
+    
+    func testPersistence() {
+        let store = ChatDataStore(storeId: "test-store")
+        store.consumerAccountId = "ConsumerAccountId-TEST1"
+
+        let control = CBDataFactory.controlFromJSON(jsonBoolean)
+        store.storeControlData(control, expectResponse: true, forConversation: "testConversationID", fromChat: chatterbox!)
+
+        do {
+            try store.store()
+            
+            store.consumerAccountId = "NA"
+            
+            let ids = try store.load()
+            
+            XCTAssertEqual("ConsumerAccountId-TEST1", store.consumerAccountId)
+            XCTAssertEqual(1, ids?.count)
+            XCTAssertEqual("testConversationID", ids?[0])
+        } catch _ {
+            XCTAssert(false)
+        }
+    }
 }

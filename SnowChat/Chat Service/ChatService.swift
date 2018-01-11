@@ -39,8 +39,8 @@ public class ChatService {
             return
         }
  
-        let user = CBUser(id: CBData.uuidString(), token: "123abd", username: userCredentials.username, consumerId: userCredentials.consumerId, consumerAccountId: userCredentials.consumerAccountId, password: userCredentials.password)
-        let vendor = CBVendor(name: "acme", vendorId: userCredentials.vendorId, consumerId: userCredentials.consumerId, consumerAccountId: userCredentials.consumerAccountId)
+        let user = CBUser(id: CBData.uuidString(), token: "123abd", username: userCredentials.username, consumerId: "CONSUMER_ID_IOS", consumerAccountId: "CONSUMER_ACCOUNT_ID_IOS", password: userCredentials.password)
+        let vendor = CBVendor(name: "acme", vendorId: userCredentials.vendorId, consumerId: user.consumerId, consumerAccountId: user.consumerAccountId)
         
         chatterbox.initializeSession(forUser: user, vendor: vendor, success: { message in
             Logger.default.logDebug("Session Initialized")
