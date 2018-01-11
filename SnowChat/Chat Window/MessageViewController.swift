@@ -28,7 +28,6 @@ class MessageViewController: UIViewController {
 
             let control = ControlsUtil.controlForViewModel(messageModel.controlModel)
             addUIControl(control, at: messageModel.location)
-            view.layoutIfNeeded()
         }
     }
     
@@ -50,7 +49,6 @@ class MessageViewController: UIViewController {
         
         controlView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(controlView)
-        controlViewController.didMove(toParentViewController: self)
         
         NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: bubbleView.contentView.leadingAnchor),
                                      controlView.trailingAnchor.constraint(equalTo: bubbleView.contentView.trailingAnchor),
@@ -62,6 +60,8 @@ class MessageViewController: UIViewController {
         if control.model.type != .text {
             controlView.widthAnchor.constraint(lessThanOrEqualToConstant: controlMaxWidth).isActive = true
         }
+        
+        controlViewController.didMove(toParentViewController: self)
     }
     
     func prepareForReuse() {

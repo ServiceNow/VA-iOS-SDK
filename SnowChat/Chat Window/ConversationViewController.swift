@@ -232,14 +232,11 @@ extension ConversationViewController {
     }
     
     private func configureConversationCell(_ cell: ConversationViewCell, at indexPath:IndexPath) {
-        cell.selectionStyle = .none
-        cell.transform = tableView.transform
-        
         if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
             let messageViewController = messageViewControllerCache.getViewController(for: indexPath, movedToParentViewController: self)
             cell.messageView = messageViewController.view
-            messageViewController.didMove(toParentViewController: self)
             messageViewController.model = chatMessageModel
+            messageViewController.didMove(toParentViewController: self)
             if let pickerVC = messageViewController.uiControl?.viewController as? PickerViewController {
                 pickerVC.tableView.setNeedsLayout()
                 pickerVC.tableView.layoutIfNeeded()
@@ -247,6 +244,9 @@ extension ConversationViewController {
             
             messageViewController.uiControl?.delegate = self
         }
+        
+        cell.selectionStyle = .none
+        cell.transform = tableView.transform
     }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {

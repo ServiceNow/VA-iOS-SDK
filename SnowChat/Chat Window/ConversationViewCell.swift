@@ -11,11 +11,8 @@ class ConversationViewCell: UITableViewCell {
     static let cellIdentifier = "ConversationViewCell"
     
     var messageView: UIView? {
-        willSet {
-            messageView?.removeFromSuperview()
-        }
-        
         didSet {
+            oldValue?.removeFromSuperview()
             guard let messageView = messageView else {
                 return
             }
