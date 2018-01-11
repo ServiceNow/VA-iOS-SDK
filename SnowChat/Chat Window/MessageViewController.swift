@@ -62,6 +62,7 @@ class MessageViewController: UIViewController {
         }
         
         controlViewController.didMove(toParentViewController: self)
+        controlView.layoutIfNeeded()
     }
     
     func prepareForReuse() {

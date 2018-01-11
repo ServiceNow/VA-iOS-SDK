@@ -237,11 +237,6 @@ extension ConversationViewController {
             cell.messageView = messageViewController.view
             messageViewController.model = chatMessageModel
             messageViewController.didMove(toParentViewController: self)
-            if let pickerVC = messageViewController.uiControl?.viewController as? PickerViewController {
-                pickerVC.tableView.setNeedsLayout()
-                pickerVC.tableView.layoutIfNeeded()
-            }
-            
             messageViewController.uiControl?.delegate = self
         }
         
