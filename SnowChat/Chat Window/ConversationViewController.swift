@@ -241,7 +241,10 @@ extension ConversationViewController {
         }
         
         cell.selectionStyle = .none
-        cell.transform = tableView.transform
+        
+        UIView.performWithoutAnimation {
+            cell.transform = tableView.transform
+        }
     }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
