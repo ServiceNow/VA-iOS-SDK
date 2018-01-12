@@ -204,11 +204,15 @@ class ChatDataController {
     }
     
     fileprivate func enableBufferControlProcessing(_ enabled: Bool = true) {
-        if enabled && bufferProcessingTimer == nil {
+        if enabled {
+            // only create a new timer if there is not one already running
+            guard bufferProcessingTimer == nil else { return }
+            
             bufferProcessingTimer = Timer.scheduledTimer(withTimeInterval: chatbotDisplayThrottle, repeats: true, block: { [weak self] timer in
                 self?.processControlBuffer()
             })
         } else {
+            bufferProcessingTimer?.invalidate()
             bufferProcessingTimer = nil
         }
     }
