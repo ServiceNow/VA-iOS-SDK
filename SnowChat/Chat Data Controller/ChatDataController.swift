@@ -36,19 +36,17 @@ class ChatDataController {
     
     private(set) var conversationId: String?
     private let chatterbox: Chatterbox
-    private var controlData: [ChatMessageModel] = []
+    private var controlData = [ChatMessageModel]()
     private var changeListener: ViewDataChangeListener?
     private let typingIndicator = TypingIndicatorViewModel()
     
-    private var controlMessageBuffer: [ChatMessageModel] = []
+    private var controlMessageBuffer = [ChatMessageModel]()
     private var bufferProcessingTimer: Timer?
     
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
-        chatterbox.chatDataListener = self
+        self.chatterbox.chatDataListener = self
         self.changeListener = changeListener
-        
-        initializeControlBuffer()
     }
     
     func setChangeListener(_ listener: ViewDataChangeListener) {
@@ -95,20 +93,18 @@ class ChatDataController {
     }
     
     fileprivate func presentControlData(_ data: ChatMessageModel) {
-        // if we are showing the typing indicator, pop it off and set a delay in updating the UI (so the user sees the indicator)
-        popTypingIndicator()
+        popTypingIndicatorIfShown()
 
-        self.addControlToCollection(data)
-
-        self.changeListener?.chatDataController(self, didChangeModel: data, atIndex: self.controlData.count - 1)
+        addControlToCollection(data)
+        changeListener?.chatDataController(self, didChangeModel: data, atIndex: self.controlData.count - 1)
     }
     
     fileprivate func pushTypingIndicator() {
         addControlToCollection(ChatMessageModel(model: typingIndicator, location: BubbleLocation.left))
-        self.changeListener?.chatDataController(self, didChangeModel: ChatMessageModel(model: typingIndicator, location: BubbleLocation.left), atIndex: self.controlData.count - 1)
+        changeListener?.chatDataController(self, didChangeModel: ChatMessageModel(model: typingIndicator, location: BubbleLocation.left), atIndex: self.controlData.count - 1)
     }
     
-    fileprivate func popTypingIndicator() {
+    fileprivate func popTypingIndicatorIfShown() {
         guard controlData.count > 0, controlData[0].controlModel as? TypingIndicatorViewModel != nil else {
             return
         }
@@ -188,13 +184,14 @@ class ChatDataController {
 
     func presentCompletionMessage() {
         let message = NSLocalizedString("Thanks for visiting. If you need anything else, just ask!", comment: "Default end of topic message to show to user")
-        let welcomeTextControl = TextControlViewModel(id: CBData.uuidString(), value: message)
-        presentControlData(ChatMessageModel(model: welcomeTextControl, location: .left))
+        let completionTextControl = TextControlViewModel(id: CBData.uuidString(), value: message)
+        bufferControlMessage(ChatMessageModel(model: completionTextControl, location: .left))
     }
 
     func presentWelcomeMessage() {
         let message = chatterbox.session?.welcomeMessage ?? "Welcome! What can we help you with?"
         let welcomeTextControl = TextControlViewModel(id: CBData.uuidString(), value: message)
+        // NOTE: we do not buffer the welcome message currently - this is intentional
         presentControlData(ChatMessageModel(model: welcomeTextControl, location: .left))
     }
     
@@ -202,16 +199,26 @@ class ChatDataController {
     
     fileprivate func bufferControlMessage(_ control: ChatMessageModel) {
         controlMessageBuffer.append(control)
+        
+        enableBufferControlProcessing()
     }
     
-    fileprivate func initializeControlBuffer() {
-        bufferProcessingTimer = Timer.scheduledTimer(withTimeInterval: chatbotDisplayThrottle, repeats: true, block: { [weak self] timer in
-            self?.processControlBuffer()
-        })
+    fileprivate func enableBufferControlProcessing(_ enabled: Bool = true) {
+        if enabled && bufferProcessingTimer == nil {
+            bufferProcessingTimer = Timer.scheduledTimer(withTimeInterval: chatbotDisplayThrottle, repeats: true, block: { [weak self] timer in
+                self?.processControlBuffer()
+            })
+        } else {
+            bufferProcessingTimer = nil
+        }
     }
 
     fileprivate func processControlBuffer() {
-        guard controlMessageBuffer.count > 0 else { return }
+        guard controlMessageBuffer.count > 0 else {
+            // disable processing the buffer when it is empty - is re-enabled when something is added to buffer (bufferControlMessage)
+            enableBufferControlProcessing(false)
+            return
+        }
         
         let control = controlMessageBuffer.remove(at: 0)
         presentControlData(control)
@@ -306,7 +313,7 @@ extension ChatDataController: ChatDataListener {
             let questionViewModel = TextControlViewModel(id: message.id, label: "", value: label)
             let answerViewModel = TextControlViewModel(id: message.id, label: "", value: valueString)
             
-            popTypingIndicator()
+            popTypingIndicatorIfShown()
             replaceLastControl(with: ChatMessageModel(model: questionViewModel, location: .left))
             presentControlData(ChatMessageModel(model: answerViewModel, location: .right))
         }
@@ -328,7 +335,7 @@ extension ChatDataController: ChatDataListener {
             
             let responseViewModel = TextControlViewModel(id: response.id, label: "", value: value)
             
-            popTypingIndicator()
+            popTypingIndicatorIfShown()
             presentControlData(ChatMessageModel(model: responseViewModel, location: .right))
         }
     }
@@ -355,7 +362,7 @@ extension ChatDataController: ChatDataListener {
                 let questionModel = TextControlViewModel(id: CBData.uuidString(), value: label)
                 let answerModel = TextControlViewModel(id: CBData.uuidString(), value: selectedOption?.label ?? value)
             
-                popTypingIndicator()
+                popTypingIndicatorIfShown()
                 replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
                 presentControlData(ChatMessageModel(model: answerModel, location: .right))
         }
