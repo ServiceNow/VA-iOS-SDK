@@ -54,36 +54,91 @@ extension APIManager {
         }
     }
     
-    func retrieve(conversation conversationId: String, completionHandler: @escaping ([CBControlData]) -> Void) {
+    func conversation(_ conversationId: String, completionHandler: @escaping ([CBControlData]) -> Void) {
         sessionManager.request(apiURLWithPath("cs/conversation/\(conversationId)/message"),
             method: .get,
             encoding: JSONEncoding.default).validate().responseJSON { response in
                 var messages = [CBControlData]()
                 if response.error == nil {
-                    if let result = response.result.value {
-                        messages = APIManager.messagesFromResult(result)
+                    if let result = response.result.value as? NSDictionary,
+                        let conversations = result["conversations"] {
+                        messages = APIManager.messagesFromResult(conversations)
                     }
                 }
                 completionHandler(messages)
         }
     }
     
+    func conversations(forConsumer consumerId: String, completionHandler: @escaping ([Conversation]) -> Void) {
+        sessionManager.request(apiURLWithPath("cs/consumerAccount/\(consumerId)/message"),
+                               method: .get,
+                               encoding: JSONEncoding.default).validate().responseJSON { response in
+            var conversations = [Conversation]()
+            if response.error == nil {
+                if let result = response.result.value {
+                    conversations = APIManager.conversationsFromResult(result)
+                }
+            }
+            completionHandler(conversations)
+        }
+    }
+    
     // MARK: - Response Parsing
     
-    private static func messagesFromResult(_ result: Any) -> [CBControlData] {
-        guard let dictionary = result as? NSDictionary,
-            let messageArray = dictionary["conversation"] as? [NSDictionary] else { return [] }
+    internal static func messagesFromResult(_ result: Any) -> [CBControlData] {
+        guard let messageArray = result as? [NSDictionary] else { return [] }
         
         let messages: [CBControlData] = messageArray.flatMap { message in
-            if let richControl = message["richControl"] as? NSDictionary, let uiType = richControl["uiType"] as? String, let controlType = CBControlType(rawValue: uiType) {
-                switch controlType {
-                default:
-                    Logger.default.logError("Unrecognized message type in messageFromResult: \(controlType) - \(richControl)")
+            // message is a dictionary, so we have to make it JSON, then convert back to ControlData
+            do {
+                // messages are missing the type/data wrapper, so we create one
+                var wrapper: [String: Any] = [:]
+                wrapper["type"] = "systemTextMessage"
+                wrapper["data"] = message
+                let messageData = try JSONSerialization.data(withJSONObject: wrapper, options: JSONSerialization.WritingOptions.prettyPrinted)
+                if let messageString = String(data: messageData, encoding: .utf8) {
+                    let control = CBDataFactory.controlFromJSON(messageString)
+                    if control.controlType != .unknown {
+                        return control
+                    } else {
+                        Logger.default.logError("message in result is not a control - skipping: \(messageString)")
+                    }
                 }
+            } catch let err {
+                Logger.default.logError("Error \(err) decoding message: \(message)")
             }
             return nil
         }
+        
         return messages
     }
     
+    internal static func conversationsFromResult(_ result: Any) -> [Conversation] {
+        guard let dictionary = result as? NSDictionary,
+              let conversationArray = dictionary["conversations"] as? [NSDictionary] else { return [] }
+        
+        let conversations: [Conversation] = conversationArray.flatMap { (conversationDictionary) -> Conversation? in
+            if let messagesDictionary = conversationDictionary["messages"] as? [NSDictionary],
+                messagesDictionary.count > 0,
+                let conversationId = messagesDictionary[0]["conversationId"] as? String {
+                
+                let messages = APIManager.messagesFromResult(messagesDictionary)
+                let status = conversationDictionary["status"] as? String ?? "UNKNOWN"
+                var conversation = Conversation(withConversationId: conversationId, withState: status == "COMPLETED" ? .completed : .inProgress)
+                
+                messages.forEach({ (message) in
+                    if conversation.lastPendingMessage() != nil {
+                        conversation.storeResponse(message)
+                    } else {
+                        conversation.add(MessageExchange(withMessage: message))
+                    }
+                })
+                return conversation
+            } else {
+                return nil
+            }
+        }
+        
+        return conversations
+    }
 }

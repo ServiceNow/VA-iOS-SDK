@@ -156,6 +156,7 @@
 		C4F3AF361FD6291E00B27B0D /* SystemTopicPickerMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4F3AF351FD6291E00B27B0D /* SystemTopicPickerMessage.swift */; };
 		C4F3AF381FD6293F00B27B0D /* UserTopicPickerMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4F3AF371FD6293F00B27B0D /* UserTopicPickerMessage.swift */; };
 		C4FFCD4A2006D6A000B835C6 /* ChatDataStore+Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4FFCD492006D6A000B835C6 /* ChatDataStore+Persistence.swift */; };
+		C4FFCD4C20091B8D00B835C6 /* APIManagerChatSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4FFCD4B20091B8D00B835C6 /* APIManagerChatSessionTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -283,6 +284,7 @@
 		C4F3AF351FD6291E00B27B0D /* SystemTopicPickerMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemTopicPickerMessage.swift; sourceTree = "<group>"; };
 		C4F3AF371FD6293F00B27B0D /* UserTopicPickerMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTopicPickerMessage.swift; sourceTree = "<group>"; };
 		C4FFCD492006D6A000B835C6 /* ChatDataStore+Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatDataStore+Persistence.swift"; sourceTree = "<group>"; };
+		C4FFCD4B20091B8D00B835C6 /* APIManagerChatSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManagerChatSessionTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -691,6 +693,7 @@
 				C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */,
 				BE3F1AB51FEC480D00DCC21B /* APIManagerChatTopicsTest.swift */,
 				C44FD9CA200010900079E107 /* ChatDataControllerTests.swift */,
+				C4FFCD4B20091B8D00B835C6 /* APIManagerChatSessionTests.swift */,
 			);
 			path = Chatterbox;
 			sourceTree = "<group>";
@@ -1030,6 +1033,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4FFCD4C20091B8D00B835C6 /* APIManagerChatSessionTests.swift in Sources */,
 				BE3F1AB61FEC480D00DCC21B /* APIManagerChatTopicsTest.swift in Sources */,
 				BE6932831FFEB49D00DD5A2A /* ServerInstanceURLTests.swift in Sources */,
 				C420ED7F1FC5F488002476C0 /* LoggerTests.swift in Sources */,

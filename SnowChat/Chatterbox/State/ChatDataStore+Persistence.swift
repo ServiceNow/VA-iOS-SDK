@@ -11,7 +11,7 @@ import Foundation
 private let documentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first
 private let archiveURL = documentsDirectory?.appendingPathComponent("chatstore")
 
-fileprivate class StorableContainer: Codable {
+internal class StorableContainer: Codable {
     var consumerAccountId: String
     var conversationIds: [String]
     

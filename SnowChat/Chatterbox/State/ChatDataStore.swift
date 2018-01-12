@@ -66,13 +66,13 @@ struct Conversation: CBStorable {
         return id
     }
     
+    private(set) var state: ConversationState
     private let id: String
-    private let state: ConversationState
     private var exchanges = [MessageExchange]()
     
-    init(withConversationId conversationId: String) {
+    init(withConversationId conversationId: String, withState state: ConversationState = .inProgress) {
         id = conversationId
-        state = .pending
+        self.state = state
     }
     
     mutating func add(_ item: MessageExchange) {
@@ -100,7 +100,7 @@ struct Conversation: CBStorable {
     }
     
     enum ConversationState {
-        case pending
+        case inProgress
         case completed
         case unknown
     }
