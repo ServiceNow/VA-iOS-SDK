@@ -25,9 +25,11 @@ class APIManagerChatSessionTest: XCTestCase {
         let jsonData = conversationsResultJSON.data(using: .utf8)
         let resultsDictionary = try JSONSerialization.jsonObject(with: jsonData!, options: JSONSerialization.ReadingOptions.allowFragments)
         let parsedResults = APIManager.conversationsFromResult(resultsDictionary)
-        let conversation = parsedResults[0]
-        
+
         XCTAssert(parsedResults.count == 1)
+        let conversation = parsedResults[0]
+
+        XCTAssertEqual("139dd4f673234300d63a566a4cf6a7c6", conversation.uniqueId())
         XCTAssertEqual(Conversation.ConversationState.completed, conversation.state)
         XCTAssertEqual(4, conversation.messageExchanges().count)
     }

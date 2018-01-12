@@ -120,7 +120,7 @@ extension APIManager {
         let conversations: [Conversation] = conversationArray.flatMap { (conversationDictionary) -> Conversation? in
             if let messagesDictionary = conversationDictionary["messages"] as? [NSDictionary],
                 messagesDictionary.count > 0,
-                let conversationId = messagesDictionary[0]["conversationId"] as? String {
+                let conversationId = conversationDictionary["topicId"] as? String {
                 
                 let messages = APIManager.messagesFromResult(messagesDictionary)
                 let status = conversationDictionary["status"] as? String ?? "UNKNOWN"
