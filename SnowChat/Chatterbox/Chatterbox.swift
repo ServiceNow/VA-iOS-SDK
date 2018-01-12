@@ -251,7 +251,7 @@ class Chatterbox {
     }
     
     private func handshakeHandler(_ message: String) {
-        let event = CBDataFactory.channelEventFromJSON(message)
+        let event = CBDataFactory.actionFromJSON(message)
         
         if event.eventType == .channelInit, let initEvent = event as? InitMessage {
             if initEvent.data.actionMessage.loginStage == MessageConstants.loginStart.rawValue {
@@ -330,7 +330,7 @@ class Chatterbox {
     private func startUserTopicHandshakeHandler(_ message: String) {
         Logger.default.logDebug("startUserTopicHandshake received: \(message)")
         
-        let actionMessage = CBDataFactory.channelEventFromJSON(message)
+        let actionMessage = CBDataFactory.actionFromJSON(message)
         
         if actionMessage.eventType == .startUserTopic {
             if let startUserTopic = actionMessage as? StartUserTopicMessage {
@@ -379,7 +379,7 @@ class Chatterbox {
     }
     
     fileprivate func handleEventMessage(_ message: String) -> Bool {
-        let action = CBDataFactory.channelEventFromJSON(message)
+        let action = CBDataFactory.actionFromJSON(message)
         
         switch action.eventType {
         case CBActionEventType.finishedUserTopic:

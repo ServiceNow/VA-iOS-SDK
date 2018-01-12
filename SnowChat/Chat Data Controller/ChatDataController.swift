@@ -236,7 +236,7 @@ extension ChatDataController: ChatDataListener {
         
         var messageClone = message
         messageClone.id = CBData.uuidString()
-        if let messageModel = ChatMessageModel.makeModel(withMessage: messageClone) {
+        if let messageModel = ChatMessageModel.model(withMessage: messageClone) {
             bufferControlMessage(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
@@ -250,7 +250,7 @@ extension ChatDataController: ChatDataListener {
         
         var messageClone = message
         messageClone.id = CBData.uuidString()
-        if let messageModel = ChatMessageModel.makeModel(withMessage: messageClone) {
+        if let messageModel = ChatMessageModel.model(withMessage: messageClone) {
             bufferControlMessage(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
@@ -264,7 +264,7 @@ extension ChatDataController: ChatDataListener {
         
         var messageClone = message
         messageClone.id = CBData.uuidString()
-        if let messageModel = ChatMessageModel.makeModel(withMessage: messageClone) {
+        if let messageModel = ChatMessageModel.model(withMessage: messageClone) {
             bufferControlMessage(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
@@ -278,7 +278,7 @@ extension ChatDataController: ChatDataListener {
 
         var messageClone = message
         messageClone.id = CBData.uuidString()
-        if let messageModel = ChatMessageModel.makeModel(withMessage: messageClone) {
+        if let messageModel = ChatMessageModel.model(withMessage: messageClone) {
             bufferControlMessage(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)

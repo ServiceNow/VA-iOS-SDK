@@ -132,7 +132,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
     
     func startConversationAndUpdateBooleanControl() -> String {
         // mimic a started conversation
-        let startTopicMessage = CBDataFactory.channelEventFromJSON(jsonStartedTopic) as! StartedUserTopicMessage
+        let startTopicMessage = CBDataFactory.actionFromJSON(jsonStartedTopic) as! StartedUserTopicMessage
         controller?.topicDidStart(startTopicMessage)
 
         // first add the initial boolean message as if it came from Chatterbox
