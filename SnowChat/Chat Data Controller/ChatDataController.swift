@@ -19,6 +19,10 @@
 // with the last element in the 0th position, and the first element at the end. This is to facilitate
 // a rendering style familiar to chat users, where the latest message is at the bottom and the older
 // ones scroll off the top of the screen.
+//
+// In order to prevent many controls coming in at essentially the same time, which makes the UI look
+// janky and inelegant, we first put incoming controls into a buffer. Then, we pull them off of the
+// buffer at a timed interval, providing a much smoother and more sequential feel to the UI
 
 import Foundation
 
@@ -28,7 +32,7 @@ protocol ViewDataChangeListener {
 
 class ChatDataController {
     
-    private let chatbotDisplayThrottle = 1.25
+    private let chatbotDisplayThrottle = 1.5
     
     private(set) var conversationId: String?
     private let chatterbox: Chatterbox
@@ -36,11 +40,15 @@ class ChatDataController {
     private var changeListener: ViewDataChangeListener?
     private let typingIndicator = TypingIndicatorViewModel()
     
+    private var controlMessageBuffer: [ChatMessageModel] = []
+    private var bufferProcessingTimer: Timer?
+    
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
         chatterbox.chatDataListener = self
-        
         self.changeListener = changeListener
+        
+        initializeControlBuffer()
     }
     
     func setChangeListener(_ listener: ViewDataChangeListener) {
@@ -87,18 +95,12 @@ class ChatDataController {
     }
     
     fileprivate func presentControlData(_ data: ChatMessageModel) {
-        var delay = 0.0
-        
         // if we are showing the typing indicator, pop it off and set a delay in updating the UI (so the user sees the indicator)
-        if popTypingIndicator() {
-            delay = chatbotDisplayThrottle
-        }
+        popTypingIndicator()
 
         self.addControlToCollection(data)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            self.changeListener?.chatDataController(self, didChangeModel: data, atIndex: self.controlData.count - 1)
-        }
+        self.changeListener?.chatDataController(self, didChangeModel: data, atIndex: self.controlData.count - 1)
     }
     
     fileprivate func pushTypingIndicator() {
@@ -106,13 +108,11 @@ class ChatDataController {
         self.changeListener?.chatDataController(self, didChangeModel: ChatMessageModel(model: typingIndicator, location: BubbleLocation.left), atIndex: self.controlData.count - 1)
     }
     
-    fileprivate func popTypingIndicator() -> Bool {
+    fileprivate func popTypingIndicator() {
         guard controlData.count > 0, controlData[0].controlModel as? TypingIndicatorViewModel != nil else {
-            return false
-            
+            return
         }
         controlData.remove(at: 0)
-        return true
     }
     
     fileprivate func updateChatterbox(_ data: ControlViewModel) {
@@ -197,6 +197,25 @@ class ChatDataController {
         let welcomeTextControl = TextControlViewModel(id: CBData.uuidString(), value: message)
         presentControlData(ChatMessageModel(model: welcomeTextControl, location: .left))
     }
+    
+    // MARK: - Control Buffer
+    
+    fileprivate func bufferControlMessage(_ control: ChatMessageModel) {
+        controlMessageBuffer.append(control)
+    }
+    
+    fileprivate func initializeControlBuffer() {
+        bufferProcessingTimer = Timer.scheduledTimer(withTimeInterval: chatbotDisplayThrottle, repeats: true, block: { [weak self] timer in
+            self?.processControlBuffer()
+        })
+    }
+
+    fileprivate func processControlBuffer() {
+        guard controlMessageBuffer.count > 0 else { return }
+        
+        let control = controlMessageBuffer.remove(at: 0)
+        presentControlData(control)
+    }
 }
 
 extension ChatDataController: ChatDataListener {
@@ -211,7 +230,7 @@ extension ChatDataController: ChatDataListener {
         var messageClone = message
         messageClone.id = CBData.uuidString()
         if let messageModel = ChatMessageModel.makeModel(withMessage: messageClone) {
-            presentControlData(messageModel)
+            bufferControlMessage(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
         }
@@ -225,7 +244,9 @@ extension ChatDataController: ChatDataListener {
         var messageClone = message
         messageClone.id = CBData.uuidString()
         if let messageModel = ChatMessageModel.makeModel(withMessage: messageClone) {
-            presentControlData(messageModel)
+            bufferControlMessage(messageModel)
+        } else {
+            dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
         }
     }
     
@@ -237,7 +258,7 @@ extension ChatDataController: ChatDataListener {
         var messageClone = message
         messageClone.id = CBData.uuidString()
         if let messageModel = ChatMessageModel.makeModel(withMessage: messageClone) {
-            presentControlData(messageModel)
+            bufferControlMessage(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
         }
@@ -248,9 +269,12 @@ extension ChatDataController: ChatDataListener {
             return
         }
 
-        if let value = message.data.richControl?.value {
-            let textViewModel = TextControlViewModel(id: CBData.uuidString(), value: value)
-            presentControlData(ChatMessageModel(model: textViewModel, location: .left))
+        var messageClone = message
+        messageClone.id = CBData.uuidString()
+        if let messageModel = ChatMessageModel.makeModel(withMessage: messageClone) {
+            bufferControlMessage(messageModel)
+        } else {
+            dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
         }
     }
     
@@ -282,6 +306,7 @@ extension ChatDataController: ChatDataListener {
             let questionViewModel = TextControlViewModel(id: message.id, label: "", value: label)
             let answerViewModel = TextControlViewModel(id: message.id, label: "", value: valueString)
             
+            popTypingIndicator()
             replaceLastControl(with: ChatMessageModel(model: questionViewModel, location: .left))
             presentControlData(ChatMessageModel(model: answerViewModel, location: .right))
         }
@@ -300,8 +325,11 @@ extension ChatDataController: ChatDataListener {
         // a completed exchange simply adds a new text output representing the users answer
         if let response = messageExchange.response as? InputControlMessage,
             let value: String = response.data.richControl?.value ?? "" {
-                let responseViewModel = TextControlViewModel(id: response.id, label: "", value: value)
-                presentControlData(ChatMessageModel(model: responseViewModel, location: .right))
+            
+            let responseViewModel = TextControlViewModel(id: response.id, label: "", value: value)
+            
+            popTypingIndicator()
+            presentControlData(ChatMessageModel(model: responseViewModel, location: .right))
         }
     }
     
@@ -327,6 +355,7 @@ extension ChatDataController: ChatDataListener {
                 let questionModel = TextControlViewModel(id: CBData.uuidString(), value: label)
                 let answerModel = TextControlViewModel(id: CBData.uuidString(), value: selectedOption?.label ?? value)
             
+                popTypingIndicator()
                 replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
                 presentControlData(ChatMessageModel(model: answerModel, location: .right))
         }

@@ -64,13 +64,12 @@ extension ChatMessageModel {
     }
     
     static func makeModel(withMessage message: OutputTextMessage) -> ChatMessageModel? {
-        guard let title = message.data.richControl?.uiMetadata?.label else {
+        guard let value = message.data.richControl?.value else {
             return nil
         }
         
-        let value = message.data.richControl?.value ?? ""
         let direction = message.data.direction
-        let textModel = TextControlViewModel(id: message.id, label: title, value: value)
+        let textModel = TextControlViewModel(id: message.id, value: value)
         let snowViewModel = ChatMessageModel(model: textModel, location: BubbleLocation(direction: direction))
         return snowViewModel
     }
