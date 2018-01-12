@@ -23,15 +23,15 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="D7e-qt-X1x">
-            <rect key="frame" x="0.0" y="0.0" width="757" height="257"/>
+            <rect key="frame" x="0.0" y="0.0" width="757" height="169"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="zQD-cm-Q41" customClass="BubbleView" customModule="SnowChat" customModuleProvider="target">
-                    <rect key="frame" x="55" y="3" width="692" height="251"/>
+                    <rect key="frame" x="65" y="3" width="682" height="163"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalCompressionResistancePriority="751" image="vagent-icon.png" translatesAutoresizingMaskIntoConstraints="NO" id="TbH-h7-fly">
-                    <rect key="frame" x="0.0" y="207" width="50" height="50"/>
+                    <rect key="frame" x="10" y="119" width="50" height="50"/>
                     <constraints>
                         <constraint firstAttribute="width" secondItem="TbH-h7-fly" secondAttribute="height" multiplier="1:1" id="Iq1-ys-0MQ"/>
                         <constraint firstAttribute="width" constant="50" id="OFa-5p-um4"/>
@@ -43,7 +43,7 @@
                 <constraint firstItem="zQD-cm-Q41" firstAttribute="leading" secondItem="sE2-NG-Z0e" secondAttribute="leading" priority="250" constant="10" id="BYk-kB-HH3"/>
                 <constraint firstAttribute="bottom" secondItem="zQD-cm-Q41" secondAttribute="bottom" constant="3" id="Poo-kv-ccW"/>
                 <constraint firstItem="TbH-h7-fly" firstAttribute="bottom" secondItem="sE2-NG-Z0e" secondAttribute="bottom" id="VIa-ku-AGG"/>
-                <constraint firstItem="sE2-NG-Z0e" firstAttribute="leading" secondItem="TbH-h7-fly" secondAttribute="leading" id="abd-r6-HuA"/>
+                <constraint firstItem="sE2-NG-Z0e" firstAttribute="leading" secondItem="TbH-h7-fly" secondAttribute="leading" constant="-10" id="abd-r6-HuA"/>
                 <constraint firstItem="zQD-cm-Q41" firstAttribute="leading" secondItem="TbH-h7-fly" secondAttribute="trailing" priority="750" constant="5" id="bFc-Gq-72f"/>
                 <constraint firstItem="TbH-h7-fly" firstAttribute="top" relation="greaterThanOrEqual" secondItem="sE2-NG-Z0e" secondAttribute="top" priority="998" id="lSH-w5-aR5"/>
                 <constraint firstItem="zQD-cm-Q41" firstAttribute="top" secondItem="D7e-qt-X1x" secondAttribute="top" constant="3" id="rKb-Z1-ZnA"/>
@@ -51,7 +51,7 @@
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <viewLayoutGuide key="safeArea" id="sE2-NG-Z0e"/>
-            <point key="canvasLocation" x="42.5" y="95.5"/>
+            <point key="canvasLocation" x="42.5" y="139.5"/>
         </view>
     </objects>
     <resources>
