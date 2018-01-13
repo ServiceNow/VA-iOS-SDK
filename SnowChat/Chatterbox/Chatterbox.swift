@@ -200,6 +200,13 @@ class Chatterbox {
                 
                 conversationContext.conversationId = initEvent.data.conversationId
                 conversationContext.consumerAccountId = initEvent.data.actionMessage.consumerAcctId
+                chatStore.consumerAccountId = conversationContext.consumerAccountId
+                
+                loadDataFromPersistence(completionHandler: { error in
+                    if error != nil {
+                        self.logger.logDebug("Error in loading from persistence: \(error.debugDescription)")
+                    }
+                })
                 
                 // handshake done, setup handler for the topic selection
                 messageHandler = self.topicSelectionHandler
@@ -281,6 +288,8 @@ class Chatterbox {
                 let actionMessage = startedUserTopic.data.actionMessage
                 logger.logInfo("User Topic Started: \(actionMessage.topicName) - \(actionMessage.topicId) - \(actionMessage.ready ? "Ready" : "Not Ready")")
                 
+                saveDataToPersistence()
+                
                 chatEventListener?.chatterbox(self, didStartTopic: startedUserTopic, forChat: chatId)
 
                 installTopicMessageHandler()
@@ -309,7 +318,8 @@ class Chatterbox {
         Logger.default.logDebug("userTopicMessage received: \(message)")
         
         if handleEventMessage(message) != true {
-            handleControlMessage(message)
+            let control = CBDataFactory.controlFromJSON(message)
+            handleControlMessage(control)
         }
     }
     
@@ -328,8 +338,7 @@ class Chatterbox {
         return true
     }
     
-    fileprivate func handleControlMessage(_ message: String) {
-        let control = CBDataFactory.controlFromJSON(message)
+    fileprivate func handleControlMessage(_ control: CBControlData) {
         
         switch control.controlType {
         case .boolean:
@@ -382,6 +391,7 @@ class Chatterbox {
     
     fileprivate func handleTopicFinishedAction(_ action: CBActionMessageData) {
         if let topicFinishedMessage = action as? TopicFinishedMessage {
+            saveDataToPersistence()
             chatEventListener?.chatterbox(self, didFinishTopic: topicFinishedMessage, forChat: chatId)
         }
     }
@@ -446,6 +456,52 @@ class Chatterbox {
             
             if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
                 chatDataListener?.chatterbox(self, didCompletePickerExchange: lastExchange, forChat: conversationId)
+            }
+        }
+    }
+    
+    // MARK: - Persistence Methods
+    
+    private func saveDataToPersistence() {
+        do {
+            try chatStore.store()
+        } catch let error {
+            logger.logError("Exception storing chatStore: \(error)")
+        }
+    }
+    
+    private func loadDataFromPersistence(completionHandler: @escaping (Error?) -> Void) {
+        do {
+            if let conversations = try chatStore.load() {
+                refreshConversations(conversations)
+            }
+        } catch let error {
+            logger.logError("Exception loading chatStore: \(error)")
+            completionHandler(error)
+        }
+    }
+    
+    private func refreshConversations(_ conversations: [String]) {
+        conversations.forEach { conversationId in
+            apiManager.conversation(conversationId) { conversation in
+                if let conversation = conversation {
+                    self.logger.logDebug("Conversation \(conversationId) refreshed: \(conversation)")
+                    self.storeConversationAndPublish(conversation)
+                } else {
+                    self.logger.logDebug("Conversation \(conversationId) could not be refreshed")
+                }
+            }
+        }
+    }
+    
+    private func storeConversationAndPublish(_ conversation: Conversation) {
+        conversation.messageExchanges().forEach { exchange in
+            if let message = exchange.message as? CBControlData {
+                handleControlMessage(message)
+                
+                if let response = exchange.response as? CBControlData {
+                    update(control: response)
+                }
             }
         }
     }

@@ -54,18 +54,23 @@ extension APIManager {
         }
     }
     
-    func conversation(_ conversationId: String, completionHandler: @escaping ([CBControlData]) -> Void) {
+    func conversation(_ conversationId: String, completionHandler: @escaping (Conversation?) -> Void) {
         sessionManager.request(apiURLWithPath("cs/conversation/\(conversationId)/message"),
             method: .get,
             encoding: JSONEncoding.default).validate().responseJSON { response in
-                var messages = [CBControlData]()
+                var conversation: Conversation?
+                
                 if response.error == nil {
                     if let result = response.result.value as? NSDictionary,
-                        let conversations = result["conversations"] {
-                        messages = APIManager.messagesFromResult(conversations)
+                        let conversationDictionary = result["conversation"] {
+                        let conversationsArray = [conversationDictionary]
+                        let conversations = APIManager.conversationsFromResult(conversationsArray)
+                        if  conversations.count > 0 {
+                            conversation = conversations.first
+                        }
                     }
                 }
-                completionHandler(messages)
+                completionHandler(conversation)
         }
     }
     
@@ -114,8 +119,7 @@ extension APIManager {
     }
     
     internal static func conversationsFromResult(_ result: Any) -> [Conversation] {
-        guard let dictionary = result as? NSDictionary,
-              let conversationArray = dictionary["conversations"] as? [NSDictionary] else { return [] }
+        guard let conversationArray = result as? [NSDictionary] else { return [] }
         
         let conversations: [Conversation] = conversationArray.flatMap { (conversationDictionary) -> Conversation? in
             if let messagesDictionary = conversationDictionary["messages"] as? [NSDictionary],
