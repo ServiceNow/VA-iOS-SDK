@@ -12,7 +12,12 @@ class ConversationViewCell: UITableViewCell {
     
     var messageView: UIView? {
         didSet {
-            oldValue?.removeFromSuperview()
+            
+            // MessageView might have been reused in other cell, so if it was moved to a different parent, we shouldn't remove it
+            if oldValue?.superview == contentView, oldValue != messageView {
+                oldValue?.removeFromSuperview()
+            }
+            
             guard let messageView = messageView else {
                 return
             }
@@ -24,11 +29,5 @@ class ConversationViewCell: UITableViewCell {
                                          messageView.topAnchor.constraint(equalTo: contentView.topAnchor),
                                          messageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)])
         }
-    }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        messageView?.removeFromSuperview()
-        messageView = nil
     }
 }

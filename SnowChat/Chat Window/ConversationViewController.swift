@@ -66,7 +66,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.estimatedRowHeight = 200
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
-        
         setupInputForState()
     }
 
@@ -79,6 +78,15 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         case .inConversation:
             setupForConversation()
         }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        // FIXME: Still need to add case for keyboard shown etc. This covers only a very basic use case.
+        var insets = tableView.contentInset
+        insets.top = 30
+        tableView.contentInset = insets
     }
     
     private func setupForSystemTopicSelection() {
@@ -214,24 +222,18 @@ extension ConversationViewController {
         if tableView == autoCompletionView {
             return
         }
-        
-        // prepareForReuse on UITableViewCell is called later than this method, so we need to make sure we will nil-out messageView (that is a view on MessageViewController)
-        // otherwise we will end up in a weird state where view is being added to a new cell and then old cell will call prepareForReuse..
-        (cell as? ConversationViewCell)?.messageView = nil
+
         messageViewControllerCache.removeViewController(at: indexPath)
     }
     
     private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
-        guard indexPath.row < dataController.controlCount() else {
-            return UITableViewCell()
-        }
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
         configureConversationCell(cell, at: indexPath)
         return cell
     }
     
     private func configureConversationCell(_ cell: ConversationViewCell, at indexPath:IndexPath) {
+
         if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
             let messageViewController = messageViewControllerCache.getViewController(for: indexPath, movedToParentViewController: self)
             cell.messageView = messageViewController.view
@@ -239,9 +241,8 @@ extension ConversationViewController {
             messageViewController.didMove(toParentViewController: self)
             messageViewController.uiControl?.delegate = self
         }
-        
+
         cell.selectionStyle = .none
-        
         UIView.performWithoutAnimation {
             cell.transform = tableView.transform
         }

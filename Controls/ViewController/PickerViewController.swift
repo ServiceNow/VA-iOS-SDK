@@ -79,16 +79,21 @@ class PickerViewController: UIViewController {
         tableView.register(PickerHeaderView.self, forHeaderFooterViewReuseIdentifier: headerViewIdentifier)
         tableView.register(PickerFooterView.self, forHeaderFooterViewReuseIdentifier: footerViewIdentifier)
         
-        // FIXME: upcoming lots of changes here
         tableView.delegate = self
         tableView.dataSource = self
         tableView.showsVerticalScrollIndicator = false
         tableView.showsHorizontalScrollIndicator = false
         tableView.bounces = false
         
-        // TODO: need to adjust based on the number of items, display style etc
-        tableView.isScrollEnabled = false
+        // There's an ugly UI glitch due to that option..
+        // Picker UIControl is changing its content inset if it is displayed on the very bottom in iPhone X
+        if #available(iOS 11.0, *) {
+            tableView.contentInsetAdjustmentBehavior = .never
+        } else {
+            automaticallyAdjustsScrollViewInsets = false
+        }
         
+        tableView.isScrollEnabled = false
         fullSizeContainer.maxVisibleItemCount = visibleItemCount
         fullSizeContainer.scrollView = tableView
         tableView.translatesAutoresizingMaskIntoConstraints = false

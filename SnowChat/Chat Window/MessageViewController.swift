@@ -64,7 +64,7 @@ class MessageViewController: UIViewController {
         controlViewController.didMove(toParentViewController: self)
         
         UIView.performWithoutAnimation {
-            controlView.layoutIfNeeded()
+            view.layoutIfNeeded()
         }
     }
     
