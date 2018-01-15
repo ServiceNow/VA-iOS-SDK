@@ -1,3 +1,4 @@
-github "Alamofire/Alamofire" "4.5.1"
+github "Alamofire/Alamofire" "4.6.0"
+github "Alamofire/AlamofireImage" "3.3.0"
 github "https://gitlab-deo.devsnc.com/mobile/AMB-Client-iOS" "4fae74b2cd254218281851847ae8dbe3def4602d"
 github "slackhq/SlackTextViewController" "v1.9.6"
