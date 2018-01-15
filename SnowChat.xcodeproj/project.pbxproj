@@ -54,6 +54,7 @@
 		572A4E401FCF06320081318D /* PickerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 572A4E3F1FCF06320081318D /* PickerTableViewCell.xib */; };
 		572A4E421FCF07150081318D /* PickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572A4E411FCF07150081318D /* PickerTableViewCell.swift */; };
 		572A4E441FCF70070081318D /* BubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572A4E431FCF70070081318D /* BubbleView.swift */; };
+		572C6BC1200C33BC00F142E2 /* ControlCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C6BC0200C33BC00F142E2 /* ControlCache.swift */; };
 		572FAC181FC47A9C00B0B956 /* MultiSelectControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */; };
 		572FAC1A1FC47B5600B0B956 /* MultiSelectControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC191FC47B5600B0B956 /* MultiSelectControlViewModel.swift */; };
 		57532BAB1FD777AC001D674C /* PickerControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57532BAA1FD777AC001D674C /* PickerControl.swift */; };
@@ -179,6 +180,7 @@
 		572A4E3F1FCF06320081318D /* PickerTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PickerTableViewCell.xib; sourceTree = "<group>"; };
 		572A4E411FCF07150081318D /* PickerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerTableViewCell.swift; sourceTree = "<group>"; };
 		572A4E431FCF70070081318D /* BubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleView.swift; sourceTree = "<group>"; };
+		572C6BC0200C33BC00F142E2 /* ControlCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlCache.swift; sourceTree = "<group>"; };
 		572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectControl.swift; sourceTree = "<group>"; };
 		572FAC191FC47B5600B0B956 /* MultiSelectControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectControlViewModel.swift; sourceTree = "<group>"; };
 		57532BAA1FD777AC001D674C /* PickerControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControl.swift; sourceTree = "<group>"; };
@@ -415,6 +417,7 @@
 				C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */,
 				57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */,
 				5717B14F2003DABA00A4252C /* ChatMessageViewControllerCache.swift */,
+				572C6BC0200C33BC00F142E2 /* ControlCache.swift */,
 				5706C5801FE49F78008D70D1 /* MessageViewController.swift */,
 				57D997AA1FE5B00000394A6D /* MessageViewController.xib */,
 			);
@@ -984,6 +987,7 @@
 				C40565F01FC491DA004BD28C /* ActionMessage.swift in Sources */,
 				C489073D1FCC8209008D9521 /* AMBTestPanelViewController.swift in Sources */,
 				C4F3AF341FD6144800B27B0D /* StartTopicMessage.swift in Sources */,
+				572C6BC1200C33BC00F142E2 /* ControlCache.swift in Sources */,
 				BE782DB81FEB205200F848F5 /* APIManager+ChatSession.swift in Sources */,
 				C41EF5D21FDB0F2500707F45 /* ChatDataListener.swift in Sources */,
 				C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */,

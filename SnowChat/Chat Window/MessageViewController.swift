@@ -20,17 +20,6 @@ class MessageViewController: UIViewController {
     
     private(set) var uiControl: ControlProtocol?
     
-    var model: ChatMessageModel? {
-        didSet {
-            guard let messageModel = model else {
-                return
-            }
-
-            let control = ControlsUtil.controlForViewModel(messageModel.controlModel)
-            addUIControl(control, at: messageModel.location)
-        }
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         bubbleView.borderColor = UIColor.agentBubbleBackgroundColor
@@ -70,7 +59,6 @@ class MessageViewController: UIViewController {
     
     func prepareForReuse() {
         removeUIControl()
-        model = nil
     }
     
     private func removeUIControl() {

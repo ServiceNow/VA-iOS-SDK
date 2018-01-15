@@ -24,6 +24,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     private let chatterbox: Chatterbox
 
     private var messageViewControllerCache = ChatMessageViewControllerCache()
+    private var uiControlCache = ControlCache()
     
     override var tableView: UITableView {
         // swiftlint:disable:next force_unwrapping
@@ -224,6 +225,11 @@ extension ConversationViewController {
         }
 
         messageViewControllerCache.removeViewController(at: indexPath)
+        guard let chatMessageModel = dataController.controlForIndex(indexPath.row) else {
+            fatalError("Something went wrong, ControlModel should exist")
+        }
+        
+        uiControlCache.prepareControlForReuse(withModel: chatMessageModel.controlModel)
     }
     
     private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
@@ -237,7 +243,8 @@ extension ConversationViewController {
         if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
             let messageViewController = messageViewControllerCache.getViewController(for: indexPath, movedToParentViewController: self)
             cell.messageView = messageViewController.view
-            messageViewController.model = chatMessageModel
+            let uiControl = uiControlCache.control(forModel: chatMessageModel.controlModel)
+            messageViewController.addUIControl(uiControl, at: chatMessageModel.location)
             messageViewController.didMove(toParentViewController: self)
             messageViewController.uiControl?.delegate = self
         }
