@@ -18,7 +18,6 @@ class ChatMessageViewControllerCache {
         let messageViewController: MessageViewController
         if let firstUnusedController = viewControllersToReuse.first {
             messageViewController = firstUnusedController
-            messageViewController.prepareForReuse()
             viewControllersToReuse.remove(messageViewController)
         } else {
             messageViewController = MessageViewController(nibName: "MessageViewController", bundle: Bundle(for: type(of: self)))
@@ -36,6 +35,7 @@ class ChatMessageViewControllerCache {
         }
         
         messageViewController.removeFromParentViewController()
+        messageViewController.prepareForReuse()
         viewControllersByIndexPath.removeValue(forKey: indexPath)
         viewControllersToReuse.insert(messageViewController)
     }
