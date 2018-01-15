@@ -249,12 +249,11 @@ extension ConversationViewController {
             return
         }
 
-        messageViewControllerCache.removeViewController(at: indexPath)
-        guard let chatMessageModel = dataController.controlForIndex(indexPath.row) else {
-            fatalError("Something went wrong, ControlModel should exist")
+        if let messageViewController = messageViewControllerCache.viewControllersByIndexPath[indexPath],
+            let controlModel = messageViewController.uiControl?.model {
+            uiControlCache.removeControl(withModel: controlModel)
         }
-        
-        uiControlCache.prepareControlForReuse(withModel: chatMessageModel.controlModel)
+        messageViewControllerCache.removeViewController(at: indexPath)
     }
     
     private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
@@ -264,14 +263,14 @@ extension ConversationViewController {
     }
     
     private func configureConversationCell(_ cell: ConversationViewCell, at indexPath:IndexPath) {
-
         if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
             let messageViewController = messageViewControllerCache.getViewController(for: indexPath, movedToParentViewController: self)
             cell.messageView = messageViewController.view
             let uiControl = uiControlCache.control(forModel: chatMessageModel.controlModel)
             messageViewController.addUIControl(uiControl, at: chatMessageModel.location)
-            messageViewController.didMove(toParentViewController: self)
             messageViewController.uiControl?.delegate = self
+            
+            messageViewController.didMove(toParentViewController: self)
         }
 
         cell.selectionStyle = .none

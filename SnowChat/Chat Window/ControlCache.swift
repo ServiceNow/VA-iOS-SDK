@@ -15,28 +15,32 @@ class ControlCache {
     private var controlsToReuse = ControlListByType()
     
     func control(forModel model: ControlViewModel) -> ControlProtocol {
+        let uiControl: ControlProtocol
         if let control = controlsToReuse[model.type]?.last {
             // update uiControl for a given model. Internally it will update UIViewController
             control.model = model
             controlsToReuse[model.type]?.removeLast()
-            return control
+            uiControl = control
+        } else {
+            uiControl = ControlsUtil.controlForViewModel(model)
         }
         
-        let uiControl = ControlsUtil.controlForViewModel(model)
         uiControlByType[model.id] = uiControl
         return uiControl
     }
     
-    func prepareControlForReuse(withModel model: ControlViewModel) {
-        if let control = uiControlByType[model.id] {
-            if var controlsList = controlsToReuse[model.type] {
-                controlsList.append(control)
-                controlsToReuse[model.type] = controlsList
-            } else {
-                controlsToReuse[model.type] = [control]
-            }
-            
-            uiControlByType.removeValue(forKey: model.id)
+    func removeControl(withModel model: ControlViewModel) {
+        guard let control = uiControlByType[model.id] else {
+            fatalError("Can't find control with model id: \(model.id)")
         }
+
+        if var controlsList = controlsToReuse[model.type] {
+            controlsList.append(control)
+            controlsToReuse[model.type] = controlsList
+        } else {
+            controlsToReuse[model.type] = [control]
+        }
+        
+        uiControlByType.removeValue(forKey: model.id)
     }
 }

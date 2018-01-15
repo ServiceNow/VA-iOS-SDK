@@ -43,6 +43,8 @@ protocol PickerControlProtocol: ControlProtocol, PickerViewControllerDelegate {
     var style: PickerControlStyle { get set }
     
     func viewController(forStyle style: PickerControlStyle, model: ControlViewModel) -> UIViewController
+    
+    func updateViewController(withModel model: ControlViewModel)
 }
 
 // MARK: - Default PickerControl implementation
@@ -67,5 +69,12 @@ extension PickerControlProtocol {
     
     func pickerViewController(_ viewController: PickerViewController, didFinishWithModel model: PickerControlViewModel) {
         delegate?.control(self, didFinishWithModel: model)
+    }
+    
+    func updateViewController(withModel model: ControlViewModel) {
+        guard let pickerModel = model as? PickerControlViewModel else { fatalError("Wrong model class") }
+        guard let pickerViewController = viewController as? PickerViewController else { return }
+        
+        pickerViewController.model = pickerModel
     }
 }

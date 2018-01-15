@@ -73,6 +73,7 @@ class MessageViewController: UIViewController {
         if uiControl?.model.type == .text,
             let textView = uiControl?.viewController.view as? UITextView {
             textView.textColor = (location == .right) ? UIColor.userBubbleTextColor : UIColor.agentBubbleTextColor
+            textView.backgroundColor = (location == .right) ? UIColor.userBubbleBackgroundColor : UIColor.agentBubbleBackgroundColor
         }
         
         switch location {
