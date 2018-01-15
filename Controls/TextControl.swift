@@ -31,7 +31,17 @@ class TextControl: ControlProtocol {
         }
     }
     
-    var model: ControlViewModel
+    var model: ControlViewModel {
+        didSet {
+            guard let textViewController = viewController as? TextViewController,
+                let textModel = model as? TextControlViewModel else {
+                    return
+            }
+            
+            textViewController.textView.text = textModel.value
+            textViewController.textView.layoutIfNeeded()
+        }
+    }
     
     let viewController: UIViewController
     
