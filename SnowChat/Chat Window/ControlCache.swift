@@ -31,6 +31,7 @@ class ControlCache {
         if let control = uiControlByType[model.id] {
             if var controlsList = controlsToReuse[model.type] {
                 controlsList.append(control)
+                controlsToReuse[model.type] = controlsList
             } else {
                 controlsToReuse[model.type] = [control]
             }
