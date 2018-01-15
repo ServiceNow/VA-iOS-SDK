@@ -295,7 +295,7 @@ class CBDataTests: XCTestCase {
     
     func testInitEventFromJSON() {
         
-        let obj = CBDataFactory.channelEventFromJSON(jsonInitStart)
+        let obj = CBDataFactory.actionFromJSON(jsonInitStart)
         XCTAssertNotNil(obj)
         XCTAssert(obj.eventType == .channelInit)
         

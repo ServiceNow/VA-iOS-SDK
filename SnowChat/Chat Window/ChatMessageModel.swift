@@ -33,7 +33,7 @@ class ChatMessageModel {
 
 extension ChatMessageModel {
     
-    static func makeModel(withMessage message: BooleanControlMessage) -> ChatMessageModel? {
+    static func model(withMessage message: BooleanControlMessage) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
             let required = message.data.richControl?.uiMetadata?.required else {
                 return nil
@@ -45,7 +45,7 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func makeModel(withMessage message: PickerControlMessage) -> ChatMessageModel? {
+    static func model(withMessage message: PickerControlMessage) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
             let required = message.data.richControl?.uiMetadata?.required else {
                 return nil
@@ -71,19 +71,18 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func makeModel(withMessage message: OutputTextMessage) -> ChatMessageModel? {
-        guard let title = message.data.richControl?.uiMetadata?.label else {
+    static func model(withMessage message: OutputTextMessage) -> ChatMessageModel? {
+        guard let value = message.data.richControl?.value else {
             return nil
         }
         
-        let value = message.data.richControl?.value ?? ""
         let direction = message.data.direction
-        let textModel = TextControlViewModel(id: message.id, label: title, value: value)
+        let textModel = TextControlViewModel(id: message.id, value: value)
         let snowViewModel = ChatMessageModel(model: textModel, location: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
-    static func makeModel(withMessage message: InputControlMessage) -> ChatMessageModel? {
+    static func model(withMessage message: InputControlMessage) -> ChatMessageModel? {
         guard let value = message.data.richControl?.uiMetadata?.label else {
             return nil
         }

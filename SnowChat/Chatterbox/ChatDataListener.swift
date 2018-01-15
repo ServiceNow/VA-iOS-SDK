@@ -20,7 +20,7 @@ protocol ChatDataListener: AnyObject {
     
     // Notifies listener that a MessageExchange was complete, meaning the user responded to a request for input
     //
-    func chattebox(_: Chatterbox, didCompleteBooleanExchange messageExchange: MessageExchange, forChat chatId: String)
-    func chattebox(_: Chatterbox, didCompleteInputExchange messageExchange: MessageExchange, forChat chatId: String)
-    func chattebox(_: Chatterbox, didCompletePickerExchange messageExchange: MessageExchange, forChat chatId: String)
+    func chatterbox(_ chatterbox: Chatterbox, didCompleteBooleanExchange messageExchange: MessageExchange, forChat chatId: String)
+    func chatterbox(_ chatterbox: Chatterbox, didCompleteInputExchange messageExchange: MessageExchange, forChat chatId: String)
+    func chatterbox(_ chatterbox: Chatterbox, didCompletePickerExchange messageExchange: MessageExchange, forChat chatId: String)
 }
