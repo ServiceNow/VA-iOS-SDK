@@ -23,7 +23,6 @@ class ChatMessageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bubbleView.borderColor = UIColor.agentBubbleBackgroundColor
-        bubbleView.backgroundColor = UIColor.agentBubbleBackgroundColor
     }
     
     func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
@@ -97,6 +96,11 @@ class ChatMessageViewController: UIViewController {
             bubbleTrailingConstraint.priority = .veryHigh
             agentImageView.isHidden = true
             agentImageTopConstraint.priority = .lowest
+        }
+        
+        // Make sure that a little tail in the bubble gets colored like picker background. now it is hardcoded to white but will need to get theme color
+        if uiControl?.viewController is PickerViewController {
+            bubbleView.backgroundColor = UIColor.white
         }
     }
 }
