@@ -70,10 +70,10 @@ class MessageViewController: UIViewController {
     // updates message view based on the direction of the message
     
     private func updateForLocation(_ location: BubbleLocation) {
-        if uiControl?.model.type == .text,
-            let textView = uiControl?.viewController.view as? UITextView {
-            textView.textColor = (location == .right) ? UIColor.userBubbleTextColor : UIColor.agentBubbleTextColor
-            textView.backgroundColor = (location == .right) ? UIColor.userBubbleBackgroundColor : UIColor.agentBubbleBackgroundColor
+        if uiControl?.model.type == .text {
+            let textViewController = uiControl?.viewController as! TextControl.TextViewController
+            textViewController.textLabel.textColor = (location == .right) ? UIColor.userBubbleTextColor : UIColor.agentBubbleTextColor
+            textViewController.textLabel.backgroundColor = (location == .right) ? UIColor.userBubbleBackgroundColor : UIColor.agentBubbleBackgroundColor
         }
         
         switch location {
