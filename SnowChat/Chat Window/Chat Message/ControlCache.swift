@@ -44,4 +44,9 @@ class ControlCache {
         
         uiControlByModelId.removeValue(forKey: model.id)
     }
+    
+    func removeAll() {
+        uiControlByModelId.removeAll()
+        controlsToReuse.removeAll()
+    }
 }

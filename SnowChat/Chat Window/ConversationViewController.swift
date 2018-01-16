@@ -285,7 +285,7 @@ extension ConversationViewController {
     }
     
     private func prepareChatMessageViewControllerForReuse(at indexPath: IndexPath) {
-        if let messageViewController = messageViewControllerCache.viewControllersByIndexPath[indexPath],
+        if let messageViewController = messageViewControllerCache.viewControllerByIndexPath[indexPath],
             let controlModel = messageViewController.uiControl?.model {
             uiControlCache.removeControl(forModel: controlModel)
         }

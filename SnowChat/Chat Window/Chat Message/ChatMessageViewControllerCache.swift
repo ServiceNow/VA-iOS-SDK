@@ -11,7 +11,7 @@
 
 class ChatMessageViewControllerCache {
     
-    private(set) var viewControllersByIndexPath = [IndexPath : ChatMessageViewController]()
+    private(set) var viewControllerByIndexPath = [IndexPath : ChatMessageViewController]()
     private var viewControllersToReuse = Set<ChatMessageViewController>()
     
     func getViewController(for indexPath: IndexPath, movedToParentViewController parent: UIViewController) -> ChatMessageViewController {
@@ -23,20 +23,25 @@ class ChatMessageViewControllerCache {
             messageViewController = ChatMessageViewController(nibName: "ChatMessageViewController", bundle: Bundle(for: type(of: self)))
         }
         
-        viewControllersByIndexPath[indexPath] = messageViewController
+        viewControllerByIndexPath[indexPath] = messageViewController
         messageViewController.willMove(toParentViewController: parent)
         parent.addChildViewController(messageViewController)
         return messageViewController
     }
     
     func removeViewController(at indexPath: IndexPath) {
-        guard let messageViewController = viewControllersByIndexPath[indexPath] else {
+        guard let messageViewController = viewControllerByIndexPath[indexPath] else {
             return
         }
         
         messageViewController.removeFromParentViewController()
         messageViewController.prepareForReuse()
-        viewControllersByIndexPath.removeValue(forKey: indexPath)
+        viewControllerByIndexPath.removeValue(forKey: indexPath)
         viewControllersToReuse.insert(messageViewController)
+    }
+    
+    func removeAll() {
+        viewControllerByIndexPath.removeAll()
+        viewControllersToReuse.removeAll()
     }
 }
