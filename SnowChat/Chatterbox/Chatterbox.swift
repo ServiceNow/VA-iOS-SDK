@@ -190,7 +190,7 @@ class Chatterbox {
     }
     
     private func handshakeHandler(_ message: String) {
-        let event = CBDataFactory.channelEventFromJSON(message)
+        let event = CBDataFactory.actionFromJSON(message)
         
         if event.eventType == .channelInit, let initEvent = event as? InitMessage {
             if initEvent.data.actionMessage.loginStage == MessageConstants.loginStart.rawValue {
@@ -280,7 +280,7 @@ class Chatterbox {
     private func startUserTopicHandshakeHandler(_ message: String) {
         //logger.logDebug("startUserTopicHandshake received: \(message)")
         
-        let actionMessage = CBDataFactory.channelEventFromJSON(message)
+        let actionMessage = CBDataFactory.actionFromJSON(message)
         
         if actionMessage.eventType == .startUserTopic {
             if let startUserTopic = actionMessage as? StartUserTopicMessage {
@@ -335,7 +335,7 @@ class Chatterbox {
     // MARK: - Incoming messages from AMB
     
     fileprivate func handleEventMessage(_ message: String) -> Bool {
-        let action = CBDataFactory.channelEventFromJSON(message)
+        let action = CBDataFactory.actionFromJSON(message)
         
         switch action.eventType {
         case CBActionEventType.finishedUserTopic:
@@ -421,7 +421,7 @@ class Chatterbox {
         }
     }
     
-    func updateMessage<T>(_ inputMessage: RichControlData<T>) -> RichControlData<T> {
+    fileprivate func updateRichControlData<T>(_ inputMessage: RichControlData<T>) -> RichControlData<T> {
         var message = inputMessage
         message.direction = .fromClient
         message.sendTime = Date()
@@ -435,7 +435,7 @@ class Chatterbox {
     
     fileprivate func updateBooleanControl(_ control: CBControlData) {
         if var booleanControl = control as? BooleanControlMessage, let conversationId = booleanControl.data.conversationId {
-            booleanControl.data = updateMessage(booleanControl.data)
+            booleanControl.data = updateRichControlData(booleanControl.data)
             storeAndPublish(booleanControl, forConversation: conversationId)
             
             if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
@@ -446,7 +446,7 @@ class Chatterbox {
     
     fileprivate func updateInputControl(_ control: CBControlData) {
         if var inputControl = control as? InputControlMessage, let conversationId = inputControl.data.conversationId {
-            inputControl.data = updateMessage(inputControl.data)
+            inputControl.data = updateRichControlData(inputControl.data)
             storeAndPublish(inputControl, forConversation: conversationId)
             
             if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
@@ -457,7 +457,7 @@ class Chatterbox {
     
     fileprivate func updatePickerControl(_ control: CBControlData) {
         if var pickerControl = control as? PickerControlMessage, let conversationId = pickerControl.data.conversationId {
-            pickerControl.data = updateMessage(pickerControl.data)
+            pickerControl.data = updateRichControlData(pickerControl.data)
             storeAndPublish(pickerControl, forConversation: conversationId)
             
             if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
@@ -492,7 +492,7 @@ class Chatterbox {
             apiManager.conversations(forConsumer: consumerId, completionHandler: { (conversations) in
                 conversations.forEach { conversation in
                     self.logger.logDebug("Conversation \(conversation.uniqueId()) refreshed: \(conversation)")
-                    self.saveConversationAndPublish(conversation)
+                    self.storeConversationAndPublish(conversation)
                 }
             })
         } else {
@@ -502,7 +502,7 @@ class Chatterbox {
                 apiManager.conversation(conversationId) { conversation in
                     if let conversation = conversation {
                         self.logger.logDebug("Conversation \(conversationId) refreshed: \(conversation)")
-                        self.saveConversationAndPublish(conversation)
+                        self.storeConversationAndPublish(conversation)
                     } else {
                         self.logger.logDebug("Conversation \(conversationId) could not be refreshed")
                     }
@@ -511,7 +511,7 @@ class Chatterbox {
         }
     }
     
-    private func saveConversationAndPublish(_ conversation: Conversation) {
+    private func storeConversationAndPublish(_ conversation: Conversation) {
         chatStore.storeConversation(conversation)
         
         chatDataListener?.chatterbox(self, willLoadConversation: conversation.uniqueId(), forChat: chatId)

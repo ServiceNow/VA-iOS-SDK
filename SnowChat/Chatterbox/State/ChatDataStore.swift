@@ -23,17 +23,8 @@ class ChatDataStore {
     // storeControlData: find or create a conversation and add a new MessageExchange with the new control data
     //
     func storeControlData(_ data: CBControlData, forConversation conversationId: String, fromChat source: Chatterbox) {
-        let messageExchange = MessageExchange(withMessage: data)
-        
-        var index = conversations.index { $0.uniqueId() == conversationId }
-        if index == nil {
-            index = conversations.count
-            conversations.append(Conversation(withConversationId: conversationId))
-        }
-        
-        if let index = index {
-            conversations[index].add(messageExchange)
-        }
+        let index = findOrCreateConversation(conversationId)
+        conversations[index].add(MessageExchange(withMessage: data))
     }
     
     // storeResponseData: find the conversation and add the response to it's pending MessageExchange, completing it
@@ -43,7 +34,18 @@ class ChatDataStore {
         
         if let index = index {
             conversations[index].storeResponse(data)
+        } else {
+            Logger.default.logError("No conversation found for \(conversationId) in storeResponseData")
         }
+    }
+    
+    internal func findOrCreateConversation(_ conversationId: String) -> Int {
+        guard let foundIndex = conversations.index(where: { $0.uniqueId() == conversationId }) else {
+            let index = conversations.count
+            conversations.append(Conversation(withConversationId: conversationId))
+            return index
+        }
+        return foundIndex
     }
     
     // pendingMessage: get the last pendng message for a conversation, if any
@@ -87,21 +89,29 @@ struct Conversation: CBStorable {
         exchanges.append(item)
     }
     
-    mutating func storeResponse(_ data: CBControlData?) {
-        if let last = exchanges.last, last.isComplete != true {
-            let index = exchanges.count - 1
-            exchanges[index].response = data
-        } else {
-            Logger.default.logError("Response received for conversationID \(id) with no pending message exchange!")
+    mutating func storeResponse(_ data: CBControlData) {
+        guard let pending = lastPendingExchange() else { fatalError("No pending message exchange in storeResponse") }
+        
+        let index = exchanges.count - 1
+        
+        // check for control type mismatch between message and response
+        let message = pending.message as? CBControlData
+        guard message != nil, message?.controlType == data.controlType else {
+            fatalError("Mismatched control types in storeResponse: message is \(message?.controlType.rawValue ?? "nil") while response is \(data.controlType)")
         }
+        
+        exchanges[index].response = data
     }
     
     func lastPendingMessage() -> CBStorable? {
-        guard let last = exchanges.last, !last.isComplete else { return nil }
-    
-        return last.message
+        guard let pending = lastPendingExchange() else { return nil }
+        return pending.message
     }
     
+    func lastPendingExchange() -> MessageExchange? {
+        guard let last = exchanges.last, !last.isComplete else { return nil }
+        return last
+    }
     func messageExchanges() -> [MessageExchange] {
         return exchanges
     }

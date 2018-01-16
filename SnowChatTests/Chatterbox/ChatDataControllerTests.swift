@@ -17,6 +17,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
     
     func chatDataController(_ dataController: ChatDataController, didChangeModel model: ChatMessageModel, atIndex index: Int) {
         modelChanged = model
+        expectation?.fulfill()
     }
     
     
@@ -37,6 +38,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         }
     }
     
+    var expectation: XCTestExpectation?
     var controller: ChatDataController?
     var modelChanged: ChatMessageModel?
     var mockChatterbox: MockChatterbox?
@@ -91,8 +93,13 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
     
     func testAddControl() {
         let boolMessage = BooleanControlMessage.exampleInstance()
+        expectation = expectation(description: "Expect model changed delegate to be called")
+        
         controller?.chatterbox(mockChatterbox!, didReceiveBooleanData: boolMessage, forChat: "chatID")
         
+        // Adding controls is buffered, so have to use an expectation to wait for it to be accessible
+        wait(for: [expectation!], timeout: 5)
+
         // test a control is saved
         XCTAssertEqual(1, controller?.controlCount())
         // test that the control is of the correct type
@@ -101,13 +108,13 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         XCTAssertNotEqual(boolMessage.uniqueId(), controller?.controlForIndex(0)?.controlModel.id)
         // test the ChatMessageData has the correct direction
         XCTAssertEqual(BubbleLocation(direction: MessageDirection.fromServer), controller?.controlForIndex(0)?.location)
-        // test the listener is notified
+        // these that the change was notified
         XCTAssertEqual(modelChanged!.controlModel.id, controller?.controlForIndex(0)!.controlModel.id)
     }
     
     func startConversationAndUpdateBooleanControl() -> String {
         // mimic a started conversation
-        let startTopicMessage = CBDataFactory.channelEventFromJSON(jsonStartedTopic) as! StartedUserTopicMessage
+        let startTopicMessage = CBDataFactory.actionFromJSON(jsonStartedTopic) as! StartedUserTopicMessage
         controller?.topicDidStart(startTopicMessage)
 
         // first add the initial boolean message as if it came from Chatterbox
@@ -139,7 +146,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         
         controller?.chatterbox(mockChatterbox!, didCompleteBooleanExchange: me, forChat: "ChatID")
         
-        // make sure there are 2 controls, both of type text
+        // make sure there are 2 controls, 1 typing indicatior and 2 of type text
         XCTAssertEqual(2, controller?.controlCount())
         XCTAssertEqual(ControlType.text, controller?.controlForIndex(0)?.controlModel.type)
         XCTAssertEqual(ControlType.text, controller?.controlForIndex(1)?.controlModel.type)

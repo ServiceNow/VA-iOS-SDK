@@ -43,7 +43,7 @@ class CBDataFactory {
         return CBControlDataUnknown()
     }
     
-    static func channelEventFromJSON(_ json: String) -> CBActionMessageData {
+    static func actionFromJSON(_ json: String) -> CBActionMessageData {
          
         if let jsonData = json.data(using: .utf8) {
             do {

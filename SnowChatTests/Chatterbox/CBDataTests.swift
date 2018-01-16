@@ -91,13 +91,12 @@ class CBDataTests: XCTestCase {
     }
     
     func testOutputTextMessage() {
-        let obj = OutputTextMessage.exampleInstance()
-        XCTAssertNotNil(obj)
-        XCTAssertEqual(obj.controlType, .text)
-        let textObj = obj as! OutputTextMessage
-        XCTAssertEqual(obj.data.richControl?.uiType, "OutputText")
-        XCTAssertEqual(obj.data.richControl?.model?.type, "outputMsg")
-        XCTAssertEqual(obj.data.richControl?.value, "Glad I could assist you.")
+        let textObj = OutputTextMessage.exampleInstance()
+        XCTAssertNotNil(textObj)
+        XCTAssertEqual(textObj.controlType, .text)
+        XCTAssertEqual(textObj.data.richControl?.uiType, "OutputText")
+        XCTAssertEqual(textObj.data.richControl?.model?.type, "outputMsg")
+        XCTAssertEqual(textObj.data.richControl?.value, "Glad I could assist you.")
     }
     let jsonInitStart = """
         {
@@ -160,7 +159,7 @@ class CBDataTests: XCTestCase {
     
     func testInitEventFromJSON() {
         
-        let obj = CBDataFactory.channelEventFromJSON(jsonInitStart)
+        let obj = CBDataFactory.actionFromJSON(jsonInitStart)
         XCTAssertNotNil(obj)
         XCTAssert(obj.eventType == .channelInit)
         

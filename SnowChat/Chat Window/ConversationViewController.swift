@@ -30,6 +30,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         return super.tableView!
     }
     
+    private var presentedWelcomeMessage = false
+    
     // MARK: - Initialization
     
     init(chatterbox: Chatterbox) {
@@ -66,10 +68,13 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.estimatedRowHeight = 50
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
-        
-        setupInputForState()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        setupInputForState()
+    }
+    
     private func setupInputForState() {
         switch inputState {
         case .inTopicSelection:
@@ -85,13 +90,22 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         // TODO: install autocomplete handler for system topic choices
     }
     
-    private func setupForTopicSelection() {
+    private func presentWelcomeIfNeeded() {
+        guard presentedWelcomeMessage == false else { return }
+        
         dataController.presentWelcomeMessage()
+        presentedWelcomeMessage = true
+    }
+    
+    private func setupForTopicSelection() {
+        self.autocompleteHandler = TopicSelectionHandler(withController: self, chatterbox: chatterbox)
+        
+        setTextInputbarHidden(false, animated: true)
         
         textView.text = ""
         textView.placeholder = NSLocalizedString("Type your question here...", comment: "Placeholder text for input field when user is selecting a topic")
 
-        self.autocompleteHandler = TopicSelectionHandler(withController: self, chatterbox: chatterbox)
+        presentWelcomeIfNeeded()
     }
     
     private func setupForConversation() {
@@ -131,14 +145,24 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         }
     }
     
-    private func manageInputControl() {
-        if inputState == .inConversation {
+    func manageInputControl() {
+        switch inputState {
+        case  .inConversation:
             // during conversation we hide the input when displaying any control other than text as the last one
             let count = dataController.controlCount()
             if count > 0, let lastControl = dataController.controlForIndex(0) {
                 textView.text = ""
                 isTextInputbarHidden = lastControl.controlModel.type != .text
+                if !isTextInputbarHidden {
+                    textView.becomeFirstResponder()
+                }
             }
+        case .inTopicSelection:
+            if !textView.isFocused {
+                textView.becomeFirstResponder()
+            }
+        default:
+            Logger.default.logDebug("unhandled inputState in manageInputControl: \(inputState)")
         }
     }
 }
