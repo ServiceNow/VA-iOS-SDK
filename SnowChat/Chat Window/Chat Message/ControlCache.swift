@@ -6,13 +6,13 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
+// This class is responsible for caching control based on its model type.
+// There might be multiple controls of the same type, so we will store it in a list for each model type as a key
+
 class ControlCache {
     
-    typealias ControlListByType = [ControlType : [ControlProtocol]]
-    typealias ControlListById = [String : ControlProtocol]
-    
-    private var uiControlByType = ControlListById()
-    private var controlsToReuse = ControlListByType()
+    private var uiControlByModelId = [String : ControlProtocol]()
+    private var controlsToReuse = [ControlType : [ControlProtocol]]()
     
     func control(forModel model: ControlViewModel) -> ControlProtocol {
         let uiControl: ControlProtocol
@@ -25,12 +25,12 @@ class ControlCache {
             uiControl = ControlsUtil.controlForViewModel(model)
         }
         
-        uiControlByType[model.id] = uiControl
+        uiControlByModelId[model.id] = uiControl
         return uiControl
     }
     
-    func removeControl(withModel model: ControlViewModel) {
-        guard let control = uiControlByType[model.id] else {
+    func removeControl(forModel model: ControlViewModel) {
+        guard let control = uiControlByModelId[model.id] else {
             fatalError("Can't find control with model id: \(model.id)")
         }
 
@@ -41,6 +41,6 @@ class ControlCache {
             controlsToReuse[model.type] = [control]
         }
         
-        uiControlByType.removeValue(forKey: model.id)
+        uiControlByModelId.removeValue(forKey: model.id)
     }
 }

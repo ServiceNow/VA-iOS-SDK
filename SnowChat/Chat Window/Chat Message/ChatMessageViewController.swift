@@ -1,5 +1,5 @@
 //
-//  MessageViewController.swift
+//  ChatMessageViewController.swift
 //  SnowChat
 //
 //  Created by Michael Borowiec on 12/15/17.
@@ -8,17 +8,16 @@
 
 import UIKit
 
-class MessageViewController: UIViewController {
+class ChatMessageViewController: UIViewController {
     
-    let controlMaxWidth: CGFloat = 250
+    private let controlMaxWidth: CGFloat = 250
+    private(set) var uiControl: ControlProtocol?
     
     @IBOutlet weak var bubbleView: BubbleView!
     @IBOutlet weak var agentImageView: UIImageView!
     @IBOutlet weak var agentBubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var bubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var bubbleTrailingConstraint: NSLayoutConstraint!
-    
-    private(set) var uiControl: ControlProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,6 +67,8 @@ class MessageViewController: UIViewController {
     }
     
     // updates message view based on the direction of the message
+    
+    // FIXME: Some of these will be moved to Control classes after we add theming.
     
     private func updateForLocation(_ location: BubbleLocation) {
         if uiControl?.model.type == .text {

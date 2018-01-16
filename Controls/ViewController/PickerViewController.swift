@@ -10,14 +10,12 @@ import UIKit
 
 class PickerViewController: UIViewController {
     
-    let headerViewIdentifier = "HeaderView"
-    let footerViewIdentifier = "FooterView"
+    private let headerViewIdentifier = "HeaderView"
+    private let footerViewIdentifier = "FooterView"
+    private let headerTextColor = UIColor.controlHeaderTextColor
+    private let fullSizeContainer = FullSizeScrollViewContainerView()
     
     weak var delegate: PickerViewControllerDelegate?
-    
-    let headerTextColor = UIColor.controlHeaderTextColor
-    
-    let fullSizeContainer = FullSizeScrollViewContainerView()
     
     var visibleItemCount: Int = 3 {
         didSet {

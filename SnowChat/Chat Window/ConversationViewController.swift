@@ -244,18 +244,6 @@ extension ConversationViewController {
         }
     }
     
-    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if tableView == autoCompletionView {
-            return
-        }
-
-        if let messageViewController = messageViewControllerCache.viewControllersByIndexPath[indexPath],
-            let controlModel = messageViewController.uiControl?.model {
-            uiControlCache.removeControl(withModel: controlModel)
-        }
-        messageViewControllerCache.removeViewController(at: indexPath)
-    }
-    
     private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
         configureConversationCell(cell, at: indexPath)
@@ -269,7 +257,6 @@ extension ConversationViewController {
             let uiControl = uiControlCache.control(forModel: chatMessageModel.controlModel)
             messageViewController.addUIControl(uiControl, at: chatMessageModel.location)
             messageViewController.uiControl?.delegate = self
-            
             messageViewController.didMove(toParentViewController: self)
         }
 
@@ -278,13 +265,32 @@ extension ConversationViewController {
             cell.transform = tableView.transform
         }
     }
-
+    
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if tableView == autoCompletionView, let handler = autocompleteHandler {
             return handler.viewForHeaderInSection(section)
         } else {
             return nil
         }
+    }
+    
+    // MARK: - ChatMessageViewController reuse
+    
+    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if tableView == autoCompletionView {
+            return
+        }
+        
+        prepareChatMessageViewControllerForReuse(at: indexPath)
+    }
+    
+    private func prepareChatMessageViewControllerForReuse(at indexPath: IndexPath) {
+        if let messageViewController = messageViewControllerCache.viewControllersByIndexPath[indexPath],
+            let controlModel = messageViewController.uiControl?.model {
+            uiControlCache.removeControl(forModel: controlModel)
+        }
+        
+        messageViewControllerCache.removeViewController(at: indexPath)
     }
 }
 

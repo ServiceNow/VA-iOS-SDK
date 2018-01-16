@@ -40,7 +40,7 @@ class TextControl: ControlProtocol {
             }
             
             textViewController.textLabel.text = textModel.value
-            textViewController.textLabel.layoutIfNeeded()
+            textViewController.view.layoutIfNeeded()
         }
     }
     

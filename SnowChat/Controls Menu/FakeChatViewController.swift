@@ -14,7 +14,7 @@ class FakeChatViewController: UIViewController, UITableViewDelegate, UITableView
     
     var observer: NSKeyValueObservation?
     
-    var messageViewControllers = [MessageViewController]()
+    var messageViewControllers = [ChatMessageViewController]()
     
     var controls: [ControlProtocol]? {
         didSet {
@@ -30,7 +30,7 @@ class FakeChatViewController: UIViewController, UITableViewDelegate, UITableView
             
             guard let controls = controls else { return }
             for _ in controls {
-                let controller = MessageViewController(nibName: "MessageViewController", bundle: Bundle(for: type(of: self)))
+                let controller = ChatMessageViewController(nibName: "ChatMessageViewController", bundle: Bundle(for: type(of: self)))
                 controller.willMove(toParentViewController: self)
                 addChildViewController(controller)
                 messageViewControllers.append(controller)
