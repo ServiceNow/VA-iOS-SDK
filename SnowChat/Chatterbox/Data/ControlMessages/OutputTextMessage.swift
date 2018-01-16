@@ -28,4 +28,36 @@ struct OutputTextMessage: Codable, CBControlData {
     init(withData: RichControlData<ControlWrapper<String, UIMetadata>>) {
         data = withData
     }
+    
+    internal static func exampleInstance() -> OutputTextMessage {
+        let jsonOutputText = """
+        {
+          "type" : "systemTextMessage",
+          "data" : {
+            "@class" : ".MessageDto",
+            "messageId" : "1849dd2f73760300d63a566a4cf6a7f5",
+            "richControl" : {
+              "model" : {
+                "name" : "fieldAck.__silent_sys_cb_prompt_9818cccfb330030001182ab716a8dc7f",
+                "type" : "outputMsg"
+              },
+              "uiType" : "OutputText",
+              "value" : "Glad I could assist you."
+            },
+            "taskId" : "6739dd2f73760300d63a566a4cf6a7cf",
+            "sessionId" : "bf29dd2f73760300d63a566a4cf6a759",
+            "conversationId" : "6339dd2f73760300d63a566a4cf6a7cf",
+            "links" : [
+
+            ],
+            "sendTime" : 1512772512460,
+            "direction" : "outbound",
+            "isAgent" : false,
+            "receiveTime" : 0
+          },
+          "source" : "server"
+        }
+        """
+        return CBDataFactory.controlFromJSON(jsonOutputText) as! OutputTextMessage
+    }
 }

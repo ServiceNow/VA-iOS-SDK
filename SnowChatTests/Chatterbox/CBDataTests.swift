@@ -58,34 +58,9 @@ class CBDataTests: XCTestCase {
     }
 
     func testBooleanFromJSON() {
-        let json = """
-        {
-          "type": "systemTextMessage",
-          "data": {
-            "sessionId": "1",
-            "sendTime": 0,
-            "receiveTime": 0,
-            "direction": "outbound",
-            "richControl": {
-              "uiType": "Boolean",
-              "value": true,
-              "uiMetadata": {
-                "label": "Would you like to create an incident?",
-                "required": true
-              },
-              "model": {
-                "name": "init_create_incident",
-                "type": "field"
-              }
-            },
-            "messageId": "d30c8342-1e78-47aa-886e-d6627c092691"
-          }
-        }
-        """
-        let obj = CBDataFactory.controlFromJSON(json)
-        XCTAssertNotNil(obj)
-        XCTAssert(obj.controlType == .boolean)
-        let boolObj = obj as! BooleanControlMessage
+        let boolObj = BooleanControlMessage.exampleInstance()
+        XCTAssertNotNil(boolObj)
+        XCTAssert(boolObj.controlType == .boolean)
         XCTAssert(boolObj.data.richControl?.uiType == "Boolean")
         XCTAssert(boolObj.data.richControl?.model?.type == "field")
         XCTAssert(boolObj.data.richControl?.uiMetadata?.label == "Would you like to create an incident?")
@@ -93,146 +68,36 @@ class CBDataTests: XCTestCase {
     }
     
     func testInputFromJSON() {
-        let json = """
-        {
-          "type" : "systemTextMessage",
-          "data" : {
-            "@class" : ".MessageDto",
-            "messageId" : "720ea46773760300d63a566a4cf6a743",
-            "richControl" : {
-              "model" : {
-                "name" : "short_description",
-                "type" : "field"
-              },
-              "uiType" : "InputText",
-              "uiMetadata" : {
-                "label" : "Please enter a short description of the issue you would like to report.",
-                "required" : true
-              }
-            },
-            "taskId" : "33fda46773760300d63a566a4cf6a74b",
-            "sessionId" : "47fde42773760300d63a566a4cf6a73f",
-            "conversationId" : "3ffda46773760300d63a566a4cf6a74a",
-            "links" : [
-
-            ],
-            "sendTime" : 1512761185086,
-            "direction" : "outbound",
-            "isAgent" : false,
-            "receiveTime" : 0
-          },
-          "source" : "server"
-        }
-        """
-        let obj = CBDataFactory.controlFromJSON(json)
+        let obj = InputControlMessage.exampleInstance()
         XCTAssertNotNil(obj)
         XCTAssert(obj.controlType == .input)
-        let boolObj = obj as! InputControlMessage
-        XCTAssert(boolObj.data.richControl?.uiType == "InputText")
-        XCTAssert(boolObj.data.richControl?.model?.type == "field")
-        XCTAssert(boolObj.data.richControl?.uiMetadata?.label == "Please enter a short description of the issue you would like to report.")
-        XCTAssert(boolObj.data.richControl?.uiMetadata?.required == true)
+        XCTAssert(obj.data.richControl?.uiType == "InputText")
+        XCTAssert(obj.data.richControl?.model?.type == "field")
+        XCTAssert(obj.data.richControl?.uiMetadata?.label == "Please enter a short description of the issue you would like to report.")
+        XCTAssert(obj.data.richControl?.uiMetadata?.required == true)
     }
     
     func testPickerFromJSON() {
-        let json = """
-        {
-          "type" : "systemTextMessage",
-          "data" : {
-            "@class" : ".MessageDto",
-            "messageId" : "d9f0c92b73760300d63a566a4cf6a717",
-            "richControl" : {
-              "model" : {
-                "name" : "urgency",
-                "type" : "field"
-              },
-              "uiType" : "Picker",
-              "uiMetadata" : {
-                "multiSelect" : false,
-                "style" : "list",
-                "openByDefault" : true,
-                "label" : "What is the urgency: low, medium or high?",
-                "options" : [
-                  {
-                    "label" : "High",
-                    "value" : "1"
-                  },
-                  {
-                    "label" : "Medium",
-                    "value" : "2"
-                  },
-                  {
-                    "label" : "Low",
-                    "value" : "3"
-                  }
-                ],
-                "required" : true,
-                "itemType" : "ID"
-              }
-            },
-            "taskId" : "efe0892b73760300d63a566a4cf6a7b9",
-            "sessionId" : "47e0892b73760300d63a566a4cf6a79b",
-            "conversationId" : "ebe0892b73760300d63a566a4cf6a7b9",
-            "links" : [
-
-            ],
-            "sendTime" : 1512766143466,
-            "direction" : "outbound",
-            "isAgent" : false,
-            "receiveTime" : 0
-          },
-          "source" : "server"
-        }
-        """
-        let obj = CBDataFactory.controlFromJSON(json)
+        let obj = PickerControlMessage.exampleInstance()
         XCTAssertNotNil(obj)
         XCTAssert(obj.controlType == .picker)
-        let boolObj = obj as! PickerControlMessage
-        XCTAssert(boolObj.data.richControl?.uiType == "Picker")
-        XCTAssert(boolObj.data.richControl?.model?.type == "field")
-        XCTAssert(boolObj.data.richControl?.uiMetadata?.label == "What is the urgency: low, medium or high?")
-        XCTAssert(boolObj.data.richControl?.uiMetadata?.required == true)
-        XCTAssert(boolObj.data.richControl?.uiMetadata?.itemType == "ID")
-        XCTAssert(boolObj.data.richControl?.uiMetadata?.style == "list")
-        XCTAssert(boolObj.data.richControl?.uiMetadata?.multiSelect == false)
+        XCTAssert(obj.data.richControl?.uiType == "Picker")
+        XCTAssert(obj.data.richControl?.model?.type == "field")
+        XCTAssert(obj.data.richControl?.uiMetadata?.label == "What is the urgency: low, medium or high?")
+        XCTAssert(obj.data.richControl?.uiMetadata?.required == true)
+        XCTAssert(obj.data.richControl?.uiMetadata?.itemType == "ID")
+        XCTAssert(obj.data.richControl?.uiMetadata?.style == "list")
+        XCTAssert(obj.data.richControl?.uiMetadata?.multiSelect == false)
     }
     
     func testOutputTextMessage() {
-        let json = """
-        {
-          "type" : "systemTextMessage",
-          "data" : {
-            "@class" : ".MessageDto",
-            "messageId" : "1849dd2f73760300d63a566a4cf6a7f5",
-            "richControl" : {
-              "model" : {
-                "name" : "fieldAck.__silent_sys_cb_prompt_9818cccfb330030001182ab716a8dc7f",
-                "type" : "outputMsg"
-              },
-              "uiType" : "OutputText",
-              "value" : "Glad I could assist you."
-            },
-            "taskId" : "6739dd2f73760300d63a566a4cf6a7cf",
-            "sessionId" : "bf29dd2f73760300d63a566a4cf6a759",
-            "conversationId" : "6339dd2f73760300d63a566a4cf6a7cf",
-            "links" : [
-
-            ],
-            "sendTime" : 1512772512460,
-            "direction" : "outbound",
-            "isAgent" : false,
-            "receiveTime" : 0
-          },
-          "source" : "server"
-        }
-        """
-        let obj = CBDataFactory.controlFromJSON(json)
+        let obj = OutputTextMessage.exampleInstance()
         XCTAssertNotNil(obj)
         XCTAssertEqual(obj.controlType, .text)
         let textObj = obj as! OutputTextMessage
-        XCTAssertEqual(textObj.data.richControl?.uiType, "OutputText")
-        XCTAssertEqual(textObj.data.richControl?.model?.type, "outputMsg")
-        XCTAssertEqual(textObj.data.richControl?.value, "Glad I could assist you.")
+        XCTAssertEqual(obj.data.richControl?.uiType, "OutputText")
+        XCTAssertEqual(obj.data.richControl?.model?.type, "outputMsg")
+        XCTAssertEqual(obj.data.richControl?.value, "Glad I could assist you.")
     }
     let jsonInitStart = """
         {

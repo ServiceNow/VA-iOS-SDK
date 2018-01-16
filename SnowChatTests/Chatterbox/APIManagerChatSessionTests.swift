@@ -33,6 +33,22 @@ class APIManagerChatSessionTest: XCTestCase {
         XCTAssertEqual("139dd4f673234300d63a566a4cf6a7c6", conversation.uniqueId())
         XCTAssertEqual(Conversation.ConversationState.completed, conversation.state)
         XCTAssertEqual(4, conversation.messageExchanges().count)
+        
+        var exchange = conversation.messageExchanges()[0]
+        let booleanMessage: BooleanControlMessage = exchange.message as! BooleanControlMessage
+        let booleanResponse: BooleanControlMessage = exchange.response as! BooleanControlMessage
+        XCTAssert(booleanMessage.data.direction == .fromServer)
+        XCTAssert(booleanResponse.data.direction == .fromClient)
+        XCTAssertEqual("1", booleanMessage.data.messageId)
+        XCTAssertEqual("2", booleanResponse.data.messageId)
+        
+        exchange = conversation.messageExchanges()[1]
+        let inputMessage: InputControlMessage = exchange.message as! InputControlMessage
+        let inputResponse: InputControlMessage = exchange.response as! InputControlMessage
+        XCTAssert(inputMessage.data.direction == .fromServer)
+        XCTAssert(inputResponse.data.direction == .fromClient)
+        XCTAssertEqual("3", inputMessage.data.messageId)
+        XCTAssertEqual("4", inputResponse.data.messageId)
     }
     
     func testConversationsResultParsing() throws {
@@ -48,6 +64,42 @@ class APIManagerChatSessionTest: XCTestCase {
         XCTAssertEqual("139dd4f673234300d63a566a4cf6a7c6", conversation.uniqueId())
         XCTAssertEqual(Conversation.ConversationState.completed, conversation.state)
         XCTAssertEqual(4, conversation.messageExchanges().count)
+        
+        var exchange = conversation.messageExchanges()[0]
+        let booleanMessage = exchange.message as! BooleanControlMessage
+        let booleanResponse = exchange.response as! BooleanControlMessage
+        XCTAssert(booleanMessage.data.direction == .fromServer)
+        XCTAssert(booleanResponse.data.direction == .fromClient)
+        XCTAssertEqual("1", booleanMessage.data.messageId)
+        XCTAssertEqual("2", booleanResponse.data.messageId)
+        XCTAssertTrue(exchange.isComplete)
+        
+        exchange = conversation.messageExchanges()[1]
+        let inputMessage = exchange.message as! InputControlMessage
+        let inputResponse = exchange.response as! InputControlMessage
+        XCTAssert(inputMessage.data.direction == .fromServer)
+        XCTAssert(inputResponse.data.direction == .fromClient)
+        XCTAssertEqual("3", inputMessage.data.messageId)
+        XCTAssertEqual("4", inputResponse.data.messageId)
+        XCTAssertEqual("Door is not unlocking", inputResponse.data.richControl?.value!)
+        XCTAssertTrue(exchange.isComplete)
+        
+        exchange = conversation.messageExchanges()[2]
+        let pickerMessage = exchange.message as! PickerControlMessage
+        let pickerResponse = exchange.response as! PickerControlMessage
+        XCTAssert(inputMessage.data.direction == .fromServer)
+        XCTAssert(inputResponse.data.direction == .fromClient)
+        XCTAssertEqual("5", pickerMessage.data.messageId)
+        XCTAssertEqual("6", pickerResponse.data.messageId)
+        XCTAssertEqual("2", pickerResponse.data.richControl?.value!)
+        XCTAssertTrue(exchange.isComplete)
+        
+        exchange = conversation.messageExchanges()[3]
+        let textOutput = exchange.message as! OutputTextMessage
+        XCTAssertEqual(.fromServer, textOutput.data.direction)
+        XCTAssertEqual("7", textOutput.data.messageId)
+        XCTAssertEqual("INC0010051 has been created for you. Glad I could assist you.", textOutput.data.richControl?.value!)
+        XCTAssertTrue(exchange.isComplete)
     }
     
     let conversationResultJSON = """
@@ -136,6 +188,31 @@ class APIManagerChatSessionTest: XCTestCase {
                         "messageId": "4",
                         "conversationId": "139dd4f673234300d63a566a4cf6a7c6",
                         "taskId": "179dd4f673234300d63a566a4cf6a7c6",
+                        "direction": "inbound",
+                        "sendTime": 1515776789000,
+                        "receiveTime": 1515776789000,
+                        "links": [
+
+                        ],
+                        "richControl": {
+                            "uiType": "InputText",
+                            "model": {
+                                "type": "field",
+                                "name": "short_description"
+                            },
+                            "uiMetadata": {
+                                "label": "Please enter a short description of the issue you would like to report.",
+                                "required": true
+                            },
+                            "value": "Door is not unlocking"
+                        },
+                        "isAgent": false
+                    },
+                    {
+                        "@class": ".MessageDto",
+                        "messageId": "5",
+                        "conversationId": "139dd4f673234300d63a566a4cf6a7c6",
+                        "taskId": "179dd4f673234300d63a566a4cf6a7c6",
                         "direction": "outbound",
                         "sendTime": 1515776789000,
                         "receiveTime": 0,
@@ -173,31 +250,7 @@ class APIManagerChatSessionTest: XCTestCase {
                         },
                         "isAgent": false
                     },
-                    {
-                        "@class": ".MessageDto",
-                        "messageId": "5",
-                        "conversationId": "139dd4f673234300d63a566a4cf6a7c6",
-                        "taskId": "179dd4f673234300d63a566a4cf6a7c6",
-                        "direction": "inbound",
-                        "sendTime": 1515776789000,
-                        "receiveTime": 1515776789000,
-                        "links": [
-
-                        ],
-                        "richControl": {
-                            "uiType": "InputText",
-                            "model": {
-                                "type": "field",
-                                "name": "short_description"
-                            },
-                            "uiMetadata": {
-                                "label": "Please enter a short description of the issue you would like to report.",
-                                "required": true
-                            },
-                            "value": "Door is not unlocking"
-                        },
-                        "isAgent": false
-                    },
+                    
                     {
                         "@class": ".MessageDto",
                         "messageId": "6",
@@ -242,24 +295,8 @@ class APIManagerChatSessionTest: XCTestCase {
                         "isAgent": false
                     },
                     {
-                        "@class": "com.glide.cs.qlue.actions.systemAction.ActionMessageDto",
-                        "messageId": "7",
-                        "conversationId": "139dd4f673234300d63a566a4cf6a7c6",
-                        "direction": "outbound",
-                        "sendTime": 1515776792000,
-                        "receiveTime": 0,
-                        "links": [
-
-                        ],
-                        "isAgent": false,
-                        "actionMessage": {
-                            "type": "TopicFinished",
-                            "systemActionName": "TopicFinished"
-                        }
-                    },
-                    {
                         "@class": ".MessageDto",
-                        "messageId": "8",
+                        "messageId": "7",
                         "conversationId": "139dd4f673234300d63a566a4cf6a7c6",
                         "taskId": "179dd4f673234300d63a566a4cf6a7c6",
                         "direction": "outbound",
@@ -277,6 +314,22 @@ class APIManagerChatSessionTest: XCTestCase {
                             "value": "INC0010051 has been created for you. Glad I could assist you."
                         },
                         "isAgent": false
+                    },
+                    {
+                        "@class": "com.glide.cs.qlue.actions.systemAction.ActionMessageDto",
+                        "messageId": "8",
+                        "conversationId": "139dd4f673234300d63a566a4cf6a7c6",
+                        "direction": "outbound",
+                        "sendTime": 1515776792000,
+                        "receiveTime": 0,
+                        "links": [
+
+                        ],
+                        "isAgent": false,
+                        "actionMessage": {
+                            "type": "TopicFinished",
+                            "systemActionName": "TopicFinished"
+                        }
                     }
                 ],
                 "consumerAcctId": "c29d18f673234300d63a566a4cf6a71a",

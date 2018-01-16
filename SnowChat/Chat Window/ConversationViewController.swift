@@ -108,6 +108,14 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     // MARK: - ViewDataChangeListener
     
     func chatDataController(_ dataController: ChatDataController, didChangeModel model: ChatMessageModel, atIndex index: Int) {
+        updateTableView()
+    }
+    
+    func chatDataController(_ dataController: ChatDataController, didBulkUpdateModelsAtIndices indices: [Int]?) {
+        updateTableView()
+    }
+    
+    private func updateTableView() {
         manageInputControl()
         tableView.reloadData()
         
@@ -123,7 +131,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         }
     }
     
-    func manageInputControl() {
+    private func manageInputControl() {
         if inputState == .inConversation {
             // during conversation we hide the input when displaying any control other than text as the last one
             let count = dataController.controlCount()

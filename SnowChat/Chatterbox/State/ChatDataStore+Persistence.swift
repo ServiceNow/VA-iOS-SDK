@@ -12,10 +12,15 @@ private let documentsDirectory = FileManager().urls(for: .documentDirectory, in:
 private let archiveURL = documentsDirectory?.appendingPathComponent("chatstore")
 
 internal class StorableContainer: Codable {
+    static let currentVersion = 1
+    
+    var version: Int
     var consumerAccountId: String
     var conversationIds: [String]
     
     init(consumerAccountId: String, conversationIds: [String]?) {
+        version = StorableContainer.currentVersion
+        
         self.consumerAccountId = consumerAccountId
         
         if let conversationIds = conversationIds {
@@ -57,6 +62,11 @@ extension ChatDataStore {
         let data = try Data(contentsOf: archiveURL, options: [])
         
         let storable = try CBData.jsonDecoder.decode(StorableContainer.self, from: data)
+        if storable.version != StorableContainer.currentVersion {
+            try clearPersistence()
+            return nil
+        }
+        
         consumerAccountId = storable.consumerAccountId
         return storable.conversationIds
     }

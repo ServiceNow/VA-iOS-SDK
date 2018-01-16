@@ -22,8 +22,8 @@ class ChatDataStore {
     
     // storeControlData: find or create a conversation and add a new MessageExchange with the new control data
     //
-    func storeControlData(_ data: CBControlData, expectResponse: Bool, forConversation conversationId: String, fromChat source: Chatterbox) {
-        let messageExchange = MessageExchange(withMessage: data, isComplete: !expectResponse)
+    func storeControlData(_ data: CBControlData, forConversation conversationId: String, fromChat source: Chatterbox) {
+        let messageExchange = MessageExchange(withMessage: data)
         
         var index = conversations.index { $0.uniqueId() == conversationId }
         if index == nil {
@@ -59,6 +59,14 @@ class ChatDataStore {
     func conversation(forId id: String) -> Conversation? {
         return conversations.first(where: { $0.uniqueId() == id })
     }
+    
+    func storeConversation(_ conversation: Conversation) {
+        if let index = conversations.index(where: { $0.uniqueId() == conversation.uniqueId() }) {
+            conversations[index] = conversation
+        } else {
+            conversations.append(conversation)
+        }
+    }
 }
 
 struct Conversation: CBStorable {
@@ -83,7 +91,6 @@ struct Conversation: CBStorable {
         if let last = exchanges.last, last.isComplete != true {
             let index = exchanges.count - 1
             exchanges[index].response = data
-            exchanges[index].isComplete = true
         } else {
             Logger.default.logError("Response received for conversationID \(id) with no pending message exchange!")
         }
@@ -107,13 +114,23 @@ struct Conversation: CBStorable {
 }
 
 struct MessageExchange {
-    var isComplete: Bool
+    var isComplete: Bool {
+        // Exchange is complete if there is a response, or if the message type needs no response
+        if !needsResponse() {
+            return true
+        } else {
+            return response != nil
+        }
+    }
     
     var message: CBStorable
     var response: CBStorable?
     
-    init(withMessage message: CBStorable, isComplete complete: Bool = false) {
+    init(withMessage message: CBStorable) {
         self.message = message
-        isComplete = complete
+    }
+    
+    private func needsResponse() -> Bool {
+        return !(message is OutputTextMessage)
     }
 }

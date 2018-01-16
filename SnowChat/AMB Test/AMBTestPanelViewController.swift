@@ -18,6 +18,14 @@ func booleanControlFromBooleanViewModel(viewModel: BooleanControlViewModel) -> B
 }
 
 class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventListener, ControlDelegate {
+    func chatterbox(_ chatterbox: Chatterbox, willLoadConversation conversationId: String, forChat chatId: String) {
+        Logger.default.logDebug("Conversation Will Load")
+    }
+
+    func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
+        Logger.default.logDebug("Conversation Load Completed")
+    }
+    
     func chatterbox(_ chatterbox: Chatterbox, didCompleteBooleanExchange messageExchange: MessageExchange, forChat chatId: String) {
         Logger.default.logDebug("Boolean Message Completed")
     }

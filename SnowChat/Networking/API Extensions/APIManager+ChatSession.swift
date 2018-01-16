@@ -80,8 +80,10 @@ extension APIManager {
                                encoding: JSONEncoding.default).validate().responseJSON { response in
             var conversations = [Conversation]()
             if response.error == nil {
-                if let result = response.result.value {
-                    conversations = APIManager.conversationsFromResult(result)
+                if let result = response.result.value as? NSDictionary,
+                   let conversationsArray = result["conversations"] {
+                    
+                    conversations = APIManager.conversationsFromResult(conversationsArray)
                 }
             }
             completionHandler(conversations)
@@ -131,7 +133,8 @@ extension APIManager {
                 var conversation = Conversation(withConversationId: conversationId, withState: status == "COMPLETED" ? .completed : .inProgress)
                 
                 messages.forEach({ (message) in
-                    if conversation.lastPendingMessage() != nil {
+                    if let lastPending = conversation.lastPendingMessage() as? CBControlData,
+                       lastPending.controlType == message.controlType {
                         conversation.storeResponse(message)
                     } else {
                         conversation.add(MessageExchange(withMessage: message))

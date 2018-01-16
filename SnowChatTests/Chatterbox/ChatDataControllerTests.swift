@@ -11,6 +11,10 @@ import XCTest
 @testable import SnowChat
 
 class DataControllerTests: XCTestCase, ViewDataChangeListener {
+    func chatDataController(_ dataController: ChatDataController, didBulkUpdateModelsAtIndices indices: [Int]?) {
+        
+    }
+    
     func chatDataController(_ dataController: ChatDataController, didChangeModel model: ChatMessageModel, atIndex index: Int) {
         modelChanged = model
     }
@@ -36,29 +40,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
     var controller: ChatDataController?
     var modelChanged: ChatMessageModel?
     var mockChatterbox: MockChatterbox?
-    let jsonBoolean = """
-        {
-          "type": "systemTextMessage",
-          "data": {
-            "sessionId": "1",
-            "sendTime": 0,
-            "receiveTime": 0,
-            "direction": "outbound",
-            "richControl": {
-              "uiType": "Boolean",
-              "uiMetadata": {
-                "label": "Would you like to create an incident?",
-                "required": true
-              },
-              "model": {
-                "name": "init_create_incident",
-                "type": "field"
-              }
-            },
-            "messageId": "d30c8342-1e78-47aa-886e-d6627c092691"
-          }
-        }
-        """
+   
     let jsonStartedTopic = """
          {
           "type" : "actionMessage",
@@ -108,7 +90,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
     }
     
     func testAddControl() {
-        let boolMessage = CBDataFactory.controlFromJSON(jsonBoolean) as! BooleanControlMessage
+        let boolMessage = BooleanControlMessage.exampleInstance()
         controller?.chatterbox(mockChatterbox!, didReceiveBooleanData: boolMessage, forChat: "chatID")
         
         // test a control is saved
@@ -129,7 +111,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         controller?.topicDidStart(startTopicMessage)
 
         // first add the initial boolean message as if it came from Chatterbox
-        let boolMessage = CBDataFactory.controlFromJSON(jsonBoolean) as! BooleanControlMessage
+        let boolMessage = BooleanControlMessage.exampleInstance()
         controller?.chatterbox(mockChatterbox!, didReceiveBooleanData: boolMessage, forChat: "chatID")
         mockChatterbox?.pendingControlMessage = boolMessage
         
@@ -154,7 +136,6 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         let booleanMessage = mockChatterbox?.pendingControlMessage
         var me = MessageExchange(withMessage: booleanMessage!)
         me.response = mockChatterbox?.updatedControl
-        me.isComplete = true
         
         controller?.chatterbox(mockChatterbox!, didCompleteBooleanExchange: me, forChat: "ChatID")
         

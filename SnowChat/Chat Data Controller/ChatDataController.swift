@@ -24,6 +24,7 @@ import Foundation
 
 protocol ViewDataChangeListener {
     func chatDataController(_ dataController: ChatDataController, didChangeModel model: ChatMessageModel, atIndex index: Int)
+    func chatDataController(_ dataController: ChatDataController, didBulkUpdateModelsAtIndices indices: [Int]?)
 }
 
 class ChatDataController {
@@ -159,6 +160,18 @@ class ChatDataController {
 }
 
 extension ChatDataController: ChatDataListener {
+    
+    func chatterbox(_ chatterbox: Chatterbox, willLoadConversation conversationId: String, forChat chatId: String) {
+        // disable caching while doing a conversation load
+        //cachingEnabled = false
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
+        // re-enable caching and upate the view
+        //cachingEnabled = true
+        
+        changeListener?.chatDataController(self, didBulkUpdateModelsAtIndices: nil)
+    }
     
     // MARK: - ChatDataListener (from service)
     

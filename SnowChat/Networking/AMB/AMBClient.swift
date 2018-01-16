@@ -13,7 +13,7 @@ import AMBClient
 // A wrapped; self contained AMB client
 // Probably remove this?
 
-private let logger = Logger(forCategory: "AMBClient", level: .Info)
+private let logger = Logger.logger(for: "AMBClient")
 
 internal class AMBClient: NSObject {
     
