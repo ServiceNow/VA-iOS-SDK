@@ -14,6 +14,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChatMessageViewController" customModule="SnowChat" customModuleProvider="target">
             <connections>
                 <outlet property="agentBubbleLeadingConstraint" destination="bFc-Gq-72f" id="DCC-OH-2G3"/>
+                <outlet property="agentImageTopConstraint" destination="lSH-w5-aR5" id="Y1S-Lg-Imz"/>
                 <outlet property="agentImageView" destination="TbH-h7-fly" id="8mh-hQ-bMB"/>
                 <outlet property="bubbleLeadingConstraint" destination="BYk-kB-HH3" id="Jv7-KW-Q6y"/>
                 <outlet property="bubbleTrailingConstraint" destination="xMf-vP-2K3" id="gBR-fD-Nt2"/>

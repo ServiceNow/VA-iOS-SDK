@@ -18,6 +18,7 @@ class ChatMessageViewController: UIViewController {
     @IBOutlet weak var agentBubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var bubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var bubbleTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var agentImageTopConstraint: NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,6 +52,7 @@ class ChatMessageViewController: UIViewController {
         
         controlViewController.didMove(toParentViewController: self)
         
+        // FIXME: that probably could go away after we add insert/delete to a data controller
         UIView.performWithoutAnimation {
             view.layoutIfNeeded()
         }
@@ -86,6 +88,7 @@ class ChatMessageViewController: UIViewController {
             agentBubbleLeadingConstraint.priority = .veryHigh
             bubbleLeadingConstraint.priority = .defaultLow
             bubbleTrailingConstraint.priority = .defaultHigh
+            agentImageTopConstraint.priority = .veryHigh
         case .right:
             uiControl?.viewController.view.backgroundColor = UIColor.userBubbleBackgroundColor
             bubbleView.backgroundColor = UIColor.userBubbleBackgroundColor
@@ -94,6 +97,7 @@ class ChatMessageViewController: UIViewController {
             bubbleLeadingConstraint.priority = .defaultHigh
             bubbleTrailingConstraint.priority = .veryHigh
             agentImageView.isHidden = true
+            agentImageTopConstraint.priority = .lowest
         }
     }
 }

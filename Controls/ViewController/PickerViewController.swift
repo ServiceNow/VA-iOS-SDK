@@ -145,6 +145,7 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: headerViewIdentifier) as! PickerHeaderView
         headerView.contentView.backgroundColor = UIColor.controlHeaderBackgroundColor
         let titleLabel = UILabel()
+        titleLabel.font = UIFont.preferredFont(forTextStyle: .title3)
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.numberOfLines = 0
         titleLabel.text = model.label
@@ -169,6 +170,7 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         let doneButton = UIButton(type: .custom)
         doneButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
         doneButton.setTitle("Done", for: .normal)
+        doneButton.titleLabel?.font = UIFont.preferredFont(forTextStyle: .title3)
         doneButton.setTitleColor(headerTextColor, for: .normal)
         doneButton.titleLabel?.adjustsFontSizeToFitWidth = true
         doneButton.backgroundColor = UIColor.controlHeaderBackgroundColor
@@ -176,8 +178,8 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         footerView.contentView.addSubview(doneButton)
         NSLayoutConstraint.activate([doneButton.leadingAnchor.constraint(equalTo: footerView.contentView.leadingAnchor),
                                      doneButton.trailingAnchor.constraint(equalTo: footerView.contentView.trailingAnchor),
-                                     doneButton.topAnchor.constraint(equalTo: footerView.contentView.topAnchor),
-                                     doneButton.bottomAnchor.constraint(equalTo: footerView.contentView.bottomAnchor)])
+                                     doneButton.topAnchor.constraint(equalTo: footerView.contentView.topAnchor, constant: 5),
+                                     doneButton.bottomAnchor.constraint(equalTo: footerView.contentView.bottomAnchor, constant: -5)])
         footerView.doneButton = doneButton
         return footerView
     }
