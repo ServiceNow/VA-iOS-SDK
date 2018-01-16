@@ -17,6 +17,12 @@ class PickerViewController: UIViewController {
     
     weak var delegate: PickerViewControllerDelegate?
     
+    private lazy var selectedBackgroundView: UIView = {
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = UIColor.controlSelectedBackgroundColor
+        return backgroundView
+    }()
+    
     var visibleItemCount: Int = 3 {
         didSet {
             fullSizeContainer.maxVisibleItemCount = visibleItemCount
@@ -117,7 +123,12 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         let identifier = model.isMultiSelect ? SelectableViewCell.cellIdentifier : PickerTableViewCell.cellIdentifier
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
         cell.contentView.backgroundColor = UIColor.white
-        cell.selectionStyle = .none
+
+        if model.isMultiSelect {
+            cell.selectionStyle = .none
+        } else {
+            cell.selectedBackgroundView = selectedBackgroundView
+        }
         
         guard let configurableCell: ConfigurablePickerCell = cell as? ConfigurablePickerCell else {
             return cell

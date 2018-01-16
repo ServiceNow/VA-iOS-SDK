@@ -69,7 +69,6 @@ class ChatMessageViewController: UIViewController {
     }
     
     // updates message view based on the direction of the message
-    
     // FIXME: Some of these will be moved to Control classes after we add theming.
     
     private func updateForLocation(_ location: BubbleLocation) {

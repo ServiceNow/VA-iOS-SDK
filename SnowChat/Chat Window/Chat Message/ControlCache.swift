@@ -31,7 +31,8 @@ class ControlCache {
     
     func removeControl(forModel model: ControlViewModel) {
         guard let control = uiControlByModelId[model.id] else {
-            fatalError("Can't find control with model id: \(model.id)")
+            Logger.default.logDebug("Can't find control with model id: \(model.id)")
+            return
         }
 
         if var controlsList = controlsToReuse[model.type] {
