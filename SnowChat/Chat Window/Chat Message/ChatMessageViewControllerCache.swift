@@ -11,7 +11,7 @@
 
 class ChatMessageViewControllerCache {
     
-    private(set) var viewControllerByIndexPath = [IndexPath : ChatMessageViewController]()
+    private(set) var viewControllerByIndexPath = [IndexPath: ChatMessageViewController]()
     private var viewControllersToReuse = Set<ChatMessageViewController>()
     
     func getViewController(for indexPath: IndexPath, movedToParentViewController parent: UIViewController) -> ChatMessageViewController {
