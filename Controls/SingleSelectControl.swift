@@ -19,7 +19,11 @@ class SingleSelectControl: PickerControlProtocol {
     
     var style: PickerControlStyle
     
-    var model: ControlViewModel
+    var model: ControlViewModel {
+        didSet {
+            updateViewController(withModel: model)
+        }
+    }
     
     weak var delegate: ControlDelegate?
     

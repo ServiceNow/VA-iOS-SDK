@@ -12,7 +12,11 @@ class MultiSelectControl: PickerControlProtocol {
     
     var visibleItemCount: Int = PickerConstants.visibleItemCount
     
-    var model: ControlViewModel
+    var model: ControlViewModel {
+        didSet {
+            updateViewController(withModel: model)
+        }
+    }
     
     var style: PickerControlStyle
     
