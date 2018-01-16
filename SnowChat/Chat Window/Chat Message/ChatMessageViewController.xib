@@ -45,8 +45,8 @@
                 <constraint firstItem="TbH-h7-fly" firstAttribute="bottom" secondItem="D7e-qt-X1x" secondAttribute="bottom" id="VIa-ku-AGG"/>
                 <constraint firstItem="sE2-NG-Z0e" firstAttribute="leading" secondItem="TbH-h7-fly" secondAttribute="leading" constant="-10" id="abd-r6-HuA"/>
                 <constraint firstItem="zQD-cm-Q41" firstAttribute="leading" secondItem="TbH-h7-fly" secondAttribute="trailing" priority="750" constant="5" id="bFc-Gq-72f"/>
-                <constraint firstItem="TbH-h7-fly" firstAttribute="top" relation="greaterThanOrEqual" secondItem="D7e-qt-X1x" secondAttribute="top" priority="998" id="lSH-w5-aR5"/>
-                <constraint firstItem="zQD-cm-Q41" firstAttribute="top" secondItem="D7e-qt-X1x" secondAttribute="top" constant="3" id="rKb-Z1-ZnA"/>
+                <constraint firstItem="TbH-h7-fly" firstAttribute="top" relation="greaterThanOrEqual" secondItem="D7e-qt-X1x" secondAttribute="top" priority="999" constant="10" id="lSH-w5-aR5"/>
+                <constraint firstItem="zQD-cm-Q41" firstAttribute="top" secondItem="D7e-qt-X1x" secondAttribute="top" priority="998" constant="3" id="rKb-Z1-ZnA"/>
                 <constraint firstItem="sE2-NG-Z0e" firstAttribute="trailing" secondItem="zQD-cm-Q41" secondAttribute="trailing" priority="750" constant="10" id="xMf-vP-2K3"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
