@@ -11,15 +11,13 @@ import XCTest
 @testable import SnowChat
 
 class DataControllerTests: XCTestCase, ViewDataChangeListener {
-    func chatDataController(_ dataController: ChatDataController, didBulkUpdateModelsAtIndices indices: [Int]?) {
-        
-    }
-    
-    func chatDataController(_ dataController: ChatDataController, didChangeModel model: ChatMessageModel, atIndex index: Int) {
-        modelChanged = model
+    func controller(_ dataController: ChatDataController, didChangeData changes: [ModelChangeInfo]) {
         expectation?.fulfill()
     }
     
+    func controlllerDidLoadContent(_ dataController: ChatDataController) {
+        
+    }
     
     class MockChatterbox: Chatterbox {
         var updatedControl: CBControlData?
@@ -40,7 +38,6 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
     
     var expectation: XCTestExpectation?
     var controller: ChatDataController?
-    var modelChanged: ChatMessageModel?
     var mockChatterbox: MockChatterbox?
    
     let jsonStartedTopic = """
@@ -78,7 +75,6 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         controller?.setChangeListener(self)
 
         mockChatterbox?.updatedControl = nil
-        modelChanged = nil
     }
     
     override func tearDown() {
@@ -108,8 +104,6 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         XCTAssertNotEqual(boolMessage.uniqueId(), controller?.controlForIndex(0)?.controlModel.id)
         // test the ChatMessageData has the correct direction
         XCTAssertEqual(BubbleLocation(direction: MessageDirection.fromServer), controller?.controlForIndex(0)?.location)
-        // these that the change was notified
-        XCTAssertEqual(modelChanged!.controlModel.id, controller?.controlForIndex(0)!.controlModel.id)
     }
     
     func startConversationAndUpdateBooleanControl() -> String {

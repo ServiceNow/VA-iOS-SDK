@@ -121,11 +121,11 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     // MARK: - ViewDataChangeListener
     
-    func chatDataController(_ dataController: ChatDataController, didChangeModel model: ChatMessageModel, atIndex index: Int) {
+    func controller(_ dataController: ChatDataController, didChangeData changes: [ModelChangeInfo]) {
         updateTableView()
     }
     
-    func chatDataController(_ dataController: ChatDataController, didBulkUpdateModelsAtIndices indices: [Int]?) {
+    func controlllerDidLoadContent(_ dataController: ChatDataController) {
         updateTableView()
     }
     

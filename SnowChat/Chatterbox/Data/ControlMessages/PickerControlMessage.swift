@@ -46,6 +46,7 @@ struct PickerControlMessage: Codable, CBControlData {
         data.richControl?.value = value
     }
     
+    // swiftlint:disable:next function_body_length
     internal static func exampleInstance() -> PickerControlMessage {
         let jsonPicker = """
         {

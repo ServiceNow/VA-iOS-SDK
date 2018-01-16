@@ -27,11 +27,6 @@
 
 import Foundation
 
-protocol ViewDataChangeListener {
-    func chatDataController(_ dataController: ChatDataController, didChangeModel model: ChatMessageModel, atIndex index: Int)
-    func chatDataController(_ dataController: ChatDataController, didBulkUpdateModelsAtIndices indices: [Int]?)
-}
-
 class ChatDataController {
     
     private let chatbotDisplayThrottle = 1.5
@@ -73,8 +68,7 @@ class ChatDataController {
     //
     public func updateControlData(_ data: ControlViewModel, isSkipped: Bool = false) {
         guard controlData.count > 0 else {
-            Logger.default.logError("No control data exists, so updating is probably incorrect")
-            return
+            fatalError("No control data exists, nothing to update")
         }
         
         updateChatterbox(data)
@@ -99,12 +93,15 @@ class ChatDataController {
         popTypingIndicatorIfShown()
 
         addControlToCollection(data)
-        changeListener?.chatDataController(self, didChangeModel: data, atIndex: self.controlData.count - 1)
+        
+        let changeInfo = ModelChangeInfo(.insert, atIndex: 0)
+        changeListener?.controller(self, didChangeData: [changeInfo])
     }
     
     fileprivate func pushTypingIndicator() {
         addControlToCollection(ChatMessageModel(model: typingIndicator, location: BubbleLocation.left))
-        changeListener?.chatDataController(self, didChangeModel: ChatMessageModel(model: typingIndicator, location: BubbleLocation.left), atIndex: self.controlData.count - 1)
+        let changeInfo = ModelChangeInfo(.insert, atIndex: 0)
+        changeListener?.controller(self, didChangeData: [changeInfo])
     }
     
     fileprivate func popTypingIndicatorIfShown() {
@@ -248,7 +245,7 @@ extension ChatDataController: ChatDataListener {
         // re-enable caching and upate the view
         isBufferingEnabled = true
         
-        changeListener?.chatDataController(self, didBulkUpdateModelsAtIndices: nil)
+        changeListener?.controlllerDidLoadContent(self)
     }
     
     // MARK: - ChatDataListener (from service)

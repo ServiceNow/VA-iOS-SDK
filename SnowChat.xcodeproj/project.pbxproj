@@ -144,6 +144,7 @@
 		C489073E1FCC8209008D9521 /* AMBTestPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C489073C1FCC8209008D9521 /* AMBTestPanelViewController.xib */; };
 		C4A774A91FDF22E200B6DF68 /* ChatEventListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A774A81FDF22E200B6DF68 /* ChatEventListener.swift */; };
 		C4A774AD1FE0607D00B6DF68 /* ChatServiceDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A774AC1FE0607D00B6DF68 /* ChatServiceDelegate.swift */; };
+		C4AF7793200E7B0B0029598A /* ViewDataChangeListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AF7792200E7B0B0029598A /* ViewDataChangeListener.swift */; };
 		C4B6A9521FE22208007DBEED /* ChatDataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */; };
 		C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA21FBCF2F8007007F5 /* CBData.swift */; };
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
@@ -272,6 +273,7 @@
 		C489073C1FCC8209008D9521 /* AMBTestPanelViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AMBTestPanelViewController.xib; sourceTree = "<group>"; };
 		C4A774A81FDF22E200B6DF68 /* ChatEventListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEventListener.swift; sourceTree = "<group>"; };
 		C4A774AC1FE0607D00B6DF68 /* ChatServiceDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceDelegate.swift; sourceTree = "<group>"; };
+		C4AF7792200E7B0B0029598A /* ViewDataChangeListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewDataChangeListener.swift; sourceTree = "<group>"; };
 		C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataStoreTests.swift; sourceTree = "<group>"; };
 		C4CAFEA21FBCF2F8007007F5 /* CBData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBData.swift; sourceTree = "<group>"; };
 		C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataTests.swift; sourceTree = "<group>"; };
@@ -429,6 +431,7 @@
 			isa = PBXGroup;
 			children = (
 				BE29E0CE1FDF06C20029D1F0 /* ChatDataController.swift */,
+				C4AF7792200E7B0B0029598A /* ViewDataChangeListener.swift */,
 			);
 			path = "Chat Data Controller";
 			sourceTree = "<group>";
@@ -994,6 +997,7 @@
 				BE782DB81FEB205200F848F5 /* APIManager+ChatSession.swift in Sources */,
 				C41EF5D21FDB0F2500707F45 /* ChatDataListener.swift in Sources */,
 				C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */,
+				C4AF7793200E7B0B0029598A /* ViewDataChangeListener.swift in Sources */,
 				C4CED93E1FD72544008E3E25 /* StartedUserTopicMessage.swift in Sources */,
 				C41EF5D61FDB327800707F45 /* PickerControlMessage.swift in Sources */,
 				C40565F81FC4F4D3004BD28C /* BooleanControlMessage.swift in Sources */,

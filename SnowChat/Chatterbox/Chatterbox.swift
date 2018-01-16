@@ -45,7 +45,6 @@ class Chatterbox {
     private struct ConversationContext {
         var topicName: String?
         var conversationId: String?
-        var consumerAccountId: String?
     }
     private var conversationContext = ConversationContext()
     
@@ -158,6 +157,7 @@ class Chatterbox {
             switch result {
             case .success(let resultSession):
                 self?.session = resultSession
+                self?.logger.logDebug("--> Chat Session established: consumerAccountId=\(resultSession.user.consumerAccountId)")
             case .failure:
                 self?.logger.logError("getSession failed!")
             }
@@ -197,10 +197,9 @@ class Chatterbox {
                 logger.logDebug("Handshake START message received")
                 startUserSession(withInitEvent: initEvent)
             } else if initEvent.data.actionMessage.loginStage == MessageConstants.loginFinish.rawValue {
-                logger.logDebug("Handshake FINISH message received: conversationID=\(initEvent.data.conversationId ?? "nil") | consumerAccountId=\(initEvent.data.actionMessage.consumerAcctId ?? "nil")")
+                logger.logDebug("Handshake FINISH message received: conversationID=\(initEvent.data.conversationId ?? "nil")")
                 
                 conversationContext.conversationId = initEvent.data.conversationId
-                conversationContext.consumerAccountId = initEvent.data.actionMessage.consumerAcctId
                 
                 loadDataFromPersistence(completionHandler: { error in
                     if error != nil {
@@ -208,14 +207,6 @@ class Chatterbox {
                     }
                 })
 
-                chatStore.consumerAccountId = initEvent.data.actionMessage.consumerAcctId
-                
-                do {
-                    try chatStore.store()
-                } catch {
-                    logger.logError("ChatStore failed to store - ignoring...")
-                }
-                
                 // handshake done, setup handler for the topic selection
                 messageHandler = self.topicSelectionHandler
             }
@@ -488,8 +479,11 @@ class Chatterbox {
     }
     
     private func refreshConversations(_ conversations: [String]) {
-        if let consumerId = chatStore.consumerAccountId {
+        if let consumerId = session?.user.consumerAccountId {
+            logger.logDebug("--> Loading conversations for \(consumerId)")
             apiManager.conversations(forConsumer: consumerId, completionHandler: { (conversations) in
+                self.logger.logDebug(" --> loaded \(conversations.count) conversations")
+                
                 conversations.forEach { conversation in
                     self.logger.logDebug("Conversation \(conversation.uniqueId()) refreshed: \(conversation)")
                     self.storeConversationAndPublish(conversation)
