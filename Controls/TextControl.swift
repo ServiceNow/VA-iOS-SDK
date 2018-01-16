@@ -21,7 +21,7 @@ class TextControl: ControlProtocol {
             textLabel.setContentHuggingPriority(.required, for: .horizontal)
             textLabel.setContentHuggingPriority(.required, for: .vertical)
             textLabel.setContentCompressionResistancePriority(.required, for: .vertical)
-            textLabel.font = UIFont.preferredFont(forTextStyle: .body)
+            textLabel.font = .preferredFont(forTextStyle: .body)
             
             textLabel.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(textLabel)
@@ -40,7 +40,6 @@ class TextControl: ControlProtocol {
             }
             
             textViewController.textLabel.text = textModel.value
-            textViewController.view.layoutIfNeeded()
         }
     }
     

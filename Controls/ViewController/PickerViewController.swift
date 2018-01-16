@@ -17,12 +17,6 @@ class PickerViewController: UIViewController {
     
     weak var delegate: PickerViewControllerDelegate?
     
-    private lazy var selectedBackgroundView: UIView = {
-        let backgroundView = UIView()
-        backgroundView.backgroundColor = UIColor.controlSelectedBackgroundColor
-        return backgroundView
-    }()
-    
     var visibleItemCount: Int = 3 {
         didSet {
             fullSizeContainer.maxVisibleItemCount = visibleItemCount
@@ -123,13 +117,6 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         let identifier = model.isMultiSelect ? SelectableViewCell.cellIdentifier : PickerTableViewCell.cellIdentifier
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
         cell.contentView.backgroundColor = UIColor.white
-
-        if model.isMultiSelect {
-            cell.selectionStyle = .none
-        } else {
-            cell.selectedBackgroundView = selectedBackgroundView
-        }
-        
         guard let configurableCell: ConfigurablePickerCell = cell as? ConfigurablePickerCell else {
             return cell
         }
@@ -156,7 +143,7 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: headerViewIdentifier) as! PickerHeaderView
         headerView.contentView.backgroundColor = UIColor.controlHeaderBackgroundColor
         let titleLabel = UILabel()
-        titleLabel.font = UIFont.preferredFont(forTextStyle: .title3)
+        titleLabel.font = .preferredFont(forTextStyle: .title3)
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.numberOfLines = 0
         titleLabel.text = model.label
@@ -182,7 +169,7 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         doneButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
         let localizedTitle = NSLocalizedString("Done", comment: "Button title for mutliselect control done.")
         doneButton.setTitle(localizedTitle, for: .normal)
-        doneButton.titleLabel?.font = UIFont.preferredFont(forTextStyle: .title3)
+        doneButton.titleLabel?.font = .preferredFont(forTextStyle: .title3)
         doneButton.setTitleColor(headerTextColor, for: .normal)
         doneButton.titleLabel?.adjustsFontSizeToFitWidth = true
         doneButton.backgroundColor = UIColor.controlHeaderBackgroundColor

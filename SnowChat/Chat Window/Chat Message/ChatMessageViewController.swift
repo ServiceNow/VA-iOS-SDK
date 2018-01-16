@@ -13,12 +13,12 @@ class ChatMessageViewController: UIViewController {
     private let controlMaxWidth: CGFloat = 250
     private(set) var uiControl: ControlProtocol?
     
-    @IBOutlet weak var bubbleView: BubbleView!
-    @IBOutlet weak var agentImageView: UIImageView!
-    @IBOutlet weak var agentBubbleLeadingConstraint: NSLayoutConstraint!
-    @IBOutlet weak var bubbleLeadingConstraint: NSLayoutConstraint!
-    @IBOutlet weak var bubbleTrailingConstraint: NSLayoutConstraint!
-    @IBOutlet weak var agentImageTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var bubbleView: BubbleView!
+    @IBOutlet private weak var agentImageView: UIImageView!
+    @IBOutlet private weak var agentBubbleLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var bubbleLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var bubbleTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var agentImageTopConstraint: NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()

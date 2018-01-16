@@ -52,11 +52,8 @@ extension ChatMessageModel {
         }
         
         let direction = message.data.direction
-        var items = [PickerItem]()
-        
-        message.data.richControl?.uiMetadata?.options.forEach({
-            items.append(PickerItem(label: $0.label, value: $0.value))
-        })
+        let options = message.data.richControl?.uiMetadata?.options ?? []
+        let items = options.map { PickerItem(label: $0.label, value: $0.value) }
         
         let isMultiselectPicker = message.data.richControl?.uiMetadata?.multiSelect ?? false
         let pickerModel: PickerControlViewModel

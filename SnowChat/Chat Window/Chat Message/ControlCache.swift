@@ -16,10 +16,9 @@ class ControlCache {
     
     func control(forModel model: ControlViewModel) -> ControlProtocol {
         let uiControl: ControlProtocol
-        if let control = controlsToReuse[model.type]?.last {
+        if let control = controlsToReuse[model.type]?.popLast() {
             // update uiControl for a given model. Internally it will update UIViewController
             control.model = model
-            controlsToReuse[model.type]?.removeLast()
             uiControl = control
         } else {
             uiControl = ControlsUtil.controlForViewModel(model)
