@@ -61,7 +61,7 @@ extension ChatMessageModel {
         let isMultiselectPicker = message.data.richControl?.uiMetadata?.multiSelect ?? false
         let pickerModel: PickerControlViewModel
         
-        if isMultiselectPicker {
+        if !isMultiselectPicker {
             pickerModel = SingleSelectControlViewModel(id: message.id, label: title, required: required, items: items)
         } else {
             pickerModel = MultiSelectControlViewModel(id: message.id, label: title, required: required, items: items)

@@ -180,7 +180,8 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         footerView.contentView.backgroundColor = UIColor.controlHeaderBackgroundColor
         let doneButton = UIButton(type: .custom)
         doneButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
-        doneButton.setTitle("Done", for: .normal)
+        let localizedTitle = NSLocalizedString("Done", comment: "Button title for mutliselect control done.")
+        doneButton.setTitle(localizedTitle, for: .normal)
         doneButton.titleLabel?.font = UIFont.preferredFont(forTextStyle: .title3)
         doneButton.setTitleColor(headerTextColor, for: .normal)
         doneButton.titleLabel?.adjustsFontSizeToFitWidth = true

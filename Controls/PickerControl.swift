@@ -73,7 +73,7 @@ extension PickerControlProtocol {
     
     func updateViewController(withModel model: ControlViewModel) {
         guard let pickerModel = model as? PickerControlViewModel else { fatalError("Wrong model class") }
-        guard let pickerViewController = viewController as? PickerViewController else { return }
+        guard let pickerViewController = viewController as? PickerViewController else { fatalError("viewController is not PickerViewController type") }
         
         pickerViewController.model = pickerModel
     }
