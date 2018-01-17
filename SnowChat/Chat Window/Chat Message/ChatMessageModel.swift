@@ -52,13 +52,18 @@ extension ChatMessageModel {
         }
         
         let direction = message.data.direction
-        var items = [PickerItem]()
+        let options = message.data.richControl?.uiMetadata?.options ?? []
+        let items = options.map { PickerItem(label: $0.label, value: $0.value) }
         
-        message.data.richControl?.uiMetadata?.options.forEach({ option in
-            items.append(PickerItem(label: option.label, value: option.value))
-        })
+        let isMultiselectPicker = message.data.richControl?.uiMetadata?.multiSelect ?? false
+        let pickerModel: PickerControlViewModel
         
-        let pickerModel = SingleSelectControlViewModel(id: message.id, label: title, required: required, items: items)
+        if !isMultiselectPicker {
+            pickerModel = SingleSelectControlViewModel(id: message.id, label: title, required: required, items: items)
+        } else {
+            pickerModel = MultiSelectControlViewModel(id: message.id, label: title, required: required, items: items)
+        }
+        
         let snowViewModel = ChatMessageModel(model: pickerModel, location: BubbleLocation(direction: direction))
         return snowViewModel
     }

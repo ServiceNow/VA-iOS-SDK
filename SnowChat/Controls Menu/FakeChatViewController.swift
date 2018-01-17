@@ -14,7 +14,7 @@ class FakeChatViewController: UIViewController, UITableViewDelegate, UITableView
     
     var observer: NSKeyValueObservation?
     
-    var messageViewControllers = [MessageViewController]()
+    var messageViewControllers = [ChatMessageViewController]()
     
     var controls: [ControlProtocol]? {
         didSet {
@@ -30,24 +30,13 @@ class FakeChatViewController: UIViewController, UITableViewDelegate, UITableView
             
             guard let controls = controls else { return }
             for _ in controls {
-                let controller = MessageViewController(nibName: "MessageViewController", bundle: Bundle(for: type(of: self)))
+                let controller = ChatMessageViewController(nibName: "ChatMessageViewController", bundle: Bundle(for: type(of: self)))
                 controller.willMove(toParentViewController: self)
                 addChildViewController(controller)
                 messageViewControllers.append(controller)
             }
             
             tableView.reloadData()
-            
-            // Due to silly self-sizing problems with UITableViewCell I am forcing table to draw itself after data are reloaded
-            // This will trigger UIControl to be placed in the cell and update its height
-            // Then we need to call beginUpdates() endUpdates() on cell to refresh cell height
-            tableView.setNeedsLayout()
-            tableView.layoutIfNeeded()
-            
-            UIView.performWithoutAnimation {
-                tableView.beginUpdates()
-                tableView.endUpdates()
-            }
         }
     }
     
@@ -86,6 +75,10 @@ class FakeChatViewController: UIViewController, UITableViewDelegate, UITableView
         let messageView: UIView = messageViewController.view
         cell.messageView = messageView
         messageViewController.addUIControl(control, at: .left)
+        if let pickerVC = messageViewController.uiControl?.viewController as? PickerViewController {
+            pickerVC.tableView.setNeedsLayout()
+            pickerVC.tableView.layoutIfNeeded()
+        }
         
         return cell
     }

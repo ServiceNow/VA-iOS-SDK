@@ -24,6 +24,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     private let chatterbox: Chatterbox
 
     private var messageViewControllerCache = ChatMessageViewControllerCache()
+    private var uiControlCache = ControlCache()
     
     override var tableView: UITableView {
         // swiftlint:disable:next force_unwrapping
@@ -65,7 +66,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         // NOTE: making section header height very tiny as 0 make it default size in iOS11
         //  see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
         tableView.sectionHeaderHeight = CGFloat(0.01)
-        tableView.estimatedRowHeight = 50
+        tableView.estimatedRowHeight = 200
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
     }
@@ -84,6 +85,15 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         case .inConversation:
             setupForConversation()
         }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        // FIXME: Still need to add case for keyboard shown etc. This covers only a very basic use case.
+        var insets = tableView.contentInset
+        insets.top = 30
+        tableView.contentInset = insets
     }
     
     private func setupForSystemTopicSelection() {
@@ -124,17 +134,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     func chatDataController(_ dataController: ChatDataController, didChangeModel model: ChatMessageModel, atIndex index: Int) {
         manageInputControl()
         tableView.reloadData()
-        
-        // Due to silly self-sizing problems with UITableViewCell I am forcing table to redraw itself after data are reloaded
-        // This will trigger UIControl to be placed in the cell and update its height
-        // Then we need to call beginUpdates() endUpdates() on cell to refresh cell height
-        tableView.setNeedsLayout()
-        tableView.layoutIfNeeded()
-        
-        UIView.performWithoutAnimation {
-            tableView.beginUpdates()
-            tableView.endUpdates()
-        }
     }
     
     func manageInputControl() {
@@ -245,46 +244,53 @@ extension ConversationViewController {
         }
     }
     
-    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if tableView == autoCompletionView {
-            return
-        }
-        
-        // prepareForReuse on UITableViewCell is called later than this method, so we need to make sure we will nil-out messageView (that is a view on MessageViewController)
-        // otherwise we will end up in a weird state where view is being added to a new cell and then old cell will call prepareForReuse..
-        (cell as? ConversationViewCell)?.messageView = nil
-        messageViewControllerCache.removeViewController(at: indexPath)
-    }
-    
     private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
-        guard indexPath.row < dataController.controlCount() else {
-            return UITableViewCell()
-        }
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
         configureConversationCell(cell, at: indexPath)
         return cell
     }
     
     private func configureConversationCell(_ cell: ConversationViewCell, at indexPath:IndexPath) {
-        cell.selectionStyle = .none
-        
         if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
             let messageViewController = messageViewControllerCache.getViewController(for: indexPath, movedToParentViewController: self)
             cell.messageView = messageViewController.view
-            messageViewController.didMove(toParentViewController: self)
-            messageViewController.model = chatMessageModel
+            let uiControl = uiControlCache.control(forModel: chatMessageModel.controlModel)
+            messageViewController.addUIControl(uiControl, at: chatMessageModel.location)
             messageViewController.uiControl?.delegate = self
-            cell.transform = self.tableView.transform
+            messageViewController.didMove(toParentViewController: self)
+        }
+
+        cell.selectionStyle = .none
+        UIView.performWithoutAnimation {
+            cell.transform = tableView.transform
         }
     }
-
+    
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if tableView == autoCompletionView, let handler = autocompleteHandler {
             return handler.viewForHeaderInSection(section)
         } else {
             return nil
         }
+    }
+    
+    // MARK: - ChatMessageViewController reuse
+    
+    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if tableView == autoCompletionView {
+            return
+        }
+        
+        prepareChatMessageViewControllerForReuse(at: indexPath)
+    }
+    
+    private func prepareChatMessageViewControllerForReuse(at indexPath: IndexPath) {
+        if let messageViewController = messageViewControllerCache.viewControllerByIndexPath[indexPath],
+            let controlModel = messageViewController.uiControl?.model {
+            uiControlCache.removeControl(forModel: controlModel)
+        }
+        
+        messageViewControllerCache.removeViewController(at: indexPath)
     }
 }
 

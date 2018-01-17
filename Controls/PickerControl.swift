@@ -18,6 +18,10 @@ enum PickerControlStyle: Int {
 //    case actionSheet
 }
 
+struct PickerConstants {
+    static let visibleItemCount = 3
+}
+
 // MARK: - PickerViewControllerDelegate
 
 // Common interface for all picker view controller (either Table style or Carousel)
@@ -34,9 +38,13 @@ protocol PickerViewControllerDelegate: AnyObject {
 
 protocol PickerControlProtocol: ControlProtocol, PickerViewControllerDelegate {
     
+    var visibleItemCount: Int { get set }
+    
     var style: PickerControlStyle { get set }
     
     func viewController(forStyle style: PickerControlStyle, model: ControlViewModel) -> UIViewController
+    
+    func updateViewController(withModel model: ControlViewModel)
 }
 
 // MARK: - Default PickerControl implementation
@@ -61,5 +69,12 @@ extension PickerControlProtocol {
     
     func pickerViewController(_ viewController: PickerViewController, didFinishWithModel model: PickerControlViewModel) {
         delegate?.control(self, didFinishWithModel: model)
+    }
+    
+    func updateViewController(withModel model: ControlViewModel) {
+        guard let pickerModel = model as? PickerControlViewModel else { fatalError("Wrong model class") }
+        guard let pickerViewController = viewController as? PickerViewController else { fatalError("viewController is not PickerViewController type") }
+        
+        pickerViewController.model = pickerModel
     }
 }
