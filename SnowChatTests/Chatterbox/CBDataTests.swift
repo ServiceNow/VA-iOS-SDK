@@ -91,7 +91,7 @@ class CBDataTests: XCTestCase {
     }
     
     func testOutputTextMessage() {
-        let textObj = OutputTextMessage.exampleInstance()
+        let textObj = OutputTextControlMessage.exampleInstance()
         XCTAssertNotNil(textObj)
         XCTAssertEqual(textObj.controlType, .text)
         XCTAssertEqual(textObj.data.richControl?.uiType, "OutputText")

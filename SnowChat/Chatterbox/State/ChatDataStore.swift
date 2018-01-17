@@ -13,7 +13,8 @@ import Foundation
 
 class ChatDataStore {
     private let id: String
-    private var conversations = [Conversation]()
+    internal var conversations = [Conversation]()
+    
     var consumerAccountId: String?
     
     init(storeId: String) {
@@ -71,7 +72,7 @@ class ChatDataStore {
     }
 }
 
-struct Conversation: CBStorable {
+struct Conversation: CBStorable, Codable {
     func uniqueId() -> String {
         return id
     }
@@ -95,9 +96,9 @@ struct Conversation: CBStorable {
         let index = exchanges.count - 1
         
         // check for control type mismatch between message and response
-        let message = pending.message as? CBControlData
-        guard message != nil, message?.controlType == data.controlType else {
-            fatalError("Mismatched control types in storeResponse: message is \(message?.controlType.rawValue ?? "nil") while response is \(data.controlType)")
+        let message = pending.message
+        guard message.controlType == data.controlType else {
+            fatalError("Mismatched control types in storeResponse: message is \(message.controlType) while response is \(data.controlType)")
         }
         
         exchanges[index].response = data
@@ -116,14 +117,18 @@ struct Conversation: CBStorable {
         return exchanges
     }
     
-    enum ConversationState {
-        case inProgress
-        case completed
-        case unknown
+    enum ConversationState: String, Codable {
+        case inProgress = "IN PROGRESS"
+        case completed = "COMPLETED"
+        case unknown = "UKNONWN"
     }
 }
 
-struct MessageExchange {
+struct MessageExchange: Codable {
+    
+    let message: CBControlData
+    var response: CBControlData?
+    
     var isComplete: Bool {
         // Exchange is complete if there is a response, or if the message type needs no response
         if !needsResponse() {
@@ -133,14 +138,44 @@ struct MessageExchange {
         }
     }
     
-    var message: CBStorable
-    var response: CBStorable?
-    
-    init(withMessage message: CBStorable) {
+    init(withMessage message: CBControlData) {
         self.message = message
     }
     
     private func needsResponse() -> Bool {
-        return !(message is OutputTextMessage)
+        return !(message is OutputTextControlMessage)
+    }
+    
+    enum CodingKeys: String, CodingKey
+    {
+        case message
+        case response
+    }
+    
+    // need custom encoder / decoder for MessageExchange because the CBControlData protocol cannot automatically be encoded or decoded
+    // - our approach is to use the controlType to serialize and deserialize to and from JSON, then store and load that
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        if let messageString = try CBDataFactory.jsonStringForControlMessage(message) {
+            try container.encode(messageString, forKey: .message)
+        }
+        if let response = response, let responseString = try CBDataFactory.jsonStringForControlMessage(response) {
+            try container.encode(responseString, forKey: .response)
+        }
+    }
+    
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        
+        let messageString = try values.decode(String.self, forKey: .message)
+        message = CBDataFactory.controlFromJSON(messageString)
+        
+        do {
+            let responseString = try values.decode(String.self, forKey: .response)
+            response = CBDataFactory.controlFromJSON(responseString)
+        } catch let error {
+            Logger.default.logInfo("No response read from decoder: error=\(error.localizedDescription)")
+        }
     }
 }

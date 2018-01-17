@@ -12,22 +12,15 @@ private let documentsDirectory = FileManager().urls(for: .documentDirectory, in:
 private let archiveURL = documentsDirectory?.appendingPathComponent("chatstore")
 
 internal class StorableContainer: Codable {
-    static let currentVersion = 1
+    static let currentVersion = 2
     
     var version: Int
-    var consumerAccountId: String
-    var conversationIds: [String]
+    var conversations: [Conversation]
     
-    init(consumerAccountId: String, conversationIds: [String]?) {
+    init(conversations: [Conversation]) {
         version = StorableContainer.currentVersion
         
-        self.consumerAccountId = consumerAccountId
-        
-        if let conversationIds = conversationIds {
-            self.conversationIds = conversationIds
-        } else {
-            self.conversationIds = [String]()
-        }
+        self.conversations = conversations
     }
 }
 
@@ -36,27 +29,27 @@ extension ChatDataStore {
     // MARK: - Persistence methods
     
     func store() throws {
-        guard let consumerAccountId = consumerAccountId else {
+        guard conversationIds().count > 0 else {
             try clearPersistence()
-            throw ChatterboxError.invalidParameter(details: "consumerAccountId is not set! cannot store")
+            return
         }
         
         guard let archiveURL = archiveURL else {
             throw ChatterboxError.invalidParameter(details: "No archive URL in ChatDataStore.store")
         }
         
-        let storable = StorableContainer(consumerAccountId: consumerAccountId, conversationIds: conversationIds())
+        let storable = StorableContainer(conversations: conversations)
         let data = try CBData.jsonEncoder.encode(storable)
         try data.write(to: archiveURL)
     }
     
-    func load() throws -> [String]? {
+    func load() throws -> [Conversation] {
         guard let archiveURL = archiveURL else {
             throw ChatterboxError.invalidParameter(details: "No archive URL in ChatDataStore.store")
         }
 
         guard FileManager().fileExists(atPath: archiveURL.path) else {
-            return nil
+            return []
         }
         
         let data = try Data(contentsOf: archiveURL, options: [])
@@ -64,11 +57,10 @@ extension ChatDataStore {
         let storable = try CBData.jsonDecoder.decode(StorableContainer.self, from: data)
         if storable.version != StorableContainer.currentVersion {
             try clearPersistence()
-            return nil
+            return []
         }
         
-        consumerAccountId = storable.consumerAccountId
-        return storable.conversationIds
+        return storable.conversations
     }
     
     private func clearPersistence() throws {
@@ -78,5 +70,5 @@ extension ChatDataStore {
 
         try FileManager().removeItem(atPath: archiveURL.path)
     }
-    
 }
+

@@ -16,7 +16,7 @@ protocol ChatDataListener: AnyObject {
     func chatterbox(_ chatterbox: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String)
     func chatterbox(_ chatterbox: Chatterbox, didReceiveInputData message: InputControlMessage, forChat chatId: String)
     func chatterbox(_ chatterbox: Chatterbox, didReceivePickerData message: PickerControlMessage, forChat chatId: String)
-    func chatterbox(_ chatterbox: Chatterbox, didReceiveTextData message: OutputTextMessage, forChat chatId: String)
+    func chatterbox(_ chatterbox: Chatterbox, didReceiveTextData message: OutputTextControlMessage, forChat chatId: String)
     
     // Notifies listener that a MessageExchange was complete, meaning the user responded to a request for input
     //

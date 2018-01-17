@@ -95,7 +95,7 @@ class APIManagerChatSessionTest: XCTestCase {
         XCTAssertTrue(exchange.isComplete)
         
         exchange = conversation.messageExchanges()[3]
-        let textOutput = exchange.message as! OutputTextMessage
+        let textOutput = exchange.message as! OutputTextControlMessage
         XCTAssertEqual(.fromServer, textOutput.data.direction)
         XCTAssertEqual("7", textOutput.data.messageId)
         XCTAssertEqual("INC0010051 has been created for you. Glad I could assist you.", textOutput.data.richControl?.value!)

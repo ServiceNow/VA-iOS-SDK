@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct OutputTextMessage: Codable, CBControlData {
+struct OutputTextControlMessage: Codable, CBControlData {
     func uniqueId() -> String {
         return id
     }
@@ -29,7 +29,7 @@ struct OutputTextMessage: Codable, CBControlData {
         data = withData
     }
     
-    internal static func exampleInstance() -> OutputTextMessage {
+    internal static func exampleInstance() -> OutputTextControlMessage {
         let jsonOutputText = """
         {
           "type" : "systemTextMessage",
@@ -58,6 +58,6 @@ struct OutputTextMessage: Codable, CBControlData {
           "source" : "server"
         }
         """
-        return CBDataFactory.controlFromJSON(jsonOutputText) as! OutputTextMessage
+        return CBDataFactory.controlFromJSON(jsonOutputText) as! OutputTextControlMessage
     }
 }

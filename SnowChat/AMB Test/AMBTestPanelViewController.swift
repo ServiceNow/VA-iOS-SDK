@@ -90,7 +90,7 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
         }
     }
 
-    func chatterbox(_: Chatterbox, didReceiveTextData message: OutputTextMessage, forChat chatId: String) {
+    func chatterbox(_: Chatterbox, didReceiveTextData message: OutputTextControlMessage, forChat chatId: String) {
         if message.data.direction == .fromServer {
             let label = message.data.richControl?.value ?? "[missing value]"
             appendContent(message: "\nText Output received: \(label)")

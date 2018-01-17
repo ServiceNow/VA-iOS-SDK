@@ -292,7 +292,7 @@ extension ChatDataController: ChatDataListener {
         }
     }
     
-    func chatterbox(_ chatterbox: Chatterbox, didReceiveTextData message: OutputTextMessage, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, didReceiveTextData message: OutputTextControlMessage, forChat chatId: String) {
         guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
             return
         }

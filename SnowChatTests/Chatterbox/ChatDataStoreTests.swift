@@ -50,7 +50,7 @@ class DataStoreTests: XCTestCase {
         let store = ChatDataStore(storeId: "test-store")
         let booleanControl = BooleanControlMessage.exampleInstance()
         let inputControl = InputControlMessage.exampleInstance()
-        let outputControl = OutputTextMessage.exampleInstance()
+        let outputControl = OutputTextControlMessage.exampleInstance()
         
         store.storeControlData(booleanControl, forConversation: "testConversationID1", fromChat: chatterbox!)
         store.storeControlData(inputControl, forConversation: "testConversationID2", fromChat: chatterbox!)
@@ -98,19 +98,40 @@ class DataStoreTests: XCTestCase {
         let store = ChatDataStore(storeId: "test-store")
         store.consumerAccountId = "ConsumerAccountId-TEST1"
 
-        let control = BooleanControlMessage.exampleInstance()
-        store.storeControlData(control, forConversation: "testConversationID", fromChat: chatterbox!)
-
+        let booleanControl = BooleanControlMessage.exampleInstance()
+        store.storeControlData(booleanControl, forConversation: "testConversationID", fromChat: chatterbox!)
+        var booleanReply = booleanControl
+        booleanReply.id = CBData.uuidString()
+        store.storeResponseData(booleanReply, forConversation: "testConversationID")
+        
+        let inputControl = InputControlMessage.exampleInstance()
+        store.storeControlData(inputControl, forConversation: "testConversationID", fromChat: chatterbox!)
+        
+        let pickerControl = PickerControlMessage.exampleInstance()
+        store.storeControlData(pickerControl, forConversation: "testConversationID", fromChat: chatterbox!)
+        
+        let textControl = OutputTextControlMessage.exampleInstance()
+        store.storeControlData(textControl, forConversation: "testConversationID", fromChat: chatterbox!)
+        
         do {
             try store.store()
             
-            store.consumerAccountId = "NA"
+            let conversations = try store.load()
             
-            let ids = try store.load()
+            XCTAssertEqual(1, conversations.count)
+            XCTAssertEqual("testConversationID", conversations[0].uniqueId())
+            let messages = conversations[0].messageExchanges()
+            XCTAssertEqual(4, messages.count)
             
-            XCTAssertEqual("ConsumerAccountId-TEST1", store.consumerAccountId)
-            XCTAssertEqual(1, ids?.count)
-            XCTAssertEqual("testConversationID", ids?[0])
+            XCTAssertEqual(booleanControl.data.messageId, (messages[0].message as! BooleanControlMessage).data.messageId)
+            XCTAssertEqual(booleanReply.data.messageId, (messages[0].response as! BooleanControlMessage).data.messageId)
+            
+            XCTAssertEqual(inputControl.data.messageId, (messages[1].message as! InputControlMessage).data.messageId)
+            XCTAssertNil(messages[1].response)
+            XCTAssertEqual(pickerControl.data.messageId, (messages[2].message as! PickerControlMessage).data.messageId)
+            XCTAssertNil(messages[2].response)
+            XCTAssertEqual(textControl.data.messageId, (messages[3].message as! OutputTextControlMessage).data.messageId)
+            XCTAssertNil(messages[2].response)
         } catch _ {
             XCTAssert(false)
         }

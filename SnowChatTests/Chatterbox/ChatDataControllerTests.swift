@@ -11,6 +11,10 @@ import XCTest
 @testable import SnowChat
 
 class DataControllerTests: XCTestCase, ViewDataChangeListener {
+    func controlllerDidLoadContent(_ dataController: ChatDataController) {
+        expectation?.fulfill()
+    }
+    
     func controller(_ dataController: ChatDataController, didChangeData changes: [ModelChangeInfo]) {
         expectation?.fulfill()
     }

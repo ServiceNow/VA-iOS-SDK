@@ -288,8 +288,6 @@ class Chatterbox {
                 let actionMessage = startedUserTopic.data.actionMessage
                 logger.logInfo("User Topic Started: \(actionMessage.topicName) - \(actionMessage.topicId) - \(actionMessage.ready ? "Ready" : "Not Ready")")
                 
-                saveDataToPersistence()
-                
                 chatEventListener?.chatterbox(self, didStartTopic: startedUserTopic, forChat: chatId)
 
                 installTopicMessageHandler()
@@ -376,7 +374,7 @@ class Chatterbox {
     }
     
     fileprivate func handleTextControl(_ control: CBControlData) {
-        if let textControl = control as? OutputTextMessage, let conversationId = textControl.data.conversationId {
+        if let textControl = control as? OutputTextControlMessage, let conversationId = textControl.data.conversationId {
             chatStore.storeControlData(textControl, forConversation: conversationId, fromChat: self)
             chatDataListener?.chatterbox(self, didReceiveTextData: textControl, forChat: chatId)
         }
@@ -469,16 +467,23 @@ class Chatterbox {
     
     private func loadDataFromPersistence(completionHandler: @escaping (Error?) -> Void) {
         do {
-            if let conversations = try chatStore.load() {
-                refreshConversations(conversations)
-            }
+            let conversations = try chatStore.load()
+            refreshConversations(conversations)
         } catch let error {
             logger.logError("Exception loading chatStore: \(error)")
             completionHandler(error)
         }
     }
     
-    private func refreshConversations(_ conversations: [String]) {
+    private func refreshConversations(_ conversations: [Conversation]) {
+        conversations.forEach { conversation in
+            self.logger.logDebug("Conversation \(conversation.uniqueId()) refreshed: \(conversation)")
+            self.storeConversationAndPublish(conversation)
+        }
+        return
+        
+        // TODO: get the history from the chat service and determine if we are out of date...\
+        
         if let consumerId = session?.user.consumerAccountId {
             logger.logDebug("--> Loading conversations for \(consumerId)")
             apiManager.fetchConversations(forConsumer: consumerId, completionHandler: { (conversations) in
@@ -492,7 +497,8 @@ class Chatterbox {
         } else {
             logger.logInfo("No consumer Account ID, loading by conversation ID instead...")
             
-            conversations.forEach { conversationId in
+            conversations.forEach { conversation in
+                let conversationId = conversation.uniqueId()
                 apiManager.fetchConversation(conversationId) { conversation in
                     if let conversation = conversation {
                         self.logger.logDebug("Conversation \(conversationId) refreshed: \(conversation)")
@@ -511,14 +517,11 @@ class Chatterbox {
         chatDataListener?.chatterbox(self, willLoadConversation: conversation.uniqueId(), forChat: chatId)
 
         conversation.messageExchanges().forEach { (exchange) in
-            guard let message = exchange.message as? CBControlData else {
-                logger.logError("Invalid message exchange - skipping: \(exchange)")
-                return
-            }
+            let message = exchange.message
             
             notifyControlReceived(message)
             
-            if let response = exchange.response as? CBControlData {
+            if let response = exchange.response {
                 notifyResponseReceived(response, exchange: exchange)
             }
         }
@@ -536,7 +539,7 @@ class Chatterbox {
                 }
             case .text:
                 logger.logDebug("--> loaded Text message")
-                if let textMessage = message as? OutputTextMessage {
+                if let textMessage = message as? OutputTextControlMessage {
                     chatDataListener.chatterbox(self, didReceiveTextData: textMessage, forChat: chatId)
                 }
             case .input:

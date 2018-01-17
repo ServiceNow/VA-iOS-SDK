@@ -32,7 +32,7 @@ class CBDataFactory {
                 case .picker:
                     return try CBData.jsonDecoder.decode(PickerControlMessage.self, from: jsonData)
                 case .text:
-                    return try CBData.jsonDecoder.decode(OutputTextMessage.self, from: jsonData)
+                    return try CBData.jsonDecoder.decode(OutputTextControlMessage.self, from: jsonData)
                 default:
                     Logger.default.logError("Unrecognized UI Control: \(controlType)")
                 }
@@ -72,6 +72,32 @@ class CBDataFactory {
         }
         
         return CBActionMessageUnknownData()
+    }
+    
+    // MARK: - Message to JSON helper
+    
+    static func jsonStringForControlMessage(_ message: CBControlData) throws -> String? {
+        let data: Data?
+        
+        switch message.controlType {
+        case .boolean:
+            data = try CBData.jsonEncoder.encode(message as? BooleanControlMessage)
+        case .input:
+            data = try CBData.jsonEncoder.encode(message as? InputControlMessage)
+        case .picker:
+            data = try CBData.jsonEncoder.encode(message as? PickerControlMessage)
+        case .text:
+            data = try CBData.jsonEncoder.encode(message as? OutputTextControlMessage)
+        default:
+            data = nil
+            Logger.default.logError("Unrecognized control type: \(message.controlType)")
+        }
+        
+        if let data = data {
+            return String(data: data, encoding: .utf8)
+        } else {
+            return nil
+        }
     }
 }
 
