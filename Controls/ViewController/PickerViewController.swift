@@ -12,7 +12,6 @@ class PickerViewController: UIViewController {
     
     private let headerViewIdentifier = "HeaderView"
     private let footerViewIdentifier = "FooterView"
-    private let headerTextColor = UIColor.controlHeaderTextColor
     private let fullSizeContainer = FullSizeScrollViewContainerView()
     
     weak var delegate: PickerViewControllerDelegate?
@@ -141,45 +140,14 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: headerViewIdentifier) as! PickerHeaderView
-        headerView.contentView.backgroundColor = UIColor.controlHeaderBackgroundColor
-        let titleLabel = UILabel()
-        titleLabel.font = .preferredFont(forTextStyle: .title3)
-        titleLabel.adjustsFontSizeToFitWidth = true
-        titleLabel.numberOfLines = 0
-        titleLabel.text = model.label
-        titleLabel.textColor = headerTextColor
-        titleLabel.backgroundColor = UIColor.controlHeaderBackgroundColor
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        headerView.contentView.addSubview(titleLabel)
-        NSLayoutConstraint.activate([titleLabel.leadingAnchor.constraint(equalTo: headerView.contentView.leadingAnchor, constant: 10),
-                                     titleLabel.trailingAnchor.constraint(equalTo: headerView.contentView.trailingAnchor, constant: -10),
-                                     titleLabel.topAnchor.constraint(equalTo: headerView.contentView.topAnchor, constant: 10),
-                                     titleLabel.bottomAnchor.constraint(equalTo: headerView.contentView.bottomAnchor, constant: -10)])
-        headerView.titleLabel = titleLabel
+        headerView.titleLabel?.text = model.label
         return headerView
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        
         guard model.isMultiSelect else { return nil }
-        
         let footerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: footerViewIdentifier) as! PickerFooterView
-        footerView.contentView.backgroundColor = UIColor.controlHeaderBackgroundColor
-        let doneButton = UIButton(type: .custom)
-        doneButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
-        let localizedTitle = NSLocalizedString("Done", comment: "Button title for mutliselect control done.")
-        doneButton.setTitle(localizedTitle, for: .normal)
-        doneButton.titleLabel?.font = .preferredFont(forTextStyle: .title3)
-        doneButton.setTitleColor(headerTextColor, for: .normal)
-        doneButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        doneButton.backgroundColor = UIColor.controlHeaderBackgroundColor
-        doneButton.translatesAutoresizingMaskIntoConstraints = false
-        footerView.contentView.addSubview(doneButton)
-        NSLayoutConstraint.activate([doneButton.leadingAnchor.constraint(equalTo: footerView.contentView.leadingAnchor),
-                                     doneButton.trailingAnchor.constraint(equalTo: footerView.contentView.trailingAnchor),
-                                     doneButton.topAnchor.constraint(equalTo: footerView.contentView.topAnchor, constant: 5),
-                                     doneButton.bottomAnchor.constraint(equalTo: footerView.contentView.bottomAnchor, constant: -5)])
-        footerView.doneButton = doneButton
+        footerView.doneButton?.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
         return footerView
     }
     
@@ -190,29 +158,5 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         delegate?.pickerViewController(self, didFinishWithModel: model)
-    }
-}
-
-// MARK: - Picker header view
-
-class PickerHeaderView: UITableViewHeaderFooterView {
-    var titleLabel: UILabel?
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        titleLabel?.removeFromSuperview()
-        titleLabel = nil
-    }
-}
-
-// MARK: - Picker footer view
-
-class PickerFooterView: UITableViewHeaderFooterView {
-    var doneButton: UIButton?
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        doneButton?.removeFromSuperview()
-        doneButton = nil
     }
 }
