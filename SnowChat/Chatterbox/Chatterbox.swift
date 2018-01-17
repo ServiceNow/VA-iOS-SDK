@@ -481,7 +481,7 @@ class Chatterbox {
     private func refreshConversations(_ conversations: [String]) {
         if let consumerId = session?.user.consumerAccountId {
             logger.logDebug("--> Loading conversations for \(consumerId)")
-            apiManager.conversations(forConsumer: consumerId, completionHandler: { (conversations) in
+            apiManager.fetchConversations(forConsumer: consumerId, completionHandler: { (conversations) in
                 self.logger.logDebug(" --> loaded \(conversations.count) conversations")
                 
                 conversations.forEach { conversation in
@@ -493,7 +493,7 @@ class Chatterbox {
             logger.logInfo("No consumer Account ID, loading by conversation ID instead...")
             
             conversations.forEach { conversationId in
-                apiManager.conversation(conversationId) { conversation in
+                apiManager.fetchConversation(conversationId) { conversation in
                     if let conversation = conversation {
                         self.logger.logDebug("Conversation \(conversationId) refreshed: \(conversation)")
                         self.storeConversationAndPublish(conversation)

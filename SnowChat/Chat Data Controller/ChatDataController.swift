@@ -245,7 +245,7 @@ extension ChatDataController: ChatDataListener {
         // re-enable caching and upate the view
         isBufferingEnabled = true
         
-        changeListener?.controlllerDidLoadContent(self)
+        changeListener?.controllerDidLoadContent(self)
     }
     
     // MARK: - ChatDataListener (from service)

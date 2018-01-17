@@ -135,7 +135,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         updateTableView()
     }
     
-    func controlllerDidLoadContent(_ dataController: ChatDataController) {
+    func controllerDidLoadContent(_ dataController: ChatDataController) {
         updateTableView()
     }
     

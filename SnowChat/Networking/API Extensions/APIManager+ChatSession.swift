@@ -54,7 +54,7 @@ extension APIManager {
         }
     }
     
-    func conversation(_ conversationId: String, completionHandler: @escaping (Conversation?) -> Void) {
+    func fetchConversation(_ conversationId: String, completionHandler: @escaping (Conversation?) -> Void) {
         sessionManager.request(apiURLWithPath("cs/conversation/\(conversationId)/message"),
             method: .get,
             encoding: JSONEncoding.default).validate().responseJSON { response in
@@ -65,16 +65,14 @@ extension APIManager {
                         let conversationDictionary = result["conversation"] {
                         let conversationsArray = [conversationDictionary]
                         let conversations = APIManager.conversationsFromResult(conversationsArray)
-                        if  conversations.count > 0 {
-                            conversation = conversations.first
-                        }
+                        conversation = conversations.first
                     }
                 }
                 completionHandler(conversation)
         }
     }
     
-    func conversations(forConsumer consumerId: String, completionHandler: @escaping ([Conversation]) -> Void) {
+    func fetchConversations(forConsumer consumerId: String, completionHandler: @escaping ([Conversation]) -> Void) {
         sessionManager.request(apiURLWithPath("cs/consumerAccount/\(consumerId)/message"),
                                method: .get,
                                encoding: JSONEncoding.default).validate().responseJSON { response in
@@ -99,7 +97,7 @@ extension APIManager {
             // message is a dictionary, so we have to make it JSON, then convert back to ControlData
             do {
                 // messages are missing the type/data wrapper, so we create one
-                var wrapper: [String: Any] = [:]
+                var wrapper = [String: Any]()
                 wrapper["type"] = "systemTextMessage"
                 wrapper["data"] = message
                 let messageData = try JSONSerialization.data(withJSONObject: wrapper, options: JSONSerialization.WritingOptions.prettyPrinted)

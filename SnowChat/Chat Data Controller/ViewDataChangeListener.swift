@@ -28,5 +28,5 @@ struct ModelChangeInfo {
 
 protocol ViewDataChangeListener {
     func controller(_ dataController: ChatDataController, didChangeData changes: [ModelChangeInfo])
-    func controlllerDidLoadContent(_ dataController: ChatDataController)
+    func controllerDidLoadContent(_ dataController: ChatDataController)
 }

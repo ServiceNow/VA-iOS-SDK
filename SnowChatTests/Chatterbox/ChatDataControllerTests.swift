@@ -15,7 +15,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         expectation?.fulfill()
     }
     
-    func controlllerDidLoadContent(_ dataController: ChatDataController) {
+    func controllerDidLoadContent(_ dataController: ChatDataController) {
         
     }
     
