@@ -11,27 +11,37 @@ import Foundation
 class TextControl: ControlProtocol {
     
     // Private class to handle custom view controller for Text Control.
-    private class TextViewController: UIViewController {
+    class TextViewController: UIViewController {
         
-        let textView = UITextView()
-        
-        override func loadView() {
-            self.view = textView
-        }
+        let textLabel = UILabel()
         
         override func viewDidLoad() {
             super.viewDidLoad()
-            textView.setContentHuggingPriority(.required, for: .horizontal)
-            textView.setContentHuggingPriority(.required, for: .vertical)
-            textView.setContentCompressionResistancePriority(.required, for: .vertical)
-            textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-            textView.isScrollEnabled = false // to turn on autoresizing
-            textView.isEditable = false
-            textView.font = UIFont.preferredFont(forTextStyle: .body)
+            textLabel.numberOfLines = 0
+            textLabel.setContentHuggingPriority(.required, for: .horizontal)
+            textLabel.setContentHuggingPriority(.required, for: .vertical)
+            textLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+            textLabel.font = .preferredFont(forTextStyle: .body)
+            
+            textLabel.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(textLabel)
+            NSLayoutConstraint.activate([textLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+                                         textLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+                                         textLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
+                                         textLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10)])
         }
     }
     
-    var model: ControlViewModel
+    var model: ControlViewModel {
+        didSet {
+            guard let textViewController = viewController as? TextViewController,
+                let textModel = model as? TextControlViewModel else {
+                    return
+            }
+            
+            textViewController.textLabel.text = textModel.value
+        }
+    }
     
     let viewController: UIViewController
     
@@ -44,7 +54,7 @@ class TextControl: ControlProtocol {
         
         self.model = textModel   
         let textViewController = TextViewController()
-        textViewController.textView.text = textModel.value
+        textViewController.textLabel.text = textModel.value
         self.viewController = textViewController
     }
 }

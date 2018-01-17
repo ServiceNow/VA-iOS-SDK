@@ -10,11 +10,21 @@ import UIKit
 
 class PickerViewController: UIViewController {
     
+    private let headerViewIdentifier = "HeaderView"
+    private let footerViewIdentifier = "FooterView"
+    private let headerTextColor = UIColor.controlHeaderTextColor
+    private let fullSizeContainer = FullSizeScrollViewContainerView()
+    
     weak var delegate: PickerViewControllerDelegate?
     
-    let headerTextColor = UIColor.controlHeaderTextColor
-    
-    let fullSizeContainer = FullSizeScrollViewContainerView()
+    var visibleItemCount: Int = 3 {
+        didSet {
+            fullSizeContainer.maxVisibleItemCount = visibleItemCount
+
+            tableView.beginUpdates()
+            tableView.endUpdates()
+        }
+    }
     
     let tableView = UITableView()
     
@@ -44,6 +54,7 @@ class PickerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupPickerView()
+        view.setContentHuggingPriority(.required, for: .vertical)
     }
     
     private func setupPickerView() {
@@ -63,15 +74,25 @@ class PickerViewController: UIViewController {
             tableView.register(UINib(nibName: "PickerTableViewCell", bundle: bundle), forCellReuseIdentifier: PickerTableViewCell.cellIdentifier)
         }
         
-        // FIXME: upcoming lots of changes here
+        tableView.register(PickerHeaderView.self, forHeaderFooterViewReuseIdentifier: headerViewIdentifier)
+        tableView.register(PickerFooterView.self, forHeaderFooterViewReuseIdentifier: footerViewIdentifier)
+        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.showsVerticalScrollIndicator = false
         tableView.showsHorizontalScrollIndicator = false
+        tableView.bounces = false
         
-        // TODO: need to adjust based on the number of items, display style etc
+        // There's an ugly UI glitch due to that option..
+        // Picker UIControl is changing its content inset if it is displayed on the very bottom in iPhone X
+        if #available(iOS 11.0, *) {
+            tableView.contentInsetAdjustmentBehavior = .never
+        } else {
+            automaticallyAdjustsScrollViewInsets = false
+        }
+        
         tableView.isScrollEnabled = false
-        
+        fullSizeContainer.maxVisibleItemCount = visibleItemCount
         fullSizeContainer.scrollView = tableView
         tableView.translatesAutoresizingMaskIntoConstraints = false
         fullSizeContainer.addSubview(tableView)
@@ -96,8 +117,6 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         let identifier = model.isMultiSelect ? SelectableViewCell.cellIdentifier : PickerTableViewCell.cellIdentifier
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
         cell.contentView.backgroundColor = UIColor.white
-        cell.selectionStyle = .none
-        
         guard let configurableCell: ConfigurablePickerCell = cell as? ConfigurablePickerCell else {
             return cell
         }
@@ -121,41 +140,46 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView = UIView()
+        let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: headerViewIdentifier) as! PickerHeaderView
+        headerView.contentView.backgroundColor = UIColor.controlHeaderBackgroundColor
         let titleLabel = UILabel()
+        titleLabel.font = .preferredFont(forTextStyle: .title3)
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.numberOfLines = 0
         titleLabel.text = model.label
         titleLabel.textColor = headerTextColor
-        headerView.backgroundColor = UIColor.controlHeaderBackgroundColor
+        titleLabel.backgroundColor = UIColor.controlHeaderBackgroundColor
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        headerView.addSubview(titleLabel)
-        
-        NSLayoutConstraint.activate([titleLabel.leftAnchor.constraint(equalTo: headerView.leftAnchor, constant: 10),
-                                     titleLabel.rightAnchor.constraint(equalTo: headerView.rightAnchor, constant: -10),
-                                     titleLabel.heightAnchor.constraint(equalTo: headerView.heightAnchor, multiplier: 0.8),
-                                     titleLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 0)])
+        headerView.contentView.addSubview(titleLabel)
+        NSLayoutConstraint.activate([titleLabel.leadingAnchor.constraint(equalTo: headerView.contentView.leadingAnchor, constant: 10),
+                                     titleLabel.trailingAnchor.constraint(equalTo: headerView.contentView.trailingAnchor, constant: -10),
+                                     titleLabel.topAnchor.constraint(equalTo: headerView.contentView.topAnchor, constant: 10),
+                                     titleLabel.bottomAnchor.constraint(equalTo: headerView.contentView.bottomAnchor, constant: -10)])
+        headerView.titleLabel = titleLabel
         return headerView
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let footerView = UIView()
-        guard model.isMultiSelect else {
-            return footerView
-        }
         
+        guard model.isMultiSelect else { return nil }
+        
+        let footerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: footerViewIdentifier) as! PickerFooterView
+        footerView.contentView.backgroundColor = UIColor.controlHeaderBackgroundColor
         let doneButton = UIButton(type: .custom)
         doneButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
-        doneButton.setTitle("Done", for: .normal)
+        let localizedTitle = NSLocalizedString("Done", comment: "Button title for mutliselect control done.")
+        doneButton.setTitle(localizedTitle, for: .normal)
+        doneButton.titleLabel?.font = .preferredFont(forTextStyle: .title3)
         doneButton.setTitleColor(headerTextColor, for: .normal)
         doneButton.titleLabel?.adjustsFontSizeToFitWidth = true
         doneButton.backgroundColor = UIColor.controlHeaderBackgroundColor
         doneButton.translatesAutoresizingMaskIntoConstraints = false
-        footerView.addSubview(doneButton)
-        NSLayoutConstraint.activate([doneButton.leftAnchor.constraint(equalTo: footerView.leftAnchor),
-                                     doneButton.rightAnchor.constraint(equalTo: footerView.rightAnchor),
-                                     doneButton.topAnchor.constraint(equalTo: footerView.topAnchor),
-                                     doneButton.bottomAnchor.constraint(equalTo: footerView.bottomAnchor)])
+        footerView.contentView.addSubview(doneButton)
+        NSLayoutConstraint.activate([doneButton.leadingAnchor.constraint(equalTo: footerView.contentView.leadingAnchor),
+                                     doneButton.trailingAnchor.constraint(equalTo: footerView.contentView.trailingAnchor),
+                                     doneButton.topAnchor.constraint(equalTo: footerView.contentView.topAnchor, constant: 5),
+                                     doneButton.bottomAnchor.constraint(equalTo: footerView.contentView.bottomAnchor, constant: -5)])
+        footerView.doneButton = doneButton
         return footerView
     }
     
@@ -166,5 +190,29 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         delegate?.pickerViewController(self, didFinishWithModel: model)
+    }
+}
+
+// MARK: - Picker header view
+
+class PickerHeaderView: UITableViewHeaderFooterView {
+    var titleLabel: UILabel?
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        titleLabel?.removeFromSuperview()
+        titleLabel = nil
+    }
+}
+
+// MARK: - Picker footer view
+
+class PickerFooterView: UITableViewHeaderFooterView {
+    var doneButton: UIButton?
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        doneButton?.removeFromSuperview()
+        doneButton = nil
     }
 }

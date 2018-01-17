@@ -20,7 +20,15 @@ class TypingIndicatorViewModel: ControlViewModel {
 
 class TypingIndicatorControl: ControlProtocol {
     
-    var model: ControlViewModel
+    var model: ControlViewModel {
+        didSet {
+            // restart animations
+            typingIndicatorView.stopAnimating()
+            typingIndicatorView.startAnimating()
+        }
+    }
+    
+    let typingIndicatorView = TypingIndicatorView()
     
     var viewController: UIViewController
     
@@ -41,7 +49,6 @@ class TypingIndicatorControl: ControlProtocol {
     }
     
     private func setupTypingIndicator() {
-        let typingIndicatorView = TypingIndicatorView()
         typingIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         viewController.view.addSubview(typingIndicatorView)
         NSLayoutConstraint.activate([typingIndicatorView.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor, constant: 10),

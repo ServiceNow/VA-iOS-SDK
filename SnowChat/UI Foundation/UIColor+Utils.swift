@@ -18,6 +18,10 @@ extension UIColor {
         return UIColor(red: 0.97, green: 0.97, blue: 0.97, alpha: 1)
     }
     
+    class var controlSelectedBackgroundColor: UIColor {
+        return UIColor(red: 0.85, green: 0.85, blue: 0.85, alpha: 1)
+    }
+    
     class var controlTextColor: UIColor {
         return UIColor(red: 72 / 255, green: 159 / 255, blue: 250 / 255, alpha: 1)
     }

@@ -24,5 +24,9 @@ class PickerTableViewCell: UITableViewCell, ConfigurablePickerCell {
     func configure(withModel model: PickerItem) {
         titleLabel.text = model.label
         titleLabel.textColor = UIColor.controlTextColor
+        
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = UIColor.controlSelectedBackgroundColor
+        selectedBackgroundView = backgroundView
     }
 }

@@ -332,7 +332,7 @@ extension ChatDataController: ChatDataListener {
             let valueString = (value ?? false) ? "Yes" : "No"
             
             let questionViewModel = TextControlViewModel(id: message.id, label: "", value: label)
-            let answerViewModel = TextControlViewModel(id: message.id, label: "", value: valueString)
+            let answerViewModel = TextControlViewModel(id: response.id, label: "", value: valueString)
             
             popTypingIndicatorIfShown()
             replaceLastControl(with: ChatMessageModel(model: questionViewModel, location: .left))

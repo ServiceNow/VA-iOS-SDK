@@ -1,5 +1,5 @@
 //
-//  MessageViewController.swift
+//  ChatMessageViewController.swift
 //  SnowChat
 //
 //  Created by Michael Borowiec on 12/15/17.
@@ -8,34 +8,21 @@
 
 import UIKit
 
-class MessageViewController: UIViewController {
+class ChatMessageViewController: UIViewController {
     
-    let controlMaxWidth: CGFloat = 250
-    
-    @IBOutlet weak var bubbleView: BubbleView!
-    @IBOutlet weak var agentImageView: UIImageView!
-    @IBOutlet weak var agentBubbleLeadingConstraint: NSLayoutConstraint!
-    @IBOutlet weak var bubbleLeadingConstraint: NSLayoutConstraint!
-    @IBOutlet weak var bubbleTrailingConstraint: NSLayoutConstraint!
-    
+    private let controlMaxWidth: CGFloat = 250
     private(set) var uiControl: ControlProtocol?
     
-    var model: ChatMessageModel? {
-        didSet {
-            guard let messageModel = model else {
-                return
-            }
-
-            let control = ControlsUtil.controlForViewModel(messageModel.controlModel)
-            addUIControl(control, at: messageModel.location)
-            self.view.layoutIfNeeded()
-        }
-    }
+    @IBOutlet private weak var bubbleView: BubbleView!
+    @IBOutlet private weak var agentImageView: UIImageView!
+    @IBOutlet private weak var agentBubbleLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var bubbleLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var bubbleTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var agentImageTopConstraint: NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         bubbleView.borderColor = UIColor.agentBubbleBackgroundColor
-        bubbleView.backgroundColor = UIColor.agentBubbleBackgroundColor
     }
     
     func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
@@ -50,7 +37,6 @@ class MessageViewController: UIViewController {
         
         controlView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(controlView)
-        controlViewController.didMove(toParentViewController: self)
         
         NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: bubbleView.contentView.leadingAnchor),
                                      controlView.trailingAnchor.constraint(equalTo: bubbleView.contentView.trailingAnchor),
@@ -62,11 +48,17 @@ class MessageViewController: UIViewController {
         if control.model.type != .text {
             controlView.widthAnchor.constraint(lessThanOrEqualToConstant: controlMaxWidth).isActive = true
         }
+        
+        controlViewController.didMove(toParentViewController: self)
+        
+        // FIXME: that probably could go away after we add insert/delete to a data controller
+        UIView.performWithoutAnimation {
+            view.layoutIfNeeded()
+        }
     }
     
     func prepareForReuse() {
         removeUIControl()
-        model = nil
     }
     
     private func removeUIControl() {
@@ -76,11 +68,13 @@ class MessageViewController: UIViewController {
     }
     
     // updates message view based on the direction of the message
+    // FIXME: Some of these will be moved to Control classes after we add theming.
     
     private func updateForLocation(_ location: BubbleLocation) {
-        if uiControl?.model.type == .text,
-            let textView = uiControl?.viewController.view as? UITextView {
-            textView.textColor = (location == .right) ? UIColor.userBubbleTextColor : UIColor.agentBubbleTextColor
+        if uiControl?.model.type == .text {
+            let textViewController = uiControl?.viewController as! TextControl.TextViewController
+            textViewController.textLabel.textColor = (location == .right) ? UIColor.userBubbleTextColor : UIColor.agentBubbleTextColor
+            textViewController.textLabel.backgroundColor = (location == .right) ? UIColor.userBubbleBackgroundColor : UIColor.agentBubbleBackgroundColor
         }
         
         switch location {
@@ -92,6 +86,7 @@ class MessageViewController: UIViewController {
             agentBubbleLeadingConstraint.priority = .veryHigh
             bubbleLeadingConstraint.priority = .defaultLow
             bubbleTrailingConstraint.priority = .defaultHigh
+            agentImageTopConstraint.priority = .veryHigh
         case .right:
             uiControl?.viewController.view.backgroundColor = UIColor.userBubbleBackgroundColor
             bubbleView.backgroundColor = UIColor.userBubbleBackgroundColor
@@ -100,6 +95,12 @@ class MessageViewController: UIViewController {
             bubbleLeadingConstraint.priority = .defaultHigh
             bubbleTrailingConstraint.priority = .veryHigh
             agentImageView.isHidden = true
+            agentImageTopConstraint.priority = .lowest
+        }
+        
+        // Make sure that a little tail in the bubble gets colored like picker background. now it is hardcoded to white but will need to get theme color
+        if uiControl?.viewController is PickerViewController {
+            bubbleView.backgroundColor = UIColor.white
         }
     }
 }

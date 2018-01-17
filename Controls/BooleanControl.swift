@@ -10,9 +10,15 @@ import UIKit
 
 class BooleanControl: PickerControlProtocol {
     
+    var visibleItemCount: Int = PickerConstants.visibleItemCount
+    
     var style: PickerControlStyle = .inline
     
-    var model: ControlViewModel
+    var model: ControlViewModel {
+        didSet {
+            updateViewController(withModel: model)
+        }
+    }
     
     weak var delegate: ControlDelegate?
     

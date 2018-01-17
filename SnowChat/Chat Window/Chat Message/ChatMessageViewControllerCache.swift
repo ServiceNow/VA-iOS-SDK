@@ -11,32 +11,37 @@
 
 class ChatMessageViewControllerCache {
     
-    private var viewControllersByIndexPath = [IndexPath : MessageViewController]()
-    private var viewControllersToReuse = Set<MessageViewController>()
+    private(set) var viewControllerByIndexPath = [IndexPath: ChatMessageViewController]()
+    private var viewControllersToReuse = Set<ChatMessageViewController>()
     
-    func getViewController(for indexPath: IndexPath, movedToParentViewController parent: UIViewController) -> MessageViewController {
-        let messageViewController: MessageViewController
+    func getViewController(for indexPath: IndexPath, movedToParentViewController parent: UIViewController) -> ChatMessageViewController {
+        let messageViewController: ChatMessageViewController
         if let firstUnusedController = viewControllersToReuse.first {
             messageViewController = firstUnusedController
-            messageViewController.prepareForReuse()
             viewControllersToReuse.remove(messageViewController)
         } else {
-            messageViewController = MessageViewController(nibName: "MessageViewController", bundle: Bundle(for: type(of: self)))
+            messageViewController = ChatMessageViewController(nibName: "ChatMessageViewController", bundle: Bundle(for: type(of: self)))
         }
         
-        viewControllersByIndexPath[indexPath] = messageViewController
+        viewControllerByIndexPath[indexPath] = messageViewController
         messageViewController.willMove(toParentViewController: parent)
         parent.addChildViewController(messageViewController)
         return messageViewController
     }
     
     func removeViewController(at indexPath: IndexPath) {
-        guard let messageViewController = viewControllersByIndexPath[indexPath] else {
+        guard let messageViewController = viewControllerByIndexPath[indexPath] else {
             return
         }
         
         messageViewController.removeFromParentViewController()
-        viewControllersByIndexPath.removeValue(forKey: indexPath)
+        messageViewController.prepareForReuse()
+        viewControllerByIndexPath.removeValue(forKey: indexPath)
         viewControllersToReuse.insert(messageViewController)
+    }
+    
+    func removeAll() {
+        viewControllerByIndexPath.removeAll()
+        viewControllersToReuse.removeAll()
     }
 }
