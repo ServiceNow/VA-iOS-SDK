@@ -459,7 +459,7 @@ class Chatterbox {
     
     private func saveDataToPersistence() {
         do {
-            try chatStore.store()
+            try chatStore.save()
         } catch let error {
             logger.logError("Exception storing chatStore: \(error)")
         }

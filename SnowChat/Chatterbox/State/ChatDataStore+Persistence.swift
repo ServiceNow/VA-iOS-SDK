@@ -28,7 +28,7 @@ extension ChatDataStore {
     
     // MARK: - Persistence methods
     
-    func store() throws {
+    func save() throws {
         guard conversationIds().count > 0 else {
             try clearPersistence()
             return

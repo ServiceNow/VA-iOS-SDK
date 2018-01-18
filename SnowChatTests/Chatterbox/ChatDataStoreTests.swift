@@ -113,7 +113,7 @@ class DataStoreTests: XCTestCase {
         store.storeControlData(textControl, forConversation: "testConversationID", fromChat: chatterbox!)
         
         do {
-            try store.store()
+            try store.save()
             
             let conversations = try store.load()
             
