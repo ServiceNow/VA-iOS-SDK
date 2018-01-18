@@ -55,7 +55,10 @@ extension ChatDataStore {
         let data = try Data(contentsOf: archiveURL, options: [])
         
         let storable = try CBData.jsonDecoder.decode(StorableContainer.self, from: data)
+        
         if storable.version != StorableContainer.currentVersion {
+            // TODO: try to do a version-change-fixup?
+            
             try clearPersistence()
             return []
         }
@@ -71,4 +74,3 @@ extension ChatDataStore {
         try FileManager().removeItem(atPath: archiveURL.path)
     }
 }
-

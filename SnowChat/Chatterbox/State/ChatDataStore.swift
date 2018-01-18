@@ -6,17 +6,14 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 // Stores all of the data needed to rehydrate a consumer's conversations.
-//  - includes the consumerAccountID, used to fetch the consumer's messages from the server
-//  - local copy of each message, grouped by conversation, for eventual local persistence
+//  - local copy of each message, grouped by conversation, for local persistence
 
 import Foundation
 
 class ChatDataStore {
     private let id: String
     internal var conversations = [Conversation]()
-    
-    var consumerAccountId: String?
-    
+        
     init(storeId: String) {
         id = storeId
     }
@@ -146,8 +143,7 @@ struct MessageExchange: Codable {
         return !(message is OutputTextControlMessage)
     }
     
-    enum CodingKeys: String, CodingKey
-    {
+    enum CodingKeys: String, CodingKey {
         case message
         case response
     }

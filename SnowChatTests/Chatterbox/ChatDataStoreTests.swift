@@ -96,7 +96,6 @@ class DataStoreTests: XCTestCase {
     
     func testPersistence() {
         let store = ChatDataStore(storeId: "test-store")
-        store.consumerAccountId = "ConsumerAccountId-TEST1"
 
         let booleanControl = BooleanControlMessage.exampleInstance()
         store.storeControlData(booleanControl, forConversation: "testConversationID", fromChat: chatterbox!)
