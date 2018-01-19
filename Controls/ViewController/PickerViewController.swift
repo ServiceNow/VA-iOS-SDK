@@ -61,7 +61,7 @@ class PickerViewController: UIViewController {
         tableView.sectionFooterHeight = UITableViewAutomaticDimension
         tableView.estimatedSectionHeaderHeight = 50
         tableView.estimatedSectionFooterHeight = model.isMultiSelect ? 50 : 0
-        tableView.tableFooterView = model.isMultiSelect ? nil : UIView()
+        tableView.tableFooterView = UIView()
         
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 50
