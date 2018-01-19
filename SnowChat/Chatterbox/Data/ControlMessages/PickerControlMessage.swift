@@ -8,6 +8,16 @@
 
 import Foundation
 
+struct PickerMetadata: Codable {
+    let multiSelect: Bool
+    let style: String
+    let openByDefault: Bool
+    let required: Bool
+    let itemType: String
+    let label: String
+    let options: [LabeledValue]
+}
+
 struct PickerControlMessage: Codable, CBControlData {
     
     func uniqueId() -> String {
@@ -19,16 +29,6 @@ struct PickerControlMessage: Codable, CBControlData {
     
     let type: String = "consumerTextMessage"
     var data: RichControlData<ControlWrapper<String?, PickerMetadata>>
-    
-    struct PickerMetadata: Codable {
-        let multiSelect: Bool
-        let style: String
-        let openByDefault: Bool
-        let required: Bool
-        let itemType: String
-        let label: String
-        let options: [LabeledValue]
-    }
     
     // define the properties that we decode / encode
     private enum CodingKeys: String, CodingKey {

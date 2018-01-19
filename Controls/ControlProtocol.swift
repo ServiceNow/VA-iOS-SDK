@@ -20,8 +20,6 @@ enum ControlType {
     
     case typingIndicator
     
-    case unknown
-    
     func description() -> String {
         switch self {
         case .multiSelect:
@@ -36,8 +34,6 @@ enum ControlType {
             return "Single Select"
         case .typingIndicator:
             return "Typing Indicator"
-        case .unknown:
-            return "Uknown Control"
         }
     }
 }

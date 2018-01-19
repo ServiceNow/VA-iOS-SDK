@@ -125,6 +125,8 @@ class ChatDataController {
                 updateInputData(data, lastPendingMessage)
             case .picker:
                 updatePickerData(data, lastPendingMessage)
+            case .multiSelect:
+                updateMultiSelectData(data, lastPendingMessage)
             default:
                 Logger.default.logDebug("Unhandled control type: \(lastPendingMessage.controlType)")
                 return
@@ -158,6 +160,16 @@ class ChatDataController {
     fileprivate func updatePickerData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
         if let pickerViewModel = data as? SingleSelectControlViewModel,
             var pickerMessage = lastPendingMessage as? PickerControlMessage {
+            
+            pickerMessage.id = pickerViewModel.id
+            pickerMessage.data.richControl?.value = pickerViewModel.resultValue
+            chatterbox.update(control: pickerMessage)
+        }
+    }
+    
+    fileprivate func updateMultiSelectData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
+        if let pickerViewModel = data as? SingleSelectControlViewModel,
+            var pickerMessage = lastPendingMessage as? MultiSelectControlMessage {
             
             pickerMessage.id = pickerViewModel.id
             pickerMessage.data.richControl?.value = pickerViewModel.resultValue
@@ -234,6 +246,20 @@ extension ChatDataController: ChatDataListener {
     // MARK: - ChatDataListener (from service)
     
     func chatterbox(_ chatterbox: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String) {
+        guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
+            return
+        }
+        
+        var messageClone = message
+        messageClone.id = CBData.uuidString()
+        if let messageModel = ChatMessageModel.model(withMessage: messageClone) {
+            bufferControlMessage(messageModel)
+        } else {
+            dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
+        }
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didReceiveMultiSelectData message: MultiSelectControlMessage, forChat chatId: String) {
         guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
             return
         }
@@ -369,6 +395,34 @@ extension ChatDataController: ChatDataListener {
                 popTypingIndicatorIfShown()
                 replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
                 presentControlData(ChatMessageModel(model: answerModel, location: .right))
+        }
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didCompleteMultiSelectExchange messageExchange: MessageExchange, forChat chatId: String) {
+        guard chatterbox.id == self.chatterbox.id else {
+            return
+        }
+        
+        guard messageExchange.isComplete else {
+            Logger.default.logError("MessageExchange is not complete in didCompleteMessageExchange method - skipping!")
+            return
+        }
+        
+        // replace the picker with the picker's label, and add the response
+        
+        if let response = messageExchange.response as? MultiSelectControlMessage,
+            let message = messageExchange.message as? MultiSelectControlMessage,
+            let label = message.data.richControl?.uiMetadata?.label,
+            let value: String = response.data.richControl?.value ?? "" {
+            let selectedOption = response.data.richControl?.uiMetadata?.options.first(where: { option -> Bool in
+                option.value == value
+            })
+            let questionModel = TextControlViewModel(id: CBData.uuidString(), value: label)
+            let answerModel = TextControlViewModel(id: CBData.uuidString(), value: selectedOption?.label ?? value)
+            
+            popTypingIndicatorIfShown()
+            replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
+            presentControlData(ChatMessageModel(model: answerModel, location: .right))
         }
     }
 }

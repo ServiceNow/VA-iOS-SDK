@@ -109,6 +109,8 @@ class Chatterbox {
             updateInputControl(control)
         case .picker:
             updatePickerControl(control)
+        case .multiSelect:
+            updateMultiSelectControl(control)
         default:
             logger.logInfo("Unrecognized control type - skipping: \(type)")
             return
@@ -158,6 +160,17 @@ class Chatterbox {
             
             if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
                 chatDataListener?.chatterbox(self, didCompletePickerExchange: lastExchange, forChat: conversationId)
+            }
+        }
+    }
+    
+    fileprivate func updateMultiSelectControl(_ control: CBControlData) {
+        if var pickerControl = control as? MultiSelectControlMessage, let conversationId = pickerControl.data.conversationId {
+            pickerControl.data = updateMessage(pickerControl.data)
+            storeAndPublish(pickerControl, forConversation: conversationId)
+            
+            if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
+                chatDataListener?.chatterbox(self, didCompleteMultiSelectExchange: lastExchange, forChat: conversationId)
             }
         }
     }
@@ -401,6 +414,8 @@ class Chatterbox {
             handleInputControl(control)
         case .picker:
             handlePickerControl(control)
+        case .multiSelect:
+            handleMultiSelectControl(control)
         case .text:
             handleTextControl(control)
         default:
@@ -429,6 +444,13 @@ class Chatterbox {
         if let pickerControl = control as? PickerControlMessage, let conversationId = pickerControl.data.conversationId {
             chatStore.storeControlData(pickerControl, expectResponse: true, forConversation: conversationId, fromChat: self)
             chatDataListener?.chatterbox(self, didReceivePickerData: pickerControl, forChat: chatId)
+        }
+    }
+    
+    fileprivate func handleMultiSelectControl(_ control: CBControlData) {
+        if let multiSelectControl = control as? MultiSelectControlMessage, let conversationId = multiSelectControl.data.conversationId {
+            chatStore.storeControlData(multiSelectControl, expectResponse: true, forConversation: conversationId, fromChat: self)
+            chatDataListener?.chatterbox(self, didReceiveMultiSelectData: multiSelectControl, forChat: chatId)
         }
     }
     
