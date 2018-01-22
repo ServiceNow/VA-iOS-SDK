@@ -165,9 +165,9 @@ class Chatterbox {
     }
     
     fileprivate func updateMultiSelectControl(_ control: CBControlData) {
-        if var pickerControl = control as? MultiSelectControlMessage, let conversationId = pickerControl.data.conversationId {
-            pickerControl.data = updateMessage(pickerControl.data)
-            storeAndPublish(pickerControl, forConversation: conversationId)
+        if var multiSelectControl = control as? MultiSelectControlMessage, let conversationId = multiSelectControl.data.conversationId {
+            multiSelectControl.data = updateMessage(multiSelectControl.data)
+            storeAndPublish(multiSelectControl, forConversation: conversationId)
             
             if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
                 chatDataListener?.chatterbox(self, didCompleteMultiSelectExchange: lastExchange, forChat: conversationId)

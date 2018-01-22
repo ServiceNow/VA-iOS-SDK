@@ -68,8 +68,8 @@ extension ChatMessageModel {
         let direction = message.data.direction
         let options = message.data.richControl?.uiMetadata?.options ?? []
         let items = options.map { PickerItem(label: $0.label, value: $0.value) }
-        let pickerModel = MultiSelectControlViewModel(id: message.id, label: title, required: required, items: items)
-        let snowViewModel = ChatMessageModel(model: pickerModel, location: BubbleLocation(direction: direction))
+        let multiSelectModel = MultiSelectControlViewModel(id: message.id, label: title, required: required, items: items)
+        let snowViewModel = ChatMessageModel(model: multiSelectModel, location: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
