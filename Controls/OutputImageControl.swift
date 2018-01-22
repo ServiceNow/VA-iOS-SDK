@@ -6,11 +6,6 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-// FIXME: this protocol will have to be improved
-
-// whoever uses OutputImageControl is responsible for conforming and implementing ImageDownloader protocol
-// ImageDownloader was added to make OutputImageControl independent of networking client
-
 import AlamofireImage
 
 class OutputImageControl: ControlProtocol {
@@ -39,6 +34,8 @@ class OutputImageControl: ControlProtocol {
                     imageModel.value == currentModel.value else {
                         return
                 }
+                
+                // FIXME: Handle error / no image case
                 
                 self?.imageViewController.image = response.value
             }
