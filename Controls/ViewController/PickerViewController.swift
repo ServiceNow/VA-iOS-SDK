@@ -124,7 +124,13 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         model.selectItem(at: indexPath.row)
-        tableView.reloadRows(at: [indexPath], with: .none)
+        
+        // Without adding `performWithoutAnimation` we will get ugly glitch when selecting items at the bottom of the table view
+        // That is caused by estimatedRowHeight not being accurate.
+        // Under the hood table view set contentOffset based on estimatedHeight of the row, and then adjusts it to an actual value.
+        UIView.performWithoutAnimation {
+            tableView.reloadRows(at: [indexPath], with: .none)
+        }
         
         // for non-multiselect control we are just done here. Otherwise we just send didSelectItem: callback
         if !model.isMultiSelect {
