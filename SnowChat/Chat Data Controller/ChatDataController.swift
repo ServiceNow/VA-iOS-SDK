@@ -168,12 +168,12 @@ class ChatDataController {
     }
     
     fileprivate func updateMultiSelectData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
-        if let pickerViewModel = data as? SingleSelectControlViewModel,
-            var pickerMessage = lastPendingMessage as? MultiSelectControlMessage {
+        if let multiSelectViewModel = data as? MultiSelectControlViewModel,
+            var multiSelectMessage = lastPendingMessage as? MultiSelectControlMessage {
             
-            pickerMessage.id = pickerViewModel.id
-            pickerMessage.data.richControl?.value = pickerViewModel.resultValue
-            chatterbox.update(control: pickerMessage)
+            multiSelectMessage.id = multiSelectViewModel.id
+            multiSelectMessage.data.richControl?.value = multiSelectViewModel.resultValue
+            chatterbox.update(control: multiSelectMessage)
         }
     }
 
@@ -413,13 +413,14 @@ extension ChatDataController: ChatDataListener {
         if let response = messageExchange.response as? MultiSelectControlMessage,
             let message = messageExchange.message as? MultiSelectControlMessage,
             let label = message.data.richControl?.uiMetadata?.label,
-            let value: String = response.data.richControl?.value ?? "" {
-            let selectedOption = response.data.richControl?.uiMetadata?.options.first(where: { option -> Bool in
-                option.value == value
-            })
-            let questionModel = TextControlViewModel(id: CBData.uuidString(), value: label)
-            let answerModel = TextControlViewModel(id: CBData.uuidString(), value: selectedOption?.label ?? value)
+            let values: [String] = response.data.richControl?.value ?? [""] {
             
+            let questionModel = TextControlViewModel(id: CBData.uuidString(), value: label)
+            
+            let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
+            let displayValue = options?.joined(separator: ", ")
+            let answerModel = TextControlViewModel(id: CBData.uuidString(), value: displayValue ?? "")
+
             popTypingIndicatorIfShown()
             replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
             presentControlData(ChatMessageModel(model: answerModel, location: .right))

@@ -66,9 +66,12 @@ class PickerViewController: UIViewController {
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 50
         
-        tableView.register(SelectableViewCell.self, forCellReuseIdentifier: SelectableViewCell.cellIdentifier)
-        let bundle = Bundle(for: PickerViewController.self)
-        tableView.register(UINib(nibName: "PickerTableViewCell", bundle: bundle), forCellReuseIdentifier: PickerTableViewCell.cellIdentifier)
+        if model.isMultiSelect {
+            tableView.register(SelectableViewCell.self, forCellReuseIdentifier: SelectableViewCell.cellIdentifier)
+        } else {
+            let bundle = Bundle(for: PickerViewController.self)
+            tableView.register(UINib(nibName: "PickerTableViewCell", bundle: bundle), forCellReuseIdentifier: PickerTableViewCell.cellIdentifier)
+        }
         
         tableView.register(PickerHeaderView.self, forHeaderFooterViewReuseIdentifier: headerViewIdentifier)
         tableView.register(PickerFooterView.self, forHeaderFooterViewReuseIdentifier: footerViewIdentifier)
