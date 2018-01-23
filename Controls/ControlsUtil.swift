@@ -18,11 +18,9 @@ class ControlsUtil {
         case .boolean:
             return BooleanControl(model: model)
         case .singleSelect:
-            fatalError("Not implemented yet")
+            return SingleSelectControl(model: model)
         case .typingIndicator:
             return TypingIndicatorControl()
-        case .unknown:
-            fatalError("Uknown model type, couldn't build UIControl")
         }
     }
 }

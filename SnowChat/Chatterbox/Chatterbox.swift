@@ -384,6 +384,8 @@ class Chatterbox {
             handleInputControl(control)
         case .picker:
             handlePickerControl(control)
+        case .multiSelect:
+            handleMultiSelectControl(control)
         case .text:
             handleTextControl(control)
         default:
@@ -409,6 +411,13 @@ class Chatterbox {
         if let pickerControl = control as? PickerControlMessage, let conversationId = pickerControl.data.conversationId {
             chatStore.storeControlData(pickerControl, forConversation: conversationId, fromChat: self)
             chatDataListener?.chatterbox(self, didReceivePickerData: pickerControl, forChat: chatId)
+        }
+    }
+    
+    fileprivate func handleMultiSelectControl(_ control: CBControlData) {
+        if let multiSelectControl = control as? MultiSelectControlMessage, let conversationId = multiSelectControl.data.conversationId {
+            chatStore.storeControlData(multiSelectControl, forConversation: conversationId, fromChat: self)
+            chatDataListener?.chatterbox(self, didReceiveMultiSelectData: multiSelectControl, forChat: chatId)
         }
     }
     
@@ -443,6 +452,8 @@ class Chatterbox {
             updateInputControl(control)
         case .picker:
             updatePickerControl(control)
+        case .multiSelect:
+            updateMultiSelectControl(control)
         default:
             logger.logInfo("Unrecognized control type - skipping: \(type)")
             return
@@ -493,7 +504,18 @@ class Chatterbox {
             }
         }
     }
-    
+
+    fileprivate func updateMultiSelectControl(_ control: CBControlData) {
+        if var multiSelectControl = control as? MultiSelectControlMessage, let conversationId = multiSelectControl.data.conversationId {
+            multiSelectControl.data = updateRichControlData(multiSelectControl.data)
+            storeAndPublish(multiSelectControl, forConversation: conversationId)
+            
+            if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
+                chatDataListener?.chatterbox(self, didCompleteMultiSelectExchange: lastExchange, forChat: conversationId)
+            }
+        }
+    }
+
     // MARK: - Persistence Methods
     
     private func saveDataToPersistence() {

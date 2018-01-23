@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import AlamofireImage
 
-class ControlsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ControlDelegate, ImageDownloader {
+class ControlsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ControlDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     
@@ -75,42 +76,20 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         case .typingIndicator:
             uiControl = TypingIndicatorControl()
         case .outputImage:
-            let bundle = Bundle(for: type(of: self))
-            guard let filePath = bundle.path(forResource: "mark", ofType: "png") else {
-                fatalError("Error getting image path")
-            }
-            
-            let url = URL(fileURLWithPath: filePath)
+            // swiftlint:disable:next force_unwrapping
+            let url = URL(string: "https://i.ytimg.com/vi/uXF9MqdKlTM/maxresdefault.jpg")!
             let imageModel = OutputImageViewModel(id: "image_output_blah_blah_blah", value: url)
             let outputImageControl = OutputImageControl(model: imageModel)
-            outputImageControl.imageDownloader = self
+            outputImageControl.imageDownloader = ImageDownloader()
             uiControl = outputImageControl
         case .singleSelect:
             fatalError("Single select not implemented yet")
-        case .unknown:
-            fatalError("Unknown")
         }
         
         uiControl.delegate = self
         
         // set the controls
         fakeChatViewController?.controls = [uiControl]
-    }
-    
-    // MARK: - ImageDownloader
-    
-    func downloadImage(forURL url: URL, completion: @escaping (UIImage?, Error?) -> Void) {
-        guard let data = try? Data(contentsOf: url) else {
-            return
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            let image = UIImage(data: data)
-            completion(image, nil)
-            
-            self?.fakeChatViewController?.tableView.beginUpdates()
-            self?.fakeChatViewController?.tableView.endUpdates()
-        }
     }
     
     // MARK: - ControlDelegate

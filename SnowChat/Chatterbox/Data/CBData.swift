@@ -147,7 +147,7 @@ enum CBControlType: String, Codable {
     case date = "Date"
     case input = "InputText"
     case picker = "Picker"
-    case multiSelect = "MultiSelect"
+    case multiSelect = "Multiselect"
     case text = "OutputText"
     
     case contextualActionMessage = "ContextualAction"

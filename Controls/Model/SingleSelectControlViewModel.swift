@@ -14,17 +14,16 @@ class SingleSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     let isRequired: Bool
     
-    let isMultiSelect: Bool
+    let isMultiSelect: Bool = false
     
     var items = [PickerItem]()
     
-    let type: ControlType = .multiSelect
+    let type: ControlType = .singleSelect
     
     init(id: String, label: String? = nil, required: Bool, items: [PickerItem], resultValue: String? = nil) {
         self.id = id
         self.label = label
         self.isRequired = required
-        self.isMultiSelect = false
         self.items = items
         
         if !required {

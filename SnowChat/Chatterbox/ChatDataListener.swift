@@ -16,6 +16,7 @@ protocol ChatDataListener: AnyObject {
     func chatterbox(_ chatterbox: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String)
     func chatterbox(_ chatterbox: Chatterbox, didReceiveInputData message: InputControlMessage, forChat chatId: String)
     func chatterbox(_ chatterbox: Chatterbox, didReceivePickerData message: PickerControlMessage, forChat chatId: String)
+    func chatterbox(_ chatterbox: Chatterbox, didReceiveMultiSelectData message: MultiSelectControlMessage, forChat chatId: String)
     func chatterbox(_ chatterbox: Chatterbox, didReceiveTextData message: OutputTextControlMessage, forChat chatId: String)
     
     // Notifies listener that a MessageExchange was complete, meaning the user responded to a request for input
@@ -23,7 +24,8 @@ protocol ChatDataListener: AnyObject {
     func chatterbox(_ chatterbox: Chatterbox, didCompleteBooleanExchange messageExchange: MessageExchange, forChat chatId: String)
     func chatterbox(_ chatterbox: Chatterbox, didCompleteInputExchange messageExchange: MessageExchange, forChat chatId: String)
     func chatterbox(_ chatterbox: Chatterbox, didCompletePickerExchange messageExchange: MessageExchange, forChat chatId: String)
-    
+    func chatterbox(_ chatterbox: Chatterbox, didCompleteMultiSelectExchange messageExchange: MessageExchange, forChat chatId: String)
+
     // Notifies listener of bulk-update
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversation conversationId: String, forChat chatId: String)
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String)

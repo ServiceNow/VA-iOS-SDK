@@ -8,6 +8,7 @@
 
 import Foundation
 import Alamofire
+import AlamofireImage
 import AMBClient
 
 class APIManager: NSObject {
@@ -16,6 +17,10 @@ class APIManager: NSObject {
     
     // Each API Manager instance has a private session. That's why we use an ephemeral configuration.
     internal let sessionManager = SessionManager(configuration: .ephemeral)
+    
+    private(set) internal lazy var imageDownloader: ImageDownloader = {
+        return ImageDownloader(sessionManager: sessionManager)
+    }()
     
     internal let ambClient: AMBClient
     

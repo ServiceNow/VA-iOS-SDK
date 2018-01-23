@@ -64,6 +64,6 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     }
     
     var displayValue: String? {
-        return resultValue?.joined(separator: ", ")
+        return resultValue?.joinedWithCommaSeparator()
     }
 }

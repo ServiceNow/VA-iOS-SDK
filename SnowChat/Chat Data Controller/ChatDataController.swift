@@ -140,6 +140,8 @@ class ChatDataController {
                 updateInputData(data, lastPendingMessage)
             case .picker:
                 updatePickerData(data, lastPendingMessage)
+            case .multiSelect:
+                updateMultiSelectData(data, lastPendingMessage)
             default:
                 Logger.default.logDebug("Unhandled control type: \(lastPendingMessage.controlType)")
                 return
@@ -177,6 +179,16 @@ class ChatDataController {
             pickerMessage.id = CBData.uuidString()
             pickerMessage.data.richControl?.value = pickerViewModel.resultValue
             chatterbox.update(control: pickerMessage)
+        }
+    }
+    
+    fileprivate func updateMultiSelectData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
+        if let multiSelectViewModel = data as? MultiSelectControlViewModel,
+            var multiSelectMessage = lastPendingMessage as? MultiSelectControlMessage {
+            
+            multiSelectMessage.id = multiSelectViewModel.id
+            multiSelectMessage.data.richControl?.value = multiSelectViewModel.resultValue
+            chatterbox.update(control: multiSelectMessage)
         }
     }
 
@@ -259,6 +271,20 @@ extension ChatDataController: ChatDataListener {
         }
         
         if let messageModel = ChatMessageModel.model(withMessage: message) {
+            bufferControlMessage(messageModel)
+        } else {
+            dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
+        }
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didReceiveMultiSelectData message: MultiSelectControlMessage, forChat chatId: String) {
+        guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
+            return
+        }
+        
+        var messageClone = message
+        messageClone.id = CBData.uuidString()
+        if let messageModel = ChatMessageModel.model(withMessage: messageClone) {
             bufferControlMessage(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
@@ -454,5 +480,34 @@ extension ChatDataController: ChatDataListener {
         }
         
         return TextControlViewModel(id: CBData.uuidString(), value: value)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didCompleteMultiSelectExchange messageExchange: MessageExchange, forChat chatId: String) {
+        guard chatterbox.id == self.chatterbox.id else {
+            return
+        }
+        
+        guard messageExchange.isComplete else {
+            Logger.default.logError("MessageExchange is not complete in didCompleteMessageExchange method - skipping!")
+            return
+        }
+        
+        // replace the picker with the picker's label, and add the response
+        
+        if let response = messageExchange.response as? MultiSelectControlMessage,
+            let message = messageExchange.message as? MultiSelectControlMessage,
+            let label = message.data.richControl?.uiMetadata?.label,
+            let values: [String] = response.data.richControl?.value ?? [""] {
+            
+            let questionModel = TextControlViewModel(id: CBData.uuidString(), value: label)
+            
+            let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
+            let displayValue = options?.joinedWithCommaSeparator()
+            let answerModel = TextControlViewModel(id: CBData.uuidString(), value: displayValue ?? "")
+
+            popTypingIndicatorIfShown()
+            replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
+            presentControlData(ChatMessageModel(model: answerModel, location: .right))
+        }
     }
 }

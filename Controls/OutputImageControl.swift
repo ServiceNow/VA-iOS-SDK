@@ -6,14 +6,7 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-// FIXME: this protocol will have to be improved
-
-// whoever uses OutputImageControl is responsible for conforming and implementing ImageDownloader protocol
-// ImageDownloader was added to make OutputImageControl independent of networking client
-public protocol ImageDownloader: AnyObject {
-    
-    func downloadImage(forURL url: URL, completion: @escaping (UIImage?, Error?) -> Void)
-}
+import AlamofireImage
 
 class OutputImageControl: ControlProtocol {
     
@@ -21,26 +14,34 @@ class OutputImageControl: ControlProtocol {
     
     var viewController: UIViewController
     
+    private var imageViewController: OutputImageViewController {
+        return viewController as! OutputImageViewController
+    }
+    
     weak var delegate: ControlDelegate?
     
-    weak var imageDownloader: ImageDownloader? {
+    var imageDownloader: ImageDownloader? {
         didSet {
             guard let imageModel = model as? OutputImageViewModel else {
                 Logger.default.logError("wrong model type")
                 return
             }
             
-            imageDownloader?.downloadImage(forURL: imageModel.value, completion: { [weak self] (image, error) in
-                if let error = error {
-                    Logger.default.logError("Error loading image from URL \(error)")
-                    return
+            let urlRequest = URLRequest(url: imageModel.value)
+            
+            imageDownloader?.download(urlRequest) { [weak self] (response) in
+                guard let currentModel = self?.model as? OutputImageViewModel,
+                    imageModel.value == currentModel.value else {
+                        return
                 }
                 
-                (self?.viewController as? OutputImageViewController)?.image = image
-            })
+                // FIXME: Handle error / no image case
+                
+                self?.imageViewController.image = response.value
+            }
         }
     }
-    
+
     required init(model: ControlViewModel) {
         guard let imageModel = model as? OutputImageViewModel else {
             fatalError("Wrong model class")
@@ -49,4 +50,5 @@ class OutputImageControl: ControlProtocol {
         self.model = imageModel
         self.viewController = OutputImageViewController()
     }
+    
 }
