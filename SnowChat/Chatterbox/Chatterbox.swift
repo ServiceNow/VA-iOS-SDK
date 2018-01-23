@@ -505,31 +505,30 @@ class Chatterbox {
     }
     
     private func loadDataFromPersistence(completionHandler: @escaping (Error?) -> Void) {
-//        do {
-//            let conversations = try chatStore.load()
-//        } catch let error {
-//            logger.logError("Exception loading chatStore: \(error)")
-//        }
-
+        // TODO: load locally stored history and synchronize with the server
+        //       for now we just pull from server, no local store
+        /*
+        do {
+            let conversations = try chatStore.load()
+        } catch let error {
+            logger.logError("Exception loading chatStore: \(error)")
+        }
+        */
+        
         refreshConversations(completionHandler: completionHandler)
     }
     
     private func refreshConversations(completionHandler: @escaping (Error?) -> Void) {
         
         // HACK - work around consumerAccountId issues for testing...
-        let correctConsumerAccountId = session?.user.consumerAccountId
-        session?.user.consumerAccountId = "5b050e0973730300d63a566a4cf6a703"
+//        let correctConsumerAccountId = session?.user.consumerAccountId
+//        session?.user.consumerAccountId = "5b050e0973730300d63a566a4cf6a703"
         
         if let consumerId = session?.user.consumerAccountId {
             logger.logDebug("--> Loading conversations for \(consumerId)")
             
             apiManager.fetchConversations(forConsumer: consumerId, completionHandler: { (conversations) in
                 self.logger.logDebug(" --> loaded \(conversations.count) conversations")
-                
-                // HACK - work around consumerAccountId issues for testing...
-                if let correctConsumerAccountId = correctConsumerAccountId {
-                    //self.session?.user.consumerAccountId = correctConsumerAccountId
-                }
                 
                 conversations.forEach { conversation in
                     if conversation.isForSystemTopic() {
