@@ -91,8 +91,8 @@ class ChatDataController {
         
         // last control is really the first... our list is reversed
         controlData[0] = model
-        let changeInfo = ModelChangeInfo(.update, atIndex: 0)
-        changeListener?.controller(self, didChangeData: [changeInfo])
+        let changeInfo = ModelChangeType.update(index: 0, model: model)
+        changeListener?.controller(self, didChangeModel: [changeInfo])
     }
     
     fileprivate func addControlToCollection(_ data: ChatMessageModel) {
@@ -114,15 +114,16 @@ class ChatDataController {
         popTypingIndicatorIfShown()
         addControlToCollection(data)
         
-        let changeInfo = ModelChangeInfo(.insert, atIndex: 0)
-        changeListener?.controller(self, didChangeData: [changeInfo])
+        let changeInfo = ModelChangeType.insert(index: 0, model: data)
+        changeListener?.controller(self, didChangeModel: [changeInfo])
     }
     
     fileprivate func pushTypingIndicator() {
-        addControlToCollection(ChatMessageModel(model: typingIndicator, location: BubbleLocation.left))
+        let model = ChatMessageModel(model: typingIndicator, location: BubbleLocation.left)
+        addControlToCollection(model)
         
-        let changeInfo = ModelChangeInfo(.insert, atIndex: 0)
-        changeListener?.controller(self, didChangeData: [changeInfo])
+        let changeInfo = ModelChangeType.insert(index: 0, model: model)
+        changeListener?.controller(self, didChangeModel: [changeInfo])
     }
     
     fileprivate func popTypingIndicatorIfShown() {
@@ -131,8 +132,8 @@ class ChatDataController {
         }
         
         controlData.remove(at: 0)
-        let changeInfo = ModelChangeInfo(.delete, atIndex: 0)
-        changeListener?.controller(self, didChangeData: [changeInfo])
+        let changeInfo = ModelChangeType.delete(index: 0)
+        changeListener?.controller(self, didChangeModel: [changeInfo])
     }
     
     fileprivate func updateChatterbox(_ data: ControlViewModel) {

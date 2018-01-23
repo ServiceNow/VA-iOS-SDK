@@ -8,25 +8,13 @@
 
 import Foundation
 
-struct ModelChangeInfo {
-    enum ChangeType {
-        case insert
-        case delete
-        case update
-    }
-    
-    let kind: ChangeType
-    let index: Int
-    let model: ChatMessageModel?
-    
-    init(_ kind: ChangeType, atIndex index: Int, withModel model: ChatMessageModel? = nil) {
-        self.kind = kind
-        self.index = index
-        self.model = model
-    }
+enum ModelChangeType {
+    case insert(index: Int, model: ChatMessageModel)
+    case delete(index: Int)
+    case update(index: Int, model: ChatMessageModel)
 }
 
 protocol ViewDataChangeListener {
-    func controller(_ dataController: ChatDataController, didChangeData changes: [ModelChangeInfo])
+    func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType])
     func controllerDidLoadContent(_ dataController: ChatDataController)
 }

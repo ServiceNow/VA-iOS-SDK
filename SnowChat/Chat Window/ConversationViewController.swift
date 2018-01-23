@@ -134,7 +134,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     // MARK: - ViewDataChangeListener
     
-    func controller(_ dataController: ChatDataController, didChangeData changes: [ModelChangeInfo]) {
+    func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType]) {
         updateTableView()
     }
     
