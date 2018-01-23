@@ -64,7 +64,7 @@ class CBDataTests: XCTestCase {
     }
 
     func testBooleanFromJSON() {
-        let boolObj = BooleanControlMessage.exampleInstance()
+        let boolObj = ExampleData.exampleBooleanControlMessage()
         XCTAssertNotNil(boolObj)
         XCTAssert(boolObj.controlType == .boolean)
         XCTAssert(boolObj.data.richControl?.uiType == "Boolean")
@@ -74,7 +74,7 @@ class CBDataTests: XCTestCase {
     }
     
     func testInputFromJSON() {
-        let obj = InputControlMessage.exampleInstance()
+        let obj = ExampleData.exampleInputControlMessage()
         XCTAssertNotNil(obj)
         XCTAssert(obj.controlType == .input)
         XCTAssert(obj.data.richControl?.uiType == "InputText")
@@ -84,7 +84,7 @@ class CBDataTests: XCTestCase {
     }
     
     func testPickerFromJSON() {
-        let obj = PickerControlMessage.exampleInstance()
+        let obj = ExampleData.examplePickerControlMessage()
         XCTAssertNotNil(obj)
         XCTAssert(obj.controlType == .picker)
         XCTAssert(obj.data.richControl?.uiType == "Picker")
@@ -97,7 +97,7 @@ class CBDataTests: XCTestCase {
     }
     
     func testOutputTextMessage() {
-        let textObj = OutputTextControlMessage.exampleInstance()
+        let textObj = ExampleData.exampleOutputTextControlMessage()
         XCTAssertNotNil(textObj)
         XCTAssertEqual(textObj.controlType, .text)
         XCTAssertEqual(textObj.data.richControl?.uiType, "OutputText")

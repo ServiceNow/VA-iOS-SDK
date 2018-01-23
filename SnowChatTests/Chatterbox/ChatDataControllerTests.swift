@@ -92,7 +92,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
     }
     
     func testAddControl() {
-        let boolMessage = BooleanControlMessage.exampleInstance()
+        let boolMessage = ExampleData.exampleBooleanControlMessage()
         expectation = expectation(description: "Expect model changed delegate to be called")
         
         controller?.chatterbox(mockChatterbox!, didReceiveBooleanData: boolMessage, forChat: "chatID")
@@ -116,7 +116,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         controller?.topicDidStart(startTopicMessage)
 
         // first add the initial boolean message as if it came from Chatterbox
-        let boolMessage = BooleanControlMessage.exampleInstance()
+        let boolMessage = ExampleData.exampleBooleanControlMessage()
         controller?.chatterbox(mockChatterbox!, didReceiveBooleanData: boolMessage, forChat: "chatID")
         mockChatterbox?.pendingControlMessage = boolMessage
         

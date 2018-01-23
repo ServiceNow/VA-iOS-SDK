@@ -25,7 +25,7 @@ class DataStoreTests: XCTestCase {
     
     func testAddConversations() {
         let store = ChatDataStore(storeId: "test-store")
-        let booleanControl =  BooleanControlMessage.exampleInstance()
+        let booleanControl =  ExampleData.exampleBooleanControlMessage()
 
         store.storeControlData(booleanControl, forConversation: "testConversationID1", fromChat: chatterbox!)
         store.storeControlData(booleanControl, forConversation: "testConversationID2", fromChat: chatterbox!)
@@ -48,9 +48,9 @@ class DataStoreTests: XCTestCase {
     
     func testAddMessagesWithAndWithoutResponses() {
         let store = ChatDataStore(storeId: "test-store")
-        let booleanControl = BooleanControlMessage.exampleInstance()
-        let inputControl = InputControlMessage.exampleInstance()
-        let outputControl = OutputTextControlMessage.exampleInstance()
+        let booleanControl = ExampleData.exampleBooleanControlMessage()
+        let inputControl = ExampleData.exampleInputControlMessage()
+        let outputControl = ExampleData.exampleOutputTextControlMessage()
         
         store.storeControlData(booleanControl, forConversation: "testConversationID1", fromChat: chatterbox!)
         store.storeControlData(inputControl, forConversation: "testConversationID2", fromChat: chatterbox!)
@@ -71,7 +71,7 @@ class DataStoreTests: XCTestCase {
 
     func testNoPendingMessageForDifferentConvresation() {
         let store = ChatDataStore(storeId: "test-store")
-        let control = BooleanControlMessage.exampleInstance()
+        let control = ExampleData.exampleBooleanControlMessage()
         
         store.storeControlData(control, forConversation: "testConversationID1", fromChat: chatterbox!)
 
@@ -81,7 +81,7 @@ class DataStoreTests: XCTestCase {
     
     func testResponseMakesCompleted() {
         let store = ChatDataStore(storeId: "test-store")
-        let control = BooleanControlMessage.exampleInstance()
+        let control = ExampleData.exampleBooleanControlMessage()
         
         store.storeControlData(control, forConversation: "testConversationID", fromChat: chatterbox!)
         store.storeControlData(control, forConversation: "testConversationID2", fromChat: chatterbox!)
@@ -97,19 +97,19 @@ class DataStoreTests: XCTestCase {
     func testPersistence() {
         let store = ChatDataStore(storeId: "test-store")
 
-        let booleanControl = BooleanControlMessage.exampleInstance()
+        let booleanControl = ExampleData.exampleBooleanControlMessage()
         store.storeControlData(booleanControl, forConversation: "testConversationID", fromChat: chatterbox!)
         var booleanReply = booleanControl
         booleanReply.id = CBData.uuidString()
         store.storeResponseData(booleanReply, forConversation: "testConversationID")
         
-        let inputControl = InputControlMessage.exampleInstance()
+        let inputControl = ExampleData.exampleInputControlMessage()
         store.storeControlData(inputControl, forConversation: "testConversationID", fromChat: chatterbox!)
         
-        let pickerControl = PickerControlMessage.exampleInstance()
+        let pickerControl = ExampleData.examplePickerControlMessage()
         store.storeControlData(pickerControl, forConversation: "testConversationID", fromChat: chatterbox!)
         
-        let textControl = OutputTextControlMessage.exampleInstance()
+        let textControl = ExampleData.exampleOutputTextControlMessage()
         store.storeControlData(textControl, forConversation: "testConversationID", fromChat: chatterbox!)
         
         do {

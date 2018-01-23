@@ -49,32 +49,4 @@ struct BooleanControlMessage: Codable, CBControlData {
         data.sendTime = Date()
         data.richControl?.value = value
     }
-    
-    internal static func exampleInstance() -> BooleanControlMessage {
-        let jsonBoolean = """
-        {
-          "type": "systemTextMessage",
-          "data": {
-            "sessionId": "1",
-            "sendTime": 0,
-            "receiveTime": 0,
-            "direction": "outbound",
-            "richControl": {
-              "uiType": "Boolean",
-              "value": true,
-              "uiMetadata": {
-                "label": "Would you like to create an incident?",
-                "required": true
-              },
-              "model": {
-                "name": "init_create_incident",
-                "type": "field"
-              }
-            },
-            "messageId": "d30c8342-1e78-47aa-886e-d6627c092691"
-          }
-        }
-        """
-        return CBDataFactory.controlFromJSON(jsonBoolean) as! BooleanControlMessage
-    }
 }
