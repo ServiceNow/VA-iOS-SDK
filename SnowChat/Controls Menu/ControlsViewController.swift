@@ -84,8 +84,6 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             uiControl = outputImageControl
         case .singleSelect:
             fatalError("Single select not implemented yet")
-        case .unknown:
-            fatalError("Unknown")
         }
         
         uiControl.delegate = self

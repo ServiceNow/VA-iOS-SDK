@@ -31,6 +31,10 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
         Logger.default.logDebug("Picker Message Completed")
     }
     
+    func chatterbox(_ chatterbox: Chatterbox, didCompleteMultiSelectExchange messageExchange: MessageExchange, forChat chatId: String) {
+        Logger.default.logDebug("Picker Message Completed")
+    }
+    
     // MARK: ControlDelegate
     
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
@@ -79,6 +83,15 @@ class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventL
             appendContent(message: "\nPickerControl received: \(label)")
             
             presentPickerAlert(message)
+        }
+    }
+    
+    func chatterbox(_: Chatterbox, didReceiveMultiSelectData message: MultiSelectControlMessage, forChat chatId: String) {
+        if message.data.direction == .fromServer {
+            let label = message.data.richControl?.uiMetadata?.label ?? "[missing label]"
+            appendContent(message: "\nPickerControl received: \(label)")
+            
+//            presentPickerAlert(message)
         }
     }
 

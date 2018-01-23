@@ -31,6 +31,8 @@ class CBDataFactory {
                     return try CBData.jsonDecoder.decode(InputControlMessage.self, from: jsonData)
                 case .picker:
                     return try CBData.jsonDecoder.decode(PickerControlMessage.self, from: jsonData)
+                case .multiSelect:
+                    return try CBData.jsonDecoder.decode(MultiSelectControlMessage.self, from: jsonData)
                 case .text:
                     return try CBData.jsonDecoder.decode(OutputTextMessage.self, from: jsonData)
                 default:

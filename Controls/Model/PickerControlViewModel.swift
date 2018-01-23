@@ -8,7 +8,7 @@
 
 protocol PickerControlViewModel: ControlViewModel {
     
-    // can user select mutliple items?
+    // can user select multiple items?
     var isMultiSelect: Bool { get }
     
     // collection of item models

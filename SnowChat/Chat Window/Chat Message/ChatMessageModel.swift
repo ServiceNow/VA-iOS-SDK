@@ -54,17 +54,22 @@ extension ChatMessageModel {
         let direction = message.data.direction
         let options = message.data.richControl?.uiMetadata?.options ?? []
         let items = options.map { PickerItem(label: $0.label, value: $0.value) }
-        
-        let isMultiselectPicker = message.data.richControl?.uiMetadata?.multiSelect ?? false
-        let pickerModel: PickerControlViewModel
-        
-        if !isMultiselectPicker {
-            pickerModel = SingleSelectControlViewModel(id: message.id, label: title, required: required, items: items)
-        } else {
-            pickerModel = MultiSelectControlViewModel(id: message.id, label: title, required: required, items: items)
+        let pickerModel = SingleSelectControlViewModel(id: message.id, label: title, required: required, items: items)
+        let snowViewModel = ChatMessageModel(model: pickerModel, location: BubbleLocation(direction: direction))
+        return snowViewModel
+    }
+    
+    static func model(withMessage message: MultiSelectControlMessage) -> ChatMessageModel? {
+        guard let title = message.data.richControl?.uiMetadata?.label,
+            let required = message.data.richControl?.uiMetadata?.required else {
+                return nil
         }
         
-        let snowViewModel = ChatMessageModel(model: pickerModel, location: BubbleLocation(direction: direction))
+        let direction = message.data.direction
+        let options = message.data.richControl?.uiMetadata?.options ?? []
+        let items = options.map { PickerItem(label: $0.label, value: $0.value) }
+        let multiSelectModel = MultiSelectControlViewModel(id: message.id, label: title, required: required, items: items)
+        let snowViewModel = ChatMessageModel(model: multiSelectModel, location: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
