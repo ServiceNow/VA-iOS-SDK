@@ -8,13 +8,25 @@
 
 import Foundation
 
-struct OutputTextMessage: Codable, CBControlData {
+struct OutputTextControlMessage: Codable, CBControlData {
     func uniqueId() -> String {
         return id
     }
     
     var id: String = CBData.uuidString()
     var controlType: CBControlType = .text
+    
+    var messageId: String {
+        return data.messageId
+    }
+    
+    var conversationId: String? {
+        return data.conversationId
+    }
+    
+    var messageTime: Date {
+        return data.sendTime
+    }
     
     let type: String = "SystemTextMessage"
     var data: RichControlData<ControlWrapper<String, UIMetadata>>

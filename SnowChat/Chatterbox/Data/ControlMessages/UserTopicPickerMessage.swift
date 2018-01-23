@@ -18,6 +18,18 @@ struct UserTopicPickerMessage: Codable, CBControlData {
     
     var controlType: CBControlType = .topicPicker
     
+    var messageId: String {
+        return data.messageId
+    }
+    
+    var conversationId: String? {
+        return data.conversationId
+    }
+    
+    var messageTime: Date {
+        return data.sendTime
+    }
+    
     var type: String
     var data: RichControlData<ControlWrapper>
     

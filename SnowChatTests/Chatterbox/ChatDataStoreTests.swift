@@ -12,31 +12,8 @@ import XCTest
 class DataStoreTests: XCTestCase {
     
     var chatterbox: Chatterbox?
-    let jsonBoolean = """
-        {
-          "type": "systemTextMessage",
-          "data": {
-            "sessionId": "1",
-            "sendTime": 0,
-            "receiveTime": 0,
-            "direction": "outbound",
-            "richControl": {
-              "uiType": "Boolean",
-              "value": true,
-              "uiMetadata": {
-                "label": "Would you like to create an incident?",
-                "required": true
-              },
-              "model": {
-                "name": "init_create_incident",
-                "type": "field"
-              }
-            },
-            "messageId": "d30c8342-1e78-47aa-886e-d6627c092691"
-          }
-        }
-        """
-
+    
+    
     override func setUp() {
         chatterbox = Chatterbox(instance: ServerInstance(instanceURL: URL(fileURLWithPath: "")), dataListener: nil, eventListener: nil)
     }
@@ -48,10 +25,10 @@ class DataStoreTests: XCTestCase {
     
     func testAddConversations() {
         let store = ChatDataStore(storeId: "test-store")
-        let control = CBDataFactory.controlFromJSON(jsonBoolean)
-        
-        store.storeControlData(control, expectResponse: true, forConversation: "testConversationID1", fromChat: chatterbox!)
-        store.storeControlData(control, expectResponse: true, forConversation: "testConversationID2", fromChat: chatterbox!)
+        let booleanControl =  ExampleData.exampleBooleanControlMessage()
+
+        store.storeControlData(booleanControl, forConversation: "testConversationID1", fromChat: chatterbox!)
+        store.storeControlData(booleanControl, forConversation: "testConversationID2", fromChat: chatterbox!)
         
         // make sure 2 conversations
         let conversationIds = store.conversationIds()
@@ -64,33 +41,39 @@ class DataStoreTests: XCTestCase {
         
         // make sure the message ID in the exchanges are correct
         conversationIds.forEach { id in
-            XCTAssertEqual(control.id, store.conversation(forId: id)?.messageExchanges().last?.message.uniqueId())
+            XCTAssertEqual(booleanControl.id, store.conversation(forId: id)?.messageExchanges().last?.message.uniqueId())
         }
 
     }
     
     func testAddMessagesWithAndWithoutResponses() {
         let store = ChatDataStore(storeId: "test-store")
-        let control = CBDataFactory.controlFromJSON(jsonBoolean)
+        let booleanControl = ExampleData.exampleBooleanControlMessage()
+        let inputControl = ExampleData.exampleInputControlMessage()
+        let outputControl = ExampleData.exampleOutputTextControlMessage()
         
-        store.storeControlData(control, expectResponse: true, forConversation: "testConversationID1", fromChat: chatterbox!)
-        store.storeControlData(control, expectResponse: false, forConversation: "testConversationID2", fromChat: chatterbox!)
+        store.storeControlData(booleanControl, forConversation: "testConversationID1", fromChat: chatterbox!)
+        store.storeControlData(inputControl, forConversation: "testConversationID2", fromChat: chatterbox!)
+        store.storeControlData(outputControl, forConversation: "testConversationID3", fromChat: chatterbox!)
         
-        XCTAssertEqual(control.uniqueId(), store.conversation(forId: "testConversationID1")?.messageExchanges().first?.message.uniqueId())
-        XCTAssertEqual(control.uniqueId(), store.conversation(forId: "testConversationID2")?.messageExchanges().first?.message.uniqueId())
+        XCTAssertEqual(booleanControl.uniqueId(), store.conversation(forId: "testConversationID1")?.messageExchanges().first?.message.uniqueId())
+        XCTAssertEqual(inputControl.uniqueId(), store.conversation(forId: "testConversationID2")?.messageExchanges().first?.message.uniqueId())
+        XCTAssertEqual(outputControl.uniqueId(), store.conversation(forId: "testConversationID3")?.messageExchanges().first?.message.uniqueId())
 
         XCTAssertFalse((store.conversation(forId: "testConversationID1")?.messageExchanges().first?.isComplete)!)
-        XCTAssertTrue((store.conversation(forId: "testConversationID2")?.messageExchanges().first?.isComplete)!)
-        
-        XCTAssertEqual(control.id, store.lastPendingMessage(forConversation: "testConversationID1")?.uniqueId())
-        XCTAssertNil(store.lastPendingMessage(forConversation: "testConversationID2"))
+        XCTAssertFalse((store.conversation(forId: "testConversationID2")?.messageExchanges().first?.isComplete)!)
+        XCTAssertTrue((store.conversation(forId: "testConversationID3")?.messageExchanges().first?.isComplete)!)
+
+        XCTAssertEqual(booleanControl.id, store.lastPendingMessage(forConversation: "testConversationID1")?.uniqueId())
+        XCTAssertEqual(inputControl.id, store.lastPendingMessage(forConversation: "testConversationID2")?.uniqueId())
+        XCTAssertNil(store.lastPendingMessage(forConversation: "testConversationID3")?.uniqueId())
     }
 
     func testNoPendingMessageForDifferentConvresation() {
         let store = ChatDataStore(storeId: "test-store")
-        let control = CBDataFactory.controlFromJSON(jsonBoolean)
+        let control = ExampleData.exampleBooleanControlMessage()
         
-        store.storeControlData(control, expectResponse: true, forConversation: "testConversationID1", fromChat: chatterbox!)
+        store.storeControlData(control, forConversation: "testConversationID1", fromChat: chatterbox!)
 
         XCTAssertEqual(control.id, store.lastPendingMessage(forConversation: "testConversationID1")?.uniqueId())
         XCTAssertNil(store.lastPendingMessage(forConversation: "some-other-conversation"))
@@ -98,10 +81,10 @@ class DataStoreTests: XCTestCase {
     
     func testResponseMakesCompleted() {
         let store = ChatDataStore(storeId: "test-store")
-        let control = CBDataFactory.controlFromJSON(jsonBoolean)
+        let control = ExampleData.exampleBooleanControlMessage()
         
-        store.storeControlData(control, expectResponse: true, forConversation: "testConversationID", fromChat: chatterbox!)
-        store.storeControlData(control, expectResponse: true, forConversation: "testConversationID2", fromChat: chatterbox!)
+        store.storeControlData(control, forConversation: "testConversationID", fromChat: chatterbox!)
+        store.storeControlData(control, forConversation: "testConversationID2", fromChat: chatterbox!)
         XCTAssertNotNil(store.lastPendingMessage(forConversation: "testConversationID")?.uniqueId())
         XCTAssertNotNil(store.lastPendingMessage(forConversation: "testConversationID2")?.uniqueId())
         
@@ -109,5 +92,47 @@ class DataStoreTests: XCTestCase {
         
         XCTAssertNil(store.lastPendingMessage(forConversation: "testConversationID"))
         XCTAssertNotNil(store.lastPendingMessage(forConversation: "testConversationID2")?.uniqueId())
+    }
+    
+    func testPersistence() {
+        let store = ChatDataStore(storeId: "test-store")
+
+        let booleanControl = ExampleData.exampleBooleanControlMessage()
+        store.storeControlData(booleanControl, forConversation: "testConversationID", fromChat: chatterbox!)
+        var booleanReply = booleanControl
+        booleanReply.id = CBData.uuidString()
+        store.storeResponseData(booleanReply, forConversation: "testConversationID")
+        
+        let inputControl = ExampleData.exampleInputControlMessage()
+        store.storeControlData(inputControl, forConversation: "testConversationID", fromChat: chatterbox!)
+        
+        let pickerControl = ExampleData.examplePickerControlMessage()
+        store.storeControlData(pickerControl, forConversation: "testConversationID", fromChat: chatterbox!)
+        
+        let textControl = ExampleData.exampleOutputTextControlMessage()
+        store.storeControlData(textControl, forConversation: "testConversationID", fromChat: chatterbox!)
+        
+        do {
+            try store.save()
+            
+            let conversations = try store.load()
+            
+            XCTAssertEqual(1, conversations.count)
+            XCTAssertEqual("testConversationID", conversations[0].uniqueId())
+            let messages = conversations[0].messageExchanges()
+            XCTAssertEqual(4, messages.count)
+            
+            XCTAssertEqual(booleanControl.data.messageId, (messages[0].message as! BooleanControlMessage).data.messageId)
+            XCTAssertEqual(booleanReply.data.messageId, (messages[0].response as! BooleanControlMessage).data.messageId)
+            
+            XCTAssertEqual(inputControl.data.messageId, (messages[1].message as! InputControlMessage).data.messageId)
+            XCTAssertNil(messages[1].response)
+            XCTAssertEqual(pickerControl.data.messageId, (messages[2].message as! PickerControlMessage).data.messageId)
+            XCTAssertNil(messages[2].response)
+            XCTAssertEqual(textControl.data.messageId, (messages[3].message as! OutputTextControlMessage).data.messageId)
+            XCTAssertNil(messages[2].response)
+        } catch _ {
+            XCTAssert(false)
+        }
     }
 }

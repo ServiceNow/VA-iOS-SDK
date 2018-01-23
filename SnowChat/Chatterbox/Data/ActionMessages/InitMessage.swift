@@ -20,6 +20,7 @@ struct InitMessage: Codable, CBActionMessageData {
         var systemActionName: String
         var extId: String?
         var userId: String?
+        var consumerAcctId: String?
         var contextHandshake: ContextHandshake
     }
 

@@ -22,13 +22,10 @@
 //
 // In order to prevent many controls coming in at essentially the same time, which makes the UI look
 // janky and inelegant, we first put incoming controls into a buffer. Then, we pull them off of the
-// buffer at a timed interval, providing a much smoother and more sequential feel to the UI
+// buffer at a timed interval, providing a much smoother and more sequential feel to the UI. This buffering
+// is disabled during bulk-loads, like when a message stream is loaded from the REST service
 
 import Foundation
-
-protocol ViewDataChangeListener {
-    func chatDataController(_ dataController: ChatDataController, didChangeModel model: ChatMessageModel, atIndex index: Int)
-}
 
 class ChatDataController {
     
@@ -42,6 +39,7 @@ class ChatDataController {
     
     private var controlMessageBuffer = [ChatMessageModel]()
     private var bufferProcessingTimer: Timer?
+    private var isBufferingEnabled = true
     
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
@@ -70,11 +68,19 @@ class ChatDataController {
     //
     public func updateControlData(_ data: ControlViewModel, isSkipped: Bool = false) {
         guard controlData.count > 0 else {
-            Logger.default.logError("No control data exists, so updating is probably incorrect")
-            return
+            fatalError("No control data exists, nothing to update")
         }
         
         updateChatterbox(data)
+    }
+    
+    func fetchOlderMessages(_ completion: @escaping (Int) -> Void) {
+        Logger.default.logDebug("Fetching older messages...")
+        
+        chatterbox.fetchOlderMessages { count in
+            Logger.default.logDebug("Fetch complete with \(count) messages")            
+            completion(count)
+        }
     }
     
     fileprivate func replaceLastControl(with model: ChatMessageModel) {
@@ -85,6 +91,8 @@ class ChatDataController {
         
         // last control is really the first... our list is reversed
         controlData[0] = model
+        let changeInfo = ModelChangeType.update(index: 0, model: model)
+        changeListener?.controller(self, didChangeModel: [changeInfo])
     }
     
     fileprivate func addControlToCollection(_ data: ChatMessageModel) {
@@ -92,23 +100,40 @@ class ChatDataController {
         controlData = [data] + controlData
     }
     
+    fileprivate func addHistoryToCollection(_ viewModels: (message: ControlViewModel, response: ControlViewModel)) {
+        // add response, then message, to the tail-end of the control data
+        controlData.append(ChatMessageModel(model: viewModels.response, location: BubbleLocation.right))
+        controlData.append(ChatMessageModel(model: viewModels.message, location: BubbleLocation.left))
+    }
+    
+    fileprivate func addHistoryToCollection(_ viewModel: ControlViewModel, location: BubbleLocation = .left) {
+        controlData.append(ChatMessageModel(model: viewModel, location: location))
+    }
+    
     fileprivate func presentControlData(_ data: ChatMessageModel) {
         popTypingIndicatorIfShown()
-
         addControlToCollection(data)
-        changeListener?.chatDataController(self, didChangeModel: data, atIndex: self.controlData.count - 1)
+        
+        let changeInfo = ModelChangeType.insert(index: 0, model: data)
+        changeListener?.controller(self, didChangeModel: [changeInfo])
     }
     
     fileprivate func pushTypingIndicator() {
-        addControlToCollection(ChatMessageModel(model: typingIndicator, location: BubbleLocation.left))
-        changeListener?.chatDataController(self, didChangeModel: ChatMessageModel(model: typingIndicator, location: BubbleLocation.left), atIndex: self.controlData.count - 1)
+        let model = ChatMessageModel(model: typingIndicator, location: BubbleLocation.left)
+        addControlToCollection(model)
+        
+        let changeInfo = ModelChangeType.insert(index: 0, model: model)
+        changeListener?.controller(self, didChangeModel: [changeInfo])
     }
     
     fileprivate func popTypingIndicatorIfShown() {
         guard controlData.count > 0, controlData[0].controlModel as? TypingIndicatorViewModel != nil else {
             return
         }
+        
         controlData.remove(at: 0)
+        let changeInfo = ModelChangeType.delete(index: 0)
+        changeListener?.controller(self, didChangeModel: [changeInfo])
     }
     
     fileprivate func updateChatterbox(_ data: ControlViewModel) {
@@ -141,7 +166,7 @@ class ChatDataController {
         if let booleanViewModel = data as? BooleanControlViewModel,
             var boolMessage = lastPendingMessage as? BooleanControlMessage {
             
-            boolMessage.id = booleanViewModel.id
+            boolMessage.id = CBData.uuidString()
             boolMessage.data.richControl?.value = booleanViewModel.resultValue
             chatterbox.update(control: boolMessage)
         }
@@ -151,7 +176,7 @@ class ChatDataController {
         if let textViewModel = data as? TextControlViewModel,
             var inputMessage = lastPendingMessage as? InputControlMessage {
             
-            inputMessage.id = textViewModel.id
+            inputMessage.id = CBData.uuidString()
             inputMessage.data.richControl?.value = textViewModel.value
             chatterbox.update(control: inputMessage)
         }
@@ -161,7 +186,7 @@ class ChatDataController {
         if let pickerViewModel = data as? SingleSelectControlViewModel,
             var pickerMessage = lastPendingMessage as? PickerControlMessage {
             
-            pickerMessage.id = pickerViewModel.id
+            pickerMessage.id = CBData.uuidString()
             pickerMessage.data.richControl?.value = pickerViewModel.resultValue
             chatterbox.update(control: pickerMessage)
         }
@@ -210,6 +235,11 @@ class ChatDataController {
     // MARK: - Control Buffer
     
     fileprivate func bufferControlMessage(_ control: ChatMessageModel) {
+        guard isBufferingEnabled else {
+            presentControlData(control)
+            return
+        }
+        
         controlMessageBuffer.append(control)
         
         enableBufferControlProcessing()
@@ -250,9 +280,7 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        var messageClone = message
-        messageClone.id = CBData.uuidString()
-        if let messageModel = ChatMessageModel.model(withMessage: messageClone) {
+        if let messageModel = ChatMessageModel.model(withMessage: message) {
             bufferControlMessage(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
@@ -278,9 +306,7 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        var messageClone = message
-        messageClone.id = CBData.uuidString()
-        if let messageModel = ChatMessageModel.model(withMessage: messageClone) {
+        if let messageModel = ChatMessageModel.model(withMessage: message) {
             bufferControlMessage(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
@@ -292,23 +318,19 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        var messageClone = message
-        messageClone.id = CBData.uuidString()
-        if let messageModel = ChatMessageModel.model(withMessage: messageClone) {
+        if let messageModel = ChatMessageModel.model(withMessage: message) {
             bufferControlMessage(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
         }
     }
     
-    func chatterbox(_ chatterbox: Chatterbox, didReceiveTextData message: OutputTextMessage, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, didReceiveTextData message: OutputTextControlMessage, forChat chatId: String) {
         guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
             return
         }
 
-        var messageClone = message
-        messageClone.id = CBData.uuidString()
-        if let messageModel = ChatMessageModel.model(withMessage: messageClone) {
+        if let messageModel = ChatMessageModel.model(withMessage: message) {
             bufferControlMessage(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
@@ -326,26 +348,10 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        guard messageExchange.isComplete else {
-            Logger.default.logError("MessageExchange is not complete in didCompleteMessageExchange method - skipping!")
-            return
-        }
-        
-        // a completed boolean exchange results in two text messages, one with the label and once with the value
-        
-        if let response = messageExchange.response as? BooleanControlMessage,
-           let message = messageExchange.message as? BooleanControlMessage {
-           
-            let label = message.data.richControl?.uiMetadata?.label ?? "???"
-            let value = response.data.richControl?.value ?? false
-            let valueString = (value ?? false) ? "Yes" : "No"
-            
-            let questionViewModel = TextControlViewModel(id: message.id, label: "", value: label)
-            let answerViewModel = TextControlViewModel(id: response.id, label: "", value: valueString)
-            
+        if let viewModels = booleanControlsFromMessageExchange(messageExchange) {
             popTypingIndicatorIfShown()
-            replaceLastControl(with: ChatMessageModel(model: questionViewModel, location: .left))
-            presentControlData(ChatMessageModel(model: answerViewModel, location: .right))
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, location: .left))
+            presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
         }
    }
     
@@ -354,19 +360,9 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        guard messageExchange.isComplete else {
-            Logger.default.logError("MessageExchange is not complete in didCompleteMessageExchange method - skipping!")
-            return
-        }
-
-        // a completed exchange simply adds a new text output representing the users answer
-        if let response = messageExchange.response as? InputControlMessage,
-            let value: String = response.data.richControl?.value ?? "" {
-            
-            let responseViewModel = TextControlViewModel(id: response.id, label: "", value: value)
-            
+        if let viewModels = inputControlsFromMessageExchange(messageExchange) {
             popTypingIndicatorIfShown()
-            presentControlData(ChatMessageModel(model: responseViewModel, location: .right))
+            presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
         }
     }
     
@@ -375,27 +371,125 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        guard messageExchange.isComplete else {
-            Logger.default.logError("MessageExchange is not complete in didCompleteMessageExchange method - skipping!")
+        if let viewModels = pickerControlsFromMessageExchange(messageExchange) {
+            popTypingIndicatorIfShown()
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, location: .left))
+            presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
+        }
+    }
+    
+    // MARK: - ChatDataListener (bulk uopdates / history)
+    
+    func chatterbox(_ chatterbox: Chatterbox, willLoadConversation conversationId: String, forChat chatId: String) {
+        // disable caching while doing a conversation load
+        isBufferingEnabled = false
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
+        // re-enable caching and upate the view
+        isBufferingEnabled = true
+        changeListener?.controllerDidLoadContent(self)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didReceiveHistory historyExchange: MessageExchange, forChat chatId: String) {
+        guard historyExchange.isComplete else {
+            Logger.default.logError("Incomplete message exchange cannot be presented in history view... skipping")
             return
         }
-
-        // replace the picker with the picker's label, and add the response
         
-        if let response = messageExchange.response as? PickerControlMessage,
+        switch historyExchange.message.controlType {
+        case .boolean:
+            if let viewModels = booleanControlsFromMessageExchange(historyExchange) {
+                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+            }
+        case .picker:
+            if let viewModels = pickerControlsFromMessageExchange(historyExchange) {
+                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+            }
+        case .input:
+            if let viewModels = inputControlsFromMessageExchange(historyExchange) {
+                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+            }
+        case .text:
+            if let viewModel = textControlFromMessageExchange(historyExchange) {
+                addHistoryToCollection(viewModel)
+            }
+        default:
+            Logger.default.logInfo("Unhandled control type in didReceiveHistory: \(historyExchange.message.controlType)")
+        }
+        
+    }
+
+    // MARK: - Model to ViewModel methods
+    
+    func booleanControlsFromMessageExchange(_ messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
+        guard messageExchange.isComplete,
+            let response = messageExchange.response as? BooleanControlMessage,
+            let message = messageExchange.message as? BooleanControlMessage else {
+            
+                Logger.default.logError("MessageExchange is not valid in booleanControlFromMessageExchange method - skipping!")
+                return nil
+        }
+        // a completed boolean exchange results in two text messages, one with the label and once with the value
+        
+        let label = message.data.richControl?.uiMetadata?.label ?? "???"
+        let value = response.data.richControl?.value ?? false
+        let valueString = (value ?? false) ? "Yes" : "No"
+        
+        let questionViewModel = TextControlViewModel(id: message.id, label: "", value: label)
+        let answerViewModel = TextControlViewModel(id: response.id, label: "", value: valueString)
+        
+        return (message: questionViewModel, response: answerViewModel)
+    }
+    
+    func inputControlsFromMessageExchange(_ messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
+        guard messageExchange.isComplete,
+            let response = messageExchange.response as? InputControlMessage,
+            let message = messageExchange.message as? InputControlMessage,
+            let messageValue: String = message.data.richControl?.uiMetadata?.label,
+            let responseValue: String = response.data.richControl?.value ?? "" else {
+            
+                Logger.default.logError("MessageExchange is not valid in inputControlsFromMessageExchange method - skipping!")
+                return nil
+        }
+        // a completed input exchange is two text controls, with the value of the message and the value of the response
+        
+        let questionViewModel = TextControlViewModel(id: message.id, value: messageValue)
+        let answerViewModel = TextControlViewModel(id: response.id, value: responseValue)
+        
+        return (message: questionViewModel, response: answerViewModel)
+    }
+    
+    func pickerControlsFromMessageExchange(_ messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
+        guard messageExchange.isComplete,
+            let response = messageExchange.response as? PickerControlMessage,
             let message = messageExchange.message as? PickerControlMessage,
             let label = message.data.richControl?.uiMetadata?.label,
-            let value: String = response.data.richControl?.value ?? "" {
-                let selectedOption = response.data.richControl?.uiMetadata?.options.first(where: { option -> Bool in
-                    option.value == value
-                })
-                let questionModel = TextControlViewModel(id: CBData.uuidString(), value: label)
-                let answerModel = TextControlViewModel(id: CBData.uuidString(), value: selectedOption?.label ?? value)
+            let value: String = response.data.richControl?.value ?? "" else {
             
-                popTypingIndicatorIfShown()
-                replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
-                presentControlData(ChatMessageModel(model: answerModel, location: .right))
+                Logger.default.logError("MessageExchange is not valid in pickerControlsFromMessageExchange method - skipping!")
+                return nil
         }
+        // a completed picker exchange results in two text messages: the picker's label, and the value of the picker response
+        
+        let selectedOption = response.data.richControl?.uiMetadata?.options.first(where: { option -> Bool in
+            option.value == value
+        })
+        let questionViewModel = TextControlViewModel(id: CBData.uuidString(), value: label)
+        let answerViewModel = TextControlViewModel(id: CBData.uuidString(), value: selectedOption?.label ?? value)
+        return (message: questionViewModel, response: answerViewModel)
+    }
+    
+    func textControlFromMessageExchange(_ messageExchange: MessageExchange) -> TextControlViewModel? {
+        guard messageExchange.isComplete,
+            let textControl = messageExchange.message as? OutputTextControlMessage,
+            let value = textControl.data.richControl?.value else {
+            
+                Logger.default.logError("MessageExchange is not valid in textControlFromMessageExchange method - skipping!")
+                return nil
+        }
+        
+        return TextControlViewModel(id: CBData.uuidString(), value: value)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didCompleteMultiSelectExchange messageExchange: MessageExchange, forChat chatId: String) {

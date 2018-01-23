@@ -73,7 +73,7 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func model(withMessage message: OutputTextMessage) -> ChatMessageModel? {
+    static func model(withMessage message: OutputTextControlMessage) -> ChatMessageModel? {
         guard let value = message.data.richControl?.value else {
             return nil
         }

@@ -9,12 +9,13 @@
 import Foundation
 
 struct ActionMessageData<T: Codable>: Codable {
-    let conversationId: String?
     let taskId: String?
     
     var messageId: String
     let sessionId: String
     
+    let conversationId: String?
+
     var direction: MessageDirection
     var sendTime: Date
     var receiveTime: Date?
