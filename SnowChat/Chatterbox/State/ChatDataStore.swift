@@ -52,6 +52,23 @@ class ChatDataStore {
         return conversations.first(where: { $0.uniqueId() == conversationId })?.lastPendingMessage()
     }
     
+    func oldestMessage() -> CBControlData? {
+        var oldest: MessageExchange?
+        
+        conversations.forEach { conversation in
+            if let conversationOldest = conversation.oldestExchange(), conversationOldest.isOlderThan(oldest) {
+                oldest = conversationOldest
+            }
+        }
+        
+        guard let oldestExchange = oldest else {
+            return nil
+        }
+        
+        // message is always older than response
+        return oldestExchange.message
+    }
+    
     func conversationIds() -> [String] {
         return conversations.map({ $0.uniqueId() })
     }
@@ -63,8 +80,15 @@ class ChatDataStore {
     func storeConversation(_ conversation: Conversation) {
         if let index = conversations.index(where: { $0.uniqueId() == conversation.uniqueId() }) {
             conversations[index] = conversation
+            // TODO: merge existing messages if the conversation already exists ???
         } else {
             conversations.append(conversation)
+        }
+    }
+    
+    func storeHistory(_ exchange: MessageExchange, forConversation conversationId: String) {
+        if let index = conversations.index(where: { $0.uniqueId() == conversationId }) {
+            conversations[index].prepend(exchange)
         }
     }
 }
@@ -74,13 +98,23 @@ struct Conversation: CBStorable, Codable {
         return id
     }
     
-    private(set) var state: ConversationState
     private let id: String
+    private(set) var state: ConversationState
+    private(set) var topicTypeName: String?
     private var exchanges = [MessageExchange]()
     
-    init(withConversationId conversationId: String, withState state: ConversationState = .inProgress) {
+    init(withConversationId conversationId: String, withTopic topicName: String = "UNKNOWN", withState state: ConversationState = .inProgress) {
         id = conversationId
         self.state = state
+        self.topicTypeName = topicName
+    }
+    
+    func isForSystemTopic() -> Bool {
+        return topicTypeName == "system"
+    }
+    
+    mutating func prepend(_ item: MessageExchange) {
+        exchanges = [item] + exchanges
     }
     
     mutating func add(_ item: MessageExchange) {
@@ -110,12 +144,18 @@ struct Conversation: CBStorable, Codable {
         guard let last = exchanges.last, !last.isComplete else { return nil }
         return last
     }
+    
     func messageExchanges() -> [MessageExchange] {
         return exchanges
     }
     
+    func oldestExchange() -> MessageExchange? {
+        // assume the first one is the oldest
+        return exchanges.first
+    }
+    
     enum ConversationState: String, Codable {
-        case inProgress = "IN PROGRESS"
+        case inProgress = "IN-PROGRESS"
         case completed = "COMPLETED"
         case unknown = "UKNONWN"
     }
@@ -173,5 +213,15 @@ struct MessageExchange: Codable {
         } catch let error {
             Logger.default.logInfo("No response read from decoder: error=\(error.localizedDescription)")
         }
+    }
+    
+    func isOlderThan(_ other: MessageExchange?) -> Bool {
+        guard let other = other else {
+            // we are older than nil
+            return true
+        }
+        
+        // message is always older than response
+        return self.message.messageTime < other.message.messageTime
     }
 }

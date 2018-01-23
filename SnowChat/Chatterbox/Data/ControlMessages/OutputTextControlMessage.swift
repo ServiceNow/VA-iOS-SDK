@@ -16,6 +16,18 @@ struct OutputTextControlMessage: Codable, CBControlData {
     var id: String = CBData.uuidString()
     var controlType: CBControlType = .text
     
+    var messageId: String {
+        return data.messageId
+    }
+    
+    var conversationId: String? {
+        return data.conversationId
+    }
+    
+    var messageTime: Date {
+        return data.sendTime
+    }
+    
     let type: String = "SystemTextMessage"
     var data: RichControlData<ControlWrapper<String, UIMetadata>>
     

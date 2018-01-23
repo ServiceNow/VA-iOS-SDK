@@ -26,6 +26,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     private var messageViewControllerCache = ChatMessageViewControllerCache()
     private var uiControlCache = ControlCache()
     
+    private var canFetchOlderMessages = false
+    private var timeLastHistoryFetch: Date = Date()
+    
     override var tableView: UITableView {
         // swiftlint:disable:next force_unwrapping
         return super.tableView!
@@ -137,6 +140,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     func controllerDidLoadContent(_ dataController: ChatDataController) {
         updateTableView()
+        canFetchOlderMessages = true
     }
     
     private func updateTableView() {
@@ -169,6 +173,39 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
 extension ConversationViewController {
     
     // MARK: - SLKTextViewController overrides
+    
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        super.scrollViewDidScroll(scrollView)
+        
+        guard scrollView == tableView else { return }
+        
+        let scrollOffsetToFetch: CGFloat = 100
+        if scrollView.contentOffset.y + tableView.bounds.height > (tableView.contentSize.height + scrollOffsetToFetch) {
+            fetchOlderMessagesIfPossible()
+        }
+    }
+    
+    func fetchOlderMessagesIfPossible() {
+        if canFetchOlderMessages,
+            Date().timeIntervalSince(timeLastHistoryFetch) > 5.0 {
+            
+            canFetchOlderMessages = false
+            timeLastHistoryFetch = Date()
+
+            Logger.default.logDebug("Fetching older messages...")
+            
+            chatterbox.fetchOlderMessages { count in
+                Logger.default.logDebug("Fetch complete with \(count) messages")
+                
+                if count > 0 {
+                    // TODO: need to provide indices for the updated rows...
+                    self.tableView.reloadData()
+                }
+                
+                self.canFetchOlderMessages = true
+            }
+        }
+    }
     
     override func didChangeAutoCompletionPrefix(_ prefix: String, andWord word: String) {
         super.didChangeAutoCompletionPrefix(prefix, andWord: word)

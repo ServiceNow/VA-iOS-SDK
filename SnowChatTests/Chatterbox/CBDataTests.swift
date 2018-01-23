@@ -10,6 +10,10 @@ import XCTest
 @testable import SnowChat
 
 class TestControlData: CBControlData {
+    var messageId: String
+    var conversationId: String?
+    var messageTime: Date
+    
     func uniqueId() -> String {
         return id
     }
@@ -20,6 +24,8 @@ class TestControlData: CBControlData {
     init() {
         id = "123"
         controlType = .unknown
+        messageId = CBData.uuidString()
+        messageTime = Date()
     }
 }
 

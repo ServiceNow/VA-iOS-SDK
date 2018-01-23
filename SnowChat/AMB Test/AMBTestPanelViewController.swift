@@ -18,6 +18,14 @@ func booleanControlFromBooleanViewModel(viewModel: BooleanControlViewModel) -> B
 }
 
 class AMBTestPanelViewController: UIViewController, ChatDataListener, ChatEventListener, ControlDelegate {
+    func chatterbox(_ chatterbox: Chatterbox, didReceiveHistory historyExchange: MessageExchange, forChat chatId: String) {
+        
+    }
+    
+    func didFetchHistory(forChatterbox chatterbox: Chatterbox, forChat chatId: String) {
+        Logger.default.logDebug("Did Fetch History")
+    }
+    
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversation conversationId: String, forChat chatId: String) {
         Logger.default.logDebug("Conversation Will Load")
     }

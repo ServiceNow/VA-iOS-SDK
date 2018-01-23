@@ -16,6 +16,18 @@ struct ContextualActionMessage: Codable, CBControlData {
     var id: String = UUID().uuidString
     var controlType: CBControlType = .contextualActionMessage
 
+    var messageId: String {
+        return data.messageId
+    }
+    
+    var conversationId: String? {
+        return data.conversationId
+    }
+    
+    var messageTime: Date {
+        return data.sendTime
+    }
+    
     let type: String
     let data: RichControlData<ContextualActionWrapper>
 

@@ -29,8 +29,8 @@ import AMBClient
 
 enum ChatterboxError: Error {
     case invalidParameter(details: String)
-    case invalidCredentials
-    case unknown
+    case invalidCredentials(details: String)
+    case unknown(details: String)
 }
 
 class Chatterbox {
@@ -65,7 +65,7 @@ class Chatterbox {
     }()
     
     private var messageHandler: ((String) -> Void)?
-    private var handshakeCompletedHandler: ((ContextualActionMessage) -> Void)?
+    private var handshakeCompletedHandler: ((ContextualActionMessage?) -> Void)?
     
     private let logger = Logger.logger(for: "Chatterbox")
 
@@ -88,13 +88,13 @@ class Chatterbox {
                 self.createChatSession { error in
                     if error == nil {
                         self.performChatHandshake { actionMessage in
+                            guard let actionMessage = actionMessage else {
+                                failure(ChatterboxError.unknown(details: "Chat Handshake failed for an unknown reason"))
+                                return
+                            }
                             success(actionMessage)
                             return
                         }
-                        // TODO: how do we detect an error here? timeout?
-                        // if the ChatServer doesn't send back anything to complete
-                        // the handhake we will just sit here waiting...
-                        
                     } else {
                         failure(error)
                     }
@@ -123,6 +123,38 @@ class Chatterbox {
     
     func lastPendingControlMessage(forConversation conversationId: String) -> CBControlData? {
         return chatStore.lastPendingMessage(forConversation: conversationId) as? CBControlData
+    }
+    
+    func fetchOlderMessages(_ completion: @escaping (Int) -> Void) {
+        // request another page of messages prior to the first message we have
+        guard let oldestMessage = chatStore.oldestMessage(),
+              let consumerAccountId = session?.user.consumerAccountId  else {
+                logger.logError("No oldest message or consumerAccountId in fetchOlderMessages")
+                completion(0)
+                return
+        }
+
+        apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { conversations in
+            var count = 0
+            
+            conversations.forEach({ conversation in
+                if conversation.isForSystemTopic() {
+                    Logger.default.logInfo("Skipping System Topic conversation in fetchOlderMessages")
+                    return
+                }
+                
+                _ = self.chatStore.findOrCreateConversation(conversation.uniqueId())
+                
+                conversation.messageExchanges().reversed().forEach({ exchange in
+                    if exchange.isComplete {
+                        self.storeHistoryAndPublish(exchange, forConversation: conversation.uniqueId())
+                        count += (exchange.response != nil ? 2 : 1)
+                    }
+                })
+            })
+            
+            completion(count)
+        })
     }
     
     // MARK: - Session Methods
@@ -178,7 +210,7 @@ class Chatterbox {
         }
     }
     
-    private func performChatHandshake(_ completion: @escaping (ContextualActionMessage) -> Void) {
+    private func performChatHandshake(_ completion: @escaping (ContextualActionMessage?) -> Void) {
         handshakeCompletedHandler = completion
         messageHandler = handshakeHandler
         
@@ -201,14 +233,20 @@ class Chatterbox {
                 
                 conversationContext.conversationId = initEvent.data.conversationId
                 
-                loadDataFromPersistence(completionHandler: { error in
-                    if error != nil {
+                loadDataFromPersistence { error in
+                    guard error == nil else {
                         self.logger.logDebug("Error in loading from persistence: \(error.debugDescription)")
+                        
+                        if let completion = self.handshakeCompletedHandler {
+                            completion(nil)
+                        }
+                        return
                     }
-                })
 
-                // handshake done, setup handler for the topic selection
-                messageHandler = self.topicSelectionHandler
+                    // handshake done, setup handler for the topic selection
+                    //  NOTE: handshakeCompletedHandler is called after topic selection, via the topicSelectionHandler
+                    self.messageHandler = self.topicSelectionHandler
+                }
             }
         }
     }
@@ -217,7 +255,8 @@ class Chatterbox {
         let choices: CBControlData = CBDataFactory.controlFromJSON(message)
         
         if choices.controlType == .contextualActionMessage {
-            if let topicChoices = choices as? ContextualActionMessage, let completion = handshakeCompletedHandler {
+            if let completion = handshakeCompletedHandler {
+                let topicChoices = choices as? ContextualActionMessage
                 completion(topicChoices)
             } else {
                 logger.logFatal("Could not call user session completion handler: invalid message or no handler provided")
@@ -466,48 +505,61 @@ class Chatterbox {
     }
     
     private func loadDataFromPersistence(completionHandler: @escaping (Error?) -> Void) {
-        do {
-            let conversations = try chatStore.load()
-            refreshConversations(conversations)
-        } catch let error {
-            logger.logError("Exception loading chatStore: \(error)")
-            completionHandler(error)
-        }
+//        do {
+//            let conversations = try chatStore.load()
+//        } catch let error {
+//            logger.logError("Exception loading chatStore: \(error)")
+//        }
+
+        refreshConversations(completionHandler: completionHandler)
     }
     
-    private func refreshConversations(_ conversations: [Conversation]) {
-        conversations.forEach { conversation in
-            self.logger.logDebug("Conversation \(conversation.uniqueId()) refreshed: \(conversation)")
-            self.storeConversationAndPublish(conversation)
-        }
-        return
+    private func refreshConversations(completionHandler: @escaping (Error?) -> Void) {
         
-        // TODO: get the history from the chat service and determine if we are out of date...\
+        // HACK - work around consumerAccountId issues for testing...
+        let correctConsumerAccountId = session?.user.consumerAccountId
+        session?.user.consumerAccountId = "5b050e0973730300d63a566a4cf6a703"
         
         if let consumerId = session?.user.consumerAccountId {
             logger.logDebug("--> Loading conversations for \(consumerId)")
+            
             apiManager.fetchConversations(forConsumer: consumerId, completionHandler: { (conversations) in
                 self.logger.logDebug(" --> loaded \(conversations.count) conversations")
                 
+                // HACK - work around consumerAccountId issues for testing...
+                if let correctConsumerAccountId = correctConsumerAccountId {
+                    //self.session?.user.consumerAccountId = correctConsumerAccountId
+                }
+                
                 conversations.forEach { conversation in
-                    self.logger.logDebug("Conversation \(conversation.uniqueId()) refreshed: \(conversation)")
+                    if conversation.isForSystemTopic() {
+                        self.logger.logInfo("Skipping conversation from system topic in refreshConversations")
+                        return
+                    }
+                    
+                    self.logger.logDebug("--> Conversation \(conversation.uniqueId()) refreshed: \(conversation)")
                     self.storeConversationAndPublish(conversation)
                 }
+                completionHandler(nil)
             })
         } else {
-            logger.logInfo("No consumer Account ID, loading by conversation ID instead...")
-            
-            conversations.forEach { conversation in
-                let conversationId = conversation.uniqueId()
-                apiManager.fetchConversation(conversationId) { conversation in
-                    if let conversation = conversation {
-                        self.logger.logDebug("Conversation \(conversationId) refreshed: \(conversation)")
-                        self.storeConversationAndPublish(conversation)
-                    } else {
-                        self.logger.logDebug("Conversation \(conversationId) could not be refreshed")
-                    }
-                }
-            }
+            logger.logError("No consumer Account ID, cannot load data from service")
+            completionHandler(ChatterboxError.invalidParameter(details: "No ConsumerAccountId set in refreshConversations"))
+        }
+    }
+    
+    fileprivate func storeHistoryAndPublish(_ exchange: MessageExchange, forConversation conversationId: String) {
+        chatStore.storeHistory(exchange, forConversation: conversationId)
+        chatDataListener?.chatterbox(self, didReceiveHistory: exchange, forChat: chatId)
+    }
+    
+    fileprivate func notifyMessageExchange(_ exchange: MessageExchange) {
+        let message = exchange.message
+        
+        notifyControlReceived(message)
+        
+        if let response = exchange.response {
+            notifyResponseReceived(response, exchange: exchange)
         }
     }
     
@@ -517,12 +569,10 @@ class Chatterbox {
         chatDataListener?.chatterbox(self, willLoadConversation: conversation.uniqueId(), forChat: chatId)
 
         conversation.messageExchanges().forEach { (exchange) in
-            let message = exchange.message
-            
-            notifyControlReceived(message)
-            
-            if let response = exchange.response {
-                notifyResponseReceived(response, exchange: exchange)
+            // NOTE: we only process completed message exchanges, since incomplete ones will render incorrectly
+            //       and we will get the completed version (if it exists) via subsequent history calls
+            if exchange.isComplete {
+                notifyMessageExchange(exchange)
             }
         }
         

@@ -25,7 +25,7 @@ class APIManagerChatSessionTest: XCTestCase {
         let jsonData = conversationResultJSON.data(using: .utf8)
         let resultsDictionary = try JSONSerialization.jsonObject(with: jsonData!, options: JSONSerialization.ReadingOptions.allowFragments) as! [String: Any]
         let conversationDictionary = resultsDictionary["conversation"]
-        let parsedResults = APIManager.conversationsFromResult([conversationDictionary])
+        let parsedResults = APIManager.conversationsFromResult([conversationDictionary], assumeMessagesReversed: false)
         
         XCTAssert(parsedResults.count == 1)
         let conversation = parsedResults[0]
@@ -34,7 +34,9 @@ class APIManagerChatSessionTest: XCTestCase {
         XCTAssertEqual(Conversation.ConversationState.completed, conversation.state)
         XCTAssertEqual(4, conversation.messageExchanges().count)
         
-        var exchange = conversation.messageExchanges()[0]
+        var exchangesInOrder: [MessageExchange] = conversation.messageExchanges()
+        
+        var exchange = exchangesInOrder[0]
         let booleanMessage: BooleanControlMessage = exchange.message as! BooleanControlMessage
         let booleanResponse: BooleanControlMessage = exchange.response as! BooleanControlMessage
         XCTAssert(booleanMessage.data.direction == .fromServer)
@@ -42,7 +44,7 @@ class APIManagerChatSessionTest: XCTestCase {
         XCTAssertEqual("1", booleanMessage.data.messageId)
         XCTAssertEqual("2", booleanResponse.data.messageId)
         
-        exchange = conversation.messageExchanges()[1]
+        exchange = exchangesInOrder[1]
         let inputMessage: InputControlMessage = exchange.message as! InputControlMessage
         let inputResponse: InputControlMessage = exchange.response as! InputControlMessage
         XCTAssert(inputMessage.data.direction == .fromServer)
@@ -56,7 +58,7 @@ class APIManagerChatSessionTest: XCTestCase {
         let resultsDictionary = try JSONSerialization.jsonObject(with: jsonData!, options: JSONSerialization.ReadingOptions.allowFragments) as! [String: Any]
         let conversations = resultsDictionary["conversations"]
         
-        let parsedResults = APIManager.conversationsFromResult(conversations!)
+        let parsedResults = APIManager.conversationsFromResult(conversations!, assumeMessagesReversed: false)
 
         XCTAssert(parsedResults.count == 1)
         let conversation = parsedResults[0]

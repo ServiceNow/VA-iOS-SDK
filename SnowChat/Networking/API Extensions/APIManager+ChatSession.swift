@@ -11,19 +11,21 @@ import Alamofire
 
 extension APIManager {
     
+    static let defaultMessageFetchLimit = 50
+    
     // MARK: - Session
     
     func startChatSession(with sessionInfo: CBSession, chatId: String, completion: @escaping (Result<CBSession>) -> Void) {
         var resultSession = sessionInfo
         
-        let parameters: Parameters = [ "deviceId" : sessionInfo.deviceId,
-                                       "channelId" : "/cs/messages/" + chatId,
-                                       "vendorId" : sessionInfo.vendor.vendorId,
-                                       "consumerId" : sessionInfo.user.consumerId,
+        let parameters: Parameters = [ "deviceId": sessionInfo.deviceId,
+                                       "channelId": "/cs/messages/" + chatId,
+                                       "vendorId": sessionInfo.vendor.vendorId,
+                                       "consumerId": sessionInfo.user.consumerId,
                                        "consumerAccountId": sessionInfo.user.consumerAccountId,
-                                       "requestTime" : Int((Date().timeIntervalSince1970 * 1000).rounded()),
-                                       "direction" : "inbound",
-                                       "deviceType" : "ios"]
+                                       "requestTime": Int((Date().timeIntervalSince1970 * 1000).rounded()),
+                                       "direction": "inbound",
+                                       "deviceType": "ios"]
         
         sessionManager.request(apiURLWithPath("cs/session"),
             method: .post,
@@ -48,16 +50,18 @@ extension APIManager {
                     
                     completion(.success(resultSession))
                 } else {
-                    Logger.default.logError("Error getting respons data from session request: malformed server response")
-                    completion(.failure(ChatterboxError.unknown))
+                    Logger.default.logError("Error getting response data from session request: malformed server response")
+                    completion(.failure(ChatterboxError.unknown(details: "malformed server response")))
                 }
         }
     }
     
     func fetchConversation(_ conversationId: String, completionHandler: @escaping (Conversation?) -> Void) {
+        
         sessionManager.request(apiURLWithPath("cs/conversation/\(conversationId)/message"),
             method: .get,
-            encoding: JSONEncoding.default).validate().responseJSON { response in
+            encoding: URLEncoding.queryString).validate().responseJSON { response in
+            
                 var conversation: Conversation?
                 
                 if response.error == nil {
@@ -73,24 +77,40 @@ extension APIManager {
     }
     
     func fetchConversations(forConsumer consumerId: String, completionHandler: @escaping ([Conversation]) -> Void) {
+        fetchConversationsInternal(forConsumer: consumerId, completionHandler: completionHandler)
+    }
+    
+    func fetchOlderConversations(forConsumer consumerId: String, beforeMessage messageId: String, completionHandler: @escaping ([Conversation]) -> Void) {
+        fetchConversationsInternal(forConsumer: consumerId, beforeMessage: messageId, completionHandler: completionHandler)
+    }
+    
+    private func fetchConversationsInternal(forConsumer consumerId: String, beforeMessage messageId: String? = nil, limit: Int = APIManager.defaultMessageFetchLimit, completionHandler: @escaping ([Conversation]) -> Void) {
+        var parameters: Parameters = ["sysparm_limit": limit,
+                                      "sysparm_sort": "desc"]
+        if messageId != nil {
+            parameters["lastMessageId"] = messageId
+        }
+        
         sessionManager.request(apiURLWithPath("cs/consumerAccount/\(consumerId)/message"),
                                method: .get,
-                               encoding: JSONEncoding.default).validate().responseJSON { response in
-            var conversations = [Conversation]()
-            if response.error == nil {
-                if let result = response.result.value as? NSDictionary,
-                   let conversationsArray = result["conversations"] {
-                    
-                    conversations = APIManager.conversationsFromResult(conversationsArray)
-                }
-            }
-            completionHandler(conversations)
+                               parameters: parameters,
+                               encoding: URLEncoding.queryString).validate().responseJSON { response in
+                                
+                                var conversations = [Conversation]()
+                                if response.error == nil {
+                                    if let result = response.result.value as? NSDictionary,
+                                        let conversationsArray = result["conversations"] {
+                                        
+                                        conversations = APIManager.conversationsFromResult(conversationsArray)
+                                    }
+                                }
+                                completionHandler(conversations)
         }
     }
     
     // MARK: - Response Parsing
     
-    internal static func messagesFromResult(_ result: Any) -> [CBControlData] {
+    internal static func messagesFromResult(_ result: Any, assumeMessagesReversed: Bool = true) -> [CBControlData] {
         guard let messageArray = result as? [NSDictionary] else { return [] }
         
         let messages: [CBControlData] = messageArray.flatMap { message in
@@ -114,11 +134,10 @@ extension APIManager {
             }
             return nil
         }
-        
-        return messages
+        return assumeMessagesReversed ? messages.reversed() : messages
     }
     
-    internal static func conversationsFromResult(_ result: Any) -> [Conversation] {
+    internal static func conversationsFromResult(_ result: Any, assumeMessagesReversed: Bool = true) -> [Conversation] {
         guard let conversationArray = result as? [NSDictionary] else { return [] }
         
         let conversations: [Conversation] = conversationArray.flatMap { (conversationDictionary) -> Conversation? in
@@ -126,9 +145,11 @@ extension APIManager {
                 messagesDictionary.count > 0,
                 let conversationId = conversationDictionary["topicId"] as? String {
                 
-                let messages = APIManager.messagesFromResult(messagesDictionary)
                 let status = conversationDictionary["status"] as? String ?? "UNKNOWN"
-                var conversation = Conversation(withConversationId: conversationId, withState: status == "COMPLETED" ? .completed : .inProgress)
+                let topicTypeName = conversationDictionary["topicTypeName"] as? String ?? "UNKNOWN"
+                let messages = APIManager.messagesFromResult(messagesDictionary, assumeMessagesReversed: assumeMessagesReversed)
+
+                var conversation = Conversation(withConversationId: conversationId, withTopic: topicTypeName, withState: status == "COMPLETED" ? .completed : .inProgress)
                 
                 messages.forEach({ (message) in
                     if let lastPending = conversation.lastPendingMessage() as? CBControlData,

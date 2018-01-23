@@ -169,13 +169,20 @@ enum MessageConstants: String, Codable {
 protocol CBControlData: CBStorable, Codable {
     var id: String { get }
     var controlType: CBControlType { get }
+    
+    var messageId: String { get }
+    var conversationId: String? { get }
+    var messageTime: Date { get }
 }
 
 struct CBControlDataUnknown: CBControlData {
     var id: String = "UNKNOWN"
     var controlType: CBControlType = .unknown
+    var messageId: String = "UNKNOWN_MESSAGE_ID"
+    var conversationId: String? = "UNKNOWN_CONVERSATION_ID"
+    var messageTime: Date = Date()
     
     func uniqueId() -> String {
-        return "CBControlDataUnknown-UNKNOWN"
+        return id
     }
 }

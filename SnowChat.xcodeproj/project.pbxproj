@@ -596,8 +596,8 @@
 			isa = PBXGroup;
 			children = (
 				BE6FBE441FBFBC210062A0EB /* AMB Test */,
-				BE29E0CD1FDF06990029D1F0 /* Chat Data Controller */,
 				BE876FDB1FDF4F64008EEF04 /* Chat Service */,
+				BE29E0CD1FDF06990029D1F0 /* Chat Data Controller */,
 				BE29E0CA1FDEF79B0029D1F0 /* Chat Window */,
 				57860EA51FD1C51800612E34 /* ChatBubble */,
 				C4CAFE9C1FBCF018007007F5 /* Chatterbox */,

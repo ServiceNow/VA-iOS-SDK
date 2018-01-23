@@ -104,13 +104,13 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         XCTAssertEqual(1, controller?.controlCount())
         // test that the control is of the correct type
         XCTAssertEqual(ControlType.boolean, controller?.controlForIndex(0)?.controlModel.type)
-        // test the control model has a new ID
-        XCTAssertNotEqual(boolMessage.uniqueId(), controller?.controlForIndex(0)?.controlModel.id)
+        // test the control model has the same ID
+        XCTAssertEqual(boolMessage.uniqueId(), controller?.controlForIndex(0)?.controlModel.id)
         // test the ChatMessageData has the correct direction
         XCTAssertEqual(BubbleLocation(direction: MessageDirection.fromServer), controller?.controlForIndex(0)?.location)
     }
     
-    func startConversationAndUpdateBooleanControl() -> String {
+    func startConversationAndUpdateBooleanControl() {
         // mimic a started conversation
         let startTopicMessage = CBDataFactory.actionFromJSON(jsonStartedTopic) as! StartedUserTopicMessage
         controller?.topicDidStart(startTopicMessage)
@@ -123,19 +123,17 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         // now update it
         let modelChanged = BooleanControlViewModel(id: CBData.uuidString(), label: "", required: true, resultValue: true)
         controller?.updateControlData(modelChanged)
-        return modelChanged.id
     }
 
     func testUpdateControl() {
-        let id = startConversationAndUpdateBooleanControl()
+        startConversationAndUpdateBooleanControl()
         
         // make sure chattertbox got it
         XCTAssertEqual(CBControlType.boolean, mockChatterbox?.updatedControl!.controlType)
-        XCTAssertEqual(id, mockChatterbox?.updatedControl!.id)
     }
     
     func testBooleanUpdateRendersTwoTextControls() {
-        let _ = startConversationAndUpdateBooleanControl()
+        startConversationAndUpdateBooleanControl()
         
         // now mimic chatterbox sending out the notification of the update
         let booleanMessage = mockChatterbox?.pendingControlMessage
