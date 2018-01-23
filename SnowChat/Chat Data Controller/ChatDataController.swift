@@ -82,6 +82,8 @@ class ChatDataController {
         
         // last control is really the first... our list is reversed
         controlData[0] = model
+        let changeInfo = ModelChangeInfo(.update, atIndex: 0)
+        changeListener?.controller(self, didChangeData: [changeInfo])
     }
     
     fileprivate func addControlToCollection(_ data: ChatMessageModel) {
@@ -91,7 +93,6 @@ class ChatDataController {
     
     fileprivate func presentControlData(_ data: ChatMessageModel) {
         popTypingIndicatorIfShown()
-
         addControlToCollection(data)
         
         let changeInfo = ModelChangeInfo(.insert, atIndex: 0)
@@ -100,6 +101,7 @@ class ChatDataController {
     
     fileprivate func pushTypingIndicator() {
         addControlToCollection(ChatMessageModel(model: typingIndicator, location: BubbleLocation.left))
+        
         let changeInfo = ModelChangeInfo(.insert, atIndex: 0)
         changeListener?.controller(self, didChangeData: [changeInfo])
     }
@@ -108,7 +110,10 @@ class ChatDataController {
         guard controlData.count > 0, controlData[0].controlModel as? TypingIndicatorViewModel != nil else {
             return
         }
+        
         controlData.remove(at: 0)
+        let changeInfo = ModelChangeInfo(.delete, atIndex: 0)
+        changeListener?.controller(self, didChangeData: [changeInfo])
     }
     
     fileprivate func updateChatterbox(_ data: ControlViewModel) {
