@@ -418,7 +418,7 @@ extension ChatDataController: ChatDataListener {
             let questionModel = TextControlViewModel(id: CBData.uuidString(), value: label)
             
             let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
-            let displayValue = options?.joined(separator: ", ")
+            let displayValue = options?.joinedWithCommaSeparator()
             let answerModel = TextControlViewModel(id: CBData.uuidString(), value: displayValue ?? "")
 
             popTypingIndicatorIfShown()
