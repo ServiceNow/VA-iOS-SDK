@@ -137,17 +137,21 @@ class Chatterbox {
         apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { conversations in
             var count = 0
             
-            conversations.forEach({ conversation in
+            conversations.forEach({ [weak self] conversation in
+                guard let strongSelf = self else { return }
+                
                 if conversation.isForSystemTopic() {
-                    Logger.default.logInfo("Skipping System Topic conversation in fetchOlderMessages")
+                    strongSelf.logger.logInfo("Skipping System Topic conversation in fetchOlderMessages")
                     return
                 }
                 
-                _ = self.chatStore.findOrCreateConversation(conversation.uniqueId())
+                _ = strongSelf.chatStore.findOrCreateConversation(conversation.uniqueId())
                 
-                conversation.messageExchanges().reversed().forEach({ exchange in
+                conversation.messageExchanges().reversed().forEach({ [weak self] exchange in
+                    guard let strongSelf = self else { return }
+
                     if exchange.isComplete {
-                        self.storeHistoryAndPublish(exchange, forConversation: conversation.uniqueId())
+                        strongSelf.storeHistoryAndPublish(exchange, forConversation: conversation.uniqueId())
                         count += (exchange.response != nil ? 2 : 1)
                     }
                 })

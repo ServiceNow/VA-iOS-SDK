@@ -74,6 +74,15 @@ class ChatDataController {
         updateChatterbox(data)
     }
     
+    func fetchOlderMessages(_ completion: @escaping (Int) -> Void) {
+        Logger.default.logDebug("Fetching older messages...")
+        
+        chatterbox.fetchOlderMessages { count in
+            Logger.default.logDebug("Fetch complete with \(count) messages")            
+            completion(count)
+        }
+    }
+    
     fileprivate func replaceLastControl(with model: ChatMessageModel) {
         guard controlData.count > 0 else {
             Logger.default.logError("Attempt to replace last control when no control is present!")

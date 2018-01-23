@@ -190,19 +190,16 @@ extension ConversationViewController {
             Date().timeIntervalSince(timeLastHistoryFetch) > 5.0 {
             
             canFetchOlderMessages = false
-            timeLastHistoryFetch = Date()
 
-            Logger.default.logDebug("Fetching older messages...")
-            
-            chatterbox.fetchOlderMessages { count in
-                Logger.default.logDebug("Fetch complete with \(count) messages")
+            dataController.fetchOlderMessages { [weak self] count in
+                guard let strongSelf = self else { return }
                 
                 if count > 0 {
                     // TODO: need to provide indices for the updated rows...
-                    self.tableView.reloadData()
+                    strongSelf.tableView.reloadData()
                 }
-                
-                self.canFetchOlderMessages = true
+                strongSelf.canFetchOlderMessages = true
+                strongSelf.timeLastHistoryFetch = Date()
             }
         }
     }
