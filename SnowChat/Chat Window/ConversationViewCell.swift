@@ -10,6 +10,12 @@ class ConversationViewCell: UITableViewCell {
     
     static let cellIdentifier = "ConversationViewCell"
     
+    var messageViewController: ChatMessageViewController? {
+        didSet {
+            messageView = messageViewController?.view
+        }
+    }
+    
     var messageView: UIView? {
         didSet {
             

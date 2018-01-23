@@ -135,7 +135,32 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     // MARK: - ViewDataChangeListener
     
     func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType]) {
-        updateTableView()
+        manageInputControl()
+        
+        func modelUpdates() {
+            changes.forEach({ [weak self] change in
+
+                switch change {
+                case .insert(let index, _):
+                    self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .top)
+                case .delete(let index):
+                    self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                case .update(let index, _):
+                    self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+                }
+            })
+        }
+        
+        // Begin/End Updates will be depracated in a future release so switching to performBatchUpdates
+        if #available(iOS 11.0, *) {
+            tableView.performBatchUpdates({
+                modelUpdates()
+            }, completion: nil)
+        } else {
+            tableView.beginUpdates()
+            modelUpdates()
+            tableView.endUpdates()
+        }
     }
     
     func controllerDidLoadContent(_ dataController: ChatDataController) {
@@ -294,8 +319,8 @@ extension ConversationViewController {
     
     private func configureConversationCell(_ cell: ConversationViewCell, at indexPath:IndexPath) {
         if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
-            let messageViewController = messageViewControllerCache.getViewController(for: indexPath, movedToParentViewController: self)
-            cell.messageView = messageViewController.view
+            let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
+            cell.messageViewController = messageViewController
             let uiControl = uiControlCache.control(forModel: chatMessageModel.controlModel)
             messageViewController.addUIControl(uiControl, at: chatMessageModel.location)
             messageViewController.uiControl?.delegate = self
@@ -303,9 +328,7 @@ extension ConversationViewController {
         }
 
         cell.selectionStyle = .none
-        UIView.performWithoutAnimation {
-            cell.transform = tableView.transform
-        }
+        cell.transform = tableView.transform
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -323,16 +346,20 @@ extension ConversationViewController {
             return
         }
         
-        prepareChatMessageViewControllerForReuse(at: indexPath)
+        prepareChatMessageViewControllerForReuse(for: cell)
     }
     
-    private func prepareChatMessageViewControllerForReuse(at indexPath: IndexPath) {
-        if let messageViewController = messageViewControllerCache.viewControllerByIndexPath[indexPath],
-            let controlModel = messageViewController.uiControl?.model {
-            uiControlCache.removeControl(forModel: controlModel)
+    private func prepareChatMessageViewControllerForReuse(for cell: UITableViewCell) {
+        guard let conversationCell = cell as? ConversationViewCell,
+            let messageViewController = conversationCell.messageViewController else {
+                return
         }
         
-        messageViewControllerCache.removeViewController(at: indexPath)
+        if let controlModel = messageViewController.uiControl?.model {
+            uiControlCache.removeControl(forModel: controlModel)
+        }
+        messageViewControllerCache.cacheViewController(messageViewController)
+        conversationCell.messageViewController = nil
     }
 }
 
