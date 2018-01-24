@@ -331,7 +331,7 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if let viewModels = booleanControlsFromMessageExchange(messageExchange) {
+        if let viewModels = controlsForBooleanFrom(messageExchange: messageExchange) {
             popTypingIndicatorIfShown()
             replaceLastControl(with: ChatMessageModel(model: viewModels.message, location: .left))
             presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
@@ -343,7 +343,7 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if let viewModels = inputControlsFromMessageExchange(messageExchange) {
+        if let viewModels = controlsForInputFrom(messageExchange: messageExchange) {
             popTypingIndicatorIfShown()
             presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
         }
@@ -354,7 +354,7 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if let viewModels = pickerControlsFromMessageExchange(messageExchange) {
+        if let viewModels = controlsForPickerFrom(messageExchange: messageExchange) {
             popTypingIndicatorIfShown()
             replaceLastControl(with: ChatMessageModel(model: viewModels.message, location: .left))
             presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
@@ -394,6 +394,7 @@ extension ChatDataController: ChatDataListener {
         changeListener?.controllerDidLoadContent(self)
     }
     
+    //swiftlint:disable:next cyclomatic_complexity
     func chatterbox(_ chatterbox: Chatterbox, didReceiveHistory historyExchange: MessageExchange, forChat chatId: String) {
         guard historyExchange.isComplete else {
             Logger.default.logError("Incomplete message exchange cannot be presented in history view... skipping")
@@ -402,19 +403,23 @@ extension ChatDataController: ChatDataListener {
         
         switch historyExchange.message.controlType {
         case .boolean:
-            if let viewModels = booleanControlsFromMessageExchange(historyExchange) {
+            if let viewModels = controlsForBooleanFrom(messageExchange: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
         case .picker:
-            if let viewModels = pickerControlsFromMessageExchange(historyExchange) {
+            if let viewModels = controlsForPickerFrom(messageExchange: historyExchange) {
+                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+            }
+        case .multiSelect:
+            if let viewModels = controlsForMultiSelectFrom(messageExchange: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
         case .input:
-            if let viewModels = inputControlsFromMessageExchange(historyExchange) {
+            if let viewModels = controlsForInputFrom(messageExchange: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
         case .text:
-            if let viewModel = textControlFromMessageExchange(historyExchange) {
+            if let viewModel = controlForTextFrom(messageExchange: historyExchange) {
                 addHistoryToCollection(viewModel)
             }
         default:
@@ -425,7 +430,7 @@ extension ChatDataController: ChatDataListener {
 
     // MARK: - Model to ViewModel methods
     
-    func booleanControlsFromMessageExchange(_ messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
+    func controlsForBooleanFrom(messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
         guard messageExchange.isComplete,
             let response = messageExchange.response as? BooleanControlMessage,
             let message = messageExchange.message as? BooleanControlMessage else {
@@ -445,7 +450,7 @@ extension ChatDataController: ChatDataListener {
         return (message: questionViewModel, response: answerViewModel)
     }
     
-    func inputControlsFromMessageExchange(_ messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
+    func controlsForInputFrom(messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
         guard messageExchange.isComplete,
             let response = messageExchange.response as? InputControlMessage,
             let message = messageExchange.message as? InputControlMessage,
@@ -463,7 +468,7 @@ extension ChatDataController: ChatDataListener {
         return (message: questionViewModel, response: answerViewModel)
     }
     
-    func pickerControlsFromMessageExchange(_ messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
+    func controlsForPickerFrom(messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
         guard messageExchange.isComplete,
             let response = messageExchange.response as? PickerControlMessage,
             let message = messageExchange.message as? PickerControlMessage,
@@ -484,7 +489,7 @@ extension ChatDataController: ChatDataListener {
         return (message: questionViewModel, response: answerViewModel)
     }
     
-    func multiSelectControlsFromMessageExchange(_ messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
+    func controlsForMultiSelectFrom(messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
         guard messageExchange.isComplete,
             let response = messageExchange.response as? MultiSelectControlMessage,
             let message = messageExchange.message as? MultiSelectControlMessage,
@@ -503,7 +508,7 @@ extension ChatDataController: ChatDataListener {
         return (message: questionModel, response: answerModel)
     }
     
-    func textControlFromMessageExchange(_ messageExchange: MessageExchange) -> TextControlViewModel? {
+    func controlForTextFrom(messageExchange: MessageExchange) -> TextControlViewModel? {
         guard messageExchange.isComplete,
             let textControl = messageExchange.message as? OutputTextControlMessage,
             let value = textControl.data.richControl?.value else {
