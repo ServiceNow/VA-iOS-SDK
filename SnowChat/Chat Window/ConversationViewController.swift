@@ -372,7 +372,7 @@ extension ConversationViewController {
         }
         
         if let controlModel = messageViewController.uiControl?.model {
-            uiControlCache.removeControl(forModel: controlModel)
+            uiControlCache.cacheControl(forModel: controlModel)
         }
         messageViewControllerCache.cacheViewController(messageViewController)
         conversationCell.messageViewController = nil

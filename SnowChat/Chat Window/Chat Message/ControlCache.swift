@@ -28,7 +28,7 @@ class ControlCache {
         return uiControl
     }
     
-    func removeControl(forModel model: ControlViewModel) {
+    func cacheControl(forModel model: ControlViewModel) {
         guard let control = uiControlByModelId[model.id], control.model.type == model.type else {
             Logger.default.logDebug("Can't find control with model id: \(model.id)")
             return
