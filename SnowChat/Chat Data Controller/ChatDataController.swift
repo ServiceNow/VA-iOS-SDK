@@ -40,6 +40,7 @@ class ChatDataController {
     private var controlMessageBuffer = [ChatMessageModel]()
     private var bufferProcessingTimer: Timer?
     private var isBufferingEnabled = true
+    private var changeSet = [ModelChangeType]()
     
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
@@ -83,6 +84,15 @@ class ChatDataController {
         }
     }
     
+    private func addChange(_ type: ModelChangeType) {
+        changeSet.append(type)
+    }
+    
+    private func applyChanges() {
+        changeListener?.controller(self, didChangeModel: changeSet)
+        changeSet.removeAll()
+    }
+    
     fileprivate func replaceLastControl(with model: ChatMessageModel) {
         guard controlData.count > 0 else {
             Logger.default.logError("Attempt to replace last control when no control is present!")
@@ -91,8 +101,8 @@ class ChatDataController {
         
         // last control is really the first... our list is reversed
         controlData[0] = model
-        let changeInfo = ModelChangeType.update(index: 0, model: model)
-        changeListener?.controller(self, didChangeModel: [changeInfo])
+        addChange(.update(index: 0, model: model))
+        applyChanges()
     }
     
     fileprivate func addControlToCollection(_ data: ChatMessageModel) {
@@ -114,16 +124,16 @@ class ChatDataController {
         popTypingIndicatorIfShown()
         addControlToCollection(data)
         
-        let changeInfo = ModelChangeType.insert(index: 0, model: data)
-        changeListener?.controller(self, didChangeModel: [changeInfo])
+        addChange(.insert(index: 0, model: data))
+        applyChanges()
     }
     
     fileprivate func pushTypingIndicator() {
         let model = ChatMessageModel(model: typingIndicator, location: BubbleLocation.left)
         addControlToCollection(model)
         
-        let changeInfo = ModelChangeType.insert(index: 0, model: model)
-        changeListener?.controller(self, didChangeModel: [changeInfo])
+        addChange(.insert(index: 0, model: model))
+        applyChanges()
     }
     
     fileprivate func popTypingIndicatorIfShown() {
@@ -132,8 +142,7 @@ class ChatDataController {
         }
         
         controlData.remove(at: 0)
-        let changeInfo = ModelChangeType.delete(index: 0)
-        changeListener?.controller(self, didChangeModel: [changeInfo])
+        addChange(.delete(index: 0))
     }
     
     fileprivate func updateChatterbox(_ data: ControlViewModel) {
