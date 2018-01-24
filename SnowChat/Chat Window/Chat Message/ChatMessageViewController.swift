@@ -50,11 +50,7 @@ class ChatMessageViewController: UIViewController {
         }
         
         controlViewController.didMove(toParentViewController: self)
-        
-        // FIXME: that probably could go away after we add insert/delete to a data controller
-        UIView.performWithoutAnimation {
-            view.layoutIfNeeded()
-        }
+        view.layoutIfNeeded()
     }
     
     func prepareForReuse() {

@@ -27,7 +27,7 @@ class ControlCacheTests: XCTestCase {
         let firstTextControl = controlCache.control(forModel: firstTextControlModel)
         XCTAssert(firstTextControl.model.id == "first_text_control")
         
-        controlCache.removeControl(forModel: firstTextControlModel)
+        controlCache.cacheControl(forModel: firstTextControlModel)
         let secondTextControlModel = TextControlViewModel(id: "second_text_control", value: "Another sample text")
         let secondTextControl = controlCache.control(forModel: secondTextControlModel)
         
@@ -53,7 +53,7 @@ class ControlCacheTests: XCTestCase {
         XCTAssert(secondTextControl !== textControl)
         
         // Prepare for reuse boolean control
-        controlCache.removeControl(forModel: booleanControlModel)
+        controlCache.cacheControl(forModel: booleanControlModel)
         let thirdTextControlModel = TextControlViewModel(id: "third_text_control", value: "Sample text")
         let control = controlCache.control(forModel: thirdTextControlModel)
         

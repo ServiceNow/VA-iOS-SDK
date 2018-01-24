@@ -44,6 +44,10 @@ class FullSizeScrollViewContainerView: UIView {
     }
     
     private func maxHeightForTableView(_ tableView: UITableView, visibleItemCount count: Int) -> CGFloat {
+        
+        // update layout to get proper rects
+        tableView.layoutIfNeeded()
+        
         var totalHeight: CGFloat = 0
         
         totalHeight += tableView.rectForHeader(inSection: 0).height
