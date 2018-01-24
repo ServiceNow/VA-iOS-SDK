@@ -90,13 +90,24 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         }
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
+    override func viewWillLayoutSubviews() {
+        // not calling super to override slack's behavior
+        adjustContentInset()
+    }
+    
+    private func adjustContentInset() {
+        var contentInset = tableView.contentInset
         
-        // FIXME: Still need to add case for keyboard shown etc. This covers only a very basic use case.
-        var insets = tableView.contentInset
-        insets.top = 30
-        tableView.contentInset = insets
+        if #available(iOS 11.0, *) {
+            contentInset.bottom = tableView.safeAreaInsets.top
+        } else {
+            // Fallback on earlier versions
+//            contentInset.bottom = topLayoutGuide.topAnchor
+        }
+        contentInset.top = 30
+        
+        tableView.contentInset = contentInset
+        tableView.scrollIndicatorInsets = contentInset
     }
     
     private func setupForSystemTopicSelection() {
