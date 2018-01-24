@@ -10,6 +10,7 @@ import Foundation
 
 class CBDataFactory {
     
+    //swiftlint:disable:next cyclomatic_complexity
     static func controlFromJSON(_ json: String) -> CBControlData {
         
         if let jsonData = json.data(using: .utf8) {

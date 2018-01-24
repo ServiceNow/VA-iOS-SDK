@@ -541,9 +541,11 @@ extension ChatDataController: ChatDataListener {
                 return nil
         }
         
-        // FIXME: that is not the way how we will create URL. just temporary to avoid warning
-        let url = URL(fileURLWithPath: value)
-        return OutputImageViewModel(id: CBData.uuidString(), value: url)
+        if let url = URL(string: value) {
+            return OutputImageViewModel(id: CBData.uuidString(), value: url)
+        }
+        
+        return nil
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didCompleteMultiSelectExchange messageExchange: MessageExchange, forChat chatId: String) {

@@ -128,8 +128,10 @@ extension ChatMessageModel {
         
         let direction = message.data.direction
         
-        // FIXME: that is not the way how we will create URL. just temporary to avoid warning
-        let url = URL(fileURLWithPath: value)
+        guard let url = URL(string: value) else {
+            return nil
+        }
+        
         let outputImageModel = OutputImageViewModel(id: CBData.uuidString(), value: url)
         let snowViewModel = ChatMessageModel(model: outputImageModel, location: BubbleLocation(direction: direction))
         return snowViewModel
