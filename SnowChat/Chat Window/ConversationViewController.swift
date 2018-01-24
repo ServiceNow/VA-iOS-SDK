@@ -156,7 +156,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         
         func modelUpdates() {
             changes.forEach({ [weak self] change in
-
                 switch change {
                 case .insert(let index, _):
                     self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .top)
