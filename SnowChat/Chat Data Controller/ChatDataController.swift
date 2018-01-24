@@ -272,68 +272,18 @@ class ChatDataController {
 }
 
 extension ChatDataController: ChatDataListener {
-    
-    // MARK: - ChatDataListener (from service)
-    
-    func chatterbox(_ chatterbox: Chatterbox, didReceiveBooleanData message: BooleanControlMessage, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
-            return
-        }
-        
-        if let messageModel = ChatMessageModel.model(withMessage: message) {
-            bufferControlMessage(messageModel)
-        } else {
-            dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
-        }
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didReceiveMultiSelectData message: MultiSelectControlMessage, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
-            return
-        }
-        
-        var messageClone = message
-        messageClone.id = CBData.uuidString()
-        if let messageModel = ChatMessageModel.model(withMessage: messageClone) {
-            bufferControlMessage(messageModel)
-        } else {
-            dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
-        }
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didReceiveInputData message: InputControlMessage, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
-            return
-        }
-        
-        if let messageModel = ChatMessageModel.model(withMessage: message) {
-            bufferControlMessage(messageModel)
-        } else {
-            dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
-        }
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didReceivePickerData message: PickerControlMessage, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
-            return
-        }
-        
-        if let messageModel = ChatMessageModel.model(withMessage: message) {
-            bufferControlMessage(messageModel)
-        } else {
-            dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
-        }
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didReceiveTextData message: OutputTextControlMessage, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id, message.data.direction == .fromServer else {
-            return
-        }
 
+    // MARK: - ChatDataListener (from service)
+
+    func chatterbox(_ chatterbox: Chatterbox, didReceiveControlMessage message: CBControlData, forChat chatId: String) {
+        guard chatterbox.id == self.chatterbox.id, message.direction == .fromServer else {
+            return
+        }
+        
         if let messageModel = ChatMessageModel.model(withMessage: message) {
             bufferControlMessage(messageModel)
         } else {
-            dataConversionError(controlId: message.uniqueId(), controlType: message.controlType)
+            dataConversionError(controlId: message.uniqueId, controlType: message.controlType)
         }
     }
     
@@ -343,7 +293,40 @@ extension ChatDataController: ChatDataListener {
     
     // MARK: - ChatDataListener (from client)
     
-    func chatterbox(_ chatterbox: Chatterbox, didCompleteBooleanExchange messageExchange: MessageExchange, forChat chatId: String) {
+    //swiftlint:disable:next cyclomatic_complexity
+    func chatterbox(_ chatterbox: Chatterbox, didCompleteMessageExchange messageExchange: MessageExchange, forChat chatId: String) {
+        guard chatterbox.id == self.chatterbox.id else {
+            return
+        }
+        
+        guard messageExchange.isComplete else {
+            Logger.default.logError("MessageExchange is not complete in didCompleteMessageExchange: skipping!")
+            return
+        }
+        
+        switch messageExchange.message.controlType {
+        case .boolean:
+            guard messageExchange.message is BooleanControlMessage,
+                messageExchange.response is BooleanControlMessage else { fatalError("Could not view message as BooleanControlMessage in ChatDataListener") }
+            self.didCompleteBooleanExchange(messageExchange, forChat: chatId)
+        case .input:
+            guard messageExchange.message is InputControlMessage,
+                messageExchange.response is InputControlMessage else { fatalError("Could not view message as InputControlMessage in ChatDataListener") }
+            self.didCompleteInputExchange(messageExchange, forChat: chatId)
+        case .picker:
+            guard messageExchange.message is PickerControlMessage,
+                messageExchange.response is PickerControlMessage else { fatalError("Could not view message as PickerControlMessage in ChatDataListener") }
+            self.didCompletePickerExchange(messageExchange, forChat: chatId)
+        case .multiSelect:
+            guard messageExchange.message is MultiSelectControlMessage,
+                messageExchange.response is MultiSelectControlMessage else { fatalError("Could not view message as MultiSelectControlMessage in ChatDataListener") }
+            self.didCompleteMultiSelectExchange(messageExchange, forChat: chatId)
+        default:
+            Logger.default.logError("Unhandled control type in ChatDataListener didCompleteMessageExchange: \(messageExchange.message.controlType)")
+        }
+    }
+    
+    private func didCompleteBooleanExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         guard chatterbox.id == self.chatterbox.id else {
             return
         }
@@ -355,7 +338,7 @@ extension ChatDataController: ChatDataListener {
         }
    }
     
-    func chatterbox(_ chatterbox: Chatterbox, didCompleteInputExchange messageExchange: MessageExchange, forChat chatId: String) {
+    private func didCompleteInputExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         guard chatterbox.id == self.chatterbox.id else {
             return
         }
@@ -366,7 +349,7 @@ extension ChatDataController: ChatDataListener {
         }
     }
     
-    func chatterbox(_ chatterbox: Chatterbox, didCompletePickerExchange messageExchange: MessageExchange, forChat chatId: String) {
+    private func didCompletePickerExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         guard chatterbox.id == self.chatterbox.id else {
             return
         }
@@ -375,6 +358,26 @@ extension ChatDataController: ChatDataListener {
             popTypingIndicatorIfShown()
             replaceLastControl(with: ChatMessageModel(model: viewModels.message, location: .left))
             presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
+        }
+    }
+    
+    private func didCompleteMultiSelectExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
+        // replace the picker with the picker's label, and add the response
+        
+        if let response = messageExchange.response as? MultiSelectControlMessage,
+            let message = messageExchange.message as? MultiSelectControlMessage,
+            let label = message.data.richControl?.uiMetadata?.label,
+            let values: [String] = response.data.richControl?.value ?? [""] {
+            
+            let questionModel = TextControlViewModel(id: CBData.uuidString(), value: label)
+            
+            let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
+            let displayValue = options?.joinedWithCommaSeparator()
+            let answerModel = TextControlViewModel(id: CBData.uuidString(), value: displayValue ?? "")
+            
+            popTypingIndicatorIfShown()
+            replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
+            presentControlData(ChatMessageModel(model: answerModel, location: .right))
         }
     }
     
@@ -477,7 +480,27 @@ extension ChatDataController: ChatDataListener {
         })
         let questionViewModel = TextControlViewModel(id: CBData.uuidString(), value: label)
         let answerViewModel = TextControlViewModel(id: CBData.uuidString(), value: selectedOption?.label ?? value)
+        
         return (message: questionViewModel, response: answerViewModel)
+    }
+    
+    func multiSelectControlsFromMessageExchange(_ messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
+        guard messageExchange.isComplete,
+            let response = messageExchange.response as? MultiSelectControlMessage,
+            let message = messageExchange.message as? MultiSelectControlMessage,
+            let label = message.data.richControl?.uiMetadata?.label,
+            let values: [String] = response.data.richControl?.value ?? [""] else {
+                Logger.default.logError("MessageExchange is not valid in multiSelectControlsFromMessageExchange method - skipping!")
+                return nil
+        }
+
+        let questionModel = TextControlViewModel(id: CBData.uuidString(), value: label)
+        
+        let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
+        let displayValue = options?.joinedWithCommaSeparator()
+        let answerModel = TextControlViewModel(id: CBData.uuidString(), value: displayValue ?? "")
+        
+        return (message: questionModel, response: answerModel)
     }
     
     func textControlFromMessageExchange(_ messageExchange: MessageExchange) -> TextControlViewModel? {

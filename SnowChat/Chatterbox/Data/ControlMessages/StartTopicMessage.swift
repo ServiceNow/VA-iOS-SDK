@@ -9,8 +9,15 @@
 import Foundation
 
 struct StartTopicMessage: Codable, CBControlData {
-    func uniqueId() -> String {
+
+    var uniqueId: String {
         return id
+    }
+    
+    // MARK: - CBControlData protocol methods
+    
+    var direction: MessageDirection {
+        return data.direction
     }
     
     var id: String = UUID().uuidString

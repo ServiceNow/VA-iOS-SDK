@@ -112,7 +112,7 @@ struct CBTopic: Codable {
 protocol CBStorable {
     // anything storable in the DataStore must conform to this
     
-    func uniqueId() -> String
+    var uniqueId: String { get }
 }
 
 // MARK: - Action events
@@ -168,10 +168,12 @@ enum MessageConstants: String, Codable {
 
 protocol CBControlData: CBStorable, Codable {
     var id: String { get }
-    var controlType: CBControlType { get }
     
+    var controlType: CBControlType { get }
     var messageId: String { get }
     var conversationId: String? { get }
+    
+    var direction: MessageDirection { get }
     var messageTime: Date { get }
 }
 
@@ -181,8 +183,9 @@ struct CBControlDataUnknown: CBControlData {
     var messageId: String = "UNKNOWN_MESSAGE_ID"
     var conversationId: String? = "UNKNOWN_CONVERSATION_ID"
     var messageTime: Date = Date()
+    var direction: MessageDirection = .fromServer
     
-    func uniqueId() -> String {
+    var uniqueId: String {
         return id
     }
 }

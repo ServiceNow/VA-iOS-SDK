@@ -28,7 +28,7 @@ class ChatDataStore {
     // storeResponseData: find the conversation and add the response to it's pending MessageExchange, completing it
     //
     func storeResponseData(_ data: CBControlData, forConversation conversationId: String) {
-        let index = conversations.index { $0.uniqueId() == conversationId }
+        let index = conversations.index { $0.uniqueId == conversationId }
         
         if let index = index {
             conversations[index].storeResponse(data)
@@ -38,7 +38,7 @@ class ChatDataStore {
     }
     
     internal func findOrCreateConversation(_ conversationId: String) -> Int {
-        guard let foundIndex = conversations.index(where: { $0.uniqueId() == conversationId }) else {
+        guard let foundIndex = conversations.index(where: { $0.uniqueId == conversationId }) else {
             let index = conversations.count
             conversations.append(Conversation(withConversationId: conversationId))
             return index
@@ -49,7 +49,7 @@ class ChatDataStore {
     // pendingMessage: get the last pendng message for a conversation, if any
     //
     func lastPendingMessage(forConversation conversationId: String) -> CBStorable? {
-        return conversations.first(where: { $0.uniqueId() == conversationId })?.lastPendingMessage()
+        return conversations.first(where: { $0.uniqueId == conversationId })?.lastPendingMessage()
     }
     
     func oldestMessage() -> CBControlData? {
@@ -70,15 +70,15 @@ class ChatDataStore {
     }
     
     func conversationIds() -> [String] {
-        return conversations.map({ $0.uniqueId() })
+        return conversations.map({ $0.uniqueId })
     }
     
     func conversation(forId id: String) -> Conversation? {
-        return conversations.first(where: { $0.uniqueId() == id })
+        return conversations.first(where: { $0.uniqueId == id })
     }
     
     func storeConversation(_ conversation: Conversation) {
-        if let index = conversations.index(where: { $0.uniqueId() == conversation.uniqueId() }) {
+        if let index = conversations.index(where: { $0.uniqueId == conversation.uniqueId }) {
             conversations[index] = conversation
             // TODO: merge existing messages if the conversation already exists ???
         } else {
@@ -87,14 +87,15 @@ class ChatDataStore {
     }
     
     func storeHistory(_ exchange: MessageExchange, forConversation conversationId: String) {
-        if let index = conversations.index(where: { $0.uniqueId() == conversationId }) {
+        if let index = conversations.index(where: { $0.uniqueId == conversationId }) {
             conversations[index].prepend(exchange)
         }
     }
 }
 
 struct Conversation: CBStorable, Codable {
-    func uniqueId() -> String {
+
+    var uniqueId: String {
         return id
     }
     

@@ -10,8 +10,14 @@ import Foundation
 
 struct PickerControlMessage: Codable, CBControlData {
     
-    func uniqueId() -> String {
+    var uniqueId: String {
         return id
+    }
+    
+    // MARK: - CBControlData protocol methods
+    
+    var direction: MessageDirection {
+        return data.direction
     }
     
     var id: String = CBData.uuidString()
