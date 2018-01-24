@@ -50,6 +50,9 @@ extension ChatMessageModel {
         case .text:
             guard let controlMessage = message as? OutputTextControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage)
+        case .outputImage:
+            guard let controlMessage = message as? OutputImageControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
         default:
             Logger.default.logError("Unhandled control type in ChatMessageModel: \(message.controlType)")
         }
@@ -115,6 +118,20 @@ extension ChatMessageModel {
         let direction = message.data.direction
         let textModel = TextControlViewModel(id: message.id, label: "", value: value)
         let snowViewModel = ChatMessageModel(model: textModel, location: BubbleLocation(direction: direction))
+        return snowViewModel
+    }
+    
+    static func model(withMessage message: OutputImageControlMessage) -> ChatMessageModel? {
+        guard let value = message.data.richControl?.value else {
+            return nil
+        }
+        
+        let direction = message.data.direction
+        
+        // FIXME: that is not the way how we will create URL. just temporary to avoid warning
+        let url = URL(fileURLWithPath: value)
+        let outputImageModel = OutputImageViewModel(id: CBData.uuidString(), value: url)
+        let snowViewModel = ChatMessageModel(model: outputImageModel, location: BubbleLocation(direction: direction))
         return snowViewModel
     }
 }
