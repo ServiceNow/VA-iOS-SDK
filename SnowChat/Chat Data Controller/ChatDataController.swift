@@ -402,6 +402,19 @@ extension ChatDataController: ChatDataListener {
         isBufferingEnabled = true
         changeListener?.controllerDidLoadContent(self)
     }
+
+    func chatterbox(_ chatterbox: Chatterbox, willLoadHistoryFor consumerAccountId: String, forChat chatId: String) {
+        pushTypingIndicator()
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didLoadHistoryFor consumerAccountId: String, forChat chatId: String) {
+        popTypingIndicatorIfShown()
+        
+        // see if there are any controls to show - if not, add the welcome message
+        if controlData.count <= 0 {
+            presentWelcomeMessage()
+        }
+    }
     
     //swiftlint:disable:next cyclomatic_complexity
     func chatterbox(_ chatterbox: Chatterbox, didReceiveHistory historyExchange: MessageExchange, forChat chatId: String) {

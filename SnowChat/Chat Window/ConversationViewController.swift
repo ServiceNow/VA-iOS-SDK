@@ -36,8 +36,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         return super.tableView!
     }
     
-    private var presentedWelcomeMessage = false
-    
     // MARK: - Initialization
     
     init(chatterbox: Chatterbox) {
@@ -120,13 +118,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         // TODO: install autocomplete handler for system topic choices
     }
     
-    private func presentWelcomeIfNeeded() {
-        guard presentedWelcomeMessage == false else { return }
-        
-        dataController.presentWelcomeMessage()
-        presentedWelcomeMessage = true
-    }
-    
     private func setupForTopicSelection() {
         self.autocompleteHandler = TopicSelectionHandler(withController: self, chatterbox: chatterbox)
         
@@ -134,8 +125,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         
         textView.text = ""
         textView.placeholder = NSLocalizedString("Type your question here...", comment: "Placeholder text for input field when user is selecting a topic")
-
-        presentWelcomeIfNeeded()
     }
     
     private func setupForConversation() {

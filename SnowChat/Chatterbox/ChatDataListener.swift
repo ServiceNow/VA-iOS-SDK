@@ -25,4 +25,8 @@ protocol ChatDataListener: AnyObject {
     
     // Notifies of history retrieval
     func chatterbox(_ chatterbox: Chatterbox, didReceiveHistory historyExchange: MessageExchange, forChat chatId: String)
+
+    // Notifies listener of loading from persistence
+    func chatterbox(_ chatterbox: Chatterbox, willLoadHistoryFor comsumerAccountId: String, forChat chatId: String)
+    func chatterbox(_ chatterbox: Chatterbox, didLoadHistoryFor consumerAccountId: String, forChat chatId: String)
 }
