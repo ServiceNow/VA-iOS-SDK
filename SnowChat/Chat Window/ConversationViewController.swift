@@ -17,6 +17,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         case inConversation             // user is in an active conversation
     }
     
+    private let bottomInset: CGFloat = 30
+    
     private var inputState = InputState.inTopicSelection
     private var autocompleteHandler: AutoCompleteHandler?
 
@@ -60,6 +62,30 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         
         setupTableView()
     }
+    
+    // MARK: - ContentInset fix
+    
+    override func viewWillLayoutSubviews() {
+        // not calling super to override slack's behavior
+        adjustContentInset()
+    }
+    
+    private func adjustContentInset() {
+        var contentInset = tableView.contentInset
+        
+        if #available(iOS 11.0, *) {
+            contentInset.bottom = tableView.safeAreaInsets.top
+        } else {
+            // Fallback on earlier versions
+            contentInset.bottom = topLayoutGuide.length
+        }
+        
+        // we are inverted so top is really a bottom
+        contentInset.top = bottomInset
+        
+        tableView.contentInset = contentInset
+        tableView.scrollIndicatorInsets = contentInset
+    }
 
     // MARK: - View Setup
     
@@ -88,26 +114,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         case .inConversation:
             setupForConversation()
         }
-    }
-    
-    override func viewWillLayoutSubviews() {
-        // not calling super to override slack's behavior
-        adjustContentInset()
-    }
-    
-    private func adjustContentInset() {
-        var contentInset = tableView.contentInset
-        
-        if #available(iOS 11.0, *) {
-            contentInset.bottom = tableView.safeAreaInsets.top
-        } else {
-            // Fallback on earlier versions
-//            contentInset.bottom = topLayoutGuide.topAnchor
-        }
-        contentInset.top = 30
-        
-        tableView.contentInset = contentInset
-        tableView.scrollIndicatorInsets = contentInset
     }
     
     private func setupForSystemTopicSelection() {
