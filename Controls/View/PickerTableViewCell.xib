@@ -23,7 +23,7 @@
                         <constraints>
                             <constraint firstAttribute="height" relation="greaterThanOrEqual" priority="999" constant="35" id="Sgd-93-SJr"/>
                         </constraints>
-                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle3"/>
+                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>

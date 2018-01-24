@@ -38,8 +38,8 @@ class SelectableViewCell: UITableViewCell, ConfigurablePickerCell {
         
         NSLayoutConstraint.activate([selectableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
                                      selectableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-                                     selectableView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
-                                     selectableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5)])
+                                     selectableView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+                                     selectableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)])
     }
     
     // MARK: - ConfigurablePickerCell Protocol

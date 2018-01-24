@@ -21,7 +21,7 @@ class PickerHeaderView: UITableViewHeaderFooterView {
     private func setupTitleLabel() {
         contentView.backgroundColor = UIColor.controlHeaderBackgroundColor
         let titleLabel = UILabel()
-        titleLabel.font = .preferredFont(forTextStyle: .title3)
+        titleLabel.font = .preferredFont(forTextStyle: .body)
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.numberOfLines = 0
         
@@ -60,7 +60,7 @@ class PickerFooterView: UITableViewHeaderFooterView {
         let doneButton = UIButton(type: .custom)
         let localizedTitle = NSLocalizedString("Done", comment: "Button title for multiselect control done.")
         doneButton.setTitle(localizedTitle, for: .normal)
-        doneButton.titleLabel?.font = .preferredFont(forTextStyle: .title3)
+        doneButton.titleLabel?.font = .preferredFont(forTextStyle: .body)
         doneButton.setTitleColor(.controlHeaderTextColor, for: .normal)
         doneButton.titleLabel?.adjustsFontSizeToFitWidth = true
         doneButton.backgroundColor = .controlHeaderBackgroundColor
