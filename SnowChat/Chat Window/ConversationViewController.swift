@@ -368,12 +368,13 @@ extension ConversationViewController {
     private func prepareChatMessageViewControllerForReuse(for cell: UITableViewCell) {
         guard let conversationCell = cell as? ConversationViewCell,
             let messageViewController = conversationCell.messageViewController else {
-                return
+                fatalError("Wrong cell's class")
         }
         
         if let controlModel = messageViewController.uiControl?.model {
             uiControlCache.cacheControl(forModel: controlModel)
         }
+        
         messageViewControllerCache.cacheViewController(messageViewController)
         conversationCell.messageViewController = nil
     }
