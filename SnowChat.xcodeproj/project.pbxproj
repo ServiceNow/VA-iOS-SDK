@@ -148,8 +148,6 @@
 		C46A7D881FCE23D300DC12AC /* ActionMessageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46A7D871FCE23D300DC12AC /* ActionMessageData.swift */; };
 		C46A7D8A1FD0BD8900DC12AC /* ContextualActionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46A7D891FD0BD8900DC12AC /* ContextualActionMessage.swift */; };
 		C483C17F2017DAD300C28E46 /* ExampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C483C17E2017DAD300C28E46 /* ExampleData.swift */; };
-		C489073D1FCC8209008D9521 /* AMBTestPanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C489073B1FCC8209008D9521 /* AMBTestPanelViewController.swift */; };
-		C489073E1FCC8209008D9521 /* AMBTestPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C489073C1FCC8209008D9521 /* AMBTestPanelViewController.xib */; };
 		C4A774A91FDF22E200B6DF68 /* ChatEventListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A774A81FDF22E200B6DF68 /* ChatEventListener.swift */; };
 		C4A774AD1FE0607D00B6DF68 /* ChatServiceDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A774AC1FE0607D00B6DF68 /* ChatServiceDelegate.swift */; };
 		C4AF7793200E7B0B0029598A /* ViewDataChangeListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AF7792200E7B0B0029598A /* ViewDataChangeListener.swift */; };
@@ -285,8 +283,6 @@
 		C46A7D871FCE23D300DC12AC /* ActionMessageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionMessageData.swift; sourceTree = "<group>"; };
 		C46A7D891FD0BD8900DC12AC /* ContextualActionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextualActionMessage.swift; sourceTree = "<group>"; };
 		C483C17E2017DAD300C28E46 /* ExampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleData.swift; sourceTree = "<group>"; };
-		C489073B1FCC8209008D9521 /* AMBTestPanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBTestPanelViewController.swift; sourceTree = "<group>"; };
-		C489073C1FCC8209008D9521 /* AMBTestPanelViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AMBTestPanelViewController.xib; sourceTree = "<group>"; };
 		C4A774A81FDF22E200B6DF68 /* ChatEventListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEventListener.swift; sourceTree = "<group>"; };
 		C4A774AC1FE0607D00B6DF68 /* ChatServiceDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceDelegate.swift; sourceTree = "<group>"; };
 		C4AF7792200E7B0B0029598A /* ViewDataChangeListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewDataChangeListener.swift; sourceTree = "<group>"; };
@@ -534,15 +530,6 @@
 			path = AMB;
 			sourceTree = "<group>";
 		};
-		BE6FBE441FBFBC210062A0EB /* AMB Test */ = {
-			isa = PBXGroup;
-			children = (
-				C489073B1FCC8209008D9521 /* AMBTestPanelViewController.swift */,
-				C489073C1FCC8209008D9521 /* AMBTestPanelViewController.xib */,
-			);
-			path = "AMB Test";
-			sourceTree = "<group>";
-		};
 		BE782DB31FEB201A00F848F5 /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
@@ -608,7 +595,6 @@
 		BEB6C8591FB92CD700B1D497 /* SnowChat */ = {
 			isa = PBXGroup;
 			children = (
-				BE6FBE441FBFBC210062A0EB /* AMB Test */,
 				BE876FDB1FDF4F64008EEF04 /* Chat Service */,
 				BE29E0CD1FDF06990029D1F0 /* Chat Data Controller */,
 				BE29E0CA1FDEF79B0029D1F0 /* Chat Window */,
@@ -860,7 +846,6 @@
 				572A4E401FCF06320081318D /* PickerTableViewCell.xib in Resources */,
 				57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */,
 				BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */,
-				C489073E1FCC8209008D9521 /* AMBTestPanelViewController.xib in Resources */,
 				57D1DB731FEC83D000082F78 /* mark.png in Resources */,
 				57B7E2C91FBA25A200196BA9 /* SelectableView.xib in Resources */,
 				BE50E2241FB9305C00948FBC /* Cartfile in Resources */,
@@ -1030,7 +1015,6 @@
 				C41EF5DA1FDB490F00707F45 /* TopicFinishedMessage.swift in Sources */,
 				C4CED93C1FD713AA008E3E25 /* StartUserTopicMessage.swift in Sources */,
 				C40565F01FC491DA004BD28C /* ActionMessage.swift in Sources */,
-				C489073D1FCC8209008D9521 /* AMBTestPanelViewController.swift in Sources */,
 				C4F3AF341FD6144800B27B0D /* StartTopicMessage.swift in Sources */,
 				572C6BC1200C33BC00F142E2 /* ControlCache.swift in Sources */,
 				BE782DB81FEB205200F848F5 /* APIManager+ChatSession.swift in Sources */,

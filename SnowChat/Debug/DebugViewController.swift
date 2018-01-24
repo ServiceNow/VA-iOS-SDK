@@ -10,7 +10,6 @@ import UIKit
 
 public class DebugViewController: UITableViewController, ChatServiceDelegate {
     
-    @IBOutlet private weak var ambTestCell: UITableViewCell!
     @IBOutlet private weak var uiControlsCell: UITableViewCell!
     @IBOutlet private weak var chatWindowCell: UITableViewCell!
     @IBOutlet private weak var instanceSettingsCell: UITableViewCell!
@@ -39,8 +38,6 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
         guard let cell = tableView.cellForRow(at: indexPath) else { return }
         
         switch cell {
-        case ambTestCell:
-            pushAMBViewController()
         case uiControlsCell:
             pushControlsViewController()
         case chatWindowCell:
@@ -72,11 +69,6 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
         if let controller = chatService?.chatViewController() {
             navigationController?.pushViewController(controller, animated: true)
         }
-    }
-    
-    private func pushAMBViewController() {
-        let controller = AMBTestPanelViewController(nibName: nil, bundle: Bundle(for: AMBTestPanelViewController.self))
-        navigationController?.pushViewController(controller, animated: true)
     }
     
     private func pushControlsViewController() {
