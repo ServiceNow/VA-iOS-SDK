@@ -15,7 +15,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         expectation?.fulfill()
     }
     
-    func controller(_ dataController: ChatDataController, didChangeData changes: [ModelChangeInfo]) {
+    func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType]) {
         expectation?.fulfill()
     }
     
@@ -95,7 +95,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         let boolMessage = ExampleData.exampleBooleanControlMessage()
         expectation = expectation(description: "Expect model changed delegate to be called")
         
-        controller?.chatterbox(mockChatterbox!, didReceiveBooleanData: boolMessage, forChat: "chatID")
+        controller?.chatterbox(mockChatterbox!, didReceiveControlMessage: boolMessage, forChat: "chatID")
         
         // Adding controls is buffered, so have to use an expectation to wait for it to be accessible
         wait(for: [expectation!], timeout: 5)
@@ -105,7 +105,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         // test that the control is of the correct type
         XCTAssertEqual(ControlType.boolean, controller?.controlForIndex(0)?.controlModel.type)
         // test the control model has the same ID
-        XCTAssertEqual(boolMessage.uniqueId(), controller?.controlForIndex(0)?.controlModel.id)
+        XCTAssertEqual(boolMessage.uniqueId, controller?.controlForIndex(0)?.controlModel.id)
         // test the ChatMessageData has the correct direction
         XCTAssertEqual(BubbleLocation(direction: MessageDirection.fromServer), controller?.controlForIndex(0)?.location)
     }
@@ -117,7 +117,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
 
         // first add the initial boolean message as if it came from Chatterbox
         let boolMessage = ExampleData.exampleBooleanControlMessage()
-        controller?.chatterbox(mockChatterbox!, didReceiveBooleanData: boolMessage, forChat: "chatID")
+        controller?.chatterbox(mockChatterbox!, didReceiveControlMessage: boolMessage, forChat: "chatID")
         mockChatterbox?.pendingControlMessage = boolMessage
         
         // now update it
@@ -140,7 +140,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         var me = MessageExchange(withMessage: booleanMessage!)
         me.response = mockChatterbox?.updatedControl
         
-        controller?.chatterbox(mockChatterbox!, didCompleteBooleanExchange: me, forChat: "ChatID")
+        controller?.chatterbox(mockChatterbox!, didCompleteMessageExchange: me, forChat: "ChatID")
         
         // make sure there are 2 controls, 1 typing indicatior and 2 of type text
         XCTAssertEqual(2, controller?.controlCount())

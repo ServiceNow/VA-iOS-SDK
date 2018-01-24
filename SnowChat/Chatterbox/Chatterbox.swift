@@ -145,13 +145,13 @@ class Chatterbox {
                     return
                 }
                 
-                _ = strongSelf.chatStore.findOrCreateConversation(conversation.uniqueId())
+                _ = strongSelf.chatStore.findOrCreateConversation(conversation.uniqueId)
                 
                 conversation.messageExchanges().reversed().forEach({ [weak self] exchange in
                     guard let strongSelf = self else { return }
 
                     if exchange.isComplete {
-                        strongSelf.storeHistoryAndPublish(exchange, forConversation: conversation.uniqueId())
+                        strongSelf.storeHistoryAndPublish(exchange, forConversation: conversation.uniqueId)
                         count += (exchange.response != nil ? 2 : 1)
                     }
                 })
@@ -381,54 +381,14 @@ class Chatterbox {
     
     fileprivate func handleControlMessage(_ control: CBControlData) {
         
-        switch control.controlType {
-        case .boolean:
-            handleBooleanControl(control)
-        case .input:
-            handleInputControl(control)
-        case .picker:
-            handlePickerControl(control)
-        case .multiSelect:
-            handleMultiSelectControl(control)
-        case .text:
-            handleTextControl(control)
-        default:
+        guard control.controlType != .unknown else {
             handleUnknownControl(control)
+            return
         }
-    }
-    
-    fileprivate func handleBooleanControl(_ control: CBControlData) {
-        if let booleanControl = control as? BooleanControlMessage, let conversationId = booleanControl.data.conversationId {
-            chatStore.storeControlData(booleanControl, forConversation: conversationId, fromChat: self)
-            chatDataListener?.chatterbox(self, didReceiveBooleanData: booleanControl, forChat: chatId)
-        }
-    }
-    
-    fileprivate func handleInputControl(_ control: CBControlData) {
-        if let inputControl = control as? InputControlMessage, let conversationId = inputControl.data.conversationId {
-            chatStore.storeControlData(inputControl, forConversation: conversationId, fromChat: self)
-            chatDataListener?.chatterbox(self, didReceiveInputData: inputControl, forChat: chatId)
-        }
-    }
-    
-    fileprivate func handlePickerControl(_ control: CBControlData) {
-        if let pickerControl = control as? PickerControlMessage, let conversationId = pickerControl.data.conversationId {
-            chatStore.storeControlData(pickerControl, forConversation: conversationId, fromChat: self)
-            chatDataListener?.chatterbox(self, didReceivePickerData: pickerControl, forChat: chatId)
-        }
-    }
-    
-    fileprivate func handleMultiSelectControl(_ control: CBControlData) {
-        if let multiSelectControl = control as? MultiSelectControlMessage, let conversationId = multiSelectControl.data.conversationId {
-            chatStore.storeControlData(multiSelectControl, forConversation: conversationId, fromChat: self)
-            chatDataListener?.chatterbox(self, didReceiveMultiSelectData: multiSelectControl, forChat: chatId)
-        }
-    }
-    
-    fileprivate func handleTextControl(_ control: CBControlData) {
-        if let textControl = control as? OutputTextControlMessage, let conversationId = textControl.data.conversationId {
-            chatStore.storeControlData(textControl, forConversation: conversationId, fromChat: self)
-            chatDataListener?.chatterbox(self, didReceiveTextData: textControl, forChat: chatId)
+        
+        if let conversationId = control.conversationId {
+            chatStore.storeControlData(control, forConversation: conversationId, fromChat: self)
+            chatDataListener?.chatterbox(self, didReceiveControlMessage: control, forChat: chatId)
         }
     }
     
@@ -446,6 +406,8 @@ class Chatterbox {
     // MARK: - Update Control Methods
     
     func update(control: CBControlData) {
+        guard let conversationId = control.conversationId else { fatalError("No conversationId for control in update method!") }
+        
         // based on type, cast the value and push to the store, then send back to service via AMB
         let type = control.controlType
         
@@ -461,6 +423,10 @@ class Chatterbox {
         default:
             logger.logInfo("Unrecognized control type - skipping: \(type)")
             return
+        }
+        
+        if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
+            chatDataListener?.chatterbox(self, didCompleteMessageExchange: lastExchange, forChat: conversationId)
         }
     }
     
@@ -480,10 +446,6 @@ class Chatterbox {
         if var booleanControl = control as? BooleanControlMessage, let conversationId = booleanControl.data.conversationId {
             booleanControl.data = updateRichControlData(booleanControl.data)
             storeAndPublish(booleanControl, forConversation: conversationId)
-            
-            if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
-                chatDataListener?.chatterbox(self, didCompleteBooleanExchange: lastExchange, forChat: conversationId)
-            }
         }
     }
     
@@ -491,10 +453,6 @@ class Chatterbox {
         if var inputControl = control as? InputControlMessage, let conversationId = inputControl.data.conversationId {
             inputControl.data = updateRichControlData(inputControl.data)
             storeAndPublish(inputControl, forConversation: conversationId)
-            
-            if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
-                chatDataListener?.chatterbox(self, didCompleteInputExchange: lastExchange, forChat: conversationId)
-            }
         }
     }
     
@@ -502,10 +460,6 @@ class Chatterbox {
         if var pickerControl = control as? PickerControlMessage, let conversationId = pickerControl.data.conversationId {
             pickerControl.data = updateRichControlData(pickerControl.data)
             storeAndPublish(pickerControl, forConversation: conversationId)
-            
-            if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
-                chatDataListener?.chatterbox(self, didCompletePickerExchange: lastExchange, forChat: conversationId)
-            }
         }
     }
 
@@ -513,10 +467,6 @@ class Chatterbox {
         if var multiSelectControl = control as? MultiSelectControlMessage, let conversationId = multiSelectControl.data.conversationId {
             multiSelectControl.data = updateRichControlData(multiSelectControl.data)
             storeAndPublish(multiSelectControl, forConversation: conversationId)
-            
-            if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
-                chatDataListener?.chatterbox(self, didCompleteMultiSelectExchange: lastExchange, forChat: conversationId)
-            }
         }
     }
 
@@ -562,7 +512,7 @@ class Chatterbox {
                         return
                     }
                     
-                    self.logger.logDebug("--> Conversation \(conversation.uniqueId()) refreshed: \(conversation)")
+                    self.logger.logDebug("--> Conversation \(conversation.uniqueId) refreshed: \(conversation)")
                     self.storeConversationAndPublish(conversation)
                 }
                 completionHandler(nil)
@@ -591,7 +541,7 @@ class Chatterbox {
     private func storeConversationAndPublish(_ conversation: Conversation) {
         chatStore.storeConversation(conversation)
         
-        chatDataListener?.chatterbox(self, willLoadConversation: conversation.uniqueId(), forChat: chatId)
+        chatDataListener?.chatterbox(self, willLoadConversation: conversation.uniqueId, forChat: chatId)
 
         conversation.messageExchanges().forEach { (exchange) in
             // NOTE: we only process completed message exchanges, since incomplete ones will render incorrectly
@@ -601,54 +551,25 @@ class Chatterbox {
             }
         }
         
-        chatDataListener?.chatterbox(self, didLoadConversation: conversation.uniqueId(), forChat: chatId)
+        chatDataListener?.chatterbox(self, didLoadConversation: conversation.uniqueId, forChat: chatId)
     }
     
     fileprivate func notifyControlReceived(_ message: CBControlData) {
-        if let chatDataListener = chatDataListener {
-            switch message.controlType {
-            case .boolean:
-                if let booleanMessage = message as? BooleanControlMessage {
-                    logger.logDebug("--> loaded Boolean message")
-                    chatDataListener.chatterbox(self, didReceiveBooleanData: booleanMessage, forChat: chatId)
-                }
-            case .text:
-                logger.logDebug("--> loaded Text message")
-                if let textMessage = message as? OutputTextControlMessage {
-                    chatDataListener.chatterbox(self, didReceiveTextData: textMessage, forChat: chatId)
-                }
-            case .input:
-                logger.logDebug("--> loaded Input message")
-                if let inputMessage = message as? InputControlMessage {
-                    chatDataListener.chatterbox(self, didReceiveInputData: inputMessage, forChat: chatId)
-                }
-            case .picker:
-                logger.logDebug("--> loaded Picker message")
-                if let pickerMessage = message as? PickerControlMessage {
-                    chatDataListener.chatterbox(self, didReceivePickerData: pickerMessage, forChat: chatId)
-                }
-            default:
-                logger.logError("--> Unhandled message control type in StoreConversationAndPublish: \(message.controlType)")
-            }
+        guard let chatDataListener = chatDataListener else {
+            logger.logError("No ChatDataListener in NotifyControlReceived")
+            return
         }
+
+        chatDataListener.chatterbox(self, didReceiveControlMessage: message, forChat: chatId)
     }
     
     fileprivate func notifyResponseReceived(_ response: CBControlData, exchange: MessageExchange) {
-        if let chatDataListener = chatDataListener {
-            switch response.controlType {
-            case .boolean:
-                logger.logDebug("--> loaded Boolean response")
-                chatDataListener.chatterbox(self, didCompleteBooleanExchange: exchange, forChat: chatId)
-            case .input:
-                logger.logDebug("--> loaded Input response")
-                chatDataListener.chatterbox(self, didCompleteInputExchange: exchange, forChat: chatId)
-            case .picker:
-                logger.logDebug("--> loaded Picker response")
-                chatDataListener.chatterbox(self, didCompletePickerExchange: exchange, forChat: chatId)
-            default:
-                logger.logError("--> Unhandled response control type in StoreConversationAndPublish: \(response.controlType)")
-            }
+        guard let chatDataListener = chatDataListener else {
+            logger.logError("No ChatDataListener in notifyResponseReceived")
+            return
         }
+        
+        chatDataListener.chatterbox(self, didCompleteMessageExchange: exchange, forChat: chatId)
     }
     
     // MARK: - Cleanup

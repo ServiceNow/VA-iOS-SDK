@@ -7,9 +7,15 @@
 //
 
 struct MultiSelectControlMessage: Codable, CBControlData {
-    
-    func uniqueId() -> String {
+
+    var uniqueId: String {
         return id
+    }
+    
+    // MARK: - CBControlData protocol methods
+    
+    var direction: MessageDirection {
+        return data.direction
     }
     
     var id: String = CBData.uuidString()
@@ -27,7 +33,7 @@ struct MultiSelectControlMessage: Codable, CBControlData {
         return data.sendTime
     }
     
-    let type: String = "Multiselect"
+    let type: String = "consumerTextMessage"
     var data: RichControlData<ControlWrapper<[String]?, PickerMetadata>>
     
     // define the properties that we decode / encode

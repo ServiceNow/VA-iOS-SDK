@@ -10,13 +10,12 @@ import XCTest
 @testable import SnowChat
 
 class TestControlData: CBControlData {
+    var direction: MessageDirection { return .fromClient }
+    var uniqueId: String { return id }
+    
     var messageId: String
     var conversationId: String?
     var messageTime: Date
-    
-    func uniqueId() -> String {
-        return id
-    }
     
     let id: String
     let controlType: CBControlType

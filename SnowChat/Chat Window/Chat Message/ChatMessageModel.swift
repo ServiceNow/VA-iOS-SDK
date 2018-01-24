@@ -32,6 +32,29 @@ class ChatMessageModel {
 }
 
 extension ChatMessageModel {
+    //swiftlint:disable:next cyclomatic_complexity
+    static func model(withMessage message: CBControlData) -> ChatMessageModel? {
+        switch message.controlType {
+        case .boolean:
+            guard let controlMessage = message as? BooleanControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
+        case .picker:
+            guard let controlMessage = message as? PickerControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
+        case .multiSelect:
+            guard let controlMessage = message as? MultiSelectControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
+        case .input:
+            guard let controlMessage = message as? InputControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
+        case .text:
+            guard let controlMessage = message as? OutputTextControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
+        default:
+            Logger.default.logError("Unhandled control type in ChatMessageModel: \(message.controlType)")
+        }
+        return nil
+    }
     
     static func model(withMessage message: BooleanControlMessage) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,

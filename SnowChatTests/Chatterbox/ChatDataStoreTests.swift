@@ -41,7 +41,7 @@ class DataStoreTests: XCTestCase {
         
         // make sure the message ID in the exchanges are correct
         conversationIds.forEach { id in
-            XCTAssertEqual(booleanControl.id, store.conversation(forId: id)?.messageExchanges().last?.message.uniqueId())
+            XCTAssertEqual(booleanControl.id, store.conversation(forId: id)?.messageExchanges().last?.message.uniqueId)
         }
 
     }
@@ -56,17 +56,17 @@ class DataStoreTests: XCTestCase {
         store.storeControlData(inputControl, forConversation: "testConversationID2", fromChat: chatterbox!)
         store.storeControlData(outputControl, forConversation: "testConversationID3", fromChat: chatterbox!)
         
-        XCTAssertEqual(booleanControl.uniqueId(), store.conversation(forId: "testConversationID1")?.messageExchanges().first?.message.uniqueId())
-        XCTAssertEqual(inputControl.uniqueId(), store.conversation(forId: "testConversationID2")?.messageExchanges().first?.message.uniqueId())
-        XCTAssertEqual(outputControl.uniqueId(), store.conversation(forId: "testConversationID3")?.messageExchanges().first?.message.uniqueId())
+        XCTAssertEqual(booleanControl.uniqueId, store.conversation(forId: "testConversationID1")?.messageExchanges().first?.message.uniqueId)
+        XCTAssertEqual(inputControl.uniqueId, store.conversation(forId: "testConversationID2")?.messageExchanges().first?.message.uniqueId)
+        XCTAssertEqual(outputControl.uniqueId, store.conversation(forId: "testConversationID3")?.messageExchanges().first?.message.uniqueId)
 
         XCTAssertFalse((store.conversation(forId: "testConversationID1")?.messageExchanges().first?.isComplete)!)
         XCTAssertFalse((store.conversation(forId: "testConversationID2")?.messageExchanges().first?.isComplete)!)
         XCTAssertTrue((store.conversation(forId: "testConversationID3")?.messageExchanges().first?.isComplete)!)
 
-        XCTAssertEqual(booleanControl.id, store.lastPendingMessage(forConversation: "testConversationID1")?.uniqueId())
-        XCTAssertEqual(inputControl.id, store.lastPendingMessage(forConversation: "testConversationID2")?.uniqueId())
-        XCTAssertNil(store.lastPendingMessage(forConversation: "testConversationID3")?.uniqueId())
+        XCTAssertEqual(booleanControl.id, store.lastPendingMessage(forConversation: "testConversationID1")?.uniqueId)
+        XCTAssertEqual(inputControl.id, store.lastPendingMessage(forConversation: "testConversationID2")?.uniqueId)
+        XCTAssertNil(store.lastPendingMessage(forConversation: "testConversationID3")?.uniqueId)
     }
 
     func testNoPendingMessageForDifferentConvresation() {
@@ -75,7 +75,7 @@ class DataStoreTests: XCTestCase {
         
         store.storeControlData(control, forConversation: "testConversationID1", fromChat: chatterbox!)
 
-        XCTAssertEqual(control.id, store.lastPendingMessage(forConversation: "testConversationID1")?.uniqueId())
+        XCTAssertEqual(control.id, store.lastPendingMessage(forConversation: "testConversationID1")?.uniqueId)
         XCTAssertNil(store.lastPendingMessage(forConversation: "some-other-conversation"))
     }
     
@@ -85,13 +85,13 @@ class DataStoreTests: XCTestCase {
         
         store.storeControlData(control, forConversation: "testConversationID", fromChat: chatterbox!)
         store.storeControlData(control, forConversation: "testConversationID2", fromChat: chatterbox!)
-        XCTAssertNotNil(store.lastPendingMessage(forConversation: "testConversationID")?.uniqueId())
-        XCTAssertNotNil(store.lastPendingMessage(forConversation: "testConversationID2")?.uniqueId())
+        XCTAssertNotNil(store.lastPendingMessage(forConversation: "testConversationID")?.uniqueId)
+        XCTAssertNotNil(store.lastPendingMessage(forConversation: "testConversationID2")?.uniqueId)
         
         store.storeResponseData(control, forConversation: "testConversationID")
         
         XCTAssertNil(store.lastPendingMessage(forConversation: "testConversationID"))
-        XCTAssertNotNil(store.lastPendingMessage(forConversation: "testConversationID2")?.uniqueId())
+        XCTAssertNotNil(store.lastPendingMessage(forConversation: "testConversationID2")?.uniqueId)
     }
     
     func testPersistence() {
@@ -118,7 +118,7 @@ class DataStoreTests: XCTestCase {
             let conversations = try store.load()
             
             XCTAssertEqual(1, conversations.count)
-            XCTAssertEqual("testConversationID", conversations[0].uniqueId())
+            XCTAssertEqual("testConversationID", conversations[0].uniqueId)
             let messages = conversations[0].messageExchanges()
             XCTAssertEqual(4, messages.count)
             

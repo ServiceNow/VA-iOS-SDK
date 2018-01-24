@@ -9,11 +9,15 @@
 import Foundation
 
 struct BooleanControlMessage: Codable, CBControlData {
+
+    var uniqueId: String {
+        return id
+    }
     
     // MARK: - CBControlData protocol methods
     
-    func uniqueId() -> String {
-        return id
+    var direction: MessageDirection {
+        return data.direction
     }
     
     var id: String = CBData.uuidString()

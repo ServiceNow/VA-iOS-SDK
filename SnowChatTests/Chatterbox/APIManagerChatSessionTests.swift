@@ -30,7 +30,7 @@ class APIManagerChatSessionTest: XCTestCase {
         XCTAssert(parsedResults.count == 1)
         let conversation = parsedResults[0]
         
-        XCTAssertEqual("139dd4f673234300d63a566a4cf6a7c6", conversation.uniqueId())
+        XCTAssertEqual("139dd4f673234300d63a566a4cf6a7c6", conversation.uniqueId)
         XCTAssertEqual(Conversation.ConversationState.completed, conversation.state)
         XCTAssertEqual(4, conversation.messageExchanges().count)
         
@@ -63,7 +63,7 @@ class APIManagerChatSessionTest: XCTestCase {
         XCTAssert(parsedResults.count == 1)
         let conversation = parsedResults[0]
 
-        XCTAssertEqual("139dd4f673234300d63a566a4cf6a7c6", conversation.uniqueId())
+        XCTAssertEqual("139dd4f673234300d63a566a4cf6a7c6", conversation.uniqueId)
         XCTAssertEqual(Conversation.ConversationState.completed, conversation.state)
         XCTAssertEqual(4, conversation.messageExchanges().count)
         
