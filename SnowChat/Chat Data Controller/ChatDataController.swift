@@ -393,23 +393,25 @@ extension ChatDataController: ChatDataListener {
     // MARK: - ChatDataListener (bulk uopdates / history)
     
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversation conversationId: String, forChat chatId: String) {
-        // disable caching while doing a conversation load
-//        isBufferingEnabled = false
+        Logger.default.logInfo("Conversation \(conversationId) will load")
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
-        // re-enable caching and upate the view
-//        isBufferingEnabled = true
-//        changeListener?.controllerDidLoadContent(self)
+        Logger.default.logInfo("Conversation \(conversationId) did load")
     }
 
     func chatterbox(_ chatterbox: Chatterbox, willLoadHistoryFor consumerAccountId: String, forChat chatId: String) {
+        Logger.default.logInfo("History will load for \(consumerAccountId) - disabling buffering...")
+
         pushTypingIndicator()
-        // disable caching while doing a conversation load
+        
+        // disable caching while doing a hiastory load
         isBufferingEnabled = false
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadHistoryFor consumerAccountId: String, forChat chatId: String) {
+        Logger.default.logInfo("History load completed for \(consumerAccountId) - re-enabling buffering.")
+
         popTypingIndicatorIfShown()
         
         // see if there are any controls to show - if not, add the welcome message
@@ -418,6 +420,7 @@ extension ChatDataController: ChatDataListener {
         }
 
         isBufferingEnabled = true
+        
         changeListener?.controllerDidLoadContent(self)
     }
     
