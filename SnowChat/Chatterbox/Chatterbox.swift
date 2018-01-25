@@ -44,7 +44,10 @@ class Chatterbox {
     
     private struct ConversationContext {
         var topicName: String?
+        var sessionId: String?
+
         var conversationId: String?
+        var systemConversationId: String?
     }
     private var conversationContext = ConversationContext()
     
@@ -109,7 +112,7 @@ class Chatterbox {
     func startTopic(withName: String) throws {
         conversationContext.topicName = withName
         
-        if let sessionId = session?.id, let conversationId = conversationContext.conversationId {
+        if let sessionId = session?.id, let conversationId = conversationContext.systemConversationId {
             messageHandler = startTopicHandler
             
             let startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
@@ -163,6 +166,13 @@ class Chatterbox {
             
             completion(count)
         })
+    }
+    
+    func endConversation() {
+        let sessionId = conversationContext.sessionId ?? "UNKNOWN_SESSION_ID"
+        let conversationId = conversationContext.conversationId ?? "UNKNOWN_CONVERSATION_ID"
+        
+        handleTopicFinishedAction(TopicFinishedMessage(withSessionId: sessionId, withConversationId: conversationId))
     }
     
     // MARK: - Session Methods
@@ -239,7 +249,8 @@ class Chatterbox {
             } else if initEvent.data.actionMessage.loginStage == MessageConstants.loginFinish.rawValue {
                 logger.logDebug("Handshake FINISH message received: conversationID=\(initEvent.data.conversationId ?? "nil")")
                 
-                conversationContext.conversationId = initEvent.data.conversationId
+                conversationContext.systemConversationId = initEvent.data.conversationId
+                conversationContext.sessionId = initEvent.data.sessionId
                 
                 loadDataFromPersistence { error in
                     guard error == nil else {
@@ -335,6 +346,8 @@ class Chatterbox {
                 let actionMessage = startedUserTopic.data.actionMessage
                 logger.logInfo("User Topic Started: \(actionMessage.topicName) - \(actionMessage.topicId) - \(actionMessage.ready ? "Ready" : "Not Ready")")
                 
+                conversationContext.conversationId = startedUserTopic.data.actionMessage.vendorTopicId
+
                 chatEventListener?.chatterbox(self, didStartTopic: startedUserTopic, forChat: chatId)
 
                 installTopicMessageHandler()
@@ -402,6 +415,8 @@ class Chatterbox {
     
     fileprivate func handleTopicFinishedAction(_ action: CBActionMessageData) {
         if let topicFinishedMessage = action as? TopicFinishedMessage {
+            conversationContext.conversationId = nil
+            
             saveDataToPersistence()
             chatEventListener?.chatterbox(self, didFinishTopic: topicFinishedMessage, forChat: chatId)
         }
@@ -441,7 +456,7 @@ class Chatterbox {
         return message
     }
     
-    func storeAndPublish<T: CBControlData>(_ message: T, forConversation conversationId: String) {
+    fileprivate func storeAndPublish<T: CBControlData>(_ message: T, forConversation conversationId: String) {
         chatStore.storeResponseData(message, forConversation: conversationId)
         apiManager.ambClient.sendMessage(message, toChannel: chatChannel, encoder: CBData.jsonEncoder)
     }
@@ -474,6 +489,55 @@ class Chatterbox {
         }
     }
 
+    // MARK: - Sync Current Conversation
+    
+    func syncConversation() {
+        guard let conversationId = conversationContext.conversationId else {
+            logger.logError("No conversation ID in syncConversation!")
+            return
+        }
+        guard let storedConversation = chatStore.conversation(forId: conversationId) else {
+            logger.logError("Conversation not in store! \(conversationId)")
+            return
+        }
+        
+        apiManager.fetchConversation(conversationId, completionHandler: { conversation in
+            guard let conversation = conversation else { return }
+            
+            // get any newer messages and add them to the store
+            if let lastFetchedExchange = conversation.messageExchanges().last {
+                if let oldestStoredExchange = storedConversation.messageExchanges().last {
+                    
+                    if lastFetchedExchange.message.messageId == oldestStoredExchange.message.messageId {
+                        self.logger.logDebug("Last fetched message matches last stored message: already in sync")
+                        return
+                    }
+                    
+                    // find messages newer than our oldest and add them
+                    self.addExchanges(conversation.messageExchanges(), newerThan: oldestStoredExchange, forConversation: conversationId)
+                }
+            }
+            
+            // see if the conversation state changed
+            if conversation.state != .inProgress {
+                self.logger.logInfo("Conversation is no longer in progress - ending current conversations")
+                
+                let topicFinishedMessage = TopicFinishedMessage(withSessionId: self.conversationContext.sessionId ?? "UNKNOWN_SESSION", withConversationId: conversationId)
+                self.chatEventListener?.chatterbox(self, didFinishTopic: topicFinishedMessage, forChat: self.chatId)
+            }
+        })
+    }
+    
+    fileprivate func addExchanges(_ messageExchanges: [MessageExchange], newerThan subjectExchange: MessageExchange, forConversation conversationId: String) {
+        let newerExchanges = messageExchanges.filter { exchange -> Bool in
+            return exchange.message.messageTime < subjectExchange.message.messageTime
+        }
+        
+        newerExchanges.forEach { exchange in
+            self.storeHistoryAndPublish(exchange, forConversation: conversationId)
+        }
+    }
+    
     // MARK: - Persistence Methods
     
     private func saveDataToPersistence() {

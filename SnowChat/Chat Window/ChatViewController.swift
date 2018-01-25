@@ -31,6 +31,7 @@ public class ChatViewController: UIViewController {
         super.viewDidLoad()
         
         setupConversationViewController()
+        setupContextMenu()
     }
     
     // MARK: - Setup
@@ -46,6 +47,24 @@ public class ChatViewController: UIViewController {
         controller.didMove(toParentViewController: self)
         
         conversationViewController = controller
+    }
+    
+    private func setupContextMenu() {
+        let contextMenu = UIBarButtonItem(title: "...", style: .plain, target: self, action: #selector(contextMenuTapped(_:)))
+        navigationItem.rightBarButtonItem = contextMenu
+    }
+    
+    @objc func contextMenuTapped(_ sender:UIBarButtonItem!) {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        let contextItems = conversationViewController?.contextMenuItems()
+        contextItems?.forEach({ item in
+            alertController.addAction(UIAlertAction(title: item.title, style: .default) { action in
+                    item.handler(self)
+                })
+        })
+        
+        self.navigationController?.present(alertController, animated: true, completion: nil)
     }
 }
 

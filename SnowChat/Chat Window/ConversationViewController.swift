@@ -416,3 +416,10 @@ extension ConversationViewController: ControlDelegate {
         dataController.updateControlData(model, isSkipped: false)
     }
 }
+
+extension ConversationViewController: ContextItemProvider {
+    
+    func contextMenuItems() -> [ContextMenuItem] {
+        return dataController.contextMenuItems()
+    }
+}
