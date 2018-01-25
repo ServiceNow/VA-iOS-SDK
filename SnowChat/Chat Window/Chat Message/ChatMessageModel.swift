@@ -24,10 +24,12 @@ class ChatMessageModel {
     
     let controlModel: ControlViewModel
     let location: BubbleLocation
+    let requiresInput: Bool
     
-    init(model: ControlViewModel, location: BubbleLocation) {
+    init(model: ControlViewModel, location: BubbleLocation, requiresInput: Bool = false) {
         self.controlModel = model
         self.location = location
+        self.requiresInput = requiresInput
     }
 }
 
@@ -114,7 +116,7 @@ extension ChatMessageModel {
         
         let direction = message.data.direction
         let textModel = TextControlViewModel(id: message.id, label: "", value: value)
-        let snowViewModel = ChatMessageModel(model: textModel, location: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: textModel, location: BubbleLocation(direction: direction), requiresInput: true)
         return snowViewModel
     }
 }

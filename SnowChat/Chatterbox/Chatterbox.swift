@@ -137,6 +137,8 @@ class Chatterbox {
         apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { conversations in
             var count = 0
             
+            self.chatDataListener?.chatterbox(self, willLoadHistoryForConsumerAccount: consumerAccountId, forChat: self.chatId)
+
             conversations.forEach({ [weak self] conversation in
                 guard let strongSelf = self else { return }
                 
@@ -156,6 +158,8 @@ class Chatterbox {
                     }
                 })
             })
+            
+            self.chatDataListener?.chatterbox(self, didLoadHistoryForConsumerAccount: consumerAccountId, forChat: self.chatId)
             
             completion(count)
         })
@@ -503,6 +507,8 @@ class Chatterbox {
         if let consumerId = session?.user.consumerAccountId {
             logger.logDebug("--> Loading conversations for \(consumerId)")
             
+            self.chatDataListener?.chatterbox(self, willLoadHistoryForConsumerAccount: consumerId, forChat: self.chatId)
+
             apiManager.fetchConversations(forConsumer: consumerId, completionHandler: { (conversations) in
                 self.logger.logDebug(" --> loaded \(conversations.count) conversations")
                 
@@ -513,8 +519,14 @@ class Chatterbox {
                     }
                     
                     self.logger.logDebug("--> Conversation \(conversation.uniqueId) refreshed: \(conversation)")
+                    
+                    self.chatDataListener?.chatterbox(self, willLoadConversation: conversation.uniqueId, forChat: self.chatId)
                     self.storeConversationAndPublish(conversation)
+                    self.chatDataListener?.chatterbox(self, didLoadConversation: conversation.uniqueId, forChat: self.chatId)
                 }
+                
+                self.chatDataListener?.chatterbox(self, didLoadHistoryForConsumerAccount: consumerId, forChat: self.chatId)
+                
                 completionHandler(nil)
             })
         } else {
