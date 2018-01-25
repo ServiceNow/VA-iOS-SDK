@@ -400,7 +400,7 @@ extension ChatDataController: ChatDataListener {
         Logger.default.logInfo("Conversation \(conversationId) did load")
     }
 
-    func chatterbox(_ chatterbox: Chatterbox, willLoadHistoryFor consumerAccountId: String, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, willLoadHistoryForConsumerAccount consumerAccountId: String, forChat chatId: String) {
         Logger.default.logInfo("History will load for \(consumerAccountId) - disabling buffering...")
 
         pushTypingIndicator()
@@ -409,7 +409,7 @@ extension ChatDataController: ChatDataListener {
         isBufferingEnabled = false
     }
     
-    func chatterbox(_ chatterbox: Chatterbox, didLoadHistoryFor consumerAccountId: String, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, didLoadHistoryForConsumerAccount consumerAccountId: String, forChat chatId: String) {
         Logger.default.logInfo("History load completed for \(consumerAccountId) - re-enabling buffering.")
 
         popTypingIndicatorIfShown()

@@ -188,7 +188,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             if count > 0, let lastControl = dataController.controlForIndex(0) {
                 textView.text = ""
 
-                if let textControl = lastControl.controlModel as? TextControlViewModel, textControl.isForInput {
+                if lastControl.controlModel is TextControlViewModel && lastControl.requiresInput {
                     isTextInputbarHidden = false
                 } else {
                     isTextInputbarHidden = true
@@ -252,8 +252,11 @@ extension ConversationViewController {
         case .inTopicSelection:
             let searchText: String = textView.text ?? ""
             autocompleteHandler?.textDidChange(searchText)
+        case .inConversation:
+            // TODO: validate the text against the input type when we have such a notion...
+            Logger.default.logDebug("Text updated: \(textView.text)")
         default:
-            Logger.default.logDebug("Right button or enter pressed: state=\(inputState)")
+            Logger.default.logDebug("Text updated: state=\(inputState)")
         }
     }
     
