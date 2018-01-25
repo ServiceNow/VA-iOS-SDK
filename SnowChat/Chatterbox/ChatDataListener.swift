@@ -20,9 +20,15 @@ protocol ChatDataListener: AnyObject {
     func chatterbox(_ chatterbox: Chatterbox, didCompleteMessageExchange messageExchange: MessageExchange, forChat chatId: String)
 
     // Notifies listener of bulk-update
+    //
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversation conversationId: String, forChat chatId: String)
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String)
     
-    // Notifies of history retrieval
+    // Notifies listener of loading from persistence
+    //
+    func chatterbox(_ chatterbox: Chatterbox, willLoadHistoryForConsumerAccount consumerAccountId: String, forChat chatId: String)
+    func chatterbox(_ chatterbox: Chatterbox, didLoadHistoryForConsumerAccount consumerAccountId: String, forChat chatId: String)
+
+    // Notifies listener of a single history exchange being loaded from the service (when loading older messages)
     func chatterbox(_ chatterbox: Chatterbox, didReceiveHistory historyExchange: MessageExchange, forChat chatId: String)
 }

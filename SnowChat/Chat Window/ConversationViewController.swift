@@ -36,8 +36,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         return super.tableView!
     }
     
-    private var presentedWelcomeMessage = false
-    
     // MARK: - Initialization
     
     init(chatterbox: Chatterbox) {
@@ -120,13 +118,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         // TODO: install autocomplete handler for system topic choices
     }
     
-    private func presentWelcomeIfNeeded() {
-        guard presentedWelcomeMessage == false else { return }
-        
-        dataController.presentWelcomeMessage()
-        presentedWelcomeMessage = true
-    }
-    
     private func setupForTopicSelection() {
         self.autocompleteHandler = TopicSelectionHandler(withController: self, chatterbox: chatterbox)
         
@@ -134,8 +125,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         
         textView.text = ""
         textView.placeholder = NSLocalizedString("Type your question here...", comment: "Placeholder text for input field when user is selecting a topic")
-
-        presentWelcomeIfNeeded()
     }
     
     private func setupForConversation() {
@@ -146,7 +135,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         rightButton.setTitle(NSLocalizedString("Send", comment: "Right button label in conversation mode"), for: UIControlState())
         
         textView.text = ""
-        textView.placeholder = NSLocalizedString("...", comment: "Placeholder text for input field when user is in a conversation")
+        textView.placeholder = ""
+        
+        setTextInputbarHidden(true, animated: true)
     }
     
     // MARK: - ViewDataChangeListener
@@ -192,12 +183,15 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     func manageInputControl() {
         switch inputState {
         case  .inConversation:
-            // during conversation we hide the input when displaying any control other than text as the last one
+            // during conversation we hide the input bar unless the last control is an input (TextControl with forInput property set)
             let count = dataController.controlCount()
             if count > 0, let lastControl = dataController.controlForIndex(0) {
                 textView.text = ""
-                isTextInputbarHidden = lastControl.controlModel.type != .text
-                if !isTextInputbarHidden {
+
+                if lastControl.controlModel is TextControlViewModel && lastControl.requiresInput {
+                    isTextInputbarHidden = false
+                } else {
+                    isTextInputbarHidden = true
                     textView.becomeFirstResponder()
                 }
             }
@@ -258,8 +252,11 @@ extension ConversationViewController {
         case .inTopicSelection:
             let searchText: String = textView.text ?? ""
             autocompleteHandler?.textDidChange(searchText)
+        case .inConversation:
+            // TODO: validate the text against the input type when we have such a notion...
+            Logger.default.logDebug("Text updated: \(textView.text)")
         default:
-            Logger.default.logDebug("Right button or enter pressed: state=\(inputState)")
+            Logger.default.logDebug("Text updated: state=\(inputState)")
         }
     }
     
