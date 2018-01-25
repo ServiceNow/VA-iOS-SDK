@@ -11,6 +11,7 @@ import UIKit
 class ChatMessageViewController: UIViewController {
     
     private let controlMaxWidth: CGFloat = 250
+    private var currentBubbleLocation: BubbleLocation?
     private(set) var uiControl: ControlProtocol?
     
     @IBOutlet private weak var bubbleView: BubbleView!
@@ -26,14 +27,18 @@ class ChatMessageViewController: UIViewController {
     }
     
     func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
+        guard uiControl?.model.id != control.model.id else {
+            return
+        }
+        
+        removeUIControl()
         uiControl = control
+        updateBubble(forControl: control, andLocation: location)
         
         let controlViewController = control.viewController
         controlViewController.willMove(toParentViewController: self)
         addChildViewController(controlViewController)
-        
         let controlView: UIView = controlViewController.view
-        updateForLocation(location)
         
         controlView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(controlView)
@@ -55,6 +60,7 @@ class ChatMessageViewController: UIViewController {
     
     func prepareForReuse() {
         removeUIControl()
+        currentBubbleLocation = .left
     }
     
     private func removeUIControl() {
@@ -66,16 +72,23 @@ class ChatMessageViewController: UIViewController {
     // updates message view based on the direction of the message
     // FIXME: Some of these will be moved to Control classes after we add theming.
     
-    private func updateForLocation(_ location: BubbleLocation) {
-        if uiControl?.model.type == .text {
-            let textViewController = uiControl?.viewController as! TextControl.TextViewController
+    private func updateBubble(forControl control: ControlProtocol, andLocation location: BubbleLocation) {
+        
+        if control.model.type == .text {
+            let textViewController = control.viewController as! TextControl.TextViewController
             textViewController.textLabel.textColor = (location == .right) ? UIColor.userBubbleTextColor : UIColor.agentBubbleTextColor
             textViewController.textLabel.backgroundColor = (location == .right) ? UIColor.userBubbleBackgroundColor : UIColor.agentBubbleBackgroundColor
         }
         
+        guard location != currentBubbleLocation else {
+            return
+        }
+        
+        currentBubbleLocation = location
+        
         switch location {
         case .left:
-            uiControl?.viewController.view.backgroundColor = UIColor.agentBubbleBackgroundColor
+            control.viewController.view.backgroundColor = UIColor.agentBubbleBackgroundColor
             bubbleView.backgroundColor = UIColor.agentBubbleBackgroundColor
             agentImageView.isHidden = false
             bubbleView.arrowDirection = .left
@@ -84,7 +97,7 @@ class ChatMessageViewController: UIViewController {
             bubbleTrailingConstraint.priority = .defaultHigh
             agentImageTopConstraint.priority = .veryHigh
         case .right:
-            uiControl?.viewController.view.backgroundColor = UIColor.userBubbleBackgroundColor
+            control.viewController.view.backgroundColor = UIColor.userBubbleBackgroundColor
             bubbleView.backgroundColor = UIColor.userBubbleBackgroundColor
             bubbleView.arrowDirection = .right
             agentBubbleLeadingConstraint.priority = .defaultLow
