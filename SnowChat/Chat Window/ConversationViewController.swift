@@ -135,7 +135,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         rightButton.setTitle(NSLocalizedString("Send", comment: "Right button label in conversation mode"), for: UIControlState())
         
         textView.text = ""
-        textView.placeholder = NSLocalizedString("...", comment: "Placeholder text for input field when user is in a conversation")
+        textView.placeholder = ""
+        
+        setTextInputbarHidden(true, animated: true)
     }
     
     // MARK: - ViewDataChangeListener
@@ -181,12 +183,15 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     func manageInputControl() {
         switch inputState {
         case  .inConversation:
-            // during conversation we hide the input when displaying any control other than text as the last one
+            // during conversation we hide the input bar unless the last control is an input (TextControl with forInput property set)
             let count = dataController.controlCount()
             if count > 0, let lastControl = dataController.controlForIndex(0) {
                 textView.text = ""
-                isTextInputbarHidden = lastControl.controlModel.type != .text
-                if !isTextInputbarHidden {
+
+                if let textControl = lastControl.controlModel as? TextControlViewModel, textControl.isForInput {
+                    isTextInputbarHidden = false
+                } else {
+                    isTextInputbarHidden = true
                     textView.becomeFirstResponder()
                 }
             }

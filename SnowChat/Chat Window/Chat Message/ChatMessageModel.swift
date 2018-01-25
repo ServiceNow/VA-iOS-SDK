@@ -113,7 +113,7 @@ extension ChatMessageModel {
         }
         
         let direction = message.data.direction
-        let textModel = TextControlViewModel(id: message.id, label: "", value: value)
+        let textModel = TextControlViewModel(id: message.id, label: "", value: value, forInput: true)
         let snowViewModel = ChatMessageModel(model: textModel, location: BubbleLocation(direction: direction))
         return snowViewModel
     }

@@ -18,9 +18,12 @@ class TextControlViewModel: ControlViewModel {
     
     let value: String
     
-    init(id: String, label: String? = nil, value: String) {
+    let isForInput: Bool
+    
+    init(id: String, label: String? = nil, value: String, forInput: Bool = false) {
         self.label = label
         self.value = value
         self.id = id
+        self.isForInput = forInput
     }
 }

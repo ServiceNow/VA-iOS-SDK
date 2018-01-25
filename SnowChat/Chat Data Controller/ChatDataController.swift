@@ -394,17 +394,19 @@ extension ChatDataController: ChatDataListener {
     
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversation conversationId: String, forChat chatId: String) {
         // disable caching while doing a conversation load
-        isBufferingEnabled = false
+//        isBufferingEnabled = false
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
         // re-enable caching and upate the view
-        isBufferingEnabled = true
-        changeListener?.controllerDidLoadContent(self)
+//        isBufferingEnabled = true
+//        changeListener?.controllerDidLoadContent(self)
     }
 
     func chatterbox(_ chatterbox: Chatterbox, willLoadHistoryFor consumerAccountId: String, forChat chatId: String) {
         pushTypingIndicator()
+        // disable caching while doing a conversation load
+        isBufferingEnabled = false
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadHistoryFor consumerAccountId: String, forChat chatId: String) {
@@ -414,6 +416,9 @@ extension ChatDataController: ChatDataListener {
         if controlData.count <= 0 {
             presentWelcomeMessage()
         }
+
+        isBufferingEnabled = true
+        changeListener?.controllerDidLoadContent(self)
     }
     
     //swiftlint:disable:next cyclomatic_complexity
@@ -540,34 +545,5 @@ extension ChatDataController: ChatDataListener {
         }
         
         return TextControlViewModel(id: CBData.uuidString(), value: value)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didCompleteMultiSelectExchange messageExchange: MessageExchange, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id else {
-            return
-        }
-        
-        guard messageExchange.isComplete else {
-            Logger.default.logError("MessageExchange is not complete in didCompleteMessageExchange method - skipping!")
-            return
-        }
-        
-        // replace the picker with the picker's label, and add the response
-        
-        if let response = messageExchange.response as? MultiSelectControlMessage,
-            let message = messageExchange.message as? MultiSelectControlMessage,
-            let label = message.data.richControl?.uiMetadata?.label,
-            let values: [String] = response.data.richControl?.value ?? [""] {
-            
-            let questionModel = TextControlViewModel(id: CBData.uuidString(), value: label)
-            
-            let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
-            let displayValue = options?.joinedWithCommaSeparator()
-            let answerModel = TextControlViewModel(id: CBData.uuidString(), value: displayValue ?? "")
-
-            popTypingIndicatorIfShown()
-            replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
-            presentControlData(ChatMessageModel(model: answerModel, location: .right))
-        }
     }
 }
