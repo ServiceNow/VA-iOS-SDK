@@ -60,7 +60,7 @@ class ChatMessageViewController: UIViewController {
     
     func prepareForReuse() {
         removeUIControl()
-        currentBubbleLocation = .left
+        currentBubbleLocation = nil
     }
     
     private func removeUIControl() {
@@ -78,6 +78,11 @@ class ChatMessageViewController: UIViewController {
             let textViewController = control.viewController as! TextControl.TextViewController
             textViewController.textLabel.textColor = (location == .right) ? UIColor.userBubbleTextColor : UIColor.agentBubbleTextColor
             textViewController.textLabel.backgroundColor = (location == .right) ? UIColor.userBubbleBackgroundColor : UIColor.agentBubbleBackgroundColor
+        }
+        
+        // Make sure that a little tail in the bubble gets colored like picker background. now it is hardcoded to white but will need to get theme color
+        if control.viewController is PickerViewController {
+            bubbleView.backgroundColor = UIColor.white
         }
         
         guard location != currentBubbleLocation else {
@@ -105,11 +110,6 @@ class ChatMessageViewController: UIViewController {
             bubbleTrailingConstraint.priority = .veryHigh
             agentImageView.isHidden = true
             agentImageTopConstraint.priority = .lowest
-        }
-        
-        // Make sure that a little tail in the bubble gets colored like picker background. now it is hardcoded to white but will need to get theme color
-        if uiControl?.viewController is PickerViewController {
-            bubbleView.backgroundColor = UIColor.white
         }
     }
 }

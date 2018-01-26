@@ -35,7 +35,7 @@ class FakeChatViewController: UIViewController, UITableViewDelegate, UITableView
                 if messageViewControllers.count > index {
                     controller = messageViewControllers[index]
                     
-                    controller.addUIControl(control, at: .left, animated: true)
+                    controller.addUIControl(control, at: .left)
                     UIView.animate(withDuration: 0.3, animations: {
                         self.tableView.beginUpdates()
                         self.tableView.endUpdates()

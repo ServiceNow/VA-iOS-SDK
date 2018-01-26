@@ -142,6 +142,19 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     // MARK: - ViewDataChangeListener
     
+    private func updateModel(_ model: ChatMessageModel, atIndex index: Int) {
+        if let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? ConversationViewCell {
+            addUIControl(forModel: model, inCell: cell)
+        }
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            self.tableView.beginUpdates()
+            self.tableView.endUpdates()
+        })
+        
+//        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+    }
+    
     func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType]) {
         manageInputControl()
         
@@ -152,8 +165,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                     self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .top)
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
-                case .update(let index, _):
-                    self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+                case .update(let index, _, let model):
+                    updateModel(model, atIndex: index)
                 }
             })
         }
@@ -190,9 +203,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
 
                 if lastControl.controlModel is TextControlViewModel && lastControl.requiresInput {
                     isTextInputbarHidden = false
+                    textView.becomeFirstResponder()
                 } else {
                     isTextInputbarHidden = true
-                    textView.becomeFirstResponder()
                 }
             }
         case .inTopicSelection:
@@ -334,14 +347,18 @@ extension ConversationViewController {
         if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
             let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
             cell.messageViewController = messageViewController
-            let uiControl = uiControlCache.control(forModel: chatMessageModel.controlModel)
-            messageViewController.addUIControl(uiControl, at: chatMessageModel.location)
-            messageViewController.uiControl?.delegate = self
+            addUIControl(forModel: chatMessageModel, inCell: cell)
             messageViewController.didMove(toParentViewController: self)
         }
 
         cell.selectionStyle = .none
         cell.transform = tableView.transform
+    }
+    
+    private func addUIControl(forModel model: ChatMessageModel, inCell cell: ConversationViewCell) {
+        let uiControl = uiControlCache.control(forModel: model.controlModel)
+        cell.messageViewController?.addUIControl(uiControl, at: model.location)
+        uiControl.delegate = self
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
