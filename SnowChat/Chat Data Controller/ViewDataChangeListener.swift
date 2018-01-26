@@ -11,7 +11,7 @@ import Foundation
 enum ModelChangeType {
     case insert(index: Int, model: ChatMessageModel)
     case delete(index: Int)
-    case update(index: Int, model: ChatMessageModel)
+    case update(index: Int, oldModel: ChatMessageModel, model: ChatMessageModel)
 }
 
 protocol ViewDataChangeListener {
