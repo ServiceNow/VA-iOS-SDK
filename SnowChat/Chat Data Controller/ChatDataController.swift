@@ -278,6 +278,10 @@ class ChatDataController {
         
         let control = controlMessageBuffer.remove(at: 0)
         presentControlData(control)
+        
+        if controlMessageBuffer.count > 0 {
+            pushTypingIndicator()
+        }
     }
 }
 
@@ -400,8 +404,6 @@ extension ChatDataController: ChatDataListener {
     func chatterbox(_ chatterbox: Chatterbox, willLoadHistoryForConsumerAccount consumerAccountId: String, forChat chatId: String) {
         Logger.default.logInfo("History will load for \(consumerAccountId) - disabling buffering...")
 
-        pushTypingIndicator()
-        
         // disable caching while doing a hiastory load
         isBufferingEnabled = false
     }
