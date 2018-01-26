@@ -350,7 +350,6 @@ extension ChatDataController: ChatDataListener {
         }
         
         if let viewModels = controlsForBoolean(from: messageExchange) {
-//            popTypingIndicatorIfShown()
             replaceLastControl(with: ChatMessageModel(model: viewModels.message, location: .left))
             presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
         }
@@ -481,8 +480,8 @@ extension ChatDataController: ChatDataListener {
         let value = response.data.richControl?.value ?? false
         let valueString = (value ?? false) ? "Yes" : "No"
         
-        let questionViewModel = TextControlViewModel(id: message.id, label: "", value: label)
-        let answerViewModel = TextControlViewModel(id: response.id, label: "", value: valueString)
+        let questionViewModel = TextControlViewModel(id: CBData.uuidString(), label: "", value: label)
+        let answerViewModel = TextControlViewModel(id: CBData.uuidString(), label: "", value: valueString)
         
         return (message: questionViewModel, response: answerViewModel)
     }
@@ -499,8 +498,8 @@ extension ChatDataController: ChatDataListener {
         }
         // a completed input exchange is two text controls, with the value of the message and the value of the response
         
-        let questionViewModel = TextControlViewModel(id: message.id, value: messageValue)
-        let answerViewModel = TextControlViewModel(id: response.id, value: responseValue)
+        let questionViewModel = TextControlViewModel(id: CBData.uuidString(), value: messageValue)
+        let answerViewModel = TextControlViewModel(id: CBData.uuidString(), value: responseValue)
         
         return (message: questionViewModel, response: answerViewModel)
     }
