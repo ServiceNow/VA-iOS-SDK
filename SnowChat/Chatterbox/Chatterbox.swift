@@ -50,6 +50,7 @@ class Chatterbox {
         var systemConversationId: String?
     }
     private var conversationContext = ConversationContext()
+    internal var contextualActions: ContextualActionMessage?
     
     private let chatStore = ChatDataStore(storeId: "ChatterboxDataStore")
     private(set) var session: CBSession?
@@ -95,6 +96,7 @@ class Chatterbox {
                                 failure(ChatterboxError.unknown(details: "Chat Handshake failed for an unknown reason"))
                                 return
                             }
+                            self.contextualActions = actionMessage
                             success(actionMessage)
                             return
                         }
@@ -204,12 +206,15 @@ class Chatterbox {
         let sessionInfo = CBSession(id: UUID().uuidString, user: user, vendor: vendor)
         
         apiManager.startChatSession(with: sessionInfo, chatId: chatId) { [weak self] result in
+            guard let strongSelf = self else { return }
+            
             switch result {
             case .success(let resultSession):
-                self?.session = resultSession
-                self?.logger.logDebug("--> Chat Session established: consumerAccountId=\(resultSession.user.consumerAccountId)")
+                strongSelf.session = resultSession
+                
+                strongSelf.logger.logDebug("--> Chat Session established: sessionId: \(strongSelf.session?.id ?? "NIL") \n consumerAccountId=\(resultSession.user.consumerAccountId)")
             case .failure:
-                self?.logger.logError("getSession failed!")
+                strongSelf.logger.logError("getSession failed!")
             }
             completion(result.error)
         }
@@ -273,7 +278,7 @@ class Chatterbox {
     private func topicSelectionHandler(_ message: String) {
         let choices: CBControlData = CBDataFactory.controlFromJSON(message)
         
-        if choices.controlType == .contextualActionMessage {
+        if choices.controlType == .contextualAction {
             if let completion = handshakeCompletedHandler {
                 let topicChoices = choices as? ContextualActionMessage
                 completion(topicChoices)
@@ -303,6 +308,16 @@ class Chatterbox {
         return initUserEvent
     }
     
+    private func serverContextResponse(fromRequest request: [String: ContextItem]) -> [String: Bool] {
+        var response: [String: Bool] = [:]
+        
+        request.forEach { item in
+            // say YES to all requests (for now)
+            response[item.key] = true
+        }
+        return response
+    }
+
     // MARK: - User Topic Methods
     
     private func startTopicHandler(_ message: String) {
@@ -381,7 +396,13 @@ class Chatterbox {
         }
     }
     
-    // MARK: - Incoming messages from AMB
+    internal func finishTopic(_ conversationId: String) {
+        let topicFinishedMessage = TopicFinishedMessage(withSessionId: self.conversationContext.sessionId ?? "UNKNOWN_SESSION",
+                                                        withConversationId: conversationId)
+        self.chatEventListener?.chatterbox(self, didFinishTopic: topicFinishedMessage, forChat: self.chatId)
+    }
+    
+    // MARK: - Incoming messages (Controls from service)
     
     fileprivate func handleEventMessage(_ message: String) -> Bool {
         let action = CBDataFactory.actionFromJSON(message)
@@ -422,7 +443,7 @@ class Chatterbox {
         }
     }
     
-    // MARK: - Update Control Methods
+    // MARK: - Update Controls (outgoing from user)
     
     func update(control: CBControlData) {
         guard let conversationId = control.conversationId else { fatalError("No conversationId for control in update method!") }
@@ -488,6 +509,16 @@ class Chatterbox {
             storeAndPublish(multiSelectControl, forConversation: conversationId)
         }
     }
+    
+    // MARK: - Cleanup
+    
+    private func clearMessageHandlers() {
+        messageHandler = nil
+        handshakeCompletedHandler = nil
+    }
+}
+
+extension Chatterbox {
 
     // MARK: - Sync Current Conversation
     
@@ -501,46 +532,50 @@ class Chatterbox {
             return
         }
         
-        apiManager.fetchConversation(conversationId, completionHandler: { conversation in
-            guard let conversation = conversation else { return }
+        apiManager.fetchConversation(conversationId, completionHandler: { [weak self] conversation in
+            guard let strongSelf = self, let conversation = conversation else { return }
             
             // get any newer messages and add them to the store
-            if let lastFetchedExchange = conversation.messageExchanges().last {
-                if let oldestStoredExchange = storedConversation.messageExchanges().last {
-                    
-                    if lastFetchedExchange.message.messageId == oldestStoredExchange.message.messageId {
-                        self.logger.logDebug("Last fetched message matches last stored message: already in sync")
-                        return
-                    }
-                    
-                    // find messages newer than our oldest and add them
-                    self.addExchanges(conversation.messageExchanges(), newerThan: oldestStoredExchange, forConversation: conversationId)
-                }
-            }
+            let oldestStoredExchange = storedConversation.messageExchanges().last
+            strongSelf.addExchanges(conversation.messageExchanges(), newerThan: oldestStoredExchange, forConversation: conversationId)
             
-            // see if the conversation state changed
+            // if the conversation state changed, might have to finish the topic
             if conversation.state != .inProgress {
-                self.logger.logInfo("Conversation is no longer in progress - ending current conversations")
+                strongSelf.logger.logInfo("Conversation is no longer in progress - ending current conversations")
                 
-                let topicFinishedMessage = TopicFinishedMessage(withSessionId: self.conversationContext.sessionId ?? "UNKNOWN_SESSION", withConversationId: conversationId)
-                self.chatEventListener?.chatterbox(self, didFinishTopic: topicFinishedMessage, forChat: self.chatId)
+                strongSelf.finishTopic(conversationId)
             }
         })
     }
     
-    fileprivate func addExchanges(_ messageExchanges: [MessageExchange], newerThan subjectExchange: MessageExchange, forConversation conversationId: String) {
-        let newerExchanges = messageExchanges.filter { exchange -> Bool in
-            return exchange.message.messageTime < subjectExchange.message.messageTime
+    internal func addExchanges(_ messageExchanges: [MessageExchange], newerThan subjectExchange: MessageExchange?, forConversation conversationId: String) {
+        var newerExchanges: [MessageExchange]
+        
+        if let subjectExchange = subjectExchange {
+            newerExchanges = messageExchanges.filter { exchange -> Bool in
+                return exchange.message.messageTime.timeIntervalSince(subjectExchange.message.messageTime) > 0
+            }
+        } else {
+            // nothing to compare to, so use them all
+            newerExchanges = messageExchanges
+        }
+        
+        guard newerExchanges.count > 0 else {
+            logger.logDebug("no messages newer than what we have: already in sync")
+            return
         }
         
         newerExchanges.forEach { exchange in
             self.storeHistoryAndPublish(exchange, forConversation: conversationId)
         }
     }
+}
+
+extension Chatterbox {
     
     // MARK: - Persistence Methods
     
-    private func saveDataToPersistence() {
+    internal func saveDataToPersistence() {
         do {
             try chatStore.save()
         } catch let error {
@@ -548,7 +583,7 @@ class Chatterbox {
         }
     }
     
-    private func loadDataFromPersistence(completionHandler: @escaping (Error?) -> Void) {
+    internal func loadDataFromPersistence(completionHandler: @escaping (Error?) -> Void) {
         // TODO: load locally stored history and synchronize with the server
         //       for now we just pull from server, no local store
         /*
@@ -562,7 +597,7 @@ class Chatterbox {
         refreshConversations(completionHandler: completionHandler)
     }
     
-    private func refreshConversations(completionHandler: @escaping (Error?) -> Void) {
+    internal func refreshConversations(completionHandler: @escaping (Error?) -> Void) {
         
         // HACK - work around consumerAccountId issues for testing...
 //        let correctConsumerAccountId = session?.user.consumerAccountId
@@ -599,22 +634,12 @@ class Chatterbox {
         }
     }
     
-    fileprivate func storeHistoryAndPublish(_ exchange: MessageExchange, forConversation conversationId: String) {
+    internal func storeHistoryAndPublish(_ exchange: MessageExchange, forConversation conversationId: String) {
         chatStore.storeHistory(exchange, forConversation: conversationId)
         chatDataListener?.chatterbox(self, didReceiveHistory: exchange, forChat: chatId)
     }
     
-    fileprivate func notifyMessageExchange(_ exchange: MessageExchange) {
-        let message = exchange.message
-        
-        notifyControlReceived(message)
-        
-        if let response = exchange.response {
-            notifyResponseReceived(response, exchange: exchange)
-        }
-    }
-    
-    private func storeConversationAndPublish(_ conversation: Conversation) {
+    internal func storeConversationAndPublish(_ conversation: Conversation) {
         chatStore.storeConversation(conversation)
         
         chatDataListener?.chatterbox(self, willLoadConversation: conversation.uniqueId, forChat: chatId)
@@ -629,8 +654,18 @@ class Chatterbox {
         
         chatDataListener?.chatterbox(self, didLoadConversation: conversation.uniqueId, forChat: chatId)
     }
+
+    internal func notifyMessageExchange(_ exchange: MessageExchange) {
+        let message = exchange.message
+        
+        notifyMessage(message)
+        
+        if let response = exchange.response {
+            notifyResponse(response, exchange: exchange)
+        }
+    }
     
-    fileprivate func notifyControlReceived(_ message: CBControlData) {
+    internal func notifyMessage(_ message: CBControlData) {
         guard let chatDataListener = chatDataListener else {
             logger.logError("No ChatDataListener in NotifyControlReceived")
             return
@@ -639,7 +674,7 @@ class Chatterbox {
         chatDataListener.chatterbox(self, didReceiveControlMessage: message, forChat: chatId)
     }
     
-    fileprivate func notifyResponseReceived(_ response: CBControlData, exchange: MessageExchange) {
+    internal func notifyResponse(_ response: CBControlData, exchange: MessageExchange) {
         guard let chatDataListener = chatDataListener else {
             logger.logError("No ChatDataListener in notifyResponseReceived")
             return
@@ -647,21 +682,4 @@ class Chatterbox {
         
         chatDataListener.chatterbox(self, didCompleteMessageExchange: exchange, forChat: chatId)
     }
-    
-    // MARK: - Cleanup
-    
-    private func clearMessageHandlers() {
-        messageHandler = nil
-        handshakeCompletedHandler = nil
-    }
-}
-
-private func serverContextResponse(fromRequest request: [String: ContextItem]) -> [String: Bool] {
-    var response: [String: Bool] = [:]
-    
-    request.forEach { item in
-        // say YES to all requests (for now)
-        response[item.key] = true
-    }
-    return response
 }

@@ -62,7 +62,7 @@ class CBDataTests: XCTestCase {
         XCTAssertNotNil(inputObj)
     }
 
-    func testBooleanFromJSON() {
+    func testBooleanMessageExample() {
         let boolObj = ExampleData.exampleBooleanControlMessage()
         XCTAssertNotNil(boolObj)
         XCTAssert(boolObj.controlType == .boolean)
@@ -72,7 +72,7 @@ class CBDataTests: XCTestCase {
         XCTAssert(boolObj.data.richControl?.uiMetadata?.required == true)
     }
     
-    func testInputFromJSON() {
+    func testInputMessageExample() {
         let obj = ExampleData.exampleInputControlMessage()
         XCTAssertNotNil(obj)
         XCTAssert(obj.controlType == .input)
@@ -82,7 +82,7 @@ class CBDataTests: XCTestCase {
         XCTAssert(obj.data.richControl?.uiMetadata?.required == true)
     }
     
-    func testPickerFromJSON() {
+    func testPickerMessageExample() {
         let obj = ExampleData.examplePickerControlMessage()
         XCTAssertNotNil(obj)
         XCTAssert(obj.controlType == .picker)
@@ -95,7 +95,7 @@ class CBDataTests: XCTestCase {
         XCTAssert(obj.data.richControl?.uiMetadata?.multiSelect == false)
     }
     
-    func testOutputTextMessage() {
+    func testOutputTextMessageExample() {
         let textObj = ExampleData.exampleOutputTextControlMessage()
         XCTAssertNotNil(textObj)
         XCTAssertEqual(textObj.controlType, .text)
@@ -103,6 +103,19 @@ class CBDataTests: XCTestCase {
         XCTAssertEqual(textObj.data.richControl?.model?.type, "outputMsg")
         XCTAssertEqual(textObj.data.richControl?.value, "Glad I could assist you.")
     }
+    
+    func testContextualActionMessageExample() {
+        let contextualAction = ExampleData.exampleContextualActionMessage()
+        XCTAssertNotNil(contextualAction)
+        XCTAssertEqual(contextualAction.controlType, .contextualAction)
+        XCTAssertEqual(contextualAction.data.richControl?.uiType, "ContextualAction")
+        XCTAssertEqual(contextualAction.data.richControl?.uiMetadata?.inputControls.count, 3)
+        XCTAssertEqual(contextualAction.options.count, 3)
+        XCTAssertEqual(contextualAction.options[0].value, "showTopic")
+        XCTAssertEqual(contextualAction.options[1].value, "startTopic")
+        XCTAssertEqual(contextualAction.options[2].value, "brb")
+    }
+    
     let jsonInitStart = """
         {
           "type" : "actionMessage",
@@ -255,84 +268,6 @@ class CBDataTests: XCTestCase {
             XCTAssert(false)
         }
         
-    }
-    
-    func testContextualActionMessage() {
-        
-        let json = """
-            {
-            "type": "systemTextMessage",
-            "data": {
-                "@class": ".MessageDto",
-                "messageId": "9807448173320300d63a566a4cf6a7ed",
-                "richControl": {
-                    "model": {
-                        "type": "task"
-                    },
-                    "uiType": "ContextualAction",
-                    "uiMetadata": {
-                        "inputControls": [
-                            {
-                                "model": {
-                                    "type": "task"
-                                },
-                                "uiType": "Picker",
-                                "uiMetadata": {
-                                    "options": [
-                                        {
-                                            "label": "Show Conversation",
-                                            "value": "showTopic"
-                                        },
-                                        {
-                                            "label": "Start a new conversation",
-                                            "value": "startTopic"
-                                        },
-                                        {
-                                            "label": "Chat with agent",
-                                            "value": "brb"
-                                        }
-                                    ],
-                                    "multiSelect": false,
-                                    "openByDefault": false
-                                }
-                            },
-                            {
-                                "model": {
-                                    "type": "task"
-                                },
-                                "uiType": "TextSearch"
-                            },
-                            {
-                                "model": {
-                                    "type": "task"
-                                },
-                                "uiType": "VoiceSearch"
-                            }
-                        ]
-                    }
-                },
-                "sessionId": "eef6844173320300d63a566a4cf6a758",
-                "conversationId": "5407c08173320300d63a566a4cf6a7f1",
-                "links": [
-
-                ],
-                "sendTime": 1512079862721,
-                "direction": "outbound",
-                "isAgent": false,
-                "receiveTime": 0
-            },
-            "source": "server"
-        }
-        """
-        let jsonData = json.data(using: .utf8)
-        let decoder = JSONDecoder()
-        do {
-            let systemMessage = try decoder.decode(ContextualActionMessage.self, from: jsonData!) as ContextualActionMessage
-            XCTAssert(systemMessage.data.richControl?.uiType == "ContextualAction")
-        } catch let error {
-            Logger.default.logInfo(error.localizedDescription)
-            XCTAssert(false)
-        }
     }
     
     func testStartTopic() {

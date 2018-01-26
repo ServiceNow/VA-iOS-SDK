@@ -21,7 +21,7 @@ class CBDataFactory {
                 }
                 
                 switch controlType {
-                case .contextualActionMessage:
+                case .contextualAction:
                     return try CBData.jsonDecoder.decode(ContextualActionMessage.self, from: jsonData)
                 case.topicPicker:
                     return try CBData.jsonDecoder.decode(UserTopicPickerMessage.self, from: jsonData)

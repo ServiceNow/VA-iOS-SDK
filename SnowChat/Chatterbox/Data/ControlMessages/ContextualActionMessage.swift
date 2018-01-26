@@ -21,7 +21,7 @@ struct ContextualActionMessage: Codable, CBControlData {
     }
     
     var id: String = UUID().uuidString
-    var controlType: CBControlType = .contextualActionMessage
+    var controlType: CBControlType = .contextualAction
 
     var messageId: String {
         return data.messageId
@@ -33,6 +33,17 @@ struct ContextualActionMessage: Codable, CBControlData {
     
     var messageTime: Date {
         return data.sendTime
+    }
+    
+    var options: [LabeledValue] {
+        if let inputControls = data.richControl?.uiMetadata?.inputControls, let index = inputControls.index(where: { inputControl in
+            inputControl.uiType == "Picker"
+        }) {
+            if let options = inputControls[index].uiMetadata?.options {
+                return options
+            }
+        }
+        return []
     }
     
     let type: String

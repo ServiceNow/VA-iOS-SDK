@@ -142,11 +142,12 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         
         controller?.chatterbox(mockChatterbox!, didCompleteMessageExchange: me, forChat: "ChatID")
         
-        // make sure there are 2 controls, 1 typing indicatior and 2 of type text
-        XCTAssertEqual(2, controller?.controlCount())
+        // make sure there are 3 controls, 2 text and a typing indicator
+        XCTAssertEqual(3, controller?.controlCount())
         XCTAssertEqual(ControlType.text, controller?.controlForIndex(0)?.controlModel.type)
         XCTAssertEqual(ControlType.text, controller?.controlForIndex(1)?.controlModel.type)
-        
+        XCTAssertEqual(ControlType.typingIndicator, controller?.controlForIndex(2)?.controlModel.type)
+
         // make sure the label and value are correct
         let label = (booleanMessage as! BooleanControlMessage).data.richControl?.uiMetadata?.label
         let value = "Yes"
