@@ -146,14 +146,6 @@ class ChatDataController {
         return true
     }
     
-    fileprivate func popTypingIndicatorIfShown() {
-        guard controlData.count > 0, controlData[0].controlModel as? TypingIndicatorViewModel != nil else {
-            return
-        }
-        
-        controlData.remove(at: 0)
-    }
-    
     fileprivate func updateChatterbox(_ data: ControlViewModel) {
         guard let conversationId = self.conversationId else {
             Logger.default.logError("No ConversationID in updateChatterbox!")
@@ -371,7 +363,6 @@ extension ChatDataController: ChatDataListener {
         }
         
         if let viewModels = controlsForPicker(from: messageExchange) {
-//            popTypingIndicatorIfShown()
             replaceLastControl(with: ChatMessageModel(model: viewModels.message, location: .left))
             presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
         }
@@ -391,7 +382,6 @@ extension ChatDataController: ChatDataListener {
             let displayValue = options?.joinedWithCommaSeparator()
             let answerModel = TextControlViewModel(id: CBData.uuidString(), value: displayValue ?? "")
             
-//            popTypingIndicatorIfShown()
             replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
             presentControlData(ChatMessageModel(model: answerModel, location: .right))
         }
