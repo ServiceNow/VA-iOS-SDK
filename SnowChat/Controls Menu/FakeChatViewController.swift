@@ -22,21 +22,40 @@ class FakeChatViewController: UIViewController, UITableViewDelegate, UITableView
             // Each cell will have its own view controller to handle each message
             // It will need to be definitely improved. I just added simple solution
             // More on it: http://khanlou.com/2015/04/view-controllers-in-cells/
-            messageViewControllers.forEach({
-                $0.prepareForReuse()
-                $0.removeFromParentViewController()
-            })
-            messageViewControllers.removeAll()
+//            messageViewControllers.forEach({
+//                $0.prepareForReuse()
+//                $0.removeFromParentViewController()
+//            })
+//            messageViewControllers.removeAll()
             
             guard let controls = controls else { return }
-            for _ in controls {
-                let controller = ChatMessageViewController(nibName: "ChatMessageViewController", bundle: Bundle(for: type(of: self)))
-                controller.willMove(toParentViewController: self)
-                addChildViewController(controller)
-                messageViewControllers.append(controller)
+            for (index, control) in controls.enumerated() {
+                
+                let controller: ChatMessageViewController
+                if messageViewControllers.count > index {
+                    controller = messageViewControllers[index]
+                    
+                    controller.addUIControl(control, at: .left)
+                    UIView.animate(withDuration: 0.3, animations: {
+                        self.tableView.beginUpdates()
+                        self.tableView.endUpdates()
+                    })
+                } else {
+                    let inController = ChatMessageViewController(nibName: "ChatMessageViewController", bundle: Bundle(for: type(of: self)))
+                    messageViewControllers.append(inController)
+                    controller = inController
+                    controller.willMove(toParentViewController: self)
+                    addChildViewController(controller)
+                    tableView.reloadData()
+                }
             }
             
-            tableView.reloadData()
+            // TODO: add custom animation
+//            if let cell = tableView.visibleCells[0] as? FakeChatViewCell {
+//
+//            } else {
+//                tableView.reloadData()
+//            }
         }
     }
     

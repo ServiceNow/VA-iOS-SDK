@@ -20,20 +20,19 @@ class ChatMessageViewController: UIViewController {
     @IBOutlet private weak var bubbleTrailingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var agentImageTopConstraint: NSLayoutConstraint!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        bubbleView.borderColor = UIColor.agentBubbleBackgroundColor
-    }
-    
     func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
-        uiControl = control
+        guard uiControl?.model.id != control.model.id,
+            uiControl?.model.type != control.model.type else {
+            Logger.default.logDebug("Seems like you try to readd the same model!")
+            return
+        }
         
+        removeUIControl()
+        uiControl = control
         let controlViewController = control.viewController
         controlViewController.willMove(toParentViewController: self)
         addChildViewController(controlViewController)
-        
         let controlView: UIView = controlViewController.view
-        updateForLocation(location)
         
         controlView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(controlView)
@@ -49,6 +48,9 @@ class ChatMessageViewController: UIViewController {
             controlView.widthAnchor.constraint(lessThanOrEqualToConstant: controlMaxWidth).isActive = true
         }
         
+        updateConstraints(forLocation: location)
+        updateBubble(forControl: control, andLocation: location)
+        
         controlViewController.didMove(toParentViewController: self)
         view.layoutIfNeeded()
     }
@@ -63,20 +65,11 @@ class ChatMessageViewController: UIViewController {
         uiControl = nil
     }
     
-    // updates message view based on the direction of the message
-    // FIXME: Some of these will be moved to Control classes after we add theming.
+    // MARK: - Update Constraints
     
-    private func updateForLocation(_ location: BubbleLocation) {
-        if uiControl?.model.type == .text {
-            let textViewController = uiControl?.viewController as! TextControl.TextViewController
-            textViewController.textLabel.textColor = (location == .right) ? UIColor.userBubbleTextColor : UIColor.agentBubbleTextColor
-            textViewController.textLabel.backgroundColor = (location == .right) ? UIColor.userBubbleBackgroundColor : UIColor.agentBubbleBackgroundColor
-        }
-        
+    private func updateConstraints(forLocation location: BubbleLocation) {
         switch location {
         case .left:
-            uiControl?.viewController.view.backgroundColor = UIColor.agentBubbleBackgroundColor
-            bubbleView.backgroundColor = UIColor.agentBubbleBackgroundColor
             agentImageView.isHidden = false
             bubbleView.arrowDirection = .left
             agentBubbleLeadingConstraint.priority = .veryHigh
@@ -84,8 +77,6 @@ class ChatMessageViewController: UIViewController {
             bubbleTrailingConstraint.priority = .defaultHigh
             agentImageTopConstraint.priority = .veryHigh
         case .right:
-            uiControl?.viewController.view.backgroundColor = UIColor.userBubbleBackgroundColor
-            bubbleView.backgroundColor = UIColor.userBubbleBackgroundColor
             bubbleView.arrowDirection = .right
             agentBubbleLeadingConstraint.priority = .defaultLow
             bubbleLeadingConstraint.priority = .defaultHigh
@@ -94,8 +85,25 @@ class ChatMessageViewController: UIViewController {
             agentImageTopConstraint.priority = .lowest
         }
         
+        view.setNeedsUpdateConstraints()
+    }
+    
+    // MARK: Update colors
+    
+    private func updateBubble(forControl control: ControlProtocol, andLocation location: BubbleLocation) {
+        bubbleView.borderColor = UIColor.agentBubbleBackgroundColor
+        
+        if control.model.type == .text {
+            let textViewController = control.viewController as! TextControl.TextViewController
+            textViewController.textLabel.textColor = (location == .right) ? UIColor.userBubbleTextColor : UIColor.agentBubbleTextColor
+            textViewController.textLabel.backgroundColor = (location == .right) ? UIColor.userBubbleBackgroundColor : UIColor.agentBubbleBackgroundColor
+        }
+        
+        control.viewController.view.backgroundColor = (location == .right) ? UIColor.userBubbleBackgroundColor : UIColor.agentBubbleBackgroundColor
+        bubbleView.backgroundColor = (location == .right) ? UIColor.userBubbleBackgroundColor : UIColor.agentBubbleBackgroundColor
+        
         // Make sure that a little tail in the bubble gets colored like picker background. now it is hardcoded to white but will need to get theme color
-        if uiControl?.viewController is PickerViewController {
+        if control.viewController is PickerViewController {
             bubbleView.backgroundColor = UIColor.white
         }
     }
