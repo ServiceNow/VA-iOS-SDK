@@ -100,8 +100,8 @@ class ChatDataController {
         }
         
         // last control is really the first... our list is reversed
+        addChange(.update(index: 0, oldModel: controlData[0], model: model))
         controlData[0] = model
-        addChange(.update(index: 0, model: model))
         applyChanges()
     }
     
@@ -121,11 +121,13 @@ class ChatDataController {
     }
     
     fileprivate func presentControlData(_ data: ChatMessageModel) {
-        popTypingIndicatorIfShown()
-        addControlToCollection(data)
-        
-        addChange(.insert(index: 0, model: data))
-        applyChanges()
+        if showsTypingIndicator() {
+            replaceLastControl(with: data)
+        } else {
+            addControlToCollection(data)
+            addChange(.insert(index: 0, model: data))
+            applyChanges()
+        }
     }
     
     fileprivate func pushTypingIndicator() {
@@ -136,13 +138,20 @@ class ChatDataController {
         applyChanges()
     }
     
+    fileprivate func showsTypingIndicator() -> Bool {
+        guard controlData.count > 0, controlData[0].controlModel.type == .typingIndicator else {
+            return false
+        }
+        
+        return true
+    }
+    
     fileprivate func popTypingIndicatorIfShown() {
         guard controlData.count > 0, controlData[0].controlModel as? TypingIndicatorViewModel != nil else {
             return
         }
         
         controlData.remove(at: 0)
-        addChange(.delete(index: 0))
     }
     
     fileprivate func updateChatterbox(_ data: ControlViewModel) {
@@ -341,7 +350,7 @@ extension ChatDataController: ChatDataListener {
         }
         
         if let viewModels = controlsForBoolean(from: messageExchange) {
-            popTypingIndicatorIfShown()
+//            popTypingIndicatorIfShown()
             replaceLastControl(with: ChatMessageModel(model: viewModels.message, location: .left))
             presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
         }
@@ -353,7 +362,6 @@ extension ChatDataController: ChatDataListener {
         }
         
         if let viewModels = controlsForInput(from: messageExchange) {
-            popTypingIndicatorIfShown()
             presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
         }
     }
@@ -364,7 +372,7 @@ extension ChatDataController: ChatDataListener {
         }
         
         if let viewModels = controlsForPicker(from: messageExchange) {
-            popTypingIndicatorIfShown()
+//            popTypingIndicatorIfShown()
             replaceLastControl(with: ChatMessageModel(model: viewModels.message, location: .left))
             presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
         }
@@ -384,7 +392,7 @@ extension ChatDataController: ChatDataListener {
             let displayValue = options?.joinedWithCommaSeparator()
             let answerModel = TextControlViewModel(id: CBData.uuidString(), value: displayValue ?? "")
             
-            popTypingIndicatorIfShown()
+//            popTypingIndicatorIfShown()
             replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
             presentControlData(ChatMessageModel(model: answerModel, location: .right))
         }
@@ -411,11 +419,10 @@ extension ChatDataController: ChatDataListener {
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadHistoryForConsumerAccount consumerAccountId: String, forChat chatId: String) {
         Logger.default.logInfo("History load completed for \(consumerAccountId) - re-enabling buffering.")
-
-        popTypingIndicatorIfShown()
         
         // see if there are any controls to show - if not, add the welcome message
-        if controlData.count <= 0 {
+        // 1 because we are showing typing indicator
+        if controlData.count <= 1 {
             presentWelcomeMessage()
         }
 
