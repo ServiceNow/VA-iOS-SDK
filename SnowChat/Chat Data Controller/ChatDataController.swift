@@ -121,7 +121,7 @@ class ChatDataController {
     }
     
     fileprivate func presentControlData(_ data: ChatMessageModel) {
-        if showsTypingIndicator() {
+        if isShowingTypingIndicator() {
             replaceLastControl(with: data)
         } else {
             addControlToCollection(data)
@@ -138,7 +138,7 @@ class ChatDataController {
         applyChanges()
     }
     
-    fileprivate func showsTypingIndicator() -> Bool {
+    fileprivate func isShowingTypingIndicator() -> Bool {
         guard controlData.count > 0, controlData[0].controlModel.type == .typingIndicator else {
             return false
         }
