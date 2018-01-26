@@ -470,8 +470,8 @@ extension ChatDataController: ChatDataListener {
         let value = response.data.richControl?.value ?? false
         let valueString = (value ?? false) ? "Yes" : "No"
         
-        let questionViewModel = TextControlViewModel(id: CBData.uuidString(), label: "", value: label)
-        let answerViewModel = TextControlViewModel(id: CBData.uuidString(), label: "", value: valueString)
+        let questionViewModel = TextControlViewModel(id: CBData.uuidString(), value: label)
+        let answerViewModel = TextControlViewModel(id: CBData.uuidString(), value: valueString)
         
         return (message: questionViewModel, response: answerViewModel)
     }
