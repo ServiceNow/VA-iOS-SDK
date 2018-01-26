@@ -60,10 +60,11 @@ public class ChatViewController: UIViewController {
         let contextItems = conversationViewController?.contextMenuItems()
         contextItems?.forEach({ item in
             alertController.addAction(UIAlertAction(title: item.title, style: .default) { action in
-                    item.handler(self)
-                })
+                item.handler(self, sender)
+            })
         })
         
+        alertController.popoverPresentationController?.barButtonItem = sender
         self.navigationController?.present(alertController, animated: true, completion: nil)
     }
 }

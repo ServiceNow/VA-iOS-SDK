@@ -11,9 +11,9 @@ import Foundation
 struct ContextMenuItem {
     
     let title: String
-    let handler: (UIViewController) -> Void
+    let handler: (UIViewController, UIBarButtonItem) -> Void
     
-    init(withTitle title: String, handler: @escaping(UIViewController) -> Void) {
+    init(withTitle title: String, handler: @escaping(UIViewController, UIBarButtonItem) -> Void) {
         self.title = title
         self.handler = handler
     }

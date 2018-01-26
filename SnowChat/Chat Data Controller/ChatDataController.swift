@@ -553,14 +553,42 @@ extension ChatDataController: ChatDataListener {
         
         return TextControlViewModel(id: CBData.uuidString(), value: value)
     }
+}
+
+extension ChatDataController: ContextItemProvider {
+    
+    func contextMenuItems() -> [ContextMenuItem] {
+        let newConversationItem = ContextMenuItem(withTitle: NSLocalizedString("New Conversation", comment: "Context Menu Item Title")) { viewController, sender in
+            Logger.default.logDebug("New Conversation menu selected")
+            
+            self.newConversation()
+        }
+        
+        let supportItem = ContextMenuItem(withTitle: NSLocalizedString("Contact Support", comment: "Context Menu Item Title")) { viewController, sender in
+            Logger.default.logDebug("Contact Support menu selected")
+            self.presentSupportOptions(viewController, sender)
+        }
+        
+        let refreshItem = ContextMenuItem(withTitle: NSLocalizedString("Refresh Conversation", comment: "Context Menu Item Title")) { viewController, sender in
+            Logger.default.logDebug("Refresh Conversation menu selected")
+            
+            self.syncConversation()
+        }
+        
+        let cancelItem = ContextMenuItem(withTitle: NSLocalizedString("Cancel", comment: "Context Menu Item Title")) { viewController, sender in
+            // nada
+        }
+        
+        return [newConversationItem, supportItem, refreshItem, cancelItem]
+    }
     
     fileprivate func newConversation() {
         chatterbox.endConversation()
     }
     
-    fileprivate func presentSupportOptions(_ viewController: UIViewController) {
+    fileprivate func presentSupportOptions(_ presentingController: UIViewController, _ sender: UIBarButtonItem) {
         
-        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let alertController = UIAlertController(title: NSLocalizedString("Support Options", comment: "Title for support options popover"), message: nil, preferredStyle: .actionSheet)
         
         let email = UIAlertAction(title: NSLocalizedString("Send Email to Customer Support", comment: "Support Menu item"), style: .default) { (action) in
             // TODO: send email
@@ -583,28 +611,7 @@ extension ChatDataController: ChatDataListener {
         alertController.addAction(call)
         alertController.addAction(cancel)
         
-        viewController.present(alertController, animated: true, completion: nil)
-    }
-}
-
-extension ChatDataController: ContextItemProvider {
-    func contextMenuItems() -> [ContextMenuItem] {
-        let newConversationItem = ContextMenuItem(withTitle: NSLocalizedString("New Conversation", comment: "Context Menu Item Title")) { viewController in
-            Logger.default.logDebug("New Conversation menu selected")
-            
-            self.newConversation()
-        }
-        
-        let supportItem = ContextMenuItem(withTitle: NSLocalizedString("Contact Support", comment: "Context Menu Item Title")) { viewController in
-            Logger.default.logDebug("Contact Support menu selected")
-            self.presentSupportOptions(viewController)
-        }
-        
-        let refreshItem = ContextMenuItem(withTitle: NSLocalizedString("Refresh Conversation", comment: "Context Menu Item Title")) { viewController in
-            Logger.default.logDebug("Refresh Conversation menu selected")
-            
-            self.syncConversation()
-        }
-        return [newConversationItem, supportItem, refreshItem]
+        alertController.popoverPresentationController?.barButtonItem = sender
+        presentingController.present(alertController, animated: true, completion: nil)
     }
 }
