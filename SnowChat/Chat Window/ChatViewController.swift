@@ -34,6 +34,12 @@ public class ChatViewController: UIViewController {
         setupContextMenu()
     }
     
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        removeConversationViewController()
+    }
+    
     // MARK: - Setup
     
     private func setupConversationViewController() {
@@ -47,6 +53,15 @@ public class ChatViewController: UIViewController {
         controller.didMove(toParentViewController: self)
         
         conversationViewController = controller
+    }
+    
+    private func removeConversationViewController() {
+        guard let childViewController = conversationViewController else { return }
+        
+        childViewController.willMove(toParentViewController: nil)
+        childViewController.view.removeFromSuperview()
+        childViewController.removeFromParentViewController()
+        conversationViewController = nil
     }
     
     private func setupContextMenu() {

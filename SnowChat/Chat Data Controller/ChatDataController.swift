@@ -34,9 +34,10 @@ class ChatDataController {
     private(set) var conversationId: String?
     private let chatterbox: Chatterbox
     private var controlData = [ChatMessageModel]()
-    private var changeListener: ViewDataChangeListener?
     private let typingIndicator = TypingIndicatorViewModel()
     
+    private weak var changeListener: ViewDataChangeListener?
+
     private var controlMessageBuffer = [ChatMessageModel]()
     private var bufferProcessingTimer: Timer?
     private var isBufferingEnabled = true
