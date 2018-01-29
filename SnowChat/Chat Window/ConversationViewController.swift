@@ -36,6 +36,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         return super.tableView!
     }
     
+    var activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+    
     // MARK: - Initialization
     
     init(chatterbox: Chatterbox) {
@@ -57,6 +59,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setupActivityIndicator()
+        showActivityIndicator = true
         
         setupTableView()
     }
@@ -186,6 +191,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     func controllerDidLoadContent(_ dataController: ChatDataController) {
         updateTableView()
         canFetchOlderMessages = true
+        showActivityIndicator = false
     }
     
     private func updateTableView() {
@@ -431,5 +437,39 @@ extension ConversationViewController: ControlDelegate {
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
         // TODO: how to determine if it was skipped?
         dataController.updateControlData(model, isSkipped: false)
+    }
+}
+
+extension ConversationViewController: ContextItemProvider {
+    
+    func contextMenuItems() -> [ContextMenuItem] {
+        return dataController.contextMenuItems()
+    }
+}
+
+extension ConversationViewController {
+    
+    // MARK: - Activity Indicator
+    
+    fileprivate func setupActivityIndicator() {
+        activityIndicator.color = UIColor.controlTextColor
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(activityIndicator)
+        
+        NSLayoutConstraint.activate([activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                                     activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)])
+    }
+    
+    var showActivityIndicator: Bool {
+        set(show) {
+            if show {
+                activityIndicator.startAnimating()
+            } else {
+                activityIndicator.stopAnimating()
+            }
+        }
+        get {
+            return activityIndicator.isAnimating
+        }
     }
 }

@@ -159,4 +159,73 @@ class ExampleData {
         """
         return CBDataFactory.controlFromJSON(jsonOutputText) as! OutputTextControlMessage
     }
+    
+    static func exampleContextualActionMessage() -> ContextualActionMessage {
+        let jsonContextualAction = """
+        {
+            "type": "systemTextMessage",
+            "data": {
+                "@class": ".MessageDto",
+                "messageId": "9807448173320300d63a566a4cf6a7ed",
+                "richControl": {
+                    "model": {
+                        "type": "task"
+                    },
+                    "uiType": "ContextualAction",
+                    "uiMetadata": {
+                        "inputControls": [
+                            {
+                                "model": {
+                                    "type": "task"
+                                },
+                                "uiType": "Picker",
+                                "uiMetadata": {
+                                    "options": [
+                                        {
+                                            "label": "Show Conversation",
+                                            "value": "showTopic"
+                                        },
+                                        {
+                                            "label": "Start a new conversation",
+                                            "value": "startTopic"
+                                        },
+                                        {
+                                            "label": "Chat with agent",
+                                            "value": "brb"
+                                        }
+                                    ],
+                                    "multiSelect": false,
+                                    "openByDefault": false
+                                }
+                            },
+                            {
+                                "model": {
+                                    "type": "task"
+                                },
+                                "uiType": "TextSearch"
+                            },
+                            {
+                                "model": {
+                                    "type": "task"
+                                },
+                                "uiType": "VoiceSearch"
+                            }
+                        ]
+                    }
+                },
+                "sessionId": "eef6844173320300d63a566a4cf6a758",
+                "conversationId": "5407c08173320300d63a566a4cf6a7f1",
+                "links": [
+
+                ],
+                "sendTime": 1512079862721,
+                "direction": "outbound",
+                "isAgent": false,
+                "receiveTime": 0
+            },
+            "source": "server"
+        }
+        """
+        return CBDataFactory.controlFromJSON(jsonContextualAction) as! ContextualActionMessage
+    }
 }

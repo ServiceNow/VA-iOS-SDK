@@ -31,6 +31,13 @@ public class ChatViewController: UIViewController {
         super.viewDidLoad()
         
         setupConversationViewController()
+        setupContextMenu()
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        removeConversationViewController()
     }
     
     // MARK: - Setup
@@ -46,6 +53,35 @@ public class ChatViewController: UIViewController {
         controller.didMove(toParentViewController: self)
         
         conversationViewController = controller
+    }
+    
+    private func removeConversationViewController() {
+        guard let childViewController = conversationViewController else { return }
+        
+        childViewController.willMove(toParentViewController: nil)
+        childViewController.view.removeFromSuperview()
+        childViewController.removeFromParentViewController()
+        conversationViewController = nil
+    }
+    
+    private func setupContextMenu() {
+        let contextMenu = UIBarButtonItem(title: "...", style: .plain, target: self, action: #selector(contextMenuTapped(_:)))
+        navigationItem.rightBarButtonItem = contextMenu
+    }
+    
+    @objc func contextMenuTapped(_ sender:UIBarButtonItem!) {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        let contextItems = conversationViewController?.contextMenuItems()
+        contextItems?.forEach({ item in
+            let style = (item.style == ContextMenuItem.Style.cancel) ? UIAlertActionStyle.cancel : UIAlertActionStyle.default
+            alertController.addAction(UIAlertAction(title: item.title, style: style) { action in
+                item.handler(self, sender)
+            })
+        })
+        
+        alertController.popoverPresentationController?.barButtonItem = sender
+        self.navigationController?.present(alertController, animated: true, completion: nil)
     }
 }
 

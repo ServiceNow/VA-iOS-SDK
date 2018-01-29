@@ -34,9 +34,10 @@ class ChatDataController {
     private(set) var conversationId: String?
     private let chatterbox: Chatterbox
     private var controlData = [ChatMessageModel]()
-    private var changeListener: ViewDataChangeListener?
     private let typingIndicator = TypingIndicatorViewModel()
     
+    private weak var changeListener: ViewDataChangeListener?
+
     private var controlMessageBuffer = [ChatMessageModel]()
     private var bufferProcessingTimer: Timer?
     private var isBufferingEnabled = true
@@ -82,6 +83,10 @@ class ChatDataController {
             Logger.default.logDebug("Fetch complete with \(count) messages")            
             completion(count)
         }
+    }
+    
+    func syncConversation() {
+        chatterbox.syncConversation()
     }
     
     private func addChange(_ type: ModelChangeType) {
@@ -546,5 +551,66 @@ extension ChatDataController: ChatDataListener {
         }
         
         return TextControlViewModel(id: CBData.uuidString(), value: value)
+    }
+}
+
+extension ChatDataController: ContextItemProvider {
+    
+    func contextMenuItems() -> [ContextMenuItem] {
+        let newConversationItem = ContextMenuItem(withTitle: NSLocalizedString("New Conversation", comment: "Context Menu Item Title")) { viewController, sender in
+            Logger.default.logDebug("New Conversation menu selected")
+            
+            self.newConversation()
+        }
+        
+        let supportItem = ContextMenuItem(withTitle: NSLocalizedString("Contact Support", comment: "Context Menu Item Title")) { viewController, sender in
+            Logger.default.logDebug("Contact Support menu selected")
+            self.presentSupportOptions(viewController, sender)
+        }
+        
+        let refreshItem = ContextMenuItem(withTitle: NSLocalizedString("Refresh Conversation", comment: "Context Menu Item Title")) { viewController, sender in
+            Logger.default.logDebug("Refresh Conversation menu selected")
+            
+            self.syncConversation()
+        }
+        
+        let cancelItem = ContextMenuItem(withTitle: NSLocalizedString("Cancel", comment: "Context Menu Item Title"), style: .cancel) { viewController, sender in
+            // nada
+        }
+        
+        return [newConversationItem, supportItem, refreshItem, cancelItem]
+    }
+    
+    fileprivate func newConversation() {
+        chatterbox.endConversation()
+    }
+    
+    fileprivate func presentSupportOptions(_ presentingController: UIViewController, _ sender: UIBarButtonItem) {
+        
+        let alertController = UIAlertController(title: NSLocalizedString("Support Options", comment: "Title for support options popover"), message: nil, preferredStyle: .actionSheet)
+        
+        let email = UIAlertAction(title: NSLocalizedString("Send Email to Customer Support", comment: "Support Menu item"), style: .default) { (action) in
+            // TODO: send email
+        }
+        
+        let agent = UIAlertAction(title: NSLocalizedString("Chat with and Agent", comment: "Support Menu item"), style: .default) { (action) in
+            // TODO: transfer to live agent chat
+        }
+        
+        let call = UIAlertAction(title: NSLocalizedString("Call Support (Daily 5AM - 11PM)", comment: "Support Menu item"), style: .default) { (action) in
+            // TODO: phone call
+        }
+        
+        let cancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Support Menu item"), style: .cancel) { (action) in
+            // nada
+        }
+        
+        alertController.addAction(email)
+        alertController.addAction(agent)
+        alertController.addAction(call)
+        alertController.addAction(cancel)
+        
+        alertController.popoverPresentationController?.barButtonItem = sender
+        presentingController.present(alertController, animated: true, completion: nil)
     }
 }

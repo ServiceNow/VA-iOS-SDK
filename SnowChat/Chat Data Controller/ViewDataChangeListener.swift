@@ -14,7 +14,7 @@ enum ModelChangeType {
     case update(index: Int, oldModel: ChatMessageModel, model: ChatMessageModel)
 }
 
-protocol ViewDataChangeListener {
+protocol ViewDataChangeListener: AnyObject {
     func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType])
     func controllerDidLoadContent(_ dataController: ChatDataController)
 }
