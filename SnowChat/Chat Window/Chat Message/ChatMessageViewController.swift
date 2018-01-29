@@ -19,6 +19,15 @@ class ChatMessageViewController: UIViewController {
     @IBOutlet private weak var bubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var bubbleTrailingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var agentImageTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var bubbleWidthConstraint: NSLayoutConstraint!
+    
+    func showBubble(animated: Bool = true) {
+        bubbleWidthConstraint.priority = .lowest
+        bubbleTrailingConstraint.priority = .veryHigh
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
     
     func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
         guard uiControl?.model.id != control.model.id,
@@ -29,30 +38,34 @@ class ChatMessageViewController: UIViewController {
         
         removeUIControl()
         uiControl = control
+        updateConstraints(forLocation: location)
+        updateBubble(forControl: control, andLocation: location)
+        bubbleWidthConstraint.priority = .veryHigh
+        bubbleTrailingConstraint.priority = .lowest
+        UIView.performWithoutAnimation {
+            view.layoutIfNeeded()
+        }
+        
         let controlViewController = control.viewController
         controlViewController.willMove(toParentViewController: self)
         addChildViewController(controlViewController)
         let controlView: UIView = controlViewController.view
-        
+
+        controlView.frame = bubbleView.contentView.bounds
         controlView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(controlView)
-        
+
         NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: bubbleView.contentView.leadingAnchor),
                                      controlView.trailingAnchor.constraint(equalTo: bubbleView.contentView.trailingAnchor),
                                      controlView.topAnchor.constraint(equalTo: bubbleView.contentView.topAnchor),
                                      controlView.bottomAnchor.constraint(equalTo: bubbleView.contentView.bottomAnchor)])
-        
+
         // all controls but text will be limited to 250 points of width.
         // For now doing it across all class sizes. Might get adjusted when we get specs.
         if control.model.type != .text {
             controlView.widthAnchor.constraint(lessThanOrEqualToConstant: controlMaxWidth).isActive = true
         }
-        
-        updateConstraints(forLocation: location)
-        updateBubble(forControl: control, andLocation: location)
-        
         controlViewController.didMove(toParentViewController: self)
-        view.layoutIfNeeded()
     }
     
     func prepareForReuse() {

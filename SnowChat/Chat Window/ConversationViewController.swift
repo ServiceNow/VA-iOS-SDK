@@ -142,17 +142,13 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     // MARK: - ViewDataChangeListener
     
-    private func updateModel(_ model: ChatMessageModel, atIndex index: Int) {
+    private func updateControl(withModel model: ChatMessageModel, atIndex index: Int) {
         if let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? ConversationViewCell {
             addUIControl(forModel: model, inCell: cell)
         }
         
-        UIView.animate(withDuration: 0.3, animations: {
-            self.tableView.beginUpdates()
-            self.tableView.endUpdates()
-        })
-        
-//        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+        self.tableView.beginUpdates()
+        self.tableView.endUpdates()
     }
     
     func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType]) {
@@ -162,11 +158,11 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             changes.forEach({ [weak self] change in
                 switch change {
                 case .insert(let index, _):
-                    self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .top)
+                    self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 case .update(let index, _, let model):
-                    updateModel(model, atIndex: index)
+                    updateControl(withModel: model, atIndex: index)
                 }
             })
         }
@@ -184,8 +180,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     }
     
     func controllerDidLoadContent(_ dataController: ChatDataController) {
-        updateTableView()
-        canFetchOlderMessages = true
+//        updateTableView()
+//        canFetchOlderMessages = true
     }
     
     private func updateTableView() {
@@ -370,6 +366,18 @@ extension ConversationViewController {
     }
     
     // MARK: - ChatMessageViewController reuse
+    
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if tableView == autoCompletionView {
+            return
+        }
+        
+        guard let conversationCell = cell as? ConversationViewCell else {
+            fatalError("Wrong cell's class")
+        }
+        
+        conversationCell.messageViewController?.showBubble()
+    }
     
     override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if tableView == autoCompletionView {

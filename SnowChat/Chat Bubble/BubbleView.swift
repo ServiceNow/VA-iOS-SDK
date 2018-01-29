@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BubbleView: UIView {
+class BubbleView: UIView, CAAnimationDelegate {
     
     enum ArrowDirection {
         case left
@@ -46,7 +46,7 @@ class BubbleView: UIView {
         let borderLayer = CAShapeLayer()
         borderLayer.fillColor = nil
         borderLayer.lineWidth = 2
-        
+
         // just to make sure border will be always presented despite adding other sublayers:
         borderLayer.zPosition = 1000
         borderLayer.isHidden = true
@@ -82,7 +82,7 @@ class BubbleView: UIView {
     private func updateContentViewConstraints() {
         NSLayoutConstraint.deactivate(insetConstraints)
         insetConstraints.removeAll()
-        
+
         insetConstraints.append(contentView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: contentViewInsets.left))
         insetConstraints.append(contentView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -contentViewInsets.right))
         insetConstraints.append(contentView.topAnchor.constraint(equalTo: topAnchor, constant: contentViewInsets.top))
@@ -90,21 +90,51 @@ class BubbleView: UIView {
         NSLayoutConstraint.activate(insetConstraints)
     }
     
+//    override func action(for layer: CALayer, forKey event: String) -> CAAction? {
+//        if let shapeLayer = self.layer.mask as? CAShapeLayer, shapeLayer == layer {
+//
+//            if event == "path" {
+//                guard self.layer.action(forKey: "bounds") != nil else {
+//                    return nil
+//                }
+//                let animation = CABasicAnimation(keyPath: "path")
+//                animation.delegate = self
+//                animation.duration = 5
+//                guard let currentBounds = (layer.mask as? CAShapeLayer)?.bounds else { return nil }
+//                animation.fromValue = chatBubblePath(forBounds: currentBounds, leftSide: (arrowDirection == .left))
+//                return animation
+//            }
+//        }
+//        let action = super.action(for: layer, forKey: event)
+//        return action
+//    }
+    
     func setupShapeLayer() {
         layer.mask = CAShapeLayer()
+        layer.mask?.delegate = self
     }
     
-    override func layoutSublayers(of layer: CALayer) {
-        super.layoutSublayers(of: layer)
-        
-        guard layer == self.layer else {
-            return
+    override var bounds: CGRect {
+        didSet {
+            addMaskPathAnimation()
         }
+    }
+    
+    private func addMaskPathAnimation() {
+        guard let currentBounds = (layer.mask as? CAShapeLayer)?.bounds else { return }
+
+        let fromPath = chatBubblePath(forBounds: currentBounds, leftSide: (arrowDirection == .left))
+        (layer.mask as? CAShapeLayer)?.removeAllAnimations()
         
-        let bubblePath = chatBubblePath(forBounds: bounds, leftSide: (arrowDirection == .left))
-        (layer.mask as? CAShapeLayer)?.path = bubblePath
         layer.mask?.frame = bounds
-        borderLayer.frame = bounds
-        borderLayer.path = bubblePath
+        let animation = CABasicAnimation(keyPath: "path")
+        animation.delegate = self
+        animation.duration = 0.3
+        animation.fillMode = "forwards"
+        animation.fromValue = fromPath
+        animation.toValue = chatBubblePath(forBounds: bounds, leftSide: (arrowDirection == .left))
+        (layer.mask as? CAShapeLayer)?.add(animation, forKey: "pathAnim")
+        
+        (layer.mask as? CAShapeLayer)?.path = chatBubblePath(forBounds: bounds, leftSide: (arrowDirection == .left))
     }
 }
