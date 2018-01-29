@@ -70,7 +70,6 @@
 		5778CF9C1FE06F08004F77D8 /* SingleSelectControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5778CF9B1FE06F08004F77D8 /* SingleSelectControl.swift */; };
 		5778CF9E1FE07023004F77D8 /* SingleSelectControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5778CF9D1FE07023004F77D8 /* SingleSelectControlViewModel.swift */; };
 		5778CFA01FE07764004F77D8 /* SingleSelectControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5778CF9F1FE07764004F77D8 /* SingleSelectControlTests.swift */; };
-		5786320B1FBB571E00FA0282 /* BubbleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578632071FBB571D00FA0282 /* BubbleViewController.swift */; };
 		578632161FBB9E0300FA0282 /* ControlProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578632151FBB9E0300FA0282 /* ControlProtocol.swift */; };
 		5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5788B2A61FBB38FD00846F33 /* ControlViewModel.swift */; };
 		578EAF5E201786940082264B /* Array+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578EAF5D201786940082264B /* Array+Additions.swift */; };
@@ -149,8 +148,6 @@
 		C46A7D881FCE23D300DC12AC /* ActionMessageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46A7D871FCE23D300DC12AC /* ActionMessageData.swift */; };
 		C46A7D8A1FD0BD8900DC12AC /* ContextualActionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46A7D891FD0BD8900DC12AC /* ContextualActionMessage.swift */; };
 		C483C17F2017DAD300C28E46 /* ExampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C483C17E2017DAD300C28E46 /* ExampleData.swift */; };
-		C489073D1FCC8209008D9521 /* AMBTestPanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C489073B1FCC8209008D9521 /* AMBTestPanelViewController.swift */; };
-		C489073E1FCC8209008D9521 /* AMBTestPanelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C489073C1FCC8209008D9521 /* AMBTestPanelViewController.xib */; };
 		C4A774A91FDF22E200B6DF68 /* ChatEventListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A774A81FDF22E200B6DF68 /* ChatEventListener.swift */; };
 		C4A774AD1FE0607D00B6DF68 /* ChatServiceDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A774AC1FE0607D00B6DF68 /* ChatServiceDelegate.swift */; };
 		C4AF7793200E7B0B0029598A /* ViewDataChangeListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AF7792200E7B0B0029598A /* ViewDataChangeListener.swift */; };
@@ -207,7 +204,6 @@
 		5778CF9B1FE06F08004F77D8 /* SingleSelectControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleSelectControl.swift; sourceTree = "<group>"; };
 		5778CF9D1FE07023004F77D8 /* SingleSelectControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleSelectControlViewModel.swift; sourceTree = "<group>"; };
 		5778CF9F1FE07764004F77D8 /* SingleSelectControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleSelectControlTests.swift; sourceTree = "<group>"; };
-		578632071FBB571D00FA0282 /* BubbleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BubbleViewController.swift; sourceTree = "<group>"; };
 		578632151FBB9E0300FA0282 /* ControlProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlProtocol.swift; sourceTree = "<group>"; };
 		5788B2A61FBB38FD00846F33 /* ControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlViewModel.swift; sourceTree = "<group>"; };
 		578EAF5D201786940082264B /* Array+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Additions.swift"; sourceTree = "<group>"; };
@@ -287,8 +283,6 @@
 		C46A7D871FCE23D300DC12AC /* ActionMessageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionMessageData.swift; sourceTree = "<group>"; };
 		C46A7D891FD0BD8900DC12AC /* ContextualActionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextualActionMessage.swift; sourceTree = "<group>"; };
 		C483C17E2017DAD300C28E46 /* ExampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleData.swift; sourceTree = "<group>"; };
-		C489073B1FCC8209008D9521 /* AMBTestPanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBTestPanelViewController.swift; sourceTree = "<group>"; };
-		C489073C1FCC8209008D9521 /* AMBTestPanelViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AMBTestPanelViewController.xib; sourceTree = "<group>"; };
 		C4A774A81FDF22E200B6DF68 /* ChatEventListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEventListener.swift; sourceTree = "<group>"; };
 		C4A774AC1FE0607D00B6DF68 /* ChatServiceDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceDelegate.swift; sourceTree = "<group>"; };
 		C4AF7792200E7B0B0029598A /* ViewDataChangeListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewDataChangeListener.swift; sourceTree = "<group>"; };
@@ -343,14 +337,13 @@
 			path = Controls;
 			sourceTree = "<group>";
 		};
-		57860EA51FD1C51800612E34 /* ChatBubble */ = {
+		57860EA51FD1C51800612E34 /* Chat Bubble */ = {
 			isa = PBXGroup;
 			children = (
 				5796E4471FD0B3E0009D2035 /* CGPath+Bubble.swift */,
-				578632071FBB571D00FA0282 /* BubbleViewController.swift */,
 				572A4E431FCF70070081318D /* BubbleView.swift */,
 			);
-			path = ChatBubble;
+			path = "Chat Bubble";
 			sourceTree = "<group>";
 		};
 		57A94513200E4E2F0073B5A1 /* Chat Message */ = {
@@ -536,15 +529,6 @@
 			path = AMB;
 			sourceTree = "<group>";
 		};
-		BE6FBE441FBFBC210062A0EB /* AMB Test */ = {
-			isa = PBXGroup;
-			children = (
-				C489073B1FCC8209008D9521 /* AMBTestPanelViewController.swift */,
-				C489073C1FCC8209008D9521 /* AMBTestPanelViewController.xib */,
-			);
-			path = "AMB Test";
-			sourceTree = "<group>";
-		};
 		BE782DB31FEB201A00F848F5 /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
@@ -610,11 +594,10 @@
 		BEB6C8591FB92CD700B1D497 /* SnowChat */ = {
 			isa = PBXGroup;
 			children = (
-				BE6FBE441FBFBC210062A0EB /* AMB Test */,
 				BE876FDB1FDF4F64008EEF04 /* Chat Service */,
 				BE29E0CD1FDF06990029D1F0 /* Chat Data Controller */,
 				BE29E0CA1FDEF79B0029D1F0 /* Chat Window */,
-				57860EA51FD1C51800612E34 /* ChatBubble */,
+				57860EA51FD1C51800612E34 /* Chat Bubble */,
 				C4CAFE9C1FBCF018007007F5 /* Chatterbox */,
 				57B7E2B91FBA24A600196BA9 /* Controls */,
 				BE5974C01FC392A300959406 /* Controls Menu */,
@@ -863,7 +846,6 @@
 				572A4E401FCF06320081318D /* PickerTableViewCell.xib in Resources */,
 				57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */,
 				BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */,
-				C489073E1FCC8209008D9521 /* AMBTestPanelViewController.xib in Resources */,
 				57D1DB731FEC83D000082F78 /* mark.png in Resources */,
 				57B7E2C91FBA25A200196BA9 /* SelectableView.xib in Resources */,
 				BE50E2241FB9305C00948FBC /* Cartfile in Resources */,
@@ -1033,7 +1015,6 @@
 				C41EF5DA1FDB490F00707F45 /* TopicFinishedMessage.swift in Sources */,
 				C4CED93C1FD713AA008E3E25 /* StartUserTopicMessage.swift in Sources */,
 				C40565F01FC491DA004BD28C /* ActionMessage.swift in Sources */,
-				C489073D1FCC8209008D9521 /* AMBTestPanelViewController.swift in Sources */,
 				C4F3AF341FD6144800B27B0D /* StartTopicMessage.swift in Sources */,
 				572C6BC1200C33BC00F142E2 /* ControlCache.swift in Sources */,
 				BE782DB81FEB205200F848F5 /* APIManager+ChatSession.swift in Sources */,
@@ -1064,7 +1045,6 @@
 				572A4E441FCF70070081318D /* BubbleView.swift in Sources */,
 				57B7E2C61FBA25A200196BA9 /* SelectableViewCell.swift in Sources */,
 				BE69327F1FFEB46100DD5A2A /* ServerInstance+URL.swift in Sources */,
-				5786320B1FBB571E00FA0282 /* BubbleViewController.swift in Sources */,
 				5796E4481FD0B3E0009D2035 /* CGPath+Bubble.swift in Sources */,
 				5706C5811FE49F78008D70D1 /* ChatMessageViewController.swift in Sources */,
 				57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */,
