@@ -21,11 +21,22 @@ class ChatMessageViewController: UIViewController {
     @IBOutlet private weak var agentImageTopConstraint: NSLayoutConstraint!
     @IBOutlet private weak var bubbleWidthConstraint: NSLayoutConstraint!
     
-    func showBubble(animated: Bool = true) {
-        bubbleWidthConstraint.priority = .lowest
-        bubbleTrailingConstraint.priority = .veryHigh
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
+    var isBubbleHidden: Bool = true {
+        didSet {
+            guard oldValue != isBubbleHidden else { return }
+            if isBubbleHidden {
+                bubbleWidthConstraint.priority = .veryHigh
+                bubbleTrailingConstraint.priority = .lowest
+                UIView.performWithoutAnimation {
+                    view.layoutIfNeeded()
+                }
+            } else {
+                bubbleWidthConstraint.priority = .lowest
+                bubbleTrailingConstraint.priority = .veryHigh
+                UIView.animate(withDuration: 0.3) {
+                    self.view.layoutIfNeeded()
+                }
+            }
         }
     }
     
@@ -40,11 +51,7 @@ class ChatMessageViewController: UIViewController {
         uiControl = control
         updateConstraints(forLocation: location)
         updateBubble(forControl: control, andLocation: location)
-        bubbleWidthConstraint.priority = .veryHigh
-        bubbleTrailingConstraint.priority = .lowest
-        UIView.performWithoutAnimation {
-            view.layoutIfNeeded()
-        }
+        isBubbleHidden = true
         
         let controlViewController = control.viewController
         controlViewController.willMove(toParentViewController: self)
@@ -65,11 +72,13 @@ class ChatMessageViewController: UIViewController {
         if control.model.type != .text {
             controlView.widthAnchor.constraint(lessThanOrEqualToConstant: controlMaxWidth).isActive = true
         }
+        
         controlViewController.didMove(toParentViewController: self)
     }
     
     func prepareForReuse() {
         removeUIControl()
+        isBubbleHidden = true
     }
     
     private func removeUIControl() {

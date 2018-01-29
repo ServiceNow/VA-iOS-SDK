@@ -137,4 +137,16 @@ class BubbleView: UIView, CAAnimationDelegate {
         
         (layer.mask as? CAShapeLayer)?.path = chatBubblePath(forBounds: bounds, leftSide: (arrowDirection == .left))
     }
+    
+    override func layoutSublayers(of layer: CALayer) {
+        super.layoutSublayers(of: layer)
+        
+        guard layer == self.layer else {
+            return
+        }
+        
+        let bubblePath = chatBubblePath(forBounds: bounds, leftSide: (arrowDirection == .left))
+        borderLayer.frame = bounds
+        borderLayer.path = bubblePath
+    }
 }
