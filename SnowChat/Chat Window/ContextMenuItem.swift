@@ -10,12 +10,19 @@ import Foundation
 
 struct ContextMenuItem {
     
+    enum Style {
+        case `default`
+        case cancel
+    }
+    
     let title: String
     let handler: (UIViewController, UIBarButtonItem) -> Void
-    
-    init(withTitle title: String, handler: @escaping(UIViewController, UIBarButtonItem) -> Void) {
+    let style: Style
+
+    init(withTitle title: String, style: ContextMenuItem.Style = .default, handler: @escaping(UIViewController, UIBarButtonItem) -> Void) {
         self.title = title
         self.handler = handler
+        self.style = style
     }
 }
 

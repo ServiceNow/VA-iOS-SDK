@@ -574,7 +574,7 @@ extension ChatDataController: ContextItemProvider {
             self.syncConversation()
         }
         
-        let cancelItem = ContextMenuItem(withTitle: NSLocalizedString("Cancel", comment: "Context Menu Item Title")) { viewController, sender in
+        let cancelItem = ContextMenuItem(withTitle: NSLocalizedString("Cancel", comment: "Context Menu Item Title"), style: .cancel) { viewController, sender in
             // nada
         }
         
@@ -601,7 +601,7 @@ extension ChatDataController: ContextItemProvider {
             // TODO: phone call
         }
         
-        let cancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Support Menu item"), style: .default) { (action) in
+        let cancel = UIAlertAction(title: NSLocalizedString("Cancel", comment: "Support Menu item"), style: .cancel) { (action) in
             // nada
         }
         

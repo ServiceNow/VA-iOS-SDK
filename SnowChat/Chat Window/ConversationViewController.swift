@@ -455,42 +455,21 @@ extension ConversationViewController {
         activityIndicator.color = UIColor.controlTextColor
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(activityIndicator)
-        let horizontalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: 0)
-        view.addConstraint(horizontalConstraint)
         
-        let verticalConstraint = NSLayoutConstraint(item: activityIndicator, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: view, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: 0)
-        view.addConstraint(verticalConstraint)
-    }
-    
-    fileprivate func onActivityIndicatorTimeout(_ onTimeout: @escaping () -> Void) {
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 10) { [weak self] in
-            if let strongSelf = self, strongSelf.showActivityIndicator {
-                onTimeout()
-            }
-        }
+        NSLayoutConstraint.activate([activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                                     activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)])
     }
     
     var showActivityIndicator: Bool {
-        set(show) { if show {
-            activityIndicator.startAnimating()
-            onActivityIndicatorTimeout { [weak self] in
-                self?.showActivityIndicator = false
-                self?.presentErrorAlert()
-            }
-        } else {
-            activityIndicator.stopAnimating()
+        set(show) {
+            if show {
+                activityIndicator.startAnimating()
+            } else {
+                activityIndicator.stopAnimating()
             }
         }
         get {
             return activityIndicator.isAnimating
         }
-    }
-    
-    fileprivate func presentErrorAlert() {
-        let errorAlert = UIAlertController(title: "Error", message: "An error occurred initializing the chat session", preferredStyle: UIAlertControllerStyle.alert)
-        errorAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: { (action) in }))
-        self.present(errorAlert, animated: true, completion: {
-            // TODO: fatal error - notify app and terminate the view controller???
-        })
     }
 }

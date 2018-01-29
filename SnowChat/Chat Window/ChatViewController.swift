@@ -74,7 +74,8 @@ public class ChatViewController: UIViewController {
         
         let contextItems = conversationViewController?.contextMenuItems()
         contextItems?.forEach({ item in
-            alertController.addAction(UIAlertAction(title: item.title, style: .default) { action in
+            let style = (item.style == ContextMenuItem.Style.cancel) ? UIAlertActionStyle.cancel : UIAlertActionStyle.default
+            alertController.addAction(UIAlertAction(title: item.title, style: style) { action in
                 item.handler(self, sender)
             })
         })
