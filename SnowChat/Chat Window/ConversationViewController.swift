@@ -145,7 +145,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     private func updateControl(withModel model: ChatMessageModel, atIndex index: Int) {
         if let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? ConversationViewCell {
             addUIControl(forModel: model, inCell: cell)
-            cell.messageViewController?.isBubbleHidden = false
         }
         
         self.tableView.beginUpdates()
@@ -377,7 +376,7 @@ extension ConversationViewController {
             fatalError("Wrong cell's class")
         }
         
-        conversationCell.messageViewController?.isBubbleHidden = false
+        conversationCell.messageViewController?.resizeBubbleToFitControl(animated: true)
     }
     
     override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {

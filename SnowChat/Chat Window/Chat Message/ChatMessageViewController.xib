@@ -17,9 +17,9 @@
                 <outlet property="agentImageTopConstraint" destination="lSH-w5-aR5" id="Y1S-Lg-Imz"/>
                 <outlet property="agentImageView" destination="TbH-h7-fly" id="8mh-hQ-bMB"/>
                 <outlet property="bubbleLeadingConstraint" destination="BYk-kB-HH3" id="Jv7-KW-Q6y"/>
+                <outlet property="bubbleTopConstraint" destination="rKb-Z1-ZnA" id="fHL-bU-nDR"/>
                 <outlet property="bubbleTrailingConstraint" destination="xMf-vP-2K3" id="gBR-fD-Nt2"/>
                 <outlet property="bubbleView" destination="zQD-cm-Q41" id="xUj-pT-jtt"/>
-                <outlet property="bubbleWidthConstraint" destination="IWh-wy-y9U" id="Lpr-6V-GMz"/>
                 <outlet property="view" destination="D7e-qt-X1x" id="Ftx-HT-igc"/>
             </connections>
         </placeholder>
@@ -29,11 +29,8 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="zQD-cm-Q41" customClass="BubbleView" customModule="SnowChat" customModuleProvider="target">
-                    <rect key="frame" x="65" y="3" width="1" height="163"/>
+                    <rect key="frame" x="65" y="3" width="682" height="163"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    <constraints>
-                        <constraint firstAttribute="width" priority="999" constant="1" id="IWh-wy-y9U"/>
-                    </constraints>
                 </view>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalCompressionResistancePriority="751" image="vagent-icon.png" translatesAutoresizingMaskIntoConstraints="NO" id="TbH-h7-fly">
                     <rect key="frame" x="10" y="119" width="50" height="50"/>
@@ -51,8 +48,8 @@
                 <constraint firstItem="sE2-NG-Z0e" firstAttribute="leading" secondItem="TbH-h7-fly" secondAttribute="leading" constant="-10" id="abd-r6-HuA"/>
                 <constraint firstItem="zQD-cm-Q41" firstAttribute="leading" secondItem="TbH-h7-fly" secondAttribute="trailing" priority="750" constant="5" id="bFc-Gq-72f"/>
                 <constraint firstItem="TbH-h7-fly" firstAttribute="top" relation="greaterThanOrEqual" secondItem="D7e-qt-X1x" secondAttribute="top" priority="999" constant="10" id="lSH-w5-aR5"/>
-                <constraint firstItem="zQD-cm-Q41" firstAttribute="top" secondItem="D7e-qt-X1x" secondAttribute="top" priority="998" constant="3" id="rKb-Z1-ZnA"/>
-                <constraint firstItem="sE2-NG-Z0e" firstAttribute="trailing" secondItem="zQD-cm-Q41" secondAttribute="trailing" priority="1" constant="10" id="xMf-vP-2K3"/>
+                <constraint firstItem="zQD-cm-Q41" firstAttribute="top" secondItem="D7e-qt-X1x" secondAttribute="top" priority="999" constant="3" id="rKb-Z1-ZnA"/>
+                <constraint firstItem="sE2-NG-Z0e" firstAttribute="trailing" secondItem="zQD-cm-Q41" secondAttribute="trailing" priority="750" constant="10" id="xMf-vP-2K3"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <viewLayoutGuide key="safeArea" id="sE2-NG-Z0e"/>

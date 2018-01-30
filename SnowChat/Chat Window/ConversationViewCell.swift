@@ -12,6 +12,8 @@ class ConversationViewCell: UITableViewCell {
     
     var messageViewController: ChatMessageViewController? {
         didSet {
+//            contentView.layer.borderWidth = 1
+//            contentView.layer.borderColor = UIColor.green.cgColor
             messageView = messageViewController?.view
         }
     }

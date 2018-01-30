@@ -19,24 +19,21 @@ class ChatMessageViewController: UIViewController {
     @IBOutlet private weak var bubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var bubbleTrailingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var agentImageTopConstraint: NSLayoutConstraint!
-    @IBOutlet private weak var bubbleWidthConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var bubbleTopConstraint: NSLayoutConstraint!
     
-    var isBubbleHidden: Bool = true {
-        didSet {
-            guard oldValue != isBubbleHidden else { return }
-            if isBubbleHidden {
-                bubbleWidthConstraint.priority = .veryHigh
-                bubbleTrailingConstraint.priority = .lowest
-                UIView.performWithoutAnimation {
-                    view.layoutIfNeeded()
-                }
-            } else {
-                bubbleWidthConstraint.priority = .lowest
-                bubbleTrailingConstraint.priority = .veryHigh
-                UIView.animate(withDuration: 0.3) {
-                    self.view.layoutIfNeeded()
-                }
-            }
+    private weak var initialControlHeight: NSLayoutConstraint?
+    
+    func resizeBubbleToFitControl(animated: Bool) {
+        // prepare control for animation with its initial height
+        initialControlHeight?.isActive = true
+        UIView.performWithoutAnimation {
+            view.layoutIfNeeded()
+        }
+        
+        // ..and now animate control to its regular height
+        initialControlHeight?.isActive = false
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
         }
     }
     
@@ -47,18 +44,20 @@ class ChatMessageViewController: UIViewController {
             return
         }
         
+        // capture initial height of the control so we can use it for animation of the new control
+        let currentControlHeight = uiControl?.viewController.view.frame.height ?? 20
+        let resizeBubbleImmediately = uiControl != nil
+        
         removeUIControl()
         uiControl = control
         updateConstraints(forLocation: location)
         updateBubble(forControl: control, andLocation: location)
-        isBubbleHidden = true
         
         let controlViewController = control.viewController
         controlViewController.willMove(toParentViewController: self)
         addChildViewController(controlViewController)
         let controlView: UIView = controlViewController.view
-
-        controlView.frame = bubbleView.contentView.bounds
+        
         controlView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(controlView)
 
@@ -74,11 +73,20 @@ class ChatMessageViewController: UIViewController {
         }
         
         controlViewController.didMove(toParentViewController: self)
+
+        // This will make sure that cell is resized to a final height of the control which we want
+        view.layoutIfNeeded()
+        
+        initialControlHeight = controlView.heightAnchor.constraint(equalToConstant: currentControlHeight)
+        if resizeBubbleImmediately {
+            resizeBubbleToFitControl(animated: true)
+        }
     }
     
     func prepareForReuse() {
         removeUIControl()
-        isBubbleHidden = true
+        initialControlHeight?.isActive = false
+        initialControlHeight = nil
     }
     
     private func removeUIControl() {
