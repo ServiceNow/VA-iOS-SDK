@@ -7,6 +7,7 @@
 //
 
 struct OutputImageControlMessage: Codable, CBControlData {
+    
     var uniqueId: String {
         return id
     }
@@ -18,7 +19,7 @@ struct OutputImageControlMessage: Codable, CBControlData {
     }
     
     var id: String = CBData.uuidString()
-    var controlType: CBControlType = .text
+    var controlType: CBControlType = .outputImage
     
     var messageId: String {
         return data.messageId

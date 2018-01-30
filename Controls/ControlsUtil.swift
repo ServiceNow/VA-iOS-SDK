@@ -6,6 +6,8 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
+import AlamofireImage
+
 class ControlsUtil {
     static func controlForViewModel(_ model: ControlViewModel) -> ControlProtocol {
         switch model.type {
@@ -14,7 +16,9 @@ class ControlsUtil {
         case .text:
             return TextControl(model: model)
         case .outputImage:
-            return OutputImageControl(model: model)
+            let outputImageControl = OutputImageControl(model: model)
+            outputImageControl.imageDownloader = ImageDownloader()
+            return outputImageControl
         case .boolean:
             return BooleanControl(model: model)
         case .singleSelect:

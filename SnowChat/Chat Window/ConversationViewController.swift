@@ -424,12 +424,17 @@ extension ConversationViewController: ChatEventListener {
     }
 }
 
-extension ConversationViewController: ControlDelegate {
+extension ConversationViewController: ControlDelegate, OutputImageControlDelegate {
     
     // MARK: - ControlDelegate
     
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
         // TODO: how to determine if it was skipped?
         dataController.updateControlData(model, isSkipped: false)
+    }
+    
+    func controlDidFinishImageDownload(_ control: OutputImageControl) {
+        tableView.beginUpdates()
+        tableView.endUpdates()
     }
 }

@@ -44,7 +44,7 @@ class ChatMessageViewController: UIViewController {
         
         // all controls but text will be limited to 250 points of width.
         // For now doing it across all class sizes. Might get adjusted when we get specs.
-        if control.model.type != .text {
+        if control.model.type != .text, control.model.type != .outputImage {
             controlView.widthAnchor.constraint(lessThanOrEqualToConstant: controlMaxWidth).isActive = true
         }
         

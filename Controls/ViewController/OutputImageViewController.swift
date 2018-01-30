@@ -23,24 +23,18 @@ class OutputImageViewController: UIViewController {
             activityIndicatorView?.stopAnimating()
             activityIndicatorView?.removeFromSuperview()
             updateImageConstraints()
-            view.layoutIfNeeded()
+            view.invalidateIntrinsicContentSize()
         }
+    }
+    
+    override func loadView() {
+        view = outputImageView
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupOutputImageView()
         setupActivityIndicatorView()
-    }
-    
-    private func setupOutputImageView() {
-        outputImageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(outputImageView)
-        NSLayoutConstraint.activate([outputImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                     outputImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     outputImageView.topAnchor.constraint(equalTo: view.topAnchor),
-                                     outputImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
-        updateImageConstraints()
+        view.setContentHuggingPriority(.veryHigh, for: .horizontal)
     }
     
     private func setupActivityIndicatorView() {
@@ -63,7 +57,8 @@ class OutputImageViewController: UIViewController {
     private func updateImageConstraints() {
         imageViewWidthToHeightConstraint?.isActive = false
         imageViewSideConstraint?.isActive = false
-        guard let image = image else {
+
+        guard let image = image, image.size.height > maxImageSize.height || image.size.width > maxImageSize.width else {
             return
         }
         
@@ -77,7 +72,6 @@ class OutputImageViewController: UIViewController {
         // set width/height proportion
         let ratio = image.size.width / image.size.height
         imageViewWidthToHeightConstraint = outputImageView.heightAnchor.constraint(equalTo: outputImageView.widthAnchor, multiplier: ratio)
-//        imageViewWidthToHeightConstraint?.priority = .veryHigh
         imageViewWidthToHeightConstraint?.isActive = true
         imageViewSideConstraint?.isActive = true
     }
