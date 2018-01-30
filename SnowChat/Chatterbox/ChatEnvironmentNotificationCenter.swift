@@ -21,11 +21,17 @@ protocol ChatEnvironmentNotificationListener: AnyObject {
     func instanceUnreachable(_ notification: ChatEnvironmentNotificationCenter)
 }
 
-class ChatEnvironmentNotificationCenter {
+class ChatEnvironmentNotificationCenter: Equatable {
+    
+    static func == (lhs: ChatEnvironmentNotificationCenter, rhs: ChatEnvironmentNotificationCenter) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
     typealias ChatNotificationSubscription = String
-
+    
     static var `default`: ChatEnvironmentNotificationCenter = ChatEnvironmentNotificationCenter()
     
+    internal var id = CBData.uuidString()
     internal var subscriptions = [(listener: ChatEnvironmentNotificationListener, id: String)]()
     private let reachabilityManager = NetworkReachabilityManager()
     private var instanceReachabilityManager: NetworkReachabilityManager?

@@ -61,6 +61,7 @@ class Chatterbox {
     
     private let chatId = CBData.uuidString()
     private var chatSubscription: NOWAMBSubscription?
+    internal var environmentSubscription: ChatEnvironmentNotificationCenter.ChatNotificationSubscription?
     
     private let instance: ServerInstance
     
@@ -71,7 +72,7 @@ class Chatterbox {
     private var messageHandler: ((String) -> Void)?
     private var handshakeCompletedHandler: ((ContextualActionMessage?) -> Void)?
     
-    private let logger = Logger.logger(for: "Chatterbox")
+    internal let logger = Logger.logger(for: "Chatterbox")
 
     // MARK: - Client Callable methods
     
@@ -79,6 +80,7 @@ class Chatterbox {
         self.instance = instance
         chatDataListener = dataListener
         chatEventListener = eventListener
+        registerForEnvironmentNotifications()
     }
     
     func initializeSession(forUser: CBUser, vendor: CBVendor,

@@ -60,4 +60,19 @@ class APIManager: NSObject {
         }
     }
     
+    func applicationWillEnterBackground() {
+        ambClient.applicationWillResignActiveNotification()
+    }
+    
+    func applicationDidEnterForeground() {
+        ambClient.applicationDidBecomeActiveNotification()
+    }
+    
+    func networkUnreachable() {
+        ambClient.networkUnreachable()
+    }
+    
+    func networkReachable() {
+        ambClient.networkReachable()
+    }
 }
