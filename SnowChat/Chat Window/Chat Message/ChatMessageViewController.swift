@@ -33,7 +33,7 @@ class ChatMessageViewController: UIViewController {
         controlViewController.willMove(toParentViewController: self)
         addChildViewController(controlViewController)
         let controlView: UIView = controlViewController.view
-        
+
         controlView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(controlView)
         
@@ -50,6 +50,10 @@ class ChatMessageViewController: UIViewController {
         
         updateConstraints(forLocation: location)
         updateBubble(forControl: control, andLocation: location)
+        
+        if control.model.type == .outputImage {
+            bubbleView.contentViewInsets = UIEdgeInsets.zero
+        }
         
         controlViewController.didMove(toParentViewController: self)
         view.layoutIfNeeded()
