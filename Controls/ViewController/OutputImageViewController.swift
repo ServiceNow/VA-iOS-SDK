@@ -23,7 +23,6 @@ class OutputImageViewController: UIViewController {
             activityIndicatorView?.stopAnimating()
             activityIndicatorView?.removeFromSuperview()
             updateImageConstraints()
-            view.invalidateIntrinsicContentSize()
         }
     }
     
