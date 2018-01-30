@@ -152,6 +152,8 @@
 		C4A774AD1FE0607D00B6DF68 /* ChatServiceDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A774AC1FE0607D00B6DF68 /* ChatServiceDelegate.swift */; };
 		C4AF7793200E7B0B0029598A /* ViewDataChangeListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AF7792200E7B0B0029598A /* ViewDataChangeListener.swift */; };
 		C4B6A9521FE22208007DBEED /* ChatDataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */; };
+		C4B8D323201FE8F300871B36 /* ChatEnvironmentNotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B8D322201FE8F300871B36 /* ChatEnvironmentNotificationCenter.swift */; };
+		C4B8D325201FF3C500871B36 /* ChatNotificationCenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B8D324201FF3C500871B36 /* ChatNotificationCenterTests.swift */; };
 		C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA21FBCF2F8007007F5 /* CBData.swift */; };
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
 		C4CAFEA81FBD0912007007F5 /* CBDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */; };
@@ -287,6 +289,8 @@
 		C4A774AC1FE0607D00B6DF68 /* ChatServiceDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceDelegate.swift; sourceTree = "<group>"; };
 		C4AF7792200E7B0B0029598A /* ViewDataChangeListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewDataChangeListener.swift; sourceTree = "<group>"; };
 		C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataStoreTests.swift; sourceTree = "<group>"; };
+		C4B8D322201FE8F300871B36 /* ChatEnvironmentNotificationCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEnvironmentNotificationCenter.swift; sourceTree = "<group>"; };
+		C4B8D324201FF3C500871B36 /* ChatNotificationCenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatNotificationCenterTests.swift; sourceTree = "<group>"; };
 		C4CAFEA21FBCF2F8007007F5 /* CBData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBData.swift; sourceTree = "<group>"; };
 		C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataTests.swift; sourceTree = "<group>"; };
 		C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataFactory.swift; sourceTree = "<group>"; };
@@ -682,6 +686,7 @@
 				C4F3AF2E1FD235D100B27B0D /* Chatterbox.swift */,
 				C4CAFE9F1FBCF057007007F5 /* Data */,
 				C4CAFE9E1FBCF047007007F5 /* State */,
+				C4B8D322201FE8F300871B36 /* ChatEnvironmentNotificationCenter.swift */,
 			);
 			path = Chatterbox;
 			sourceTree = "<group>";
@@ -716,6 +721,7 @@
 				C44FD9CA200010900079E107 /* ChatDataControllerTests.swift */,
 				C4FFCD4B20091B8D00B835C6 /* APIManagerChatSessionTests.swift */,
 				C483C17E2017DAD300C28E46 /* ExampleData.swift */,
+				C4B8D324201FF3C500871B36 /* ChatNotificationCenterTests.swift */,
 			);
 			path = Chatterbox;
 			sourceTree = "<group>";
@@ -986,6 +992,7 @@
 				BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */,
 				BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */,
 				BE6932781FFE9F3F00DD5A2A /* DebugSettings.swift in Sources */,
+				C4B8D323201FE8F300871B36 /* ChatEnvironmentNotificationCenter.swift in Sources */,
 				57D1DB6B1FEAC94A00082F78 /* ConversationViewCell.swift in Sources */,
 				BE29E0CF1FDF06C20029D1F0 /* ChatDataController.swift in Sources */,
 				BE6FBE401FBFB3060062A0EB /* AMBHTTPClient.swift in Sources */,
@@ -1072,6 +1079,7 @@
 				575566A7200F963C000953F7 /* ControlCacheTests.swift in Sources */,
 				C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */,
 				5778CFA01FE07764004F77D8 /* SingleSelectControlTests.swift in Sources */,
+				C4B8D325201FF3C500871B36 /* ChatNotificationCenterTests.swift in Sources */,
 				5778CF981FDEE767004F77D8 /* BooleanControlTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
