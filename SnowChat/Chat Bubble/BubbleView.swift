@@ -112,6 +112,7 @@ class BubbleView: UIView, CAAnimationDelegate {
     func setupShapeLayer() {
         layer.mask = CAShapeLayer()
         layer.mask?.delegate = self
+//        self.borderColor = UIColor.red
 //        layer.backgroundColor = UIColor.red.cgColor
     }
     
@@ -132,8 +133,11 @@ class BubbleView: UIView, CAAnimationDelegate {
             borderLayer.removeAllAnimations()
             
             let animation = CABasicAnimation(keyPath: "path")
+//            animation.damping = 0.8
+//            animation.initialVelocity = 0.4
+            animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
             animation.delegate = self
-            animation.duration = 0.3
+//            animation.duration = 0.3
             animation.fromValue = fromPath
             animation.toValue = newPath
             (layer.mask as? CAShapeLayer)?.add(animation, forKey: "pathAnim")

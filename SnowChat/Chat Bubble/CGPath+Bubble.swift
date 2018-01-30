@@ -10,13 +10,18 @@ import Foundation
 
 // TODO: move to UIBezierPath
 func chatBubblePath(forBounds bounds: CGRect, radius: CGFloat = 7, tip: CGFloat = 10, leftSide left: Bool = true) -> CGPath {
+    var localRadius = radius
+    if bounds.height < 15 {
+        localRadius = 0
+    }
+    
     let path = CGMutablePath()
     path.move(to: CGPoint(x: bounds.minX, y: bounds.maxY))
     path.addArc(center: CGPoint(x: bounds.minX, y: bounds.maxY - tip), radius: tip, startAngle: 0.5 * (.pi), endAngle: 0, clockwise: true)
     
-    path.addArc(center: CGPoint(x: bounds.minX + radius + tip, y: bounds.minY + radius), radius: radius, startAngle: .pi, endAngle: 3.0 * (.pi / 2.0), clockwise: false)
-    path.addArc(center: CGPoint(x: bounds.maxX - radius, y: bounds.minY + radius), radius: radius, startAngle: 3.0 * (.pi / 2.0), endAngle: 0, clockwise: false)
-    path.addArc(center: CGPoint(x: bounds.maxX - radius, y: bounds.maxY - radius), radius: radius, startAngle: 0, endAngle: .pi / 2, clockwise: false)
+    path.addArc(center: CGPoint(x: bounds.minX + localRadius + tip, y: bounds.minY + localRadius), radius: localRadius, startAngle: .pi, endAngle: 3.0 * (.pi / 2.0), clockwise: false)
+    path.addArc(center: CGPoint(x: bounds.maxX - localRadius, y: bounds.minY + localRadius), radius: localRadius, startAngle: 3.0 * (.pi / 2.0), endAngle: 0, clockwise: false)
+    path.addArc(center: CGPoint(x: bounds.maxX - localRadius, y: bounds.maxY - localRadius), radius: localRadius, startAngle: 0, endAngle: .pi / 2, clockwise: false)
     path.addLine(to: CGPoint(x: bounds.minX, y: bounds.maxY))
     path.closeSubpath()
     

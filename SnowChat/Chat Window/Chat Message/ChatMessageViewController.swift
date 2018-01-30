@@ -19,9 +19,9 @@ class ChatMessageViewController: UIViewController {
     @IBOutlet private weak var bubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var bubbleTrailingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var agentImageTopConstraint: NSLayoutConstraint!
-    @IBOutlet private weak var bubbleTopConstraint: NSLayoutConstraint!
     
     private weak var initialControlHeight: NSLayoutConstraint?
+    private weak var topControlConstraint: NSLayoutConstraint!
     
     func resizeBubbleToFitControl(animated: Bool) {
         // prepare control for animation with its initial height
@@ -32,6 +32,15 @@ class ChatMessageViewController: UIViewController {
         
         // ..and now animate control to its regular height
         initialControlHeight?.isActive = false
+//        UIView.animate(withDuration: 10,
+//                       delay: 0,
+//                       usingSpringWithDamping: 0.9,
+//                       initialSpringVelocity: 0,
+//                       options: .curveEaseOut,
+//                       animations: {
+//                        self.view.layoutIfNeeded()
+//        },
+//                       completion: nil)
         UIView.animate(withDuration: 0.3) {
             self.view.layoutIfNeeded()
         }
@@ -60,10 +69,12 @@ class ChatMessageViewController: UIViewController {
         
         controlView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(controlView)
-
+        topControlConstraint = controlView.topAnchor.constraint(equalTo: bubbleView.contentView.topAnchor)
+        topControlConstraint.priority = .veryHigh
+        
         NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: bubbleView.contentView.leadingAnchor),
                                      controlView.trailingAnchor.constraint(equalTo: bubbleView.contentView.trailingAnchor),
-                                     controlView.topAnchor.constraint(equalTo: bubbleView.contentView.topAnchor),
+                                     topControlConstraint,
                                      controlView.bottomAnchor.constraint(equalTo: bubbleView.contentView.bottomAnchor)])
 
         // all controls but text will be limited to 250 points of width.

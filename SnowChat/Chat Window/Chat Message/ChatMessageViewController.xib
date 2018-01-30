@@ -17,7 +17,6 @@
                 <outlet property="agentImageTopConstraint" destination="lSH-w5-aR5" id="Y1S-Lg-Imz"/>
                 <outlet property="agentImageView" destination="TbH-h7-fly" id="8mh-hQ-bMB"/>
                 <outlet property="bubbleLeadingConstraint" destination="BYk-kB-HH3" id="Jv7-KW-Q6y"/>
-                <outlet property="bubbleTopConstraint" destination="rKb-Z1-ZnA" id="fHL-bU-nDR"/>
                 <outlet property="bubbleTrailingConstraint" destination="xMf-vP-2K3" id="gBR-fD-Nt2"/>
                 <outlet property="bubbleView" destination="zQD-cm-Q41" id="xUj-pT-jtt"/>
                 <outlet property="view" destination="D7e-qt-X1x" id="Ftx-HT-igc"/>
