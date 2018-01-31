@@ -301,6 +301,7 @@ class Chatterbox {
         initUserEvent.data.actionMessage.loginStage = MessageConstants.loginUserSession.rawValue
         initUserEvent.data.actionMessage.contextHandshake.vendorId = vendor?.vendorId
         initUserEvent.data.actionMessage.contextHandshake.deviceId = deviceIdentifier()
+        initUserEvent.data.actionMessage.consumerAcctId = session?.user.consumerAccountId
         
         if let request = initUserEvent.data.actionMessage.contextHandshake.serverContextRequest {
             initUserEvent.data.actionMessage.contextHandshake.serverContextResponse = serverContextResponse(fromRequest: request)
@@ -598,10 +599,6 @@ extension Chatterbox {
     }
     
     internal func refreshConversations(completionHandler: @escaping (Error?) -> Void) {
-        
-        // HACK - work around consumerAccountId issues for testing...
-//        let correctConsumerAccountId = session?.user.consumerAccountId
-//        session?.user.consumerAccountId = "5b050e0973730300d63a566a4cf6a703"
         
         if let consumerId = session?.user.consumerAccountId {
             logger.logDebug("--> Loading conversations for \(consumerId)")
