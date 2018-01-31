@@ -34,10 +34,10 @@ class Logger {
     }
     
     enum LogLevel {
-        case Info
-        case Debug
-        case Error
-        case Fatal
+        case info
+        case debug
+        case error
+        case fatal
     }
     
     var logLevel: LogLevel
@@ -51,7 +51,7 @@ class Logger {
         let enabled: Bool = false
     #endif
     
-    init(forCategory: String, level: LogLevel = .Info) {
+    init(forCategory: String, level: LogLevel = .info) {
         category = forCategory
         logLevel = level
         osLogger = OSLog(subsystem: domain, category: forCategory)
@@ -61,13 +61,13 @@ class Logger {
         if enabled && shouldLog(level: level) {
             let type: OSLogType
             switch level {
-            case .Debug:
+            case .debug:
                 type = .debug
-            case .Info:
+            case .info:
                 type = .info
-            case .Error:
+            case .error:
                 type = .error
-            case .Fatal:
+            case .fatal:
                 type = .fault
             }
             let formatString: StaticString = "%@"
@@ -76,31 +76,31 @@ class Logger {
     }
 
     func logInfo(_ message: String) {
-        log(message, level: .Info)
+        log(message, level: .info)
     }
     
     func logDebug(_ message: String) {
-        log(message, level: .Debug)
+        log(message, level: .debug)
     }
     
     func logError(_ message: String) {
-        log(message, level: .Error)
+        log(message, level: .error)
     }
     
     func logFatal(_ message: String) {
-        log(message, level: .Fatal)
+        log(message, level: .fatal)
     }
     
     private func shouldLog(level: LogLevel) -> Bool {
         switch level {
-        case .Fatal:
+        case .fatal:
             return true
-        case .Error:
-            return logLevel == .Info || logLevel == .Debug || logLevel == .Error
-        case .Debug:
-            return logLevel == .Info || logLevel == .Debug
-        case .Info:
-            return logLevel == .Info
+        case .error:
+            return logLevel == .info || logLevel == .debug || logLevel == .error
+        case .debug:
+            return logLevel == .info || logLevel == .debug
+        case .info:
+            return logLevel == .info
         }
     }
     

@@ -152,10 +152,8 @@ class Chatterbox {
                     strongSelf.logger.logInfo("Skipping System Topic conversation in fetchOlderMessages")
                     return
                 }
-                guard let conversationId = conversation.conversationId else {
-                    strongSelf.logger.logError("No conversation ID in fetchOlderMessages!")
-                    return
-                }
+                
+                let conversationId = conversation.conversationId
                 
                 _ = strongSelf.chatStore.findOrCreateConversation(conversationId)
                 
@@ -639,10 +637,8 @@ extension Chatterbox {
                         self.logger.logInfo("Skipping conversation from system topic in refreshConversations")
                         return
                     }
-                    guard let conversationId = conversation.conversationId else {
-                        self.logger.logError("No conversation ID for conversation in refreshConversations")
-                        return
-                    }
+                    
+                    let conversationId = conversation.conversationId
                     self.logger.logDebug("--> Conversation \(conversationId) refreshed: \(conversation)")
                     
                     self.chatDataListener?.chatterbox(self, willLoadConversation: conversationId, forChat: self.chatId)
@@ -671,10 +667,7 @@ extension Chatterbox {
     internal func storeConversationAndPublish(_ conversation: Conversation) {
         chatStore.storeConversation(conversation)
         
-        guard let conversationId = conversation.conversationId else {
-            logger.logError("No conversation ID for the conversation!")
-            return
-        }
+        let conversationId = conversation.conversationId
         
         chatDataListener?.chatterbox(self, willLoadConversation: conversationId, forChat: chatId)
 
