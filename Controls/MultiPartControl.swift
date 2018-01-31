@@ -17,13 +17,19 @@ class MultiPartControlViewModel: ControlViewModel {
 }
 
 class MultiPartControl: ControlProtocol {
-    required init(model: ControlViewModel) {
-        
-    }
     
     var model: ControlViewModel
     
     var viewController: UIViewController
     
-    var delegate: ControlDelegate?
+    weak var delegate: ControlDelegate?
+    
+    required init(model: ControlViewModel) {
+        guard let multiPartModel = model as? MultiPartControlViewModel else {
+            fatalError("Tried to assign wrong model type")
+        }
+        
+        self.model = multiPartModel
+        self.viewController = UIViewController()
+    }
 }

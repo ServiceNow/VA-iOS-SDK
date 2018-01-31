@@ -362,6 +362,7 @@ extension ConversationViewController {
     }
     
     private func addUIControl(forModel model: ChatMessageModel, inCell cell: ConversationViewCell) {
+        cacheUIControl(for: cell)
         let uiControl = uiControlCache.control(forModel: model.controlModel)
         cell.messageViewController?.addUIControl(uiControl, at: model.location)
         uiControl.delegate = self
@@ -385,17 +386,25 @@ extension ConversationViewController {
         prepareChatMessageViewControllerForReuse(for: cell)
     }
     
-    private func prepareChatMessageViewControllerForReuse(for cell: UITableViewCell) {
-        guard let conversationCell = cell as? ConversationViewCell else {
-            fatalError("Wrong cell's class")
-        }
-        
+    private func cacheUIControl(for conversationCell: ConversationViewCell) {
         guard let messageViewController = conversationCell.messageViewController else {
             return
         }
         
         if let controlModel = messageViewController.uiControl?.model {
             uiControlCache.cacheControl(forModel: controlModel)
+        }
+    }
+    
+    private func prepareChatMessageViewControllerForReuse(for cell: UITableViewCell) {
+        guard let conversationCell = cell as? ConversationViewCell else {
+            fatalError("Wrong cell's class")
+        }
+        
+        cacheUIControl(for: conversationCell)
+        
+        guard let messageViewController = conversationCell.messageViewController else {
+            return
         }
         
         messageViewControllerCache.cacheViewController(messageViewController)

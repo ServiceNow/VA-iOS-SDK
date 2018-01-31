@@ -36,6 +36,8 @@ enum ControlType {
             return "Single Select"
         case .typingIndicator:
             return "Typing Indicator"
+        case .multiPart:
+            return "MultiPart"
         }
     }
 }
