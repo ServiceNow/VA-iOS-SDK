@@ -14,6 +14,7 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
     @IBOutlet private weak var chatWindowCell: UITableViewCell!
     @IBOutlet private weak var instanceSettingsCell: UITableViewCell!
     
+    var instance = ServerInstance(instanceURL: DebugSettings.shared.instanceURL)
     private var chatService: ChatService?
     
     // MARK: - Initialization
@@ -28,8 +29,18 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-        
         title = "Debug 🐞"
+
+        chatWindowCell?.enable(on: false)
+        chatService = ChatService(instance: instance, delegate: self)
+        chatService?.establishUserSession({ error in
+            if let error = error {
+                self.presentError(error)
+                return
+            } else {
+                self.chatWindowCell?.enable(on: true)
+            }
+        })
     }
     
     // MARK: - UITableViewDelegate
@@ -59,18 +70,6 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
     
     // MARK: - Navigation
     
-    private func pushChatController() {
-        let instance = ServerInstance(instanceURL: DebugSettings.shared.instanceURL)
-        chatService = ChatService(instance: instance, delegate: self)
-        
-        Logger.logger(for: "AMBClient").logLevel = .Error
-        Logger.logger(for: "Chatterbox").logLevel = .Debug
-        
-        if let controller = chatService?.chatViewController() {
-            navigationController?.pushViewController(controller, animated: true)
-        }
-    }
-    
     private func pushControlsViewController() {
         let controller = ControlsViewController(nibName: nil, bundle: Bundle(for: ControlsViewController.self))
         navigationController?.pushViewController(controller, animated: true)
@@ -81,4 +80,88 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
         navigationController?.pushViewController(controller, animated: true)
     }
     
+    private func pushChatController() {
+        Logger.logger(for: "AMBClient").logLevel = .Error
+        Logger.logger(for: "Chatterbox").logLevel = .Debug
+        
+        guard let chatService = chatService else { return }
+        
+        // if instance info has changed, or we have not yet initialize chatService, then establish
+        // the user session and show the view controller when done
+        // otherwise just present the view controller and save a lot of time
+        
+        if !chatService.initialized || updateInstanceIfChanged() {
+            let activity = activityIndicator()
+            activity.startAnimating()
+            
+            chatService.establishUserSession({ error in
+                activity.stopAnimating()
+                
+                if let error = error {
+                    self.presentError(error)
+                    return
+                }
+
+                self.presentChatViewController()
+            })
+        } else {
+            presentChatViewController()
+        }
+    }
+    
+    private func activityIndicator() -> UIActivityIndicatorView {
+        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
+        activityIndicator.color = UIColor.red
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(activityIndicator)
+        NSLayoutConstraint.activate([activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                                     activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)])
+        return activityIndicator
+    }
+    
+    private func updateInstanceIfChanged() -> Bool {
+        if instance.instanceURL != DebugSettings.shared.instanceURL {
+            instance = ServerInstance(instanceURL: DebugSettings.shared.instanceURL)
+            chatService = ChatService(instance: instance, delegate: self)
+            return true
+        }
+        return false
+    }
+    
+    fileprivate func presentChatViewController() {
+        if let controller = chatService?.chatViewController() {
+            self.navigationController?.pushViewController(controller, animated: true)
+        }
+    }
+    
+    private func presentError(_ error: ChatServiceError) {
+        var message: String = error.localizedDescription
+        switch error {
+        case .noSession(let chatError):
+            if  let apiError = chatError as? APIManager.APIManagerError {
+                switch apiError {
+                case .loginError(message: let errorMessage):
+                    message = errorMessage
+                }
+            }
+        default:
+            break
+        }
+        let alert = UIAlertController()
+        alert.title = "\(message)"
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: { (action) in
+            self.tableView.reloadData()
+        }))
+        present(alert, animated: true) {}
+    }
+}
+
+extension UITableViewCell {
+    func enable(on: Bool) {
+        self.isUserInteractionEnabled = on
+        for view in contentView.subviews {
+            view.isUserInteractionEnabled = on
+            view.alpha = on ? 1 : 0.5
+        }
+    }
 }

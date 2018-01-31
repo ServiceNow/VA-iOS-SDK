@@ -62,6 +62,16 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         
         setupActivityIndicator()
         setupTableView()
+        
+        loadHistory()
+    }
+    
+    internal func loadHistory() {
+        dataController.loadHistory { (error) in
+            if let error = error {
+                Logger.default.logError("Error loading history! \(error)")
+            }
+        }
     }
     
     // MARK: - ContentInset fix
@@ -185,7 +195,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         showActivityIndicator = true
     }
     
-
     func controllerDidLoadContent(_ dataController: ChatDataController) {
         updateTableView()
         canFetchOlderMessages = true
@@ -406,6 +415,11 @@ extension ConversationViewController {
 extension ConversationViewController: ChatEventListener {
     
     // MARK: - ChatEventListener
+    
+    func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
+        // if we were shown before the session was established then we did not load history yet, so do it now
+        loadHistory()
+    }
     
     func chatterbox(_ chatterbox: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
         guard self.chatterbox.id == chatterbox.id else {

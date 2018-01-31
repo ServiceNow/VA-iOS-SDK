@@ -76,6 +76,17 @@ class ChatDataController {
         updateChatterbox(data)
     }
     
+    func loadHistory(_ completion: @escaping (Error?) -> Void) {
+        Logger.default.logDebug("Fetching history...")
+        
+        chatterbox.loadDataFromPersistence { (error) in
+            if let error = error {
+                Logger.default.logError("Error loading history: \(error)")
+            }
+            completion(error)
+        }
+    }
+    
     func fetchOlderMessages(_ completion: @escaping (Int) -> Void) {
         Logger.default.logDebug("Fetching older messages...")
         
