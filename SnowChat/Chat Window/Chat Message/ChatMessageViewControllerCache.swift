@@ -28,6 +28,7 @@ class ChatMessageViewControllerCache {
     }
     
     func cacheViewController(_ viewController: ChatMessageViewController) {
+        viewController.didMove(toParentViewController: nil)
         viewController.removeFromParentViewController()
         viewController.prepareForReuse()
         viewControllersToReuse.insert(viewController)

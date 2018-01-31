@@ -57,6 +57,8 @@
 		572C6BC1200C33BC00F142E2 /* ControlCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C6BC0200C33BC00F142E2 /* ControlCache.swift */; };
 		572FAC181FC47A9C00B0B956 /* MultiSelectControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */; };
 		572FAC1A1FC47B5600B0B956 /* MultiSelectControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC191FC47B5600B0B956 /* MultiSelectControlViewModel.swift */; };
+		573F78F7202275000008391D /* MultiPartControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573F78F6202275000008391D /* MultiPartControl.swift */; };
+		5740F431202269E90060B349 /* MultiPartControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5740F430202269E90060B349 /* MultiPartControlMessage.swift */; };
 		57532BAB1FD777AC001D674C /* PickerControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57532BAA1FD777AC001D674C /* PickerControl.swift */; };
 		57532BAD1FD777FA001D674C /* TextControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57532BAC1FD777FA001D674C /* TextControl.swift */; };
 		575566A7200F963C000953F7 /* ControlCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575566A6200F963C000953F7 /* ControlCacheTests.swift */; };
@@ -191,6 +193,8 @@
 		572C6BC0200C33BC00F142E2 /* ControlCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlCache.swift; sourceTree = "<group>"; };
 		572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectControl.swift; sourceTree = "<group>"; };
 		572FAC191FC47B5600B0B956 /* MultiSelectControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectControlViewModel.swift; sourceTree = "<group>"; };
+		573F78F6202275000008391D /* MultiPartControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPartControl.swift; sourceTree = "<group>"; };
+		5740F430202269E90060B349 /* MultiPartControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPartControlMessage.swift; sourceTree = "<group>"; };
 		57532BAA1FD777AC001D674C /* PickerControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControl.swift; sourceTree = "<group>"; };
 		57532BAC1FD777FA001D674C /* TextControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControl.swift; sourceTree = "<group>"; };
 		575566A6200F963C000953F7 /* ControlCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlCacheTests.swift; sourceTree = "<group>"; };
@@ -369,6 +373,7 @@
 				57B7E2BB1FBA25A200196BA9 /* BooleanControl.swift */,
 				5778CF9B1FE06F08004F77D8 /* SingleSelectControl.swift */,
 				572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */,
+				573F78F6202275000008391D /* MultiPartControl.swift */,
 				5704EA331FEAAE4B001020E6 /* TypingIndicatorControl.swift */,
 				57B7E2CE1FBA6B1300196BA9 /* Model */,
 				57B7E2BA1FBA25A200196BA9 /* ViewController */,
@@ -647,6 +652,7 @@
 				C4F3AF371FD6293F00B27B0D /* UserTopicPickerMessage.swift */,
 				C40565F71FC4F4D3004BD28C /* BooleanControlMessage.swift */,
 				C41EF5D31FDB284600707F45 /* InputControlMessage.swift */,
+				5740F430202269E90060B349 /* MultiPartControlMessage.swift */,
 				C41EF5D51FDB327800707F45 /* PickerControlMessage.swift */,
 				C41EF5DB1FDB4CA400707F45 /* OutputTextControlMessage.swift */,
 				5771D2EC2011174000FF2483 /* MultiSelectControlMessage.swift */,
@@ -983,6 +989,7 @@
 				C4F3AF2F1FD235D100B27B0D /* Chatterbox.swift in Sources */,
 				57532BAB1FD777AC001D674C /* PickerControl.swift in Sources */,
 				578EAF5E201786940082264B /* Array+Additions.swift in Sources */,
+				573F78F7202275000008391D /* MultiPartControl.swift in Sources */,
 				BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */,
 				BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */,
 				BE6932781FFE9F3F00DD5A2A /* DebugSettings.swift in Sources */,
@@ -1024,6 +1031,7 @@
 				C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */,
 				C4AF7793200E7B0B0029598A /* ViewDataChangeListener.swift in Sources */,
 				C4CED93E1FD72544008E3E25 /* StartedUserTopicMessage.swift in Sources */,
+				5740F431202269E90060B349 /* MultiPartControlMessage.swift in Sources */,
 				C41EF5D61FDB327800707F45 /* PickerControlMessage.swift in Sources */,
 				C40565F81FC4F4D3004BD28C /* BooleanControlMessage.swift in Sources */,
 				C40565CD1FBE292B004BD28C /* ChatDataStore.swift in Sources */,

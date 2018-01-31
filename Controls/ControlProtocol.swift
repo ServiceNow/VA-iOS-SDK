@@ -20,6 +20,8 @@ enum ControlType {
     
     case typingIndicator
     
+    case multiPart
+    
     func description() -> String {
         switch self {
         case .multiSelect:

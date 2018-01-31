@@ -60,6 +60,7 @@ class ChatMessageViewController: UIViewController {
     }
     
     private func removeUIControl() {
+        uiControl?.viewController.didMove(toParentViewController: nil)
         uiControl?.viewController.removeFromParentViewController()
         uiControl?.viewController.view.removeFromSuperview()
         uiControl = nil
