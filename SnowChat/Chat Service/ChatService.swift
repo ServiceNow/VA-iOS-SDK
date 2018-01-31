@@ -50,10 +50,7 @@ public class ChatService {
             establishUserSession({ (error) in
                 Logger.default.logInfo("EstablishUserSession completed: \(error == nil ? "no error" : error.debugDescription)")
             })
-        } else {
-            
-        }
-        
+        } 
         return viewController
     }
 

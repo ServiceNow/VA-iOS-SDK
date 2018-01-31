@@ -16,6 +16,7 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
     
     var instance = ServerInstance(instanceURL: DebugSettings.shared.instanceURL)
     private var chatService: ChatService?
+    private var lastCredentials: ChatUserCredentials?
     
     // MARK: - Initialization
     
@@ -31,14 +32,14 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
         super.viewDidLoad()
         title = "Debug 🐞"
 
-        chatWindowCell?.enable(on: false)
+        chatWindowCell?.enable(false)
         chatService = ChatService(instance: instance, delegate: self)
         chatService?.establishUserSession({ error in
             if let error = error {
                 self.presentError(error)
                 return
             } else {
-                self.chatWindowCell?.enable(on: true)
+                self.chatWindowCell?.enable(true)
             }
         })
     }
@@ -63,9 +64,11 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
     // MARK: - ChatServiceDelegate
     
     func userCredentials() -> ChatUserCredentials {
-        return ChatUserCredentials(username: DebugSettings.shared.username,
-                                   password: DebugSettings.shared.password,
-                                   vendorId: "c2f0b8f187033200246ddd4c97cb0bb9")
+        lastCredentials = ChatUserCredentials(username: DebugSettings.shared.username,
+                                              password: DebugSettings.shared.password,
+                                              vendorId: "c2f0b8f187033200246ddd4c97cb0bb9")
+        // swiftlint:disable:next force_unwrap
+        return lastCredentials!
     }
     
     // MARK: - Navigation
@@ -90,7 +93,7 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
         // the user session and show the view controller when done
         // otherwise just present the view controller and save a lot of time
         
-        if !chatService.initialized || updateInstanceIfChanged() {
+        if !chatService.initialized || updateSettingsIfChanged() {
             let activity = activityIndicator()
             activity.startAnimating()
             
@@ -119,10 +122,15 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
         return activityIndicator
     }
     
-    private func updateInstanceIfChanged() -> Bool {
+    private func updateSettingsIfChanged() -> Bool {
         if instance.instanceURL != DebugSettings.shared.instanceURL {
             instance = ServerInstance(instanceURL: DebugSettings.shared.instanceURL)
             chatService = ChatService(instance: instance, delegate: self)
+            return true
+        }
+        // see if user credentials changed
+        if DebugSettings.shared.username != lastCredentials?.username ||
+           DebugSettings.shared.password != lastCredentials?.password {
             return true
         }
         return false
@@ -157,7 +165,7 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
 }
 
 extension UITableViewCell {
-    func enable(on: Bool) {
+    func enable(_ on: Bool) {
         self.isUserInteractionEnabled = on
         for view in contentView.subviews {
             view.isUserInteractionEnabled = on
