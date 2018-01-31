@@ -9,7 +9,15 @@
 import UIKit
 
 public class DebugViewController: UITableViewController, ChatServiceDelegate {
+    func authorizationFailed() -> Bool {
+        //
+        return false
+    }
     
+    func fatalError() {
+        //
+    }
+        
     @IBOutlet private weak var uiControlsCell: UITableViewCell!
     @IBOutlet private weak var chatWindowCell: UITableViewCell!
     @IBOutlet private weak var instanceSettingsCell: UITableViewCell!

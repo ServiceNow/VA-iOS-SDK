@@ -219,13 +219,13 @@ class ChatDataController {
 
     // MARK: - Topic Notifications
     
-    func topicDidStart(_ topicMessage: StartedUserTopicMessage) {
-        conversationId = topicMessage.data.actionMessage.vendorTopicId
+    func topicDidStart(_ topicInfo: TopicInfo) {
+        conversationId = topicInfo.conversationId
         
         pushTypingIndicator()
     }
 
-    func topicDidFinish(_ topicMessage: TopicFinishedMessage) {
+    func topicDidFinish(_ topicInfo: TopicInfo) {
         conversationId = nil
         
         // TEMPORARY: add a completion message. This will eventually come from the service but for now we synthesize it

@@ -102,10 +102,15 @@ struct Conversation: CBStorable, Codable {
     private let id: String
     private(set) var state: ConversationState
     private(set) var topicTypeName: String?
+    private var topicId: String?
+    internal var conversationId: String? {
+        return topicId
+    }
     private var exchanges = [MessageExchange]()
     
     init(withConversationId conversationId: String, withTopic topicName: String = "UNKNOWN", withState state: ConversationState = .inProgress) {
-        id = conversationId
+        id = CBData.uuidString()
+        self.topicId = conversationId
         self.state = state
         self.topicTypeName = topicName
     }

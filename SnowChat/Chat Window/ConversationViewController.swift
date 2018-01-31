@@ -407,23 +407,23 @@ extension ConversationViewController: ChatEventListener {
     
     // MARK: - ChatEventListener
     
-    func chatterbox(_ chatterbox: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, didStartTopic topicInfo: TopicInfo, forChat chatId: String) {
         guard self.chatterbox.id == chatterbox.id else {
                 return
         }
 
-        dataController.topicDidStart(topic)
+        dataController.topicDidStart(topicInfo)
         
         inputState = .inConversation
         setupInputForState()
     }
     
-    func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topicInfo: TopicInfo, forChat chatId: String) {
         guard self.chatterbox.id == chatterbox.id else {
             return
         }
 
-        dataController.topicDidFinish(topic)
+        dataController.topicDidFinish(topicInfo)
         
         inputState = .inTopicSelection
         setupInputForState()

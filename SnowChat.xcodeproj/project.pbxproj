@@ -152,9 +152,8 @@
 		C4A774AD1FE0607D00B6DF68 /* ChatServiceDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A774AC1FE0607D00B6DF68 /* ChatServiceDelegate.swift */; };
 		C4AF7793200E7B0B0029598A /* ViewDataChangeListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AF7792200E7B0B0029598A /* ViewDataChangeListener.swift */; };
 		C4B6A9521FE22208007DBEED /* ChatDataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */; };
-		C4B8D323201FE8F300871B36 /* ChatEnvironmentNotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B8D322201FE8F300871B36 /* ChatEnvironmentNotificationCenter.swift */; };
-		C4B8D325201FF3C500871B36 /* ChatNotificationCenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B8D324201FF3C500871B36 /* ChatNotificationCenterTests.swift */; };
-		C4B8D3272020E32E00871B36 /* Chatterbox+ChatEnvironmentNotificationListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B8D3262020E32E00871B36 /* Chatterbox+ChatEnvironmentNotificationListener.swift */; };
+		C4B8D3292021090900871B36 /* TransportStatusListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B8D3282021090900871B36 /* TransportStatusListener.swift */; };
+		C4B8D32B20210E1400871B36 /* ChatAuthListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B8D32A20210E1400871B36 /* ChatAuthListener.swift */; };
 		C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA21FBCF2F8007007F5 /* CBData.swift */; };
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
 		C4CAFEA81FBD0912007007F5 /* CBDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */; };
@@ -290,9 +289,8 @@
 		C4A774AC1FE0607D00B6DF68 /* ChatServiceDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceDelegate.swift; sourceTree = "<group>"; };
 		C4AF7792200E7B0B0029598A /* ViewDataChangeListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewDataChangeListener.swift; sourceTree = "<group>"; };
 		C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataStoreTests.swift; sourceTree = "<group>"; };
-		C4B8D322201FE8F300871B36 /* ChatEnvironmentNotificationCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEnvironmentNotificationCenter.swift; sourceTree = "<group>"; };
-		C4B8D324201FF3C500871B36 /* ChatNotificationCenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatNotificationCenterTests.swift; sourceTree = "<group>"; };
-		C4B8D3262020E32E00871B36 /* Chatterbox+ChatEnvironmentNotificationListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chatterbox+ChatEnvironmentNotificationListener.swift"; sourceTree = "<group>"; };
+		C4B8D3282021090900871B36 /* TransportStatusListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportStatusListener.swift; sourceTree = "<group>"; };
+		C4B8D32A20210E1400871B36 /* ChatAuthListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatAuthListener.swift; sourceTree = "<group>"; };
 		C4CAFEA21FBCF2F8007007F5 /* CBData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBData.swift; sourceTree = "<group>"; };
 		C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataTests.swift; sourceTree = "<group>"; };
 		C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataFactory.swift; sourceTree = "<group>"; };
@@ -569,11 +567,12 @@
 			isa = PBXGroup;
 			children = (
 				BE6FBE411FBFBAD10062A0EB /* AMB */,
-				BE782DB61FEB204200F848F5 /* API Extensions */,
 				BE9E8BA81FBF826300499960 /* APIManager.swift */,
+				BE782DB61FEB204200F848F5 /* API Extensions */,
 				BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */,
 				BE9E8BAA1FBF828E00499960 /* ServerInstance.swift */,
 				BE69327E1FFEB46100DD5A2A /* ServerInstance+URL.swift */,
+				C4B8D3282021090900871B36 /* TransportStatusListener.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -685,11 +684,10 @@
 			children = (
 				C41EF5D11FDB0F2500707F45 /* ChatDataListener.swift */,
 				C4A774A81FDF22E200B6DF68 /* ChatEventListener.swift */,
+				C4B8D32A20210E1400871B36 /* ChatAuthListener.swift */,
 				C4F3AF2E1FD235D100B27B0D /* Chatterbox.swift */,
-				C4B8D3262020E32E00871B36 /* Chatterbox+ChatEnvironmentNotificationListener.swift */,
 				C4CAFE9F1FBCF057007007F5 /* Data */,
 				C4CAFE9E1FBCF047007007F5 /* State */,
-				C4B8D322201FE8F300871B36 /* ChatEnvironmentNotificationCenter.swift */,
 			);
 			path = Chatterbox;
 			sourceTree = "<group>";
@@ -724,7 +722,6 @@
 				C44FD9CA200010900079E107 /* ChatDataControllerTests.swift */,
 				C4FFCD4B20091B8D00B835C6 /* APIManagerChatSessionTests.swift */,
 				C483C17E2017DAD300C28E46 /* ExampleData.swift */,
-				C4B8D324201FF3C500871B36 /* ChatNotificationCenterTests.swift */,
 			);
 			path = Chatterbox;
 			sourceTree = "<group>";
@@ -983,6 +980,7 @@
 				BE6932721FFE9B5C00DD5A2A /* InstanceSettingsViewController.swift in Sources */,
 				57532BAD1FD777FA001D674C /* TextControl.swift in Sources */,
 				BE5974C41FC392FB00959406 /* ControlsViewController.swift in Sources */,
+				C4B8D32B20210E1400871B36 /* ChatAuthListener.swift in Sources */,
 				5760B91F1FD5C8C100591C06 /* UIImageUtils.swift in Sources */,
 				BE782DB51FEB203700F848F5 /* Result.swift in Sources */,
 				5778CF9C1FE06F08004F77D8 /* SingleSelectControl.swift in Sources */,
@@ -995,7 +993,6 @@
 				BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */,
 				BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */,
 				BE6932781FFE9F3F00DD5A2A /* DebugSettings.swift in Sources */,
-				C4B8D323201FE8F300871B36 /* ChatEnvironmentNotificationCenter.swift in Sources */,
 				57D1DB6B1FEAC94A00082F78 /* ConversationViewCell.swift in Sources */,
 				BE29E0CF1FDF06C20029D1F0 /* ChatDataController.swift in Sources */,
 				BE6FBE401FBFB3060062A0EB /* AMBHTTPClient.swift in Sources */,
@@ -1024,6 +1021,7 @@
 				57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */,
 				BE3F1AB21FEC315100DCC21B /* APIManager+ChatTopics.swift in Sources */,
 				C41EF5DA1FDB490F00707F45 /* TopicFinishedMessage.swift in Sources */,
+				C4B8D3292021090900871B36 /* TransportStatusListener.swift in Sources */,
 				C4CED93C1FD713AA008E3E25 /* StartUserTopicMessage.swift in Sources */,
 				C40565F01FC491DA004BD28C /* ActionMessage.swift in Sources */,
 				C4F3AF341FD6144800B27B0D /* StartTopicMessage.swift in Sources */,
@@ -1053,7 +1051,6 @@
 				5760C8CE1FBF4C920055B73D /* PickerViewController.swift in Sources */,
 				57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */,
 				572A4E441FCF70070081318D /* BubbleView.swift in Sources */,
-				C4B8D3272020E32E00871B36 /* Chatterbox+ChatEnvironmentNotificationListener.swift in Sources */,
 				57B7E2C61FBA25A200196BA9 /* SelectableViewCell.swift in Sources */,
 				BE69327F1FFEB46100DD5A2A /* ServerInstance+URL.swift in Sources */,
 				5796E4481FD0B3E0009D2035 /* CGPath+Bubble.swift in Sources */,
@@ -1083,7 +1080,6 @@
 				575566A7200F963C000953F7 /* ControlCacheTests.swift in Sources */,
 				C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */,
 				5778CFA01FE07764004F77D8 /* SingleSelectControlTests.swift in Sources */,
-				C4B8D325201FF3C500871B36 /* ChatNotificationCenterTests.swift in Sources */,
 				5778CF981FDEE767004F77D8 /* BooleanControlTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

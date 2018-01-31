@@ -17,6 +17,7 @@ public class ChatService {
         self.delegate = delegate
         self.chatterbox = Chatterbox(instance: instance)
         self.chatterbox.chatEventListener = self
+        //self.chatterbox.authFailureListener = self
         
         establishUserSession()
     }
@@ -62,15 +63,28 @@ public class ChatService {
 
 extension ChatService: ChatEventListener {
     
-    func chatterbox(_ chatterbox: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
-        Logger.default.logDebug("Topic Started: \(topic)")
+    func chatterbox(_ chatterbox: Chatterbox, didStartTopic topicInfo: TopicInfo, forChat chatId: String) {
+        Logger.default.logDebug("Topic Started: \(topicInfo)")
         
-        viewController?.chatterbox(chatterbox, didStartTopic: topic, forChat: chatId)
+        viewController?.chatterbox(chatterbox, didStartTopic: topicInfo, forChat: chatId)
     }
     
-    func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String) {
-        Logger.default.logDebug("Topic Finished: \(topic)")
+    func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topicInfo: TopicInfo, forChat chatId: String) {
+        Logger.default.logDebug("Topic Finished: \(topicInfo)")
         
-        viewController?.chatterbox(chatterbox, didFinishTopic: topic, forChat: chatId)
+        viewController?.chatterbox(chatterbox, didFinishTopic: topicInfo, forChat: chatId)
+    }
+}
+
+extension ChatService: ChatAuthListener {
+    func authorizationFailed() {
+        guard let delegate = delegate else { return }
+        let shouldRetry = delegate.authorizationFailed()
+        if shouldRetry {
+            establishUserSession()
+        } else {
+            Logger.default.logError("Authorization failed, cannot continue")
+            delegate.fatalError()
+        }
     }
 }
