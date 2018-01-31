@@ -16,5 +16,6 @@ enum ModelChangeType {
 
 protocol ViewDataChangeListener: AnyObject {
     func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType])
+    func controllerWillLoadContent(_ dataController: ChatDataController)
     func controllerDidLoadContent(_ dataController: ChatDataController)
 }

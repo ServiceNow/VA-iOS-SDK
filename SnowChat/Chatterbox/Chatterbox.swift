@@ -615,10 +615,7 @@ extension Chatterbox {
                     }
                     
                     self.logger.logDebug("--> Conversation \(conversation.uniqueId) refreshed: \(conversation)")
-                    
-                    self.chatDataListener?.chatterbox(self, willLoadConversation: conversation.uniqueId, forChat: self.chatId)
                     self.storeConversationAndPublish(conversation)
-                    self.chatDataListener?.chatterbox(self, didLoadConversation: conversation.uniqueId, forChat: self.chatId)
                 }
                 
                 self.chatDataListener?.chatterbox(self, didLoadHistoryForConsumerAccount: consumerId, forChat: self.chatId)

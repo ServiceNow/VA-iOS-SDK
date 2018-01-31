@@ -411,6 +411,8 @@ extension ChatDataController: ChatDataListener {
 
         // disable caching while doing a hiastory load
         isBufferingEnabled = false
+        
+        changeListener?.controllerWillLoadContent(self)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadHistoryForConsumerAccount consumerAccountId: String, forChat chatId: String) {

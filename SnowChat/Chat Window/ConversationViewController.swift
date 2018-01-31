@@ -61,8 +61,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         super.viewDidLoad()
         
         setupActivityIndicator()
-        showActivityIndicator = true
-        
         setupTableView()
     }
     
@@ -103,11 +101,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        setupInputForState()
-    }
-    
     private func setupInputForState() {
         switch inputState {
         case .inTopicSelection:
@@ -188,10 +181,17 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         }
     }
     
+    func controllerWillLoadContent(_ dataController: ChatDataController) {
+        showActivityIndicator = true
+    }
+    
+
     func controllerDidLoadContent(_ dataController: ChatDataController) {
         updateTableView()
         canFetchOlderMessages = true
         showActivityIndicator = false
+        
+        setupInputForState()
     }
     
     private func updateTableView() {
