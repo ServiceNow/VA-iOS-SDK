@@ -28,8 +28,11 @@ class MultiSelectControl: PickerControlProtocol {
     weak var delegate: ControlDelegate?
     
     required init(model: ControlViewModel) {
-//        assert(model.type == .multiSelect, "Model must be multiselect type")
-        self.model = model
+        guard let multiSelectModel = model as? MultiSelectControlViewModel else {
+            fatalError("Wrong model type")
+        }
+
+        self.model = multiSelectModel
         style = .inline
     }
     
