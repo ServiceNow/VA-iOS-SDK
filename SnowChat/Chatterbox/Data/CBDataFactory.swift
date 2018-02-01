@@ -36,7 +36,7 @@ class CBDataFactory {
                     return try CBData.jsonDecoder.decode(MultiSelectControlMessage.self, from: jsonData)
                 case .text:
                     return try CBData.jsonDecoder.decode(OutputTextControlMessage.self, from: jsonData)
-                case .multiFlow:
+                case .multiPart:
                     return try CBData.jsonDecoder.decode(MultiPartControlMessage.self, from: jsonData)
                 default:
                     Logger.default.logError("Unrecognized UI Control: \(controlType)")
@@ -93,7 +93,7 @@ class CBDataFactory {
             data = try CBData.jsonEncoder.encode(message as? PickerControlMessage)
         case .text:
             data = try CBData.jsonEncoder.encode(message as? OutputTextControlMessage)
-        case .multiFlow:
+        case .multiPart:
             data = try CBData.jsonEncoder.encode(message as? MultiPartControlMessage)
         default:
             data = nil

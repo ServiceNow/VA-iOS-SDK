@@ -11,9 +11,17 @@ class MultiPartControlViewModel: ControlViewModel {
     
     let isRequired = true
     
-    let id = "multipart"
+    let id: String
     
     let type: ControlType = .multiPart
+    
+    var value: Int
+    
+    init(id: String, label: String? = nil, value: Int) {
+        self.id = id
+        self.label = label
+        self.value = value
+    }
 }
 
 class MultiPartControl: ControlProtocol {

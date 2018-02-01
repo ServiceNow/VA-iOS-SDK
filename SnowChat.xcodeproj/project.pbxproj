@@ -58,6 +58,8 @@
 		572FAC181FC47A9C00B0B956 /* MultiSelectControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */; };
 		572FAC1A1FC47B5600B0B956 /* MultiSelectControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC191FC47B5600B0B956 /* MultiSelectControlViewModel.swift */; };
 		573F78F7202275000008391D /* MultiPartControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573F78F6202275000008391D /* MultiPartControl.swift */; };
+		573F78FD202288F40008391D /* MultiPartControlViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573F78FC202288F40008391D /* MultiPartControlViewCell.swift */; };
+		573F78FF20228B060008391D /* MultiPartControlViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 573F78FE20228B060008391D /* MultiPartControlViewCell.xib */; };
 		5740F431202269E90060B349 /* MultiPartControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5740F430202269E90060B349 /* MultiPartControlMessage.swift */; };
 		57532BAB1FD777AC001D674C /* PickerControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57532BAA1FD777AC001D674C /* PickerControl.swift */; };
 		57532BAD1FD777FA001D674C /* TextControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57532BAC1FD777FA001D674C /* TextControl.swift */; };
@@ -194,6 +196,8 @@
 		572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectControl.swift; sourceTree = "<group>"; };
 		572FAC191FC47B5600B0B956 /* MultiSelectControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectControlViewModel.swift; sourceTree = "<group>"; };
 		573F78F6202275000008391D /* MultiPartControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPartControl.swift; sourceTree = "<group>"; };
+		573F78FC202288F40008391D /* MultiPartControlViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPartControlViewCell.swift; sourceTree = "<group>"; };
+		573F78FE20228B060008391D /* MultiPartControlViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MultiPartControlViewCell.xib; sourceTree = "<group>"; };
 		5740F430202269E90060B349 /* MultiPartControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPartControlMessage.swift; sourceTree = "<group>"; };
 		57532BAA1FD777AC001D674C /* PickerControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControl.swift; sourceTree = "<group>"; };
 		57532BAC1FD777FA001D674C /* TextControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControl.swift; sourceTree = "<group>"; };
@@ -330,6 +334,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		573F78FB202288860008391D /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				57D1DB6A1FEAC94A00082F78 /* ConversationViewCell.swift */,
+				573F78FC202288F40008391D /* MultiPartControlViewCell.swift */,
+				573F78FE20228B060008391D /* MultiPartControlViewCell.xib */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		5778CF961FDEE6A6004F77D8 /* Controls */ = {
 			isa = PBXGroup;
 			children = (
@@ -445,10 +459,10 @@
 		BE29E0CA1FDEF79B0029D1F0 /* Chat Window */ = {
 			isa = PBXGroup;
 			children = (
+				573F78FB202288860008391D /* Cells */,
+				BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */,
 				C432A037201A9C5900F328B7 /* ContextMenuItem.swift */,
 				BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */,
-				BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */,
-				57D1DB6A1FEAC94A00082F78 /* ConversationViewCell.swift */,
 				C43479EB1FE460700091806D /* TopicSelection.swift */,
 				C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */,
 				57A94513200E4E2F0073B5A1 /* Chat Message */,
@@ -853,6 +867,7 @@
 				57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */,
 				BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */,
 				57D1DB731FEC83D000082F78 /* mark.png in Resources */,
+				573F78FF20228B060008391D /* MultiPartControlViewCell.xib in Resources */,
 				57B7E2C91FBA25A200196BA9 /* SelectableView.xib in Resources */,
 				BE50E2241FB9305C00948FBC /* Cartfile in Resources */,
 				57D997AB1FE5B00000394A6D /* ChatMessageViewController.xib in Resources */,
@@ -1019,6 +1034,7 @@
 				5717B1502003DABA00A4252C /* ChatMessageViewControllerCache.swift in Sources */,
 				5771D2ED2011174000FF2483 /* MultiSelectControlMessage.swift in Sources */,
 				57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */,
+				573F78FD202288F40008391D /* MultiPartControlViewCell.swift in Sources */,
 				BE3F1AB21FEC315100DCC21B /* APIManager+ChatTopics.swift in Sources */,
 				C41EF5DA1FDB490F00707F45 /* TopicFinishedMessage.swift in Sources */,
 				C4CED93C1FD713AA008E3E25 /* StartUserTopicMessage.swift in Sources */,

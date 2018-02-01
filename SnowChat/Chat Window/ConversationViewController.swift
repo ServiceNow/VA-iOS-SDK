@@ -101,6 +101,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.estimatedRowHeight = 200
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
+        let bundle = Bundle(for: MultiPartControlViewCell.self)
+        tableView.register(UINib(nibName: "MultiPartControlViewCell", bundle: bundle), forCellReuseIdentifier: MultiPartControlViewCell.cellIdentifier)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -156,8 +158,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             self.tableView.beginUpdates()
             self.tableView.endUpdates()
         })
-        
-//        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
     }
     
     func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType]) {
@@ -171,7 +171,11 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 case .update(let index, _, let model):
-                    updateModel(model, atIndex: index)
+                    if model.controlModel.type == .multiPart {
+                        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    } else {
+                        updateModel(model, atIndex: index)
+                    }
                 }
             })
         }
@@ -338,27 +342,37 @@ extension ConversationViewController {
         if tableView == autoCompletionView, let handler = autocompleteHandler {
             return handler.cellForRowAt(indexPath)
         } else {
-            
            return conversationCellForRowAt(indexPath)
         }
     }
     
     private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
-        configureConversationCell(cell, at: indexPath)
+        guard let chatMessageModel = dataController.controlForIndex(indexPath.row) else {
+            return UITableViewCell()
+        }
+        
+        let cell: UITableViewCell
+        let controlModel = chatMessageModel.controlModel
+        if controlModel.type == .multiPart {
+            let multiPartCell = tableView.dequeueReusableCell(withIdentifier: MultiPartControlViewCell.cellIdentifier, for: indexPath) as! MultiPartControlViewCell
+            multiPartCell.configure(with: controlModel as! MultiPartControlViewModel)
+            cell = multiPartCell
+        } else {
+            let conversationCell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
+            configureConversationCell(conversationCell, messageModel: chatMessageModel, at: indexPath)
+            cell = conversationCell
+        }
+        
+        cell.selectionStyle = .none
+        cell.transform = tableView.transform
         return cell
     }
     
-    private func configureConversationCell(_ cell: ConversationViewCell, at indexPath:IndexPath) {
-        if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
-            let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
-            cell.messageViewController = messageViewController
-            addUIControl(forModel: chatMessageModel, inCell: cell)
-            messageViewController.didMove(toParentViewController: self)
-        }
-
-        cell.selectionStyle = .none
-        cell.transform = tableView.transform
+    private func configureConversationCell(_ cell: ConversationViewCell, messageModel model: ChatMessageModel, at indexPath:IndexPath) {
+        let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
+        cell.messageViewController = messageViewController
+        addUIControl(forModel: model, inCell: cell)
+        messageViewController.didMove(toParentViewController: self)
     }
     
     private func addUIControl(forModel model: ChatMessageModel, inCell cell: ConversationViewCell) {

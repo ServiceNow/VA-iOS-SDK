@@ -52,6 +52,9 @@ extension ChatMessageModel {
         case .text:
             guard let controlMessage = message as? OutputTextControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage)
+        case .multiPart:
+            guard let controlMessage = message as? MultiPartControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
         default:
             Logger.default.logError("Unhandled control type in ChatMessageModel: \(message.controlType)")
         }
@@ -117,6 +120,18 @@ extension ChatMessageModel {
         let direction = message.data.direction
         let textModel = TextControlViewModel(id: message.id, label: "", value: value)
         let snowViewModel = ChatMessageModel(model: textModel, location: BubbleLocation(direction: direction), requiresInput: true)
+        return snowViewModel
+    }
+    
+    static func model(withMessage message: MultiPartControlMessage) -> ChatMessageModel? {
+        guard let title = message.data.richControl?.uiMetadata?.navigationBtnLabel,
+            let index = message.data.richControl?.uiMetadata?.index else {
+                return nil
+        }
+        
+        let multiPartModel = MultiPartControlViewModel(id: message.id, label: title, value: index)
+        let direction = message.data.direction
+        let snowViewModel = ChatMessageModel(model: multiPartModel, location: BubbleLocation(direction: direction))
         return snowViewModel
     }
 }

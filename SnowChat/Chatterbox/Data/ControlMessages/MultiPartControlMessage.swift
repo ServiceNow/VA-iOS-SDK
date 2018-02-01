@@ -18,7 +18,7 @@ struct MultiPartControlMessage: Codable, CBControlData {
     }
     
     var id: String = CBData.uuidString()
-    var controlType: CBControlType = .multiFlow
+    var controlType: CBControlType = .multiPart
     
     var messageId: String {
         return data.messageId
