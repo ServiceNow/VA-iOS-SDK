@@ -17,5 +17,5 @@ struct ChatUserCredentials {
 
 protocol ChatServiceDelegate: AnyObject {
     
-    func userCredentials() -> ChatUserCredentials
+    func userCredentials(forChatService chatService: ChatService) -> ChatUserCredentials?
 }

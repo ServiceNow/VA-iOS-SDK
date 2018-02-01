@@ -33,6 +33,7 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
         title = "Debug 🐞"
 
         chatWindowCell?.enable(false)
+
         chatService = ChatService(instance: instance, delegate: self)
         chatService?.establishUserSession({ error in
             if let error = error {
@@ -63,12 +64,14 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
     
     // MARK: - ChatServiceDelegate
     
-    func userCredentials() -> ChatUserCredentials {
-        lastCredentials = ChatUserCredentials(username: DebugSettings.shared.username,
+    func userCredentials(forChatService chatService: ChatService) -> ChatUserCredentials? {
+        guard let instanceChatService = self.chatService, instanceChatService == chatService else { return nil }
+        
+        let credentials = ChatUserCredentials(username: DebugSettings.shared.username,
                                               password: DebugSettings.shared.password,
                                               vendorId: "c2f0b8f187033200246ddd4c97cb0bb9")
-        // swiftlint:disable:next force_unwrap
-        return lastCredentials!
+        lastCredentials = credentials
+        return credentials
     }
     
     // MARK: - Navigation
@@ -152,6 +155,8 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
                     message = errorMessage
                 }
             }
+        case .sessionInitializing(let errorMessage):
+            message = errorMessage
         default:
             break
         }
@@ -165,11 +170,11 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
 }
 
 extension UITableViewCell {
-    func enable(_ on: Bool) {
-        self.isUserInteractionEnabled = on
+    func enable(_ enable: Bool) {
+        self.isUserInteractionEnabled = enable
         for view in contentView.subviews {
-            view.isUserInteractionEnabled = on
-            view.alpha = on ? 1 : 0.5
+            view.isUserInteractionEnabled = enable
+            view.alpha = enable ? 1 : 0.5
         }
     }
 }

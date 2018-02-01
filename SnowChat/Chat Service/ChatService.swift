@@ -10,10 +10,17 @@ import Foundation
 
 public enum ChatServiceError: Error {
     case invalidCredentials
+    case sessionInitializing(String)
     case noSession(Error?)
 }
 
-public class ChatService {
+public class ChatService: Equatable {
+    private let id: String = CBData.uuidString()
+    
+    public static func == (lhs: ChatService, rhs: ChatService) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
     private let chatterbox: Chatterbox
     private weak var delegate: ChatServiceDelegate?
     private weak var viewController: ChatViewController?
@@ -27,6 +34,7 @@ public class ChatService {
     public var initialized: Bool {
         return userActions != nil
     }
+    private var initializationSemaphore = DispatchSemaphore(value: 1)
     
     init(instance: ServerInstance, delegate: ChatServiceDelegate) {
         self.delegate = delegate
@@ -47,37 +55,47 @@ public class ChatService {
         if !initialized {
             Logger.default.logFatal("User session not established - kicking that off now...")
 
-            establishUserSession({ (error) in
-                Logger.default.logInfo("EstablishUserSession completed: \(error == nil ? "no error" : error.debugDescription)")
-            })
+            DispatchQueue.global(qos: .background).async {
+                self.establishUserSession({ (error) in
+                    Logger.default.logInfo("EstablishUserSession completed: \(error == nil ? "no error" : error.debugDescription)")
+                })
+            }
         } 
         return viewController
     }
 
     public func establishUserSession(_ completion: @escaping (ChatServiceError?) -> Void) {
-        guard let userCredentials = delegate?.userCredentials() else {
+        guard let userCredentials = delegate?.userCredentials(forChatService: self) else {
             Logger.default.logError("Unable to get user credentials from delegate")
             completion(ChatServiceError.invalidCredentials)
             return
         }
- 
+        
+        guard self.initializationSemaphore.wait(timeout: DispatchTime.now()) == .success else {
+            completion(ChatServiceError.sessionInitializing("Session is currently being initialized"))
+            return
+        }
+        
         let user = CBUser(id: CBData.uuidString(), token: "123abd", username: userCredentials.username, consumerId: "CONSUMER_ID_IOS", consumerAccountId: "CONSUMER_ACCOUNT_ID_IOS", password: userCredentials.password)
         let vendor = CBVendor(name: "acme", vendorId: userCredentials.vendorId, consumerId: user.consumerId, consumerAccountId: user.consumerAccountId)
         
-        chatterbox.initializeSession(forUser: user, vendor: vendor, success: { message in
-            Logger.default.logDebug("Session Initialized")
-            
-            self.userActions = message
-            
-            completion(nil)
-            
-        }, failure: { error in
-            Logger.default.logDebug("Session failed to initialize: \(error.debugDescription)")
-            
-            self.userActions = nil
-            
-            completion(ChatServiceError.noSession(error))
-        })
+        self.chatterbox.initializeSession(forUser: user, vendor: vendor,
+            success: { message in
+                Logger.default.logDebug("Session Initialized")
+                
+                self.userActions = message
+                
+                completion(nil)
+                self.initializationSemaphore.signal()
+            },
+            failure: { error in
+                Logger.default.logDebug("Session failed to initialize: \(error.debugDescription)")
+                
+                self.userActions = nil
+                
+                completion(ChatServiceError.noSession(error))
+                self.initializationSemaphore.signal()
+            })
     }
 }
 
