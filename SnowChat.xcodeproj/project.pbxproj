@@ -568,11 +568,11 @@
 			children = (
 				BE6FBE411FBFBAD10062A0EB /* AMB */,
 				BE9E8BA81FBF826300499960 /* APIManager.swift */,
+				C4B8D3282021090900871B36 /* TransportStatusListener.swift */,
 				BE782DB61FEB204200F848F5 /* API Extensions */,
 				BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */,
 				BE9E8BAA1FBF828E00499960 /* ServerInstance.swift */,
 				BE69327E1FFEB46100DD5A2A /* ServerInstance+URL.swift */,
-				C4B8D3282021090900871B36 /* TransportStatusListener.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
