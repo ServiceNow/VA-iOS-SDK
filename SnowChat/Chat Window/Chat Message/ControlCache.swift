@@ -14,14 +14,14 @@ class ControlCache {
     private var uiControlByModelId = [String: ControlProtocol]()
     private var controlsToReuse = [ControlType: [ControlProtocol]]()
     
-    func control(forModel model: ControlViewModel) -> ControlProtocol {
+    func control(forModel model: ControlViewModel, forApiManager apiManager: APIManager) -> ControlProtocol {
         let uiControl: ControlProtocol
         if let control = controlsToReuse[model.type]?.popLast() {
             // update uiControl for a given model. Internally it will update UIViewController
             control.model = model
             uiControl = control
         } else {
-            uiControl = ControlsUtil.controlForViewModel(model)
+            uiControl = ControlsUtil.controlForViewModel(model, apiManager: apiManager)
         }
         
         uiControlByModelId[model.id] = uiControl
