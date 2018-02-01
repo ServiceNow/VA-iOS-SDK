@@ -6,7 +6,8 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-class MultiPartControlViewModel: ControlViewModel {
+class MultiPartControlViewModel: ControlViewModel, ValueRepresentable {
+    
     var label: String?
     
     let isRequired = true
@@ -16,6 +17,14 @@ class MultiPartControlViewModel: ControlViewModel {
     let type: ControlType = .multiPart
     
     var value: Int
+    
+    var resultValue: Int? {
+        return value
+    }
+    
+    var displayValue: String? {
+        return nil
+    }
     
     init(id: String, label: String? = nil, value: Int) {
         self.id = id
@@ -47,16 +56,21 @@ class MultiPartControl: ControlProtocol {
     }
     
     private func setupMoreButton() {
-        let doneButton = UIButton(type: .custom)
-        doneButton.titleLabel?.font = .preferredFont(forTextStyle: .body)
-        doneButton.setTitle(multiPartModel.label, for: .normal)
-        doneButton.setTitleColor(.controlHeaderTextColor, for: .normal)
-        doneButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        doneButton.translatesAutoresizingMaskIntoConstraints = false
+        let moreButton = UIButton(type: .custom)
+        moreButton.titleLabel?.font = .preferredFont(forTextStyle: .body)
+        moreButton.setTitle(multiPartModel.label, for: .normal)
+        moreButton.setTitleColor(.controlHeaderTextColor, for: .normal)
+        moreButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        moreButton.translatesAutoresizingMaskIntoConstraints = false
+        moreButton.addTarget(self, action: #selector(moreButtonPressed(_:)), for: .touchUpInside)
         
-        viewController.view.addSubview(doneButton)
-        NSLayoutConstraint.activate([doneButton.centerXAnchor.constraint(equalTo: viewController.view.centerXAnchor),
-                                     doneButton.topAnchor.constraint(equalTo: viewController.view.topAnchor),
-                                     doneButton.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)])
+        viewController.view.addSubview(moreButton)
+        NSLayoutConstraint.activate([moreButton.centerXAnchor.constraint(equalTo: viewController.view.centerXAnchor),
+                                     moreButton.topAnchor.constraint(equalTo: viewController.view.topAnchor),
+                                     moreButton.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)])
+    }
+    
+    @objc func moreButtonPressed(_ sender: UIButton) {
+        delegate?.control(self, didFinishWithModel: multiPartModel)
     }
 }

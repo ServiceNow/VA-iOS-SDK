@@ -12,7 +12,7 @@ class MultiPartControlViewCell: UITableViewCell, ControlPresentable {
     
     static let cellIdentifier = "MultiPartControlViewCell"
     
-    private var controlView: UIView?
+    private(set) var control: ControlProtocol?
     
     func configure(with model: MultiPartControlViewModel) {
         let control = ControlsUtil.controlForViewModel(model)
@@ -35,11 +35,11 @@ class MultiPartControlViewCell: UITableViewCell, ControlPresentable {
                                      controlView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
                                      controlView.topAnchor.constraint(equalTo: contentView.topAnchor),
                                      controlView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)])
-        self.controlView = controlView
+        self.control = control
         layoutIfNeeded()
     }
     
     func removeUIControl() {
-        controlView?.removeFromSuperview()
+        control?.viewController.view.removeFromSuperview()
     }
 }

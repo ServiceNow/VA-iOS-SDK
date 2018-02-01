@@ -167,6 +167,8 @@ class ChatDataController {
                 updatePickerData(data, lastPendingMessage)
             case .multiSelect:
                 updateMultiSelectData(data, lastPendingMessage)
+            case .multiPart:
+                updateMultiPartData(data, lastPendingMessage)
             default:
                 Logger.default.logDebug("Unhandled control type: \(lastPendingMessage.controlType)")
                 return
@@ -214,6 +216,16 @@ class ChatDataController {
             multiSelectMessage.id = multiSelectViewModel.id
             multiSelectMessage.data.richControl?.value = multiSelectViewModel.resultValue
             chatterbox.update(control: multiSelectMessage)
+        }
+    }
+    
+    fileprivate func updateMultiPartData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
+        if let multiPartViewModel = data as? MultiPartControlViewModel,
+            var multiPartMessage = lastPendingMessage as? MultiPartControlMessage {
+            
+            multiPartMessage.id = multiPartViewModel.id
+            multiPartMessage.data.richControl?.value = multiPartViewModel.resultValue
+            chatterbox.update(control: multiPartMessage)
         }
     }
 
@@ -340,6 +352,10 @@ extension ChatDataController: ChatDataListener {
             guard messageExchange.message is MultiSelectControlMessage,
                 messageExchange.response is MultiSelectControlMessage else { fatalError("Could not view message as MultiSelectControlMessage in ChatDataListener") }
             self.didCompleteMultiSelectExchange(messageExchange, forChat: chatId)
+//        case .multiPart:
+//            guard messageExchange.message is MultiPartControlMessage,
+//                messageExchange.response is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
+//            self.didCompleteMultiSelectExchange(messageExchange, forChat: chatId)
         default:
             Logger.default.logError("Unhandled control type in ChatDataListener didCompleteMessageExchange: \(messageExchange.message.controlType)")
         }

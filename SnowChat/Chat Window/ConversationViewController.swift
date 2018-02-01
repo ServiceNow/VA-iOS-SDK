@@ -17,7 +17,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         case inConversation             // user is in an active conversation
     }
     
-    private let bottomInset: CGFloat = 30
+    private let bottomInset: CGFloat = 60
     
     private var inputState = InputState.inTopicSelection
     private var autocompleteHandler: AutoCompleteHandler?
@@ -96,12 +96,12 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.separatorStyle = .none
         
         // NOTE: making section header height very tiny as 0 make it default size in iOS11
-        //  see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
+        // see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
         tableView.sectionHeaderHeight = CGFloat(0.01)
         tableView.estimatedRowHeight = 200
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
-        tableView.register(MultiPartControlViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
+        tableView.register(MultiPartControlViewCell.self, forCellReuseIdentifier: MultiPartControlViewCell.cellIdentifier)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -355,6 +355,7 @@ extension ConversationViewController {
         if controlModel.type == .multiPart {
             let multiPartCell = tableView.dequeueReusableCell(withIdentifier: MultiPartControlViewCell.cellIdentifier, for: indexPath) as! MultiPartControlViewCell
             multiPartCell.configure(with: controlModel as! MultiPartControlViewModel)
+            multiPartCell.control?.delegate = self
             cell = multiPartCell
         } else {
             let conversationCell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
@@ -411,7 +412,7 @@ extension ConversationViewController {
     
     private func prepareChatMessageViewControllerForReuse(for cell: UITableViewCell) {
         guard let conversationCell = cell as? ConversationViewCell else {
-            fatalError("Wrong cell's class")
+            return
         }
         
         cacheUIControl(for: conversationCell)

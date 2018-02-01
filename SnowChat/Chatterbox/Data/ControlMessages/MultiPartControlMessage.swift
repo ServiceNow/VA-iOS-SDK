@@ -38,7 +38,7 @@ struct MultiPartControlMessage: Codable, CBControlData {
     }
     
     let type: String = "systemTextMessage"
-    var data: RichControlData<ControlWrapper<String?, MultiFlowMetadata>>
+    var data: RichControlData<ControlWrapper<Int?, MultiFlowMetadata>>
     
     // define the properties that we decode / encode
     private enum CodingKeys: String, CodingKey {
@@ -46,11 +46,11 @@ struct MultiPartControlMessage: Codable, CBControlData {
         case data
     }
     
-    init(withData: RichControlData<ControlWrapper<String?, MultiFlowMetadata>>) {
+    init(withData: RichControlData<ControlWrapper<Int?, MultiFlowMetadata>>) {
         data = withData
     }
     
-    init(withValue value: String, fromMessage message: MultiPartControlMessage) {
+    init(withValue value: Int, fromMessage message: MultiPartControlMessage) {
         data = message.data
         data.sendTime = Date()
         data.richControl?.value = value
