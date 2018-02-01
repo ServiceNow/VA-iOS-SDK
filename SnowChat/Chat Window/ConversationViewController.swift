@@ -101,8 +101,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.estimatedRowHeight = 200
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
-        let bundle = Bundle(for: MultiPartControlViewCell.self)
-        tableView.register(UINib(nibName: "MultiPartControlViewCell", bundle: bundle), forCellReuseIdentifier: MultiPartControlViewCell.cellIdentifier)
+        tableView.register(MultiPartControlViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
     }
 
     override func viewDidAppear(_ animated: Bool) {

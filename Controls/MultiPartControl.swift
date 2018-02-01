@@ -28,6 +28,10 @@ class MultiPartControl: ControlProtocol {
     
     var model: ControlViewModel
     
+    private var multiPartModel: MultiPartControlViewModel {
+        return model as! MultiPartControlViewModel
+    }
+    
     var viewController: UIViewController
     
     weak var delegate: ControlDelegate?
@@ -39,5 +43,20 @@ class MultiPartControl: ControlProtocol {
         
         self.model = multiPartModel
         self.viewController = UIViewController()
+        setupMoreButton()
+    }
+    
+    private func setupMoreButton() {
+        let doneButton = UIButton(type: .custom)
+        doneButton.titleLabel?.font = .preferredFont(forTextStyle: .body)
+        doneButton.setTitle(multiPartModel.label, for: .normal)
+        doneButton.setTitleColor(.controlHeaderTextColor, for: .normal)
+        doneButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        doneButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        viewController.view.addSubview(doneButton)
+        NSLayoutConstraint.activate([doneButton.centerXAnchor.constraint(equalTo: viewController.view.centerXAnchor),
+                                     doneButton.topAnchor.constraint(equalTo: viewController.view.topAnchor),
+                                     doneButton.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)])
     }
 }

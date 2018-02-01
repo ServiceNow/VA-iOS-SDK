@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ChatMessageViewController: UIViewController {
+class ChatMessageViewController: UIViewController, ControlPresentable {
     
     private let controlMaxWidth: CGFloat = 250
     private(set) var uiControl: ControlProtocol?
@@ -55,15 +55,15 @@ class ChatMessageViewController: UIViewController {
         view.layoutIfNeeded()
     }
     
-    func prepareForReuse() {
-        removeUIControl()
-    }
-    
-    private func removeUIControl() {
+    func removeUIControl() {
         uiControl?.viewController.didMove(toParentViewController: nil)
         uiControl?.viewController.removeFromParentViewController()
         uiControl?.viewController.view.removeFromSuperview()
         uiControl = nil
+    }
+    
+    func prepareForReuse() {
+        removeUIControl()
     }
     
     // MARK: - Update Constraints

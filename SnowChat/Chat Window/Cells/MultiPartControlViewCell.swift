@@ -8,13 +8,38 @@
 
 import UIKit
 
-class MultiPartControlViewCell: UITableViewCell {
+class MultiPartControlViewCell: UITableViewCell, ControlPresentable {
     
     static let cellIdentifier = "MultiPartControlViewCell"
     
-    @IBOutlet private weak var moreButton: UIButton!
+    private var controlView: UIView?
     
     func configure(with model: MultiPartControlViewModel) {
-        moreButton.setTitle(model.label, for: .normal)
+        let control = ControlsUtil.controlForViewModel(model)
+        addUIControl(control, at: .left)
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        removeUIControl()
+    }
+    
+    // MARK: ControlPresentable
+    
+    func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
+        guard let controlView = control.viewController.view else { return }
+        controlView.translatesAutoresizingMaskIntoConstraints = false
+        
+        contentView.addSubview(controlView)
+        NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                                     controlView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                                     controlView.topAnchor.constraint(equalTo: contentView.topAnchor),
+                                     controlView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)])
+        self.controlView = controlView
+        layoutIfNeeded()
+    }
+    
+    func removeUIControl() {
+        controlView?.removeFromSuperview()
     }
 }
