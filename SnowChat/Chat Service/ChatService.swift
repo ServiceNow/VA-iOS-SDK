@@ -34,7 +34,7 @@ public class ChatService: Equatable {
     public var initialized: Bool {
         return userActions != nil
     }
-    private var initializationSemaphore = DispatchSemaphore(value: 1)
+    private var isInitializing: Bool = false
     
     init(instance: ServerInstance, delegate: ChatServiceDelegate) {
         self.delegate = delegate
@@ -55,12 +55,10 @@ public class ChatService: Equatable {
         if !initialized {
             Logger.default.logFatal("User session not established - kicking that off now...")
 
-            DispatchQueue.global(qos: .background).async {
-                self.establishUserSession({ (error) in
-                    Logger.default.logInfo("EstablishUserSession completed: \(error == nil ? "no error" : error.debugDescription)")
-                })
-            }
-        } 
+            self.establishUserSession({ (error) in
+                Logger.default.logInfo("EstablishUserSession completed: \(error == nil ? "no error" : error.debugDescription)")
+            })
+        }
         return viewController
     }
 
@@ -71,10 +69,11 @@ public class ChatService: Equatable {
             return
         }
         
-        guard self.initializationSemaphore.wait(timeout: DispatchTime.now()) == .success else {
+        if isInitializing {
             completion(ChatServiceError.sessionInitializing("Session is currently being initialized"))
             return
         }
+        isInitializing = true
         
         let user = CBUser(id: CBData.uuidString(), token: "123abd", username: userCredentials.username, consumerId: "CONSUMER_ID_IOS", consumerAccountId: "CONSUMER_ACCOUNT_ID_IOS", password: userCredentials.password)
         let vendor = CBVendor(name: "acme", vendorId: userCredentials.vendorId, consumerId: user.consumerId, consumerAccountId: user.consumerAccountId)
@@ -86,7 +85,8 @@ public class ChatService: Equatable {
                 self.userActions = message
                 
                 completion(nil)
-                self.initializationSemaphore.signal()
+                
+                self.isInitializing = false
             },
             failure: { error in
                 Logger.default.logDebug("Session failed to initialize: \(error.debugDescription)")
@@ -94,7 +94,8 @@ public class ChatService: Equatable {
                 self.userActions = nil
                 
                 completion(ChatServiceError.noSession(error))
-                self.initializationSemaphore.signal()
+                
+                self.isInitializing = false
             })
     }
 }
