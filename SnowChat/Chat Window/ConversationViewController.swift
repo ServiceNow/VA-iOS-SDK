@@ -30,6 +30,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     private var canFetchOlderMessages = false
     private var timeLastHistoryFetch: Date = Date()
+    private var isLoading = false
     
     override var tableView: UITableView {
         // swiftlint:disable:next force_unwrapping
@@ -192,23 +193,29 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     }
     
     func controllerWillLoadContent(_ dataController: ChatDataController) {
+        isLoading = true
         showActivityIndicator = true
     }
     
     func controllerDidLoadContent(_ dataController: ChatDataController) {
-        updateTableView()
+        isLoading = false
         canFetchOlderMessages = true
-        showActivityIndicator = false
-        
+
         setupInputForState()
+        manageInputControl()
+        updateTableView()
+        
+        showActivityIndicator = false
     }
     
     private func updateTableView() {
-        manageInputControl()
         tableView.reloadData()
     }
     
     func manageInputControl() {
+        // don't process the input control during bulk-load, it will be done at the end
+        guard isLoading == false else { return }
+        
         switch inputState {
         case  .inConversation:
             // during conversation we hide the input bar unless the last control is an input (TextControl with forInput property set)
@@ -224,9 +231,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                 }
             }
         case .inTopicSelection:
-            if !textView.isFocused {
-                textView.becomeFirstResponder()
-            }
+            isTextInputbarHidden = false
         default:
             Logger.default.logDebug("unhandled inputState in manageInputControl: \(inputState)")
         }

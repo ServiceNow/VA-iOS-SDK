@@ -64,7 +64,7 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
     
     // MARK: - ChatServiceDelegate
     
-    func userCredentials(forChatService chatService: ChatService) -> ChatUserCredentials? {
+    public func userCredentials(for chatService: ChatService) -> ChatUserCredentials? {
         guard let instanceChatService = self.chatService, instanceChatService == chatService else { return nil }
         
         let credentials = ChatUserCredentials(username: DebugSettings.shared.username,

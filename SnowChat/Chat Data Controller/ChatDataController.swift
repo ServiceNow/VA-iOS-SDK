@@ -105,7 +105,9 @@ class ChatDataController {
     }
     
     private func applyChanges() {
-        changeListener?.controller(self, didChangeModel: changeSet)
+        if isBufferingEnabled {
+            changeListener?.controller(self, didChangeModel: changeSet)
+        }
         changeSet.removeAll()
     }
     
@@ -116,8 +118,9 @@ class ChatDataController {
         }
         
         // last control is really the first... our list is reversed
-        addChange(.update(index: 0, oldModel: controlData[0], model: model))
+        let prevModel = controlData[0]
         controlData[0] = model
+        addChange(.update(index: 0, oldModel: prevModel, model: model))
         applyChanges()
     }
     

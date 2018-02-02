@@ -21,8 +21,9 @@ public class ChatService: Equatable {
         return lhs.id == rhs.id
     }
     
+    public weak var delegate: ChatServiceDelegate?
+    
     private let chatterbox: Chatterbox
-    private weak var delegate: ChatServiceDelegate?
     private weak var viewController: ChatViewController?
     
     internal var instance: ServerInstance {
@@ -36,7 +37,7 @@ public class ChatService: Equatable {
     }
     private var isInitializing: Bool = false
     
-    init(instance: ServerInstance, delegate: ChatServiceDelegate) {
+    init(instance: ServerInstance, delegate: ChatServiceDelegate?) {
         self.delegate = delegate
         self.chatterbox = Chatterbox(instance: instance)
         self.chatterbox.chatEventListener = self
@@ -44,7 +45,7 @@ public class ChatService: Equatable {
     
     // start a chat, providing a view-controller for the application to manage
     public func chatViewController(modal: Bool = false) -> ChatViewController? {
-        guard  !modal else {
+        guard !modal else {
             // FIXME: Handle modal case
             fatalError("Not yet implemented.")
         }
@@ -63,7 +64,7 @@ public class ChatService: Equatable {
     }
 
     public func establishUserSession(_ completion: @escaping (ChatServiceError?) -> Void) {
-        guard let userCredentials = delegate?.userCredentials(forChatService: self) else {
+        guard let userCredentials = delegate?.userCredentials(for: self) else {
             Logger.default.logError("Unable to get user credentials from delegate")
             completion(ChatServiceError.invalidCredentials)
             return
