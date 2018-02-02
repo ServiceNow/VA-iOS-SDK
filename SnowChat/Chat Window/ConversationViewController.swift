@@ -418,6 +418,18 @@ extension ConversationViewController: ChatEventListener {
         setupInputForState()
     }
     
+    func chatterbox(_ chatterbox: Chatterbox, didResumeTopic topicInfo: TopicInfo, forChat chatId: String) {
+        guard self.chatterbox.id == chatterbox.id else {
+            return
+        }
+        
+        dataController.topicDidResume(topicInfo)
+        
+        inputState = .inConversation
+        setupInputForState()
+        manageInputControl()
+    }
+    
     func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topicInfo: TopicInfo, forChat chatId: String) {
         guard self.chatterbox.id == chatterbox.id else {
             return

@@ -118,7 +118,7 @@ class DataStoreTests: XCTestCase {
             let conversations = try store.load()
             
             XCTAssertEqual(1, conversations.count)
-            XCTAssertEqual("testConversationID", conversations[0].uniqueId)
+            XCTAssertEqual("testConversationID", conversations[0].conversationId)
             let messages = conversations[0].messageExchanges()
             XCTAssertEqual(4, messages.count)
             

@@ -233,13 +233,15 @@ class Chatterbox {
     
     private func setupChatSubscription() {
         chatSubscription = apiManager.ambClient.subscribe(chatChannel) { [weak self] (subscription, message) in
-            //self?.logger.logDebug(message)
+            guard let 💪 = self else { return }
+            
+            💪.logger.logDebug(message)
             
             // when AMB gives us a message we dispatch to the current handler
-            if let messageHandler = self?.messageHandler {
+            if let messageHandler = 💪.messageHandler {
                 messageHandler(message)
             } else {
-                self?.logger.logError("No handler set in Chatterbox setupChatSubscription!")
+                💪.logger.logError("No handler set in Chatterbox setupChatSubscription!")
             }
         }
     }
@@ -257,32 +259,29 @@ class Chatterbox {
     
     private func handshakeHandler(_ message: String) {
         let event = CBDataFactory.actionFromJSON(message)
+        guard event.eventType == .channelInit, let initEvent = event as? InitMessage  else {
+            return
+        }
         
-        if event.eventType == .channelInit, let initEvent = event as? InitMessage {
-            if initEvent.data.actionMessage.loginStage == MessageConstants.loginStart.rawValue {
-                logger.logDebug("Handshake START message received")
-                startUserSession(withInitEvent: initEvent)
-            } else if initEvent.data.actionMessage.loginStage == MessageConstants.loginFinish.rawValue {
-                logger.logDebug("Handshake FINISH message received: conversationID=\(initEvent.data.conversationId ?? "nil")")
-                
-                conversationContext.systemConversationId = initEvent.data.conversationId
-                conversationContext.sessionId = initEvent.data.sessionId
-                
-                loadDataFromPersistence { error in
-                    guard error == nil else {
-                        self.logger.logDebug("Error in loading from persistence: \(error.debugDescription)")
-                        
-                        if let completion = self.handshakeCompletedHandler {
-                            completion(nil)
-                        }
-                        return
-                    }
-
-                    // handshake done, setup handler for the topic selection
-                    //  NOTE: handshakeCompletedHandler is called after topic selection, via the topicSelectionHandler
-                    self.messageHandler = self.topicSelectionHandler
+        switch initEvent.data.actionMessage.loginStage {
+        case .loginStart:
+            logger.logDebug("Handshake START message received")
+            startUserSession(withInitEvent: initEvent)
+        case .loginFinish:
+            logger.logDebug("Handshake FINISH message received: conversationID=\(initEvent.data.conversationId ?? "nil")")
+            
+            conversationContext.systemConversationId = initEvent.data.conversationId
+            conversationContext.sessionId = initEvent.data.sessionId
+            
+            loadDataFromPersistence { error in
+                guard error == nil else {
+                    self.logger.logDebug("Error in loading from persistence: \(error.debugDescription)")
+                    if let completion = self.handshakeCompletedHandler { completion(nil) }
+                    return
                 }
             }
+        default:
+            logger.logError("Unexpected loginStage: \(initEvent.data.actionMessage.loginStage)")
         }
     }
     
@@ -309,7 +308,7 @@ class Chatterbox {
         
         initUserEvent.data.direction = .fromClient
         initUserEvent.data.sendTime = Date()
-        initUserEvent.data.actionMessage.loginStage = MessageConstants.loginUserSession.rawValue
+        initUserEvent.data.actionMessage.loginStage = .loginUserSession
         initUserEvent.data.actionMessage.contextHandshake.vendorId = vendor?.vendorId
         initUserEvent.data.actionMessage.contextHandshake.deviceId = deviceIdentifier()
         initUserEvent.data.actionMessage.consumerAcctId = session?.user.consumerAccountId
@@ -380,10 +379,19 @@ class Chatterbox {
         }
     }
     
-    private func startUserTopic(topicInfo: TopicInfo) {
+    private func beginConversation(topicInfo: TopicInfo) {
         conversationContext.conversationId = topicInfo.conversationId
-        chatEventListener?.chatterbox(self, didStartTopic: topicInfo, forChat: chatId)
         installTopicMessageHandler()
+    }
+
+    private func startUserTopic(topicInfo: TopicInfo) {
+        beginConversation(topicInfo: topicInfo)
+        chatEventListener?.chatterbox(self, didStartTopic: topicInfo, forChat: chatId)
+    }
+    
+    private func resumeUserTopic(topicInfo: TopicInfo) {
+        beginConversation(topicInfo: topicInfo)
+        chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: chatId)
     }
     
     private func createStartTopicReadyMessage(startUserTopic: StartUserTopicMessage) -> StartUserTopicMessage {
@@ -539,12 +547,17 @@ extension Chatterbox {
 
     // MARK: - Sync Current Conversation
     
-    fileprivate func handleConversationState(_ conversation: Conversation, _ conversationId: String) {
+    fileprivate func syncConversationState(_ conversation: Conversation) {
+        let conversationId = conversation.conversationId
+        
         switch conversation.state {
         case .inProgress:
-            logger.logInfo("Conversation is still in progress - updating context")
-            let topicInfo = TopicInfo(topicId: "TOPIC_ID", conversationId: conversationId)
-            startUserTopic(topicInfo: topicInfo)
+            logger.logInfo("Conversation is in progress")
+            if conversationContext.conversationId != conversationId {
+                // its a different conversation! start it...
+                let topicInfo = TopicInfo(topicId: "TOPIC_ID", conversationId: conversationId)
+                resumeUserTopic(topicInfo: topicInfo)
+            }
         case .completed:
             logger.logInfo("Conversation is no longer in progress - ending current conversations")
             finishTopic(conversationId)
@@ -569,7 +582,8 @@ extension Chatterbox {
             // get any newer messages and add them to the store
             let oldestStoredExchange = storedConversation.messageExchanges().last
             strongSelf.addExchanges(conversation.messageExchanges(), newerThan: oldestStoredExchange, forConversation: conversationId)
-            strongSelf.handleConversationState(conversation, conversationId)
+            
+            strongSelf.syncConversationState(conversation)
         })
     }
     
@@ -629,22 +643,25 @@ extension Chatterbox {
             
             self.chatDataListener?.chatterbox(self, willLoadHistoryForConsumerAccount: consumerId, forChat: self.chatId)
 
-            apiManager.fetchConversations(forConsumer: consumerId, completionHandler: { (conversations) in
-                self.logger.logDebug(" --> loaded \(conversations.count) conversations")
+            apiManager.fetchConversations(forConsumer: consumerId, completionHandler: { (conversationsFromService) in
+                
+                // HACK: service is returning user and system conversations, so we remove all system topics here
+                //       remove this when the service is fixed
+                let conversations = self.filterSystemTopics(conversationsFromService)
+                self.logger.logDebug(" --> loaded \(conversationsFromService.count) conversations, \(conversations.count) are for user")
+
+                let lastConversation = conversations.last
                 
                 conversations.forEach { conversation in
-                    if conversation.isForSystemTopic() {
-                        self.logger.logInfo("Skipping conversation from system topic in refreshConversations")
-                        return
-                    }
-                    
                     let conversationId = conversation.conversationId
                     self.logger.logDebug("--> Conversation \(conversationId) refreshed: \(conversation)")
                     
                     self.chatDataListener?.chatterbox(self, willLoadConversation: conversationId, forChat: self.chatId)
                     self.storeConversationAndPublish(conversation)
-                    
-                    //self.handleConversationState(conversation, conversationId)
+                
+                    if conversation.conversationId == lastConversation?.conversationId {
+                        self.syncConversationState(conversation)
+                    }
                     
                     self.chatDataListener?.chatterbox(self, didLoadConversation: conversationId, forChat: self.chatId)
                 }
@@ -657,6 +674,12 @@ extension Chatterbox {
             logger.logError("No consumer Account ID, cannot load data from service")
             completionHandler(ChatterboxError.invalidParameter(details: "No ConsumerAccountId set in refreshConversations"))
         }
+    }
+    
+    internal func filterSystemTopics(_ conversations: [Conversation]) -> [Conversation] {
+        return conversations.filter({ conversation -> Bool in
+            return conversation.isForSystemTopic() == false
+        })
     }
     
     internal func storeHistoryAndPublish(_ exchange: MessageExchange, forConversation conversationId: String) {
@@ -672,11 +695,7 @@ extension Chatterbox {
         chatDataListener?.chatterbox(self, willLoadConversation: conversationId, forChat: chatId)
 
         conversation.messageExchanges().forEach { (exchange) in
-            // NOTE: we only process completed message exchanges, since incomplete ones will render incorrectly
-            //       and we will get the completed version (if it exists) via subsequent history calls
-            if exchange.isComplete {
-                notifyMessageExchange(exchange)
-            }
+            notifyMessageExchange(exchange)
         }
         
         chatDataListener?.chatterbox(self, didLoadConversation: conversationId, forChat: chatId)
@@ -716,8 +735,9 @@ extension Chatterbox: TransportStatusListener {
     // MARK: - handle transport notifications
     
     func transportDidBecomeUnavailable() {
-        // notify UI that input cannot be accepted
         logger.logInfo("Network unavailable....")
+
+        // TODO:notify UI that input cannot be accepted?
     }
     
     func transportDidBecomeAvailable() {

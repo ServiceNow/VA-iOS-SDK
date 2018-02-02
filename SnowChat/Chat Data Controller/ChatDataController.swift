@@ -147,7 +147,6 @@ class ChatDataController {
         guard controlData.count > 0, controlData[0].controlModel.type == .typingIndicator else {
             return false
         }
-        
         return true
     }
     
@@ -225,6 +224,11 @@ class ChatDataController {
         pushTypingIndicator()
     }
 
+    func topicDidResume(_ topicInfo: TopicInfo) {
+        conversationId = topicInfo.conversationId
+        
+    }
+    
     func topicDidFinish(_ topicInfo: TopicInfo) {
         conversationId = nil
         

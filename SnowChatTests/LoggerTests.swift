@@ -30,7 +30,7 @@ class LoggerTests: XCTestCase {
         Logger.default.logError("Error Log Message")
         Logger.default.logFatal("Fatal Log Message")
         
-        Logger.default.logLevel = .Error
+        Logger.default.logLevel = .error
         Logger.default.logInfo("Info Log Message - should not see")
         Logger.default.logDebug("Debug Log Message - should not see")
         Logger.default.logError("Error Log Message")

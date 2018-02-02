@@ -69,6 +69,12 @@ extension ChatService: ChatEventListener {
         viewController?.chatterbox(chatterbox, didStartTopic: topicInfo, forChat: chatId)
     }
     
+    func chatterbox(_ chatterbox: Chatterbox, didResumeTopic topicInfo: TopicInfo, forChat chatId: String) {
+        Logger.default.logDebug("Topic Resumed: \(topicInfo)")
+        
+        viewController?.chatterbox(chatterbox, didResumeTopic: topicInfo, forChat: chatId)
+    }
+    
     func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topicInfo: TopicInfo, forChat chatId: String) {
         Logger.default.logDebug("Topic Finished: \(topicInfo)")
         

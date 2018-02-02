@@ -71,8 +71,8 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
         let instance = ServerInstance(instanceURL: DebugSettings.shared.instanceURL)
         chatService = ChatService(instance: instance, delegate: self)
         
-        Logger.logger(for: "AMBClient").logLevel = .error
-        Logger.logger(for: "Chatterbox").logLevel = .error
+        Logger.logger(for: "AMBClient").logLevel = .debug
+        Logger.logger(for: "Chatterbox").logLevel = .debug
         
         if let controller = chatService?.chatViewController() {
             navigationController?.pushViewController(controller, animated: true)
