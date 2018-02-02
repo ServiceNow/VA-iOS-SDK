@@ -33,7 +33,7 @@ class ChatMessageViewController: UIViewController {
         controlViewController.willMove(toParentViewController: self)
         addChildViewController(controlViewController)
         let controlView: UIView = controlViewController.view
-        
+
         controlView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(controlView)
         
@@ -44,12 +44,16 @@ class ChatMessageViewController: UIViewController {
         
         // all controls but text will be limited to 250 points of width.
         // For now doing it across all class sizes. Might get adjusted when we get specs.
-        if control.model.type != .text {
+        if control.model.type != .text, control.model.type != .outputImage {
             controlView.widthAnchor.constraint(lessThanOrEqualToConstant: controlMaxWidth).isActive = true
         }
         
         updateConstraints(forLocation: location)
         updateBubble(forControl: control, andLocation: location)
+        
+        if control.model.type == .outputImage {
+            bubbleView.contentViewInsets = UIEdgeInsets.zero
+        }
         
         controlViewController.didMove(toParentViewController: self)
         view.layoutIfNeeded()
