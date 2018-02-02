@@ -356,7 +356,7 @@ extension ConversationViewController {
     }
     
     private func addUIControl(forModel model: ChatMessageModel, inCell cell: ConversationViewCell) {
-        let uiControl = uiControlCache.control(forModel: model.controlModel, forApiManager: chatterbox.apiManager)
+        let uiControl = uiControlCache.control(forModel: model.controlModel, forResourceProvider: chatterbox.apiManager)
         cell.messageViewController?.addUIControl(uiControl, at: model.location)
         uiControl.delegate = self
     }
