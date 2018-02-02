@@ -360,14 +360,6 @@
 			path = "Chat Message";
 			sourceTree = "<group>";
 		};
-		57B742002024E63900E638E0 /* API Protocols */ = {
-			isa = PBXGroup;
-			children = (
-				57B741FE2024DC7800E638E0 /* APIManager+Controls.swift */,
-			);
-			path = "API Protocols";
-			sourceTree = "<group>";
-		};
 		57B7E2B91FBA24A600196BA9 /* Controls */ = {
 			isa = PBXGroup;
 			children = (
@@ -551,6 +543,7 @@
 		BE782DB61FEB204200F848F5 /* API Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				57B741FE2024DC7800E638E0 /* APIManager+Controls.swift */,
 				BE782DB71FEB205200F848F5 /* APIManager+ChatSession.swift */,
 				BE3F1AB11FEC315100DCC21B /* APIManager+ChatTopics.swift */,
 				BE6932851FFEDB0000DD5A2A /* APIManager+Routes.swift */,
@@ -572,7 +565,6 @@
 			isa = PBXGroup;
 			children = (
 				BE6FBE411FBFBAD10062A0EB /* AMB */,
-				57B742002024E63900E638E0 /* API Protocols */,
 				BE782DB61FEB204200F848F5 /* API Extensions */,
 				BE9E8BA81FBF826300499960 /* APIManager.swift */,
 				BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */,

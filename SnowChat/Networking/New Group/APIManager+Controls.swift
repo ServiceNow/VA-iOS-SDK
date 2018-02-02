@@ -9,5 +9,11 @@
 import AlamofireImage
 
 protocol ControlResourceProvider {
-    var imageDownloader: ImageDownloader { get }
+    var imageProvider: ImageDownloader { get }
+}
+
+extension APIManager: ControlResourceProvider {
+    var imageProvider: ImageDownloader {
+        return imageDownloader
+    }
 }

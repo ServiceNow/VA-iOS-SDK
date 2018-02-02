@@ -11,7 +11,7 @@ import Alamofire
 import AlamofireImage
 import AMBClient
 
-class APIManager: NSObject, ControlResourceProvider {
+class APIManager: NSObject {
     
     internal let instance: ServerInstance
     

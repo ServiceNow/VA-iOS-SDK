@@ -17,7 +17,7 @@ class ControlsUtil {
             return TextControl(model: model)
         case .outputImage:
             let outputImageControl = OutputImageControl(model: model)
-            outputImageControl.imageDownloader = provider.imageDownloader
+            outputImageControl.imageDownloader = provider.imageProvider
             return outputImageControl
         case .boolean:
             return BooleanControl(model: model)
