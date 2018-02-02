@@ -362,7 +362,7 @@ extension ConversationViewController {
     }
     
     private func addUIControl(forModel model: ChatMessageModel, inCell cell: ConversationViewCell) {
-        let uiControl = uiControlCache.control(forModel: model.controlModel)
+        let uiControl = uiControlCache.control(forModel: model.controlModel, forResourceProvider: chatterbox.apiManager)
         cell.messageViewController?.addUIControl(uiControl, at: model.location)
         uiControl.delegate = self
     }
@@ -442,13 +442,18 @@ extension ConversationViewController: ChatEventListener {
     }
 }
 
-extension ConversationViewController: ControlDelegate {
+extension ConversationViewController: ControlDelegate, OutputImageControlDelegate {
     
     // MARK: - ControlDelegate
     
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
         // TODO: how to determine if it was skipped?
         dataController.updateControlData(model, isSkipped: false)
+    }
+    
+    func controlDidFinishImageDownload(_ control: OutputImageControl) {
+        tableView.beginUpdates()
+        tableView.endUpdates()
     }
 }
 

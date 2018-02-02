@@ -1,15 +1,13 @@
 //
-//  OutputTextMessage.swift
+//  OutputImageControlMessage.swift
 //  SnowChat
 //
-//  Created by Marc Attinasi on 12/8/17.
-//  Copyright © 2017 ServiceNow. All rights reserved.
+//  Created by Michael Borowiec on 1/24/18.
+//  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-import Foundation
-
-struct OutputTextControlMessage: Codable, CBControlData {
-
+struct OutputImageControlMessage: Codable, CBControlData {
+    
     var uniqueId: String {
         return id
     }
@@ -21,7 +19,7 @@ struct OutputTextControlMessage: Codable, CBControlData {
     }
     
     var id: String = CBData.uuidString()
-    var controlType: CBControlType = .text
+    var controlType: CBControlType = .outputImage
     
     var messageId: String {
         return data.messageId

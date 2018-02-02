@@ -459,6 +459,10 @@ extension ChatDataController: ChatDataListener {
             if let viewModel = controlForText(from: historyExchange) {
                 addHistoryToCollection(viewModel)
             }
+        case .outputImage:
+            if let viewModel = controlForImage(from: historyExchange) {
+                addHistoryToCollection(viewModel)
+            }
         default:
             Logger.default.logInfo("Unhandled control type in didReceiveHistory: \(historyExchange.message.controlType)")
         }
@@ -555,6 +559,21 @@ extension ChatDataController: ChatDataListener {
         }
         
         return TextControlViewModel(id: CBData.uuidString(), value: value)
+    }
+    
+    func controlForImage(from messageExchange: MessageExchange) -> OutputImageViewModel? {
+        guard messageExchange.isComplete,
+            let textControl = messageExchange.message as? OutputImageControlMessage,
+            let value = textControl.data.richControl?.value else {
+                Logger.default.logError("MessageExchange is not valid in imageControlFromMessageExchange method - skipping!")
+                return nil
+        }
+        
+        if let url = URL(string: value) {
+            return OutputImageViewModel(id: CBData.uuidString(), value: url)
+        }
+        
+        return nil
     }
 }
 

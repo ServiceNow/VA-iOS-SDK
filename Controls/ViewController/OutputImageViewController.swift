@@ -23,7 +23,6 @@ class OutputImageViewController: UIViewController {
             activityIndicatorView?.stopAnimating()
             activityIndicatorView?.removeFromSuperview()
             updateImageConstraints()
-            view.layoutIfNeeded()
         }
     }
     
@@ -34,6 +33,7 @@ class OutputImageViewController: UIViewController {
     }
     
     private func setupOutputImageView() {
+        outputImageView.setContentHuggingPriority(.veryHigh, for: .horizontal)
         outputImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(outputImageView)
         NSLayoutConstraint.activate([outputImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -63,7 +63,8 @@ class OutputImageViewController: UIViewController {
     private func updateImageConstraints() {
         imageViewWidthToHeightConstraint?.isActive = false
         imageViewSideConstraint?.isActive = false
-        guard let image = image else {
+
+        guard let image = image, image.size.height > maxImageSize.height || image.size.width > maxImageSize.width else {
             return
         }
         
@@ -77,7 +78,6 @@ class OutputImageViewController: UIViewController {
         // set width/height proportion
         let ratio = image.size.width / image.size.height
         imageViewWidthToHeightConstraint = outputImageView.heightAnchor.constraint(equalTo: outputImageView.widthAnchor, multiplier: ratio)
-//        imageViewWidthToHeightConstraint?.priority = .veryHigh
         imageViewWidthToHeightConstraint?.isActive = true
         imageViewSideConstraint?.isActive = true
     }
