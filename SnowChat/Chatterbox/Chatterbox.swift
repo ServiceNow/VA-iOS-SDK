@@ -160,10 +160,8 @@ class Chatterbox {
                 conversation.messageExchanges().reversed().forEach({ [weak self] exchange in
                     guard let strongSelf = self else { return }
 
-                    if exchange.isComplete {
-                        strongSelf.storeHistoryAndPublish(exchange, forConversation: conversationId)
-                        count += (exchange.response != nil ? 2 : 1)
-                    }
+                    strongSelf.storeHistoryAndPublish(exchange, forConversation: conversationId)
+                    count += (exchange.response != nil ? 2 : 1)
                 })
             })
             
@@ -659,11 +657,11 @@ extension Chatterbox {
                     self.chatDataListener?.chatterbox(self, willLoadConversation: conversationId, forChat: self.chatId)
                     self.storeConversationAndPublish(conversation)
                 
+                    self.chatDataListener?.chatterbox(self, didLoadConversation: conversationId, forChat: self.chatId)
+                    
                     if conversation.conversationId == lastConversation?.conversationId {
                         self.syncConversationState(conversation)
                     }
-                    
-                    self.chatDataListener?.chatterbox(self, didLoadConversation: conversationId, forChat: self.chatId)
                 }
                 
                 self.chatDataListener?.chatterbox(self, didLoadHistoryForConsumerAccount: consumerId, forChat: self.chatId)
@@ -702,6 +700,8 @@ extension Chatterbox {
     }
 
     internal func notifyMessageExchange(_ exchange: MessageExchange) {
+        logger.logDebug("--> Notifying MessageExchange: message=\(exchange.message.controlType) | response=\(exchange.response?.controlType ?? CBControlType.unknown)")
+        
         let message = exchange.message
         
         notifyMessage(message)

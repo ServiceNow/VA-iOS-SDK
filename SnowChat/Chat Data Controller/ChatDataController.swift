@@ -433,10 +433,6 @@ extension ChatDataController: ChatDataListener {
     
     //swiftlint:disable:next cyclomatic_complexity
     func chatterbox(_ chatterbox: Chatterbox, didReceiveHistory historyExchange: MessageExchange, forChat chatId: String) {
-        guard historyExchange.isComplete else {
-            Logger.default.logError("Incomplete message exchange cannot be presented in history view... skipping")
-            return
-        }
         
         switch historyExchange.message.controlType {
         case .boolean:
@@ -466,7 +462,6 @@ extension ChatDataController: ChatDataListener {
         default:
             Logger.default.logInfo("Unhandled control type in didReceiveHistory: \(historyExchange.message.controlType)")
         }
-        
     }
 
     // MARK: - Model to ViewModel methods
