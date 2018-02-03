@@ -11,7 +11,13 @@ import UIKit
 class ChatMessageViewController: UIViewController, ControlPresentable {
     
     private let controlMaxWidth: CGFloat = 250
-    private(set) var uiControl: ControlProtocol?
+    private(set) var uiControl: ControlProtocol? {
+        didSet {
+            if isPresentingControl(oldValue) {
+                oldValue?.removeFromParent()
+            }
+        }
+    }
     
     @IBOutlet private weak var bubbleView: BubbleView!
     @IBOutlet private weak var agentImageView: UIImageView!
@@ -27,7 +33,6 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
             return
         }
         
-        removeUIControl()
         uiControl = control
         let controlViewController = control.viewController
         controlViewController.willMove(toParentViewController: self)
@@ -55,15 +60,16 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         view.layoutIfNeeded()
     }
     
-    func removeUIControl() {
-        uiControl?.viewController.didMove(toParentViewController: nil)
-        uiControl?.viewController.removeFromParentViewController()
-        uiControl?.viewController.view.removeFromSuperview()
-        uiControl = nil
+    func isPresentingControl(_ control: ControlProtocol?) -> Bool {
+        guard let uiControlView = control?.viewController.view else {
+            return false
+        }
+        
+        return uiControlView.superview == bubbleView.contentView
     }
     
     func prepareForReuse() {
-        removeUIControl()
+        uiControl = nil
     }
     
     // MARK: - Update Constraints

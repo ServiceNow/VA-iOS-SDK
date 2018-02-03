@@ -62,4 +62,16 @@ protocol ControlProtocol: AnyObject {
     var viewController: UIViewController { get }
     
     weak var delegate: ControlDelegate? { get set }
+    
+    func removeFromParent()
+}
+
+// Code for self-removable control, just like UIView or UIViewController
+
+extension ControlProtocol {
+    func removeFromParent() {
+        viewController.willMove(toParentViewController: nil)
+        viewController.view.removeFromSuperview()
+        viewController.removeFromParentViewController()
+    }
 }

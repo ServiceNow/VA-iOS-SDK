@@ -16,7 +16,7 @@ class ConversationViewCell: UITableViewCell {
         }
     }
     
-    var messageView: UIView? {
+    private var messageView: UIView? {
         didSet {
             
             // MessageView might have been reused in other cell, so if it was moved to a different parent, we shouldn't remove it

@@ -8,5 +8,4 @@
 
 protocol ControlPresentable {
     func addUIControl(_ control: ControlProtocol, at location: BubbleLocation)
-    func removeUIControl()
 }

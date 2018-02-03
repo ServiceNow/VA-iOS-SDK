@@ -149,7 +149,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     // MARK: - ViewDataChangeListener
     
     private func updateModel(_ model: ChatMessageModel, atIndex index: Int) {
-        if let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? ConversationViewCell {
+        let indexPath = IndexPath(row: index, section: 0)
+        if let cell = tableView.cellForRow(at: indexPath) as? ConversationViewCell {
+            cacheUIControl(for: cell)
             addUIControl(forModel: model, inCell: cell)
         }
         
@@ -315,6 +317,7 @@ extension ConversationViewController {
         // default is 140, but even on iPhone SE 200 fits fine with keyboard up
         return 200
     }
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         if tableView == autoCompletionView, let handler = autocompleteHandler {
             return handler.numberOfSections()
@@ -368,7 +371,7 @@ extension ConversationViewController {
         return cell
     }
     
-    private func configureConversationCell(_ cell: ConversationViewCell, messageModel model: ChatMessageModel, at indexPath:IndexPath) {
+    private func configureConversationCell(_ cell: ConversationViewCell, messageModel model: ChatMessageModel, at indexPath: IndexPath) {
         let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
         cell.messageViewController = messageViewController
         addUIControl(forModel: model, inCell: cell)
@@ -376,7 +379,6 @@ extension ConversationViewController {
     }
     
     private func addUIControl(forModel model: ChatMessageModel, inCell cell: ConversationViewCell) {
-        cacheUIControl(for: cell)
         let uiControl = uiControlCache.control(forModel: model.controlModel)
         cell.messageViewController?.addUIControl(uiControl, at: model.location)
         uiControl.delegate = self
@@ -415,12 +417,11 @@ extension ConversationViewController {
             return
         }
         
-        cacheUIControl(for: conversationCell)
-        
         guard let messageViewController = conversationCell.messageViewController else {
             return
         }
         
+        cacheUIControl(for: conversationCell)
         messageViewControllerCache.cacheViewController(messageViewController)
         conversationCell.messageViewController = nil
     }

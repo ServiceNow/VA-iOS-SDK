@@ -21,7 +21,7 @@ class MultiPartControlViewCell: UITableViewCell, ControlPresentable {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        removeUIControl()
+        control?.viewController.view.removeFromSuperview()
     }
     
     // MARK: ControlPresentable
@@ -37,9 +37,5 @@ class MultiPartControlViewCell: UITableViewCell, ControlPresentable {
                                      controlView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)])
         self.control = control
         layoutIfNeeded()
-    }
-    
-    func removeUIControl() {
-        control?.viewController.view.removeFromSuperview()
     }
 }
