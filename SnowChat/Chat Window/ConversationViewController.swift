@@ -31,6 +31,18 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     private var canFetchOlderMessages = false
     private var timeLastHistoryFetch: Date = Date()
     
+    private lazy var bottomControlContainerView: BottomControlContainerView = {
+        let bottomContainer = BottomControlContainerView()
+        bottomContainer.backgroundColor = UIColor.red
+        bottomContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(bottomContainer)
+        NSLayoutConstraint.activate([bottomContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                                     bottomContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                                     bottomContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                                     bottomContainer.heightAnchor.constraint(equalToConstant: 100)])
+        return bottomContainer
+    }()
+    
     override var tableView: UITableView {
         // swiftlint:disable:next force_unwrapping
         return super.tableView!
@@ -101,7 +113,15 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.estimatedRowHeight = 200
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
-        tableView.register(MultiPartControlViewCell.self, forCellReuseIdentifier: MultiPartControlViewCell.cellIdentifier)
+    }
+    
+    // MARK: BottomControlContainerView
+    
+    private func setBottomControlContainerHidden(_ hidden: Bool, animated: Bool) {
+        bottomControlContainerView.isHidden = hidden
+        if hidden == false {
+            view.bringSubview(toFront: bottomControlContainerView)
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -150,15 +170,25 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     private func updateModel(_ model: ChatMessageModel, atIndex index: Int) {
         let indexPath = IndexPath(row: index, section: 0)
-        if let cell = tableView.cellForRow(at: indexPath) as? ConversationViewCell {
-            cacheUIControl(for: cell)
-            addUIControl(forModel: model, inCell: cell)
+        guard let cell = tableView.cellForRow(at: indexPath) as? ConversationViewCell else {
+            return
         }
         
+        cell.messageViewController?.model = model
         UIView.animate(withDuration: 0.3, animations: {
             self.tableView.beginUpdates()
             self.tableView.endUpdates()
         })
+    }
+    
+    func controller(_ dataController: ChatDataController, didChangeAuxiliaryModel change: ModelChangeType) {
+        switch change {
+        case .insert(_, let model):
+            bottomControlContainerView.configure(with: model.controlModel)
+            setBottomControlContainerHidden(false, animated: true)
+        default:
+            print("pff")
+        }
     }
     
     func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType]) {
@@ -172,11 +202,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 case .update(let index, _, let model):
-                    if model.controlModel.type == .multiPart {
-                        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-                    } else {
-                        updateModel(model, atIndex: index)
-                    }
+                    updateModel(model, atIndex: index)
                 }
             })
         }
@@ -353,35 +379,18 @@ extension ConversationViewController {
             return UITableViewCell()
         }
         
-        let cell: UITableViewCell
-        let controlModel = chatMessageModel.controlModel
-        if controlModel.type == .multiPart {
-            let multiPartCell = tableView.dequeueReusableCell(withIdentifier: MultiPartControlViewCell.cellIdentifier, for: indexPath) as! MultiPartControlViewCell
-            multiPartCell.configure(with: controlModel as! MultiPartControlViewModel)
-            multiPartCell.control?.delegate = self
-            cell = multiPartCell
-        } else {
-            let conversationCell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
-            configureConversationCell(conversationCell, messageModel: chatMessageModel, at: indexPath)
-            cell = conversationCell
-        }
-        
-        cell.selectionStyle = .none
-        cell.transform = tableView.transform
+        let cell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
+        configureConversationCell(cell, messageModel: chatMessageModel, at: indexPath)
         return cell
     }
     
     private func configureConversationCell(_ cell: ConversationViewCell, messageModel model: ChatMessageModel, at indexPath: IndexPath) {
         let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
         cell.messageViewController = messageViewController
-        addUIControl(forModel: model, inCell: cell)
+        messageViewController.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self)
         messageViewController.didMove(toParentViewController: self)
-    }
-    
-    private func addUIControl(forModel model: ChatMessageModel, inCell cell: ConversationViewCell) {
-        let uiControl = uiControlCache.control(forModel: model.controlModel)
-        cell.messageViewController?.addUIControl(uiControl, at: model.location)
-        uiControl.delegate = self
+        cell.selectionStyle = .none
+        cell.transform = tableView.transform
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -402,26 +411,12 @@ extension ConversationViewController {
         prepareChatMessageViewControllerForReuse(for: cell)
     }
     
-    private func cacheUIControl(for conversationCell: ConversationViewCell) {
-        guard let messageViewController = conversationCell.messageViewController else {
-            return
-        }
-        
-        if let controlModel = messageViewController.uiControl?.model {
-            uiControlCache.cacheControl(forModel: controlModel)
-        }
-    }
-    
     private func prepareChatMessageViewControllerForReuse(for cell: UITableViewCell) {
-        guard let conversationCell = cell as? ConversationViewCell else {
+        guard let conversationCell = cell as? ConversationViewCell,
+            let messageViewController = conversationCell.messageViewController else {
             return
         }
         
-        guard let messageViewController = conversationCell.messageViewController else {
-            return
-        }
-        
-        cacheUIControl(for: conversationCell)
         messageViewControllerCache.cacheViewController(messageViewController)
         conversationCell.messageViewController = nil
     }

@@ -34,6 +34,7 @@ class ChatDataController {
     private(set) var conversationId: String?
     private let chatterbox: Chatterbox
     private var controlData = [ChatMessageModel]()
+    private(set) var auxiliaryControlData: ChatMessageModel?
     private let typingIndicator = TypingIndicatorViewModel()
     
     private weak var changeListener: ViewDataChangeListener?
@@ -126,6 +127,16 @@ class ChatDataController {
     }
     
     fileprivate func presentControlData(_ data: ChatMessageModel) {
+        if data.controlModel.type == .multiPart {
+            changeListener?.controller(self, didChangeAuxiliaryModel: .insert(index: 0, model: data))
+            if isShowingTypingIndicator() {
+                controlData.remove(at: 0)
+                addChange(.delete(index: 0))
+                applyChanges()
+            }
+            return
+        }
+        
         if isShowingTypingIndicator() {
             replaceLastControl(with: data)
         } else {

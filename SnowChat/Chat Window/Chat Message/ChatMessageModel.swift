@@ -21,7 +21,6 @@ enum BubbleLocation {
 }
 
 class ChatMessageModel {
-    
     let controlModel: ControlViewModel
     let location: BubbleLocation
     let requiresInput: Bool
@@ -118,7 +117,7 @@ extension ChatMessageModel {
         }
         
         let direction = message.data.direction
-        let textModel = TextControlViewModel(id: message.id, label: "", value: value)
+        let textModel = TextControlViewModel(id: message.id, value: value)
         let snowViewModel = ChatMessageModel(model: textModel, location: BubbleLocation(direction: direction), requiresInput: true)
         return snowViewModel
     }
