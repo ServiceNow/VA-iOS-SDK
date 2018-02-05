@@ -168,6 +168,17 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     // MARK: - ViewDataChangeListener
     
+    func controller(_ dataController: ChatDataController, didChangeAuxiliaryModel change: ModelChangeType) {
+        switch change {
+        case .insert(_, let model):
+            bottomControlContainerView.model = model
+            bottomControlContainerView.control?.delegate = self
+            setBottomControlContainerHidden(false, animated: true)
+        default:
+            print("pff")
+        }
+    }
+    
     private func updateModel(_ model: ChatMessageModel, atIndex index: Int) {
         let indexPath = IndexPath(row: index, section: 0)
         guard let cell = tableView.cellForRow(at: indexPath) as? ConversationViewCell else {
@@ -179,16 +190,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             self.tableView.beginUpdates()
             self.tableView.endUpdates()
         })
-    }
-    
-    func controller(_ dataController: ChatDataController, didChangeAuxiliaryModel change: ModelChangeType) {
-        switch change {
-        case .insert(_, let model):
-            bottomControlContainerView.configure(with: model.controlModel)
-            setBottomControlContainerHidden(false, animated: true)
-        default:
-            print("pff")
-        }
     }
     
     func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType]) {

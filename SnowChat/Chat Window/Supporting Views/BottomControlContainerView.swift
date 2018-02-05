@@ -10,9 +10,12 @@ class BottomControlContainerView: UIView, ControlPresentable {
     
     private(set) var control: ControlProtocol?
     
-    func configure(with model: ControlViewModel) {
-        let control = ControlsUtil.controlForViewModel(model)
-        addUIControl(control, at: .left)
+    var model: ChatMessageModel? {
+        didSet {
+            guard let messageModel = model else { return }
+            let control = ControlsUtil.controlForViewModel(messageModel.controlModel)
+            addUIControl(control, at: .left)
+        }
     }
     
     // MARK: ControlPresentable
@@ -25,7 +28,7 @@ class BottomControlContainerView: UIView, ControlPresentable {
         NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: leadingAnchor),
                                      controlView.trailingAnchor.constraint(equalTo: trailingAnchor),
                                      controlView.topAnchor.constraint(equalTo: topAnchor),
-                                     controlView.bottomAnchor.constraint(equalTo: bottomAnchor)])
+                                     controlView.heightAnchor.constraint(equalToConstant: 50)])
         self.control = control
         layoutIfNeeded()
     }
