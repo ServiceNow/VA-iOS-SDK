@@ -18,6 +18,12 @@ struct ControlWrapper<ValueType: Codable, MetadataType: Codable>: Codable {
     let uiType: String
     let uiMetadata: MetadataType?
     var value: ValueType?
+    var content: MultiPartContent<ValueType>?
+}
+
+struct MultiPartContent<ValueType: Codable>: Codable {
+    var uiType: String
+    var value: ValueType?
 }
 
 struct ControlModel: Codable {

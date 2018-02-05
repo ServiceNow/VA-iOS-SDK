@@ -124,7 +124,9 @@ extension ChatMessageModel {
     
     static func model(withMessage message: MultiPartControlMessage) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.navigationBtnLabel,
-            let index = message.data.richControl?.uiMetadata?.index else {
+            let index = message.data.richControl?.uiMetadata?.index,
+            let nestedControlValue = message.data.richControl?.content?.value,
+            let nestedControlType = message.data.richControl?.content?.uiType else {
                 return nil
         }
         

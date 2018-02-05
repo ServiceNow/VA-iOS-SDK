@@ -235,7 +235,7 @@ class ChatDataController {
             var multiPartMessage = lastPendingMessage as? MultiPartControlMessage {
             
             multiPartMessage.id = multiPartViewModel.id
-            multiPartMessage.data.richControl?.value = multiPartViewModel.resultValue
+            // TODO: increment index
             chatterbox.update(control: multiPartMessage)
         }
     }
