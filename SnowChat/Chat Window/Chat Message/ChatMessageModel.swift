@@ -21,6 +21,7 @@ enum BubbleLocation {
 }
 
 class ChatMessageModel {
+    var auxiliaryControlModel: ControlViewModel?
     let controlModel: ControlViewModel
     let location: BubbleLocation
     let requiresInput: Bool
@@ -126,13 +127,22 @@ extension ChatMessageModel {
         guard let title = message.data.richControl?.uiMetadata?.navigationBtnLabel,
             let index = message.data.richControl?.uiMetadata?.index,
             let nestedControlValue = message.data.richControl?.content?.value,
-            let nestedControlType = message.data.richControl?.content?.uiType else {
+            let nestedControlType = message.nestedControlType else {
                 return nil
         }
         
         let multiPartModel = MultiPartControlViewModel(id: message.id, label: title, value: index)
         let direction = message.data.direction
         let snowViewModel = ChatMessageModel(model: multiPartModel, location: BubbleLocation(direction: direction))
+        
+        var controlModel: ControlViewModel?
+        if nestedControlType == .text {
+            controlModel = TextControlViewModel(id: CBData.uuidString(), value: nestedControlValue)
+        } else {
+            print("Something went wrong")
+        }
+        
+        snowViewModel.auxiliaryControlModel = controlModel
         return snowViewModel
     }
 }

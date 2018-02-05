@@ -168,17 +168,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     // MARK: - ViewDataChangeListener
     
-    func controller(_ dataController: ChatDataController, didChangeAuxiliaryModel change: ModelChangeType) {
-        switch change {
-        case .insert(_, let model):
-            bottomControlContainerView.model = model
-            bottomControlContainerView.control?.delegate = self
-            setBottomControlContainerHidden(false, animated: true)
-        default:
-            print("pff")
-        }
-    }
-    
     private func updateModel(_ model: ChatMessageModel, atIndex index: Int) {
         let indexPath = IndexPath(row: index, section: 0)
         guard let cell = tableView.cellForRow(at: indexPath) as? ConversationViewCell else {
@@ -195,14 +184,24 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType]) {
         manageInputControl()
         
+        func updateBottomControlWithModel(_ model: ChatMessageModel) {
+            if model.controlModel.type == .multiPart {
+                bottomControlContainerView.model = model
+                bottomControlContainerView.control?.delegate = self
+                setBottomControlContainerHidden(false, animated: true)
+            }
+        }
+        
         func modelUpdates() {
             changes.forEach({ [weak self] change in
                 switch change {
-                case .insert(let index, _):
+                case .insert(let index, let model):
+                    updateBottomControlWithModel(model)
                     self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .top)
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 case .update(let index, _, let model):
+                    updateBottomControlWithModel(model)
                     updateModel(model, atIndex: index)
                 }
             })

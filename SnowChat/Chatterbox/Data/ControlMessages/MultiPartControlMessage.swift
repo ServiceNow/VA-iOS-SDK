@@ -21,6 +21,11 @@ struct MultiPartControlMessage: Codable, CBControlData {
     var id: String = CBData.uuidString()
     var controlType: CBControlType = .multiPart
     
+    var nestedControlType: CBControlType? {
+        guard let uiType = data.richControl?.content?.uiType, let controlType = CBControlType(rawValue: uiType) else { return nil }
+        return controlType
+    }
+    
     var messageId: String {
         return data.messageId
     }
@@ -45,7 +50,6 @@ struct MultiPartControlMessage: Codable, CBControlData {
     private enum CodingKeys: String, CodingKey {
         case type
         case data
-        case nestedData
     }
     
     init(withData: RichControlData<ControlWrapper<String, MultiFlowMetadata>>) {
