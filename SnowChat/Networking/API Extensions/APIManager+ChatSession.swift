@@ -89,6 +89,8 @@ extension APIManager {
                                       "sysparm_sort": "desc"]
         if messageId != nil {
             parameters["lastMessageId"] = messageId
+            parameters["sysparm_sort"] = "asc"
+            parameters["sysparm_age"] = "newer"
         }
         
         sessionManager.request(apiURLWithPath("cs/consumerAccount/\(consumerId)/message"),

@@ -94,7 +94,9 @@ class ChatDataController {
     }
     
     private func applyChanges() {
-        changeListener?.controller(self, didChangeModel: changeSet)
+        if isBufferingEnabled {
+            changeListener?.controller(self, didChangeModel: changeSet)
+        }
         changeSet.removeAll()
     }
     

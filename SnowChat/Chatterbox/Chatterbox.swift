@@ -565,24 +565,58 @@ extension Chatterbox {
     }
     
     func syncConversation() {
-        guard let conversationId = conversationContext.conversationId else {
-            logger.logError("No conversation ID in syncConversation!")
+        // get the newest message and see if there are any messages newer than that for this consumer
+        //
+        guard let consumerAccountId = session?.user.consumerAccountId else {
+            logger.logError("No consumerAccountId in syncConversation!")
             return
         }
-        guard let storedConversation = chatStore.conversation(forId: conversationId) else {
-            logger.logError("Conversation not in store! \(conversationId)")
+        guard let conversationId = conversationContext.conversationId,
+              let conversation = chatStore.conversation(forId: conversationId),
+              let newestExchange = conversation.newestExchange() else {
+            logger.logError("Could not determine last message ID")
             return
         }
         
-        apiManager.fetchConversation(conversationId, completionHandler: { [weak self] conversation in
-            guard let strongSelf = self, let conversation = conversation else { return }
-            
-            // get any newer messages and add them to the store
-            let oldestStoredExchange = storedConversation.messageExchanges().last
-            strongSelf.addExchanges(conversation.messageExchanges(), newerThan: oldestStoredExchange, forConversation: conversationId)
-            
-            strongSelf.syncConversationState(conversation)
+        let newestMessage: CBControlData = newestExchange.response ?? newestExchange.message
+        
+        apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: newestMessage.messageId, completionHandler: { [weak self] conversations in
+            guard let strongSelf = self else { return }
+
+            conversations.forEach({ conversation in
+                let messages = strongSelf.flattenMessageExchanges(conversation.messageExchanges())
+                strongSelf.syncConversationMessages(conversation.conversationId, messages)
+                strongSelf.syncConversationState(conversation)
+            })
         })
+    }
+
+    internal func syncConversationMessages(_ conversationId: String, _ messages: [CBControlData]) {
+        messages.forEach({ message in
+            if let pendingMessage = chatStore.lastPendingMessage(forConversation: conversationId) as? CBControlData {
+                if pendingMessage.controlType != message.controlType {
+                    logger.logError("Type mismatchin in syncConversationMessages!")
+                }
+                let exchange = MessageExchange(withMessage: pendingMessage, withResponse: message)
+                chatStore.storeResponseData(message, forConversation: conversationId)
+                chatDataListener?.chatterbox(self, didCompleteMessageExchange: exchange, forChat: chatId)
+            } else {
+                chatStore.storeControlData(message, forConversation: conversationId, fromChat: self)
+            }
+        })
+    }
+    
+    internal func flattenMessageExchanges(_ exchanges: [MessageExchange]) -> [CBControlData] {
+        var messages = [CBControlData]()
+        
+        exchanges.forEach({ exchange in
+            messages.append(exchange.message)
+            if let response = exchange.response {
+                messages.append(response)
+            }
+        })
+        
+        return messages
     }
     
     internal func addExchanges(_ messageExchanges: [MessageExchange], newerThan subjectExchange: MessageExchange?, forConversation conversationId: String) {

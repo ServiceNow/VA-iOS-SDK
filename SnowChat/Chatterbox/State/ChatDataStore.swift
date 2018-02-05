@@ -160,6 +160,10 @@ struct Conversation: CBStorable, Codable {
         return exchanges.first
     }
     
+    func newestExchange() -> MessageExchange? {
+        return exchanges.last
+    }
+    
     enum ConversationState: String, Codable {
         case inProgress = "IN-PROGRESS"
         case completed = "COMPLETED"
@@ -181,7 +185,7 @@ struct MessageExchange: Codable {
         }
     }
     
-    init(withMessage message: CBControlData) {
+    init(withMessage message: CBControlData, withResponse: CBControlData? = nil) {
         self.message = message
     }
     
