@@ -17,6 +17,7 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
     var instance = ServerInstance(instanceURL: DebugSettings.shared.instanceURL)
     private var chatService: ChatService?
     private var lastCredentials: ChatUserCredentials?
+    private var isChatEnabled: Bool = false
     
     // MARK: - Initialization
     
@@ -32,15 +33,16 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
         super.viewDidLoad()
         title = "Debug 🐞"
 
-        chatWindowCell?.enable(false)
-
+        chatWindowCell?.showEnabled(false)
+        isChatEnabled = false
         chatService = ChatService(instance: instance, delegate: self)
         chatService?.establishUserSession({ error in
             if let error = error {
                 self.presentError(error)
                 return
             } else {
-                self.chatWindowCell?.enable(true)
+                self.chatWindowCell?.showEnabled(true)
+                self.isChatEnabled = true
             }
         })
     }
@@ -60,6 +62,13 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
         default:
             break // noop
         }
+    }
+    
+    override public func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        guard let cell = tableView.cellForRow(at: indexPath), cell == chatWindowCell else {
+            return true
+        }
+        return isChatEnabled
     }
     
     // MARK: - ChatServiceDelegate
@@ -170,10 +179,8 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
 }
 
 extension UITableViewCell {
-    func enable(_ enable: Bool) {
-        self.isUserInteractionEnabled = enable
+    func showEnabled(_ enable: Bool) {
         for view in contentView.subviews {
-            view.isUserInteractionEnabled = enable
             view.alpha = enable ? 1 : 0.5
         }
     }
