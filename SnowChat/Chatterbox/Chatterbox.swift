@@ -594,9 +594,11 @@ extension Chatterbox {
     internal func syncConversationMessages(_ conversationId: String, _ messages: [CBControlData]) {
         messages.forEach({ message in
             if let pendingMessage = chatStore.lastPendingMessage(forConversation: conversationId) as? CBControlData {
-                if pendingMessage.controlType != message.controlType {
+                guard pendingMessage.controlType == message.controlType else {
                     logger.logError("Type mismatchin in syncConversationMessages!")
+                    return
                 }
+                
                 let exchange = MessageExchange(withMessage: pendingMessage, withResponse: message)
                 chatStore.storeResponseData(message, forConversation: conversationId)
                 chatDataListener?.chatterbox(self, didCompleteMessageExchange: exchange, forChat: chatId)

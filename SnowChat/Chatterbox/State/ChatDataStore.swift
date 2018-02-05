@@ -135,7 +135,8 @@ struct Conversation: CBStorable, Codable {
         // check for control type mismatch between message and response
         let message = pending.message
         guard message.controlType == data.controlType else {
-            fatalError("Mismatched control types in storeResponse: message is \(message.controlType) while response is \(data.controlType)")
+            Logger.default.logError("Mismatched control types in storeResponse: message is \(message.controlType) while response is \(data.controlType) - skipping")
+            return
         }
         
         exchanges[index].response = data
