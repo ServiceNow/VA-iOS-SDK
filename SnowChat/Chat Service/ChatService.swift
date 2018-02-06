@@ -102,7 +102,11 @@ public class ChatService: Equatable {
 }
 
 extension ChatService: ChatEventListener {
-
+    func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {
+        Logger.default.logDebug("Transport Status Changed: \(transportStatus)")
+        viewController?.chatterbox(chatterbox, didReceiveTransportStatus: transportStatus, forChat: chatId)
+    }
+    
     func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
         Logger.default.logDebug("Session Established: \(sessionId)")
         viewController?.chatterbox(chatterbox, didEstablishUserSession: sessionId, forChat: chatId)

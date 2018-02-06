@@ -11,7 +11,7 @@ import Alamofire
 
 extension APIManager {
     
-    static let defaultMessageFetchLimit = 50
+    static let defaultMessageFetchLimit = 100
     
     // MARK: - Session
     
@@ -75,37 +75,75 @@ extension APIManager {
         fetchConversationsInternal(forConsumer: consumerId, completionHandler: completionHandler)
     }
     
-    func fetchNewerConversations(forConsumer consumerId: String, beforeMessage messageId: String, completionHandler: @escaping ([Conversation]) -> Void) {
-        fetchConversationsInternal(forConsumer: consumerId, beforeMessage: messageId, completionHandler: completionHandler)
+    func fetchNewerConversations(forConsumer consumerId: String, afterMessage messageId: String, completionHandler: @escaping ([Conversation]) -> Void) {
+        fetchConversationsInternal(forConsumer: consumerId, relativeTo: messageId, before: false, completionHandler: completionHandler)
     }
-    
-    private func fetchConversationsInternal(forConsumer consumerId: String, beforeMessage messageId: String? = nil, limit: Int = APIManager.defaultMessageFetchLimit, completionHandler: @escaping ([Conversation]) -> Void) {
+
+    func fetchOlderConversations(forConsumer consumerId: String, beforeMessage messageId: String, completionHandler: @escaping ([Conversation]) -> Void) {
+        fetchConversationsInternal(forConsumer: consumerId, relativeTo: messageId, before: true, completionHandler: completionHandler)
+    }
+
+    private func fetchConversationsInternal(forConsumer consumerId: String,
+                                            relativeTo messageId: String? = nil,
+                                            before: Bool = true,
+                                            limit: Int = APIManager.defaultMessageFetchLimit,
+                                            completionHandler: @escaping ([Conversation]) -> Void) {
         var parameters: Parameters = ["sysparm_limit": limit,
                                       "sysparm_sort": "desc"]
         if messageId != nil {
             parameters["lastMessageId"] = messageId
-            parameters["sysparm_sort"] = "asc"
-            parameters["sysparm_age"] = "newer"
+            parameters["sysparm_sort"] = before ? "desc" : "asc"
+            parameters["sysparm_age"] = before ? "older" : "newer"
         }
         
         sessionManager.request(apiURLWithPath("cs/consumerAccount/\(consumerId)/message"),
-                               method: .get,
-                               parameters: parameters,
-                               encoding: URLEncoding.queryString).validate().responseJSON { response in
-                                
-                                var conversations = [Conversation]()
-                                if response.error == nil {
-                                    if let result = response.result.value as? NSDictionary,
-                                        let conversationsArray = result["conversations"] {
-                                        
-                                        conversations = APIManager.conversationsFromResult(conversationsArray)
-                                    }
-                                }
-                                completionHandler(conversations)
+           method: .get,
+           parameters: parameters,
+           encoding: URLEncoding.queryString).validate().responseJSON { response in
+            
+            var conversations = [Conversation]()
+            if response.error == nil {
+                if let result = response.result.value as? NSDictionary,
+                    let conversationsArray = result["conversations"] {
+                    
+                    conversations = APIManager.conversationsFromResult(conversationsArray)
+                }
+            }
+            completionHandler(conversations)
         }
     }
     
     // MARK: - Response Parsing
+    
+    internal static func conversationsFromResult(_ result: Any, assumeMessagesReversed: Bool = true) -> [Conversation] {
+        guard let conversationArray = result as? [NSDictionary] else { return [] }
+        
+        let conversations: [Conversation] = conversationArray.flatMap { (conversationDictionary) -> Conversation? in
+            if let messagesDictionary = conversationDictionary["messages"] as? [NSDictionary],
+               messagesDictionary.count > 0,
+               let conversationId = conversationDictionary["topicId"] as? String {
+        
+                let status = conversationDictionary["status"] as? String ?? "UNKNOWN"
+                let topicTypeName = conversationDictionary["topicTypeName"] as? String ?? "UNKNOWN"
+                let messages = APIManager.messagesFromResult(messagesDictionary, assumeMessagesReversed: assumeMessagesReversed)
+
+                var conversation = Conversation(withConversationId: conversationId, withTopic: topicTypeName, withState: status == "COMPLETED" ? .completed : .inProgress)
+                
+                messages.forEach({ (message) in
+                    if let lastPending = conversation.lastPendingMessage() as? CBControlData,
+                       lastPending.controlType == message.controlType {
+                        conversation.storeResponse(message)
+                    } else {
+                        conversation.add(MessageExchange(withMessage: message))
+                    }
+                })
+                return conversation
+            } else {
+                return nil
+            }
+        }
+        return conversations
+    }
     
     internal static func messagesFromResult(_ result: Any, assumeMessagesReversed: Bool = true) -> [CBControlData] {
         guard let messageArray = result as? [NSDictionary] else { return [] }
@@ -132,36 +170,5 @@ extension APIManager {
             return nil
         }
         return assumeMessagesReversed ? messages.reversed() : messages
-    }
-    
-    internal static func conversationsFromResult(_ result: Any, assumeMessagesReversed: Bool = true) -> [Conversation] {
-        guard let conversationArray = result as? [NSDictionary] else { return [] }
-        
-        let conversations: [Conversation] = conversationArray.flatMap { (conversationDictionary) -> Conversation? in
-            if let messagesDictionary = conversationDictionary["messages"] as? [NSDictionary],
-                messagesDictionary.count > 0,
-                let conversationId = conversationDictionary["topicId"] as? String {
-                
-                let status = conversationDictionary["status"] as? String ?? "UNKNOWN"
-                let topicTypeName = conversationDictionary["topicTypeName"] as? String ?? "UNKNOWN"
-                let messages = APIManager.messagesFromResult(messagesDictionary, assumeMessagesReversed: assumeMessagesReversed)
-
-                var conversation = Conversation(withConversationId: conversationId, withTopic: topicTypeName, withState: status == "COMPLETED" ? .completed : .inProgress)
-                
-                messages.forEach({ (message) in
-                    if let lastPending = conversation.lastPendingMessage() as? CBControlData,
-                       lastPending.controlType == message.controlType {
-                        conversation.storeResponse(message)
-                    } else {
-                        conversation.add(MessageExchange(withMessage: message))
-                    }
-                })
-                return conversation
-            } else {
-                return nil
-            }
-        }
-        
-        return conversations
     }
 }

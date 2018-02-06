@@ -39,11 +39,10 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
         chatService?.establishUserSession({ error in
             if let error = error {
                 self.presentError(error)
-                return
-            } else {
-                self.chatWindowCell?.showEnabled(true)
-                self.isChatEnabled = true
             }
+            // enable anyway
+            self.chatWindowCell?.showEnabled(true)
+            self.isChatEnabled = true
         })
     }
     

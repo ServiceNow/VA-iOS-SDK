@@ -143,7 +143,7 @@ class Chatterbox {
                 return
         }
 
-        apiManager.fetchNewerConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { conversations in
+        apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { conversations in
             var count = 0
             
             self.chatDataListener?.chatterbox(self, willLoadHistoryForConsumerAccount: consumerAccountId, forChat: self.chatId)
@@ -160,7 +160,7 @@ class Chatterbox {
                 
                 _ = strongSelf.chatStore.findOrCreateConversation(conversationId)
                 
-                conversation.messageExchanges().reversed().forEach({ [weak self] exchange in
+                conversation.messageExchanges().forEach({ [weak self] exchange in
                     guard let strongSelf = self else { return }
 
                     strongSelf.storeHistoryAndPublish(exchange, forConversation: conversationId)
@@ -604,7 +604,7 @@ extension Chatterbox {
         
         let newestMessage = newestExchange.message
                 
-        apiManager.fetchNewerConversations(forConsumer: consumerAccountId, beforeMessage: newestMessage.messageId, completionHandler: { [weak self] conversationsFromService in
+        apiManager.fetchNewerConversations(forConsumer: consumerAccountId, afterMessage: newestMessage.messageId, completionHandler: { [weak self] conversationsFromService in
             guard let strongSelf = self else { return }
 
             // HACK: service is returning user and system conversations, so we remove all system topics here
@@ -801,15 +801,17 @@ extension Chatterbox: TransportStatusListener {
     func transportDidBecomeUnavailable() {
         logger.logInfo("Network unavailable....")
 
-        // TODO:notify UI that input cannot be accepted?
+        chatEventListener?.chatterbox(self, didReceiveTransportStatus: .unreachable, forChat: chatId)
     }
     
     private static var alreadySynchronizing = false
+    
     func transportDidBecomeAvailable() {
+        chatEventListener?.chatterbox(self, didReceiveTransportStatus: .unreachable, forChat: chatId)
+
         guard !Chatterbox.alreadySynchronizing, conversationContext.conversationId != nil else { return }
         
         logger.logInfo("Synchronizing conversations due to transport becoming available")
-
         Chatterbox.alreadySynchronizing = true
         syncConversation { count in
             Chatterbox.alreadySynchronizing = false

@@ -459,6 +459,10 @@ extension ConversationViewController: ChatEventListener {
         inputState = .inTopicSelection
         setupInputForState()
     }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {
+        // TODO: is there anything to do here to help the user deal with loss of connectivity?
+    }
 }
 
 extension ConversationViewController: ControlDelegate, OutputImageControlDelegate {

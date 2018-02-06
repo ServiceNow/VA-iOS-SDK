@@ -101,4 +101,15 @@ extension ChatViewController: ChatEventListener {
     func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
         conversationViewController?.chatterbox(chatterbox, didEstablishUserSession: sessionId, forChat: chatId)
     }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {
+        switch transportStatus {
+        case .unreachable:
+            Logger.default.logInfo("Transport is unavailable")
+            // TODO: display a notification...
+        case .reachable:
+            Logger.default.logInfo("Transport is available")
+            // TODO: remove notification...
+        }
+    }
 }
