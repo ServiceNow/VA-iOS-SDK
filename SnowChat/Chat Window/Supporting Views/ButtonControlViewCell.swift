@@ -8,9 +8,9 @@
 
 import UIKit
 
-class MultiPartControlViewCell: UITableViewCell, ControlPresentable {
+class ButtonControlViewCell: UITableViewCell, ControlPresentable {
     
-    static let cellIdentifier = "MultiPartControlViewCell"
+    static let cellIdentifier = "ButtonControlViewCell"
     
     private(set) var control: ControlProtocol?
     

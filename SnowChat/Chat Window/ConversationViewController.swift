@@ -110,7 +110,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.estimatedRowHeight = 200
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
-        tableView.register(MultiPartControlViewCell.self, forCellReuseIdentifier: MultiPartControlViewCell.cellIdentifier)
+        tableView.register(ButtonControlViewCell.self, forCellReuseIdentifier: ButtonControlViewCell.cellIdentifier)
     }
 
     private func setupInputForState() {
@@ -365,7 +365,7 @@ extension ConversationViewController {
         
         let cell: UITableViewCell
         if chatMessageModel.controlModel.type == .button {
-            let multiPartCell = tableView.dequeueReusableCell(withIdentifier: MultiPartControlViewCell.cellIdentifier, for: indexPath) as! MultiPartControlViewCell
+            let multiPartCell = tableView.dequeueReusableCell(withIdentifier: ButtonControlViewCell.cellIdentifier, for: indexPath) as! ButtonControlViewCell
             multiPartCell.configure(with: chatMessageModel.controlModel as! ButtonControlViewModel)
             multiPartCell.control?.delegate = self
             cell = multiPartCell

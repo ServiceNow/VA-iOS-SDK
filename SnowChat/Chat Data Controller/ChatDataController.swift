@@ -238,11 +238,11 @@ class ChatDataController {
     }
     
     fileprivate func updateMultiPartData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
-        if let multiPartViewModel = data as? ButtonControlViewModel,
+        if let buttonViewModel = data as? ButtonControlViewModel,
             var multiPartMessage = lastPendingMessage as? MultiPartControlMessage {
             
-            multiPartMessage.id = multiPartViewModel.id
-            multiPartMessage.data.richControl?.uiMetadata?.index = multiPartViewModel.value + 1
+            multiPartMessage.id = buttonViewModel.id
+            multiPartMessage.data.richControl?.uiMetadata?.index = buttonViewModel.value + 1
             chatterbox.update(control: multiPartMessage)
         }
     }
@@ -332,7 +332,7 @@ extension ChatDataController: ChatDataListener {
         if let messageModel = ChatMessageModel.model(withMessage: message) {
             bufferControlMessage(messageModel)
             
-            // show Button at after nested control of multipart is presented
+            // show Button control after nested control of multipart is presented
             if message.controlType == .multiPart, let buttonModel = ChatMessageModel.buttonModel(withMessage: message as! MultiPartControlMessage) {
                 bufferControlMessage(buttonModel)
             }

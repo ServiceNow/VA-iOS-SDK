@@ -57,6 +57,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         
         uiControl = nil
         resourceProvider = nil
+        model = nil
     }
     
     internal func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {

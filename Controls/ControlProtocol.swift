@@ -37,7 +37,7 @@ enum ControlType {
         case .typingIndicator:
             return "Typing Indicator"
         case .button:
-            return "MultiPart"
+            return "Button"
         }
     }
 }
