@@ -14,15 +14,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
 
     var model: ChatMessageModel? {
         didSet {
-            
-            guard let chatModel = model else { return }
-            
-            var controlModel = chatModel.controlModel
-            if controlModel.type == .multiPart, let auxiliaryControlModel = chatModel.auxiliaryControlModel {
-                controlModel = auxiliaryControlModel
-            }
-            
-            guard let control = controlCache?.control(forModel: controlModel) else {
+            guard let chatModel = model, let control = controlCache?.control(forModel: chatModel.controlModel) else {
                 return
             }
             
