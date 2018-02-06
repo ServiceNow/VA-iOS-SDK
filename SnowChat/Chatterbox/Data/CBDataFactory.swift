@@ -38,6 +38,8 @@ class CBDataFactory {
                     return try CBData.jsonDecoder.decode(OutputTextControlMessage.self, from: jsonData)
                 case .multiPart:
                     return try CBData.jsonDecoder.decode(MultiPartControlMessage.self, from: jsonData)
+                case .outputImage:
+                    return try CBData.jsonDecoder.decode(OutputImageControlMessage.self, from: jsonData)
                 default:
                     Logger.default.logError("Unrecognized UI Control: \(controlType)")
                 }
@@ -91,10 +93,14 @@ class CBDataFactory {
             data = try CBData.jsonEncoder.encode(message as? InputControlMessage)
         case .picker:
             data = try CBData.jsonEncoder.encode(message as? PickerControlMessage)
+        case .multiSelect:
+            data = try CBData.jsonEncoder.encode(message as? MultiSelectControlMessage)
         case .text:
             data = try CBData.jsonEncoder.encode(message as? OutputTextControlMessage)
         case .multiPart:
             data = try CBData.jsonEncoder.encode(message as? MultiPartControlMessage)
+        case .outputImage:
+            data = try CBData.jsonEncoder.encode(message as? OutputImageControlMessage)
         default:
             data = nil
             Logger.default.logError("Unrecognized control type: \(message.controlType)")

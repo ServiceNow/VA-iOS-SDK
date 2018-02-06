@@ -14,7 +14,7 @@ class ControlCache {
     private var uiControlByModelId = [String: ControlProtocol]()
     private var controlsToReuse = [ControlType: [ControlProtocol]]()
     
-    func control(forModel model: ControlViewModel) -> ControlProtocol {        
+    func control(forModel model: ControlViewModel, forResourceProvider provider: ControlResourceProvider? = nil) -> ControlProtocol {     
         if let storedControl = uiControlByModelId[model.id] {
             return storedControl
         }
@@ -25,7 +25,7 @@ class ControlCache {
             control.model = model
             uiControl = control
         } else {
-            uiControl = ControlsUtil.controlForViewModel(model)
+            uiControl = ControlsUtil.controlForViewModel(model, resourceProvider: provider)
         }
         
         uiControlByModelId[model.id] = uiControl

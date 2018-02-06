@@ -30,6 +30,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     private var canFetchOlderMessages = false
     private var timeLastHistoryFetch: Date = Date()
+    private var isLoading = false
     
     override var tableView: UITableView {
         // swiftlint:disable:next force_unwrapping
@@ -61,9 +62,17 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         super.viewDidLoad()
         
         setupActivityIndicator()
-        showActivityIndicator = true
-        
         setupTableView()
+        
+        loadHistory()
+    }
+    
+    internal func loadHistory() {
+        dataController.loadHistory { (error) in
+            if let error = error {
+                Logger.default.logError("Error loading history! \(error)")
+            }
+        }
     }
     
     // MARK: - ContentInset fix
@@ -104,11 +113,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.register(MultiPartControlViewCell.self, forCellReuseIdentifier: MultiPartControlViewCell.cellIdentifier)
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        setupInputForState()
-    }
-    
     private func setupInputForState() {
         switch inputState {
         case .inTopicSelection:
@@ -193,18 +197,30 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         }
     }
     
+    func controllerWillLoadContent(_ dataController: ChatDataController) {
+        isLoading = true
+        showActivityIndicator = true
+    }
+    
     func controllerDidLoadContent(_ dataController: ChatDataController) {
-        updateTableView()
+        isLoading = false
         canFetchOlderMessages = true
+
+        setupInputForState()
+        manageInputControl()
+        updateTableView()
+        
         showActivityIndicator = false
     }
     
     private func updateTableView() {
-        manageInputControl()
         tableView.reloadData()
     }
     
     func manageInputControl() {
+        // don't process the input control during bulk-load, it will be done at the end
+        guard isLoading == false else { return }
+        
         switch inputState {
         case  .inConversation:
             // during conversation we hide the input bar unless the last control is an input (TextControl with forInput property set)
@@ -220,9 +236,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                 }
             }
         case .inTopicSelection:
-            if !textView.isFocused {
-                textView.becomeFirstResponder()
-            }
+            isTextInputbarHidden = false
         default:
             Logger.default.logDebug("unhandled inputState in manageInputControl: \(inputState)")
         }
@@ -379,7 +393,7 @@ extension ConversationViewController {
     private func configureConversationCell(_ cell: ConversationViewCell, messageModel model: ChatMessageModel, at indexPath: IndexPath) {
         let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
         cell.messageViewController = messageViewController
-        messageViewController.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self)
+        messageViewController.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self, resourceProvider: chatterbox.apiManager)
         messageViewController.didMove(toParentViewController: self)
     }
     
@@ -416,6 +430,11 @@ extension ConversationViewController: ChatEventListener {
     
     // MARK: - ChatEventListener
     
+    func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
+        // if we were shown before the session was established then we did not load history yet, so do it now
+        loadHistory()
+    }
+    
     func chatterbox(_ chatterbox: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
         guard self.chatterbox.id == chatterbox.id else {
                 return
@@ -439,13 +458,18 @@ extension ConversationViewController: ChatEventListener {
     }
 }
 
-extension ConversationViewController: ControlDelegate {
+extension ConversationViewController: ControlDelegate, OutputImageControlDelegate {
     
     // MARK: - ControlDelegate
     
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
         // TODO: how to determine if it was skipped?
         dataController.updateControlData(model, isSkipped: false)
+    }
+    
+    func controlDidFinishImageDownload(_ control: OutputImageControl) {
+        tableView.beginUpdates()
+        tableView.endUpdates()
     }
 }
 

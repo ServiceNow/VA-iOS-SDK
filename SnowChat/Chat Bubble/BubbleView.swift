@@ -25,7 +25,7 @@ class BubbleView: UIView {
         }
     }
     
-    var insetConstraints = [NSLayoutConstraint]()
+    private var insetConstraints = [NSLayoutConstraint]()
     
     var contentViewInsets: UIEdgeInsets = UIEdgeInsets.zero {
         didSet {

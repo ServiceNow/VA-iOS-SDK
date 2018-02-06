@@ -76,6 +76,17 @@ class ChatDataController {
         updateChatterbox(data)
     }
     
+    func loadHistory(_ completion: @escaping (Error?) -> Void) {
+        Logger.default.logDebug("Fetching history...")
+        
+        chatterbox.loadDataFromPersistence { (error) in
+            if let error = error {
+                Logger.default.logError("Error loading history: \(error)")
+            }
+            completion(error)
+        }
+    }
+    
     func fetchOlderMessages(_ completion: @escaping (Int) -> Void) {
         Logger.default.logDebug("Fetching older messages...")
         
@@ -94,7 +105,9 @@ class ChatDataController {
     }
     
     private func applyChanges() {
-        changeListener?.controller(self, didChangeModel: changeSet)
+        if isBufferingEnabled {
+            changeListener?.controller(self, didChangeModel: changeSet)
+        }
         changeSet.removeAll()
     }
     
@@ -105,8 +118,9 @@ class ChatDataController {
         }
         
         // last control is really the first... our list is reversed
-        addChange(.update(index: 0, oldModel: controlData[0], model: model))
+        let prevModel = controlData[0]
         controlData[0] = model
+        addChange(.update(index: 0, oldModel: prevModel, model: model))
         applyChanges()
     }
     
@@ -442,6 +456,8 @@ extension ChatDataController: ChatDataListener {
 
         // disable caching while doing a hiastory load
         isBufferingEnabled = false
+        
+        changeListener?.controllerWillLoadContent(self)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadHistoryForConsumerAccount consumerAccountId: String, forChat chatId: String) {
@@ -484,6 +500,10 @@ extension ChatDataController: ChatDataListener {
             }
         case .text:
             if let viewModel = controlForText(from: historyExchange) {
+                addHistoryToCollection(viewModel)
+            }
+        case .outputImage:
+            if let viewModel = controlForImage(from: historyExchange) {
                 addHistoryToCollection(viewModel)
             }
         default:
@@ -582,6 +602,21 @@ extension ChatDataController: ChatDataListener {
         }
         
         return TextControlViewModel(id: CBData.uuidString(), value: value)
+    }
+    
+    func controlForImage(from messageExchange: MessageExchange) -> OutputImageViewModel? {
+        guard messageExchange.isComplete,
+            let textControl = messageExchange.message as? OutputImageControlMessage,
+            let value = textControl.data.richControl?.value else {
+                Logger.default.logError("MessageExchange is not valid in imageControlFromMessageExchange method - skipping!")
+                return nil
+        }
+        
+        if let url = URL(string: value) {
+            return OutputImageViewModel(id: CBData.uuidString(), value: url)
+        }
+        
+        return nil
     }
 }
 

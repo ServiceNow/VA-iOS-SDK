@@ -8,6 +8,10 @@
 
 import AlamofireImage
 
+protocol OutputImageControlDelegate: ControlDelegate {
+    func controlDidFinishImageDownload(_ control: OutputImageControl)
+}
+
 class OutputImageControl: ControlProtocol {
     
     var model: ControlViewModel
@@ -19,6 +23,10 @@ class OutputImageControl: ControlProtocol {
     }
     
     weak var delegate: ControlDelegate?
+    
+    private var outputImageDelegate: OutputImageControlDelegate? {
+        return delegate as? OutputImageControlDelegate
+    }
     
     var imageDownloader: ImageDownloader? {
         didSet {
@@ -38,6 +46,9 @@ class OutputImageControl: ControlProtocol {
                 // FIXME: Handle error / no image case
                 
                 self?.imageViewController.image = response.value
+                
+                guard let strongSelf = self else { return }
+                self?.outputImageDelegate?.controlDidFinishImageDownload(strongSelf)
             }
         }
     }
