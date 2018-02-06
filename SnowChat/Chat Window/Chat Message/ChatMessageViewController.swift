@@ -10,8 +10,18 @@ import UIKit
 
 class ChatMessageViewController: UIViewController, ControlPresentable {
     
+    @IBOutlet private weak var bubbleView: BubbleView!
+    @IBOutlet private weak var agentImageView: UIImageView!
+    @IBOutlet private weak var agentBubbleLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var bubbleLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var bubbleTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var agentImageTopConstraint: NSLayoutConstraint!
+    
     var controlCache: ControlCache?
     var resourceProvider: ControlResourceProvider?
+    
+    private let controlMaxWidth: CGFloat = 250
+    private(set) var uiControl: ControlProtocol?
     
     var model: ChatMessageModel? {
         didSet {
@@ -31,16 +41,6 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
             uiControl = control
         }
     }
-    
-    private let controlMaxWidth: CGFloat = 250
-    private(set) var uiControl: ControlProtocol?
-    
-    @IBOutlet private weak var bubbleView: BubbleView!
-    @IBOutlet private weak var agentImageView: UIImageView!
-    @IBOutlet private weak var agentBubbleLeadingConstraint: NSLayoutConstraint!
-    @IBOutlet private weak var bubbleLeadingConstraint: NSLayoutConstraint!
-    @IBOutlet private weak var bubbleTrailingConstraint: NSLayoutConstraint!
-    @IBOutlet private weak var agentImageTopConstraint: NSLayoutConstraint!
     
     func configure(withChatMessageModel model: ChatMessageModel, controlCache cache: ControlCache, controlDelegate delegate: ControlDelegate, resourceProvider provider: ControlResourceProvider) {
         self.controlCache = cache
