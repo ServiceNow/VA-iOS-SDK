@@ -20,12 +20,7 @@ extension APIManager {
         
         let parameters: Parameters = [ "deviceId": sessionInfo.deviceId,
                                        "channelId": "/cs/messages/" + chatId,
-                                       "vendorId": sessionInfo.vendor.vendorId,
-                                       "consumerId": sessionInfo.user.consumerId,
-                                       "consumerAccountId": sessionInfo.user.consumerAccountId,
-                                       "requestTime": Int((Date().timeIntervalSince1970 * 1000).rounded()),
-                                       "direction": "inbound",
-                                       "deviceType": "ios"]
+                                       "vendorId": sessionInfo.vendor.vendorId]
         
         sessionManager.request(apiURLWithPath("cs/session"),
             method: .post,

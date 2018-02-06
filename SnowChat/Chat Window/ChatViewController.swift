@@ -86,7 +86,6 @@ public class ChatViewController: UIViewController {
 }
 
 extension ChatViewController: ChatEventListener {
-    
     func chatterbox(_ chatterbox: Chatterbox, didStartTopic topicInfo: TopicInfo, forChat chatId: String) {
         conversationViewController?.chatterbox(chatterbox, didStartTopic: topicInfo, forChat: chatId)
     }
@@ -97,5 +96,9 @@ extension ChatViewController: ChatEventListener {
     
     func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topicInfo: TopicInfo, forChat chatId: String) {
         conversationViewController?.chatterbox(chatterbox, didFinishTopic: topicInfo, forChat: chatId)
+    }
+
+    func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
+        conversationViewController?.chatterbox(chatterbox, didEstablishUserSession: sessionId, forChat: chatId)
     }
 }

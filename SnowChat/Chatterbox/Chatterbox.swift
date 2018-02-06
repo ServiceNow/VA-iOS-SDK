@@ -60,10 +60,10 @@ class Chatterbox {
         return "/cs/messages/\(chatId)"
     }
     
-    private let chatId = CBData.uuidString()
+    internal let chatId = CBData.uuidString()
     private var chatSubscription: NOWAMBSubscription?
     
-    private let instance: ServerInstance
+    internal let instance: ServerInstance
     
     private(set) internal lazy var apiManager: APIManager = {
         return APIManager(instance: instance, transportListener: self)
@@ -98,6 +98,9 @@ class Chatterbox {
                                 return
                             }
                             self.contextualActions = actionMessage
+                            
+                            self.chatEventListener?.chatterbox(self, didEstablishUserSession: self.session?.id ?? "UNKNOWN_SESSION_ID", forChat: self.chatId)
+                            
                             success(actionMessage)
                             return
                         }
@@ -271,13 +274,7 @@ class Chatterbox {
             conversationContext.systemConversationId = initEvent.data.conversationId
             conversationContext.sessionId = initEvent.data.sessionId
             
-            loadDataFromPersistence { error in
-                guard error == nil else {
-                    self.logger.logDebug("Error in loading from persistence: \(error.debugDescription)")
-                    if let completion = self.handshakeCompletedHandler { completion(nil) }
-                    return
-                }
-            }
+            self.messageHandler = self.topicSelectionHandler
         default:
             logger.logError("Unexpected loginStage: \(initEvent.data.actionMessage.loginStage)")
         }
@@ -388,7 +385,9 @@ class Chatterbox {
     }
     
     private func resumeUserTopic(topicInfo: TopicInfo) {
-        beginConversation(topicInfo: topicInfo)
+        if conversationContext.conversationId != topicInfo.conversationId {
+            beginConversation(topicInfo: topicInfo)
+        }
         chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: chatId)
     }
     
@@ -558,12 +557,9 @@ extension Chatterbox {
         
         switch conversation.state {
         case .inProgress:
-            logger.logInfo("Conversation is in progress")
-            if conversationContext.conversationId != conversationId {
-                // its a different conversation! start it...
-                let topicInfo = TopicInfo(topicId: "TOPIC_ID", conversationId: conversationId)
-                resumeUserTopic(topicInfo: topicInfo)
-            }
+            logger.logInfo("Conversation \(conversationId) is in progress")
+            let topicInfo = TopicInfo(topicId: "TOPIC_ID", conversationId: conversationId)
+            resumeUserTopic(topicInfo: topicInfo)
         case .completed:
             logger.logInfo("Conversation is no longer in progress - ending current conversations")
             finishTopic(conversationId)
