@@ -171,8 +171,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                     self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .top)
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
-                case .update(let index, _, let model):
-                    if model.controlModel.type == .button {
+                case .update(let index, let oldModel, let model):
+                    if model.controlModel.type == .button || oldModel.controlModel.type == .button {
                         self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                     } else {
                         updateModel(model, atIndex: index)
@@ -353,6 +353,7 @@ extension ConversationViewController {
         if chatMessageModel.controlModel.type == .button {
             let multiPartCell = tableView.dequeueReusableCell(withIdentifier: MultiPartControlViewCell.cellIdentifier, for: indexPath) as! MultiPartControlViewCell
             multiPartCell.configure(with: chatMessageModel.controlModel as! ButtonControlViewModel)
+            multiPartCell.control?.delegate = self
             cell = multiPartCell
         } else {
             let conversationCell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell

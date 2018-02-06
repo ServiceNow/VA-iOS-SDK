@@ -136,6 +136,10 @@ class ChatDataController {
     }
     
     fileprivate func pushTypingIndicator() {
+        if isShowingTypingIndicator() {
+            return
+        }
+        
         let model = ChatMessageModel(model: typingIndicator, location: BubbleLocation.left)
         addControlToCollection(model)
         
@@ -359,8 +363,8 @@ extension ChatDataController: ChatDataListener {
                 messageExchange.response is MultiSelectControlMessage else { fatalError("Could not view message as MultiSelectControlMessage in ChatDataListener") }
             self.didCompleteMultiSelectExchange(messageExchange, forChat: chatId)
         case .multiPart:
-//            guard messageExchange.message is MultiPartControlMessage,
-//                messageExchange.response is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
+            guard messageExchange.message is MultiPartControlMessage,
+                messageExchange.response is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
             self.didCompleteMultiPartExchange(messageExchange, forChat: chatId)
         default:
             Logger.default.logError("Unhandled control type in ChatDataListener didCompleteMessageExchange: \(messageExchange.message.controlType)")
@@ -419,7 +423,8 @@ extension ChatDataController: ChatDataListener {
     }
     
     private func didCompleteMultiPartExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        // Set flag on chat message model to indicate that MultiPart is answered
+        let typingIndicatorModel = ChatMessageModel(model: typingIndicator, location: BubbleLocation.left)
+        replaceLastControl(with: typingIndicatorModel)        
     }
     
     // MARK: - ChatDataListener (bulk uopdates / history)

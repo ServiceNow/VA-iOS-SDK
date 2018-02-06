@@ -43,7 +43,7 @@ struct MultiPartControlMessage: Codable, CBControlData {
         let navigationBtnLabel: String
     }
     
-    let type: String = "systemTextMessage"
+    let type: String = "consumerTextMessage"
     var data: RichControlData<ControlWrapper<String, MultiFlowMetadata>>
     
     // define the properties that we decode / encode

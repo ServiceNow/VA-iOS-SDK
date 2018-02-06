@@ -35,7 +35,7 @@ struct OutputTextControlMessage: Codable, CBControlData {
         return data.sendTime
     }
     
-    let type: String = "SystemTextMessage"
+    let type: String = "systemTextMessage"
     var data: RichControlData<ControlWrapper<String, UIMetadata>>
     
     // define the properties that we decode / encode
