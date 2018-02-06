@@ -313,6 +313,12 @@ extension ChatDataController: ChatDataListener {
         
         if let messageModel = ChatMessageModel.model(withMessage: message) {
             bufferControlMessage(messageModel)
+            
+            // show Button at after nested control of multipart is presented
+            if message.controlType == .multiPart, let buttonModel = ChatMessageModel.buttonModel(withMessage: message as! MultiPartControlMessage) {
+                bufferControlMessage(buttonModel)
+            }
+            
         } else {
             dataConversionError(controlId: message.uniqueId, controlType: message.controlType)
         }

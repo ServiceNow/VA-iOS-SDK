@@ -21,7 +21,6 @@ enum BubbleLocation {
 }
 
 class ChatMessageModel {
-    var auxiliaryControlModel: ControlViewModel?
     let controlModel: ControlViewModel
     let location: BubbleLocation
     let requiresInput: Bool
@@ -124,25 +123,31 @@ extension ChatMessageModel {
     }
     
     static func model(withMessage message: MultiPartControlMessage) -> ChatMessageModel? {
-        guard let title = message.data.richControl?.uiMetadata?.navigationBtnLabel,
-            let index = message.data.richControl?.uiMetadata?.index,
-            let nestedControlValue = message.data.richControl?.content?.value,
+        guard let nestedControlValue = message.data.richControl?.content?.value,
             let nestedControlType = message.nestedControlType else {
                 return nil
         }
         
-        let multiPartModel = ButtonControlViewModel(id: message.id, label: title, value: index)
         let direction = message.data.direction
-        let snowViewModel = ChatMessageModel(model: multiPartModel, location: BubbleLocation(direction: direction))
         
-        var controlModel: ControlViewModel?
         if nestedControlType == .text {
-            controlModel = TextControlViewModel(id: CBData.uuidString(), value: nestedControlValue)
-        } else {
-            print("Something went wrong")
+            let controlModel = TextControlViewModel(id: CBData.uuidString(), value: nestedControlValue)
+            let textChatModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
+            return textChatModel
         }
         
-        snowViewModel.auxiliaryControlModel = controlModel
-        return snowViewModel
+        return nil
+    }
+    
+    static func buttonModel(withMessage message: MultiPartControlMessage) -> ChatMessageModel? {
+        guard let title = message.data.richControl?.uiMetadata?.navigationBtnLabel,
+            let index = message.data.richControl?.uiMetadata?.index else {
+                return nil
+        }
+        
+        let buttonModel = ButtonControlViewModel(id: message.id, label: title, value: index)
+        let direction = message.data.direction
+        let buttonChatModel = ChatMessageModel(model: buttonModel, location: BubbleLocation(direction: direction))
+        return buttonChatModel
     }
 }

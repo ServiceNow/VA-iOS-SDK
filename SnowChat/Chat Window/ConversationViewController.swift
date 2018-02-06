@@ -101,6 +101,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.estimatedRowHeight = 200
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
+        tableView.register(MultiPartControlViewCell.self, forCellReuseIdentifier: MultiPartControlViewCell.cellIdentifier)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -171,7 +172,11 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 case .update(let index, _, let model):
-                    updateModel(model, atIndex: index)
+                    if model.controlModel.type == .button {
+                        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    } else {
+                        updateModel(model, atIndex: index)
+                    }
                 }
             })
         }
@@ -338,9 +343,26 @@ extension ConversationViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if tableView == autoCompletionView, let handler = autocompleteHandler {
             return handler.cellForRowAt(indexPath)
-        } else {
-           return conversationCellForRowAt(indexPath)
         }
+            
+        guard let chatMessageModel = dataController.controlForIndex(indexPath.row) else {
+            return UITableViewCell()
+        }
+        
+        let cell: UITableViewCell
+        if chatMessageModel.controlModel.type == .button {
+            let multiPartCell = tableView.dequeueReusableCell(withIdentifier: MultiPartControlViewCell.cellIdentifier, for: indexPath) as! MultiPartControlViewCell
+            multiPartCell.configure(with: chatMessageModel.controlModel as! ButtonControlViewModel)
+            cell = multiPartCell
+        } else {
+            let conversationCell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
+            configureConversationCell(conversationCell, messageModel: chatMessageModel, at: indexPath)
+            cell = conversationCell
+        }
+        
+        cell.selectionStyle = .none
+        cell.transform = tableView.transform
+        return cell
     }
     
     private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
@@ -358,8 +380,6 @@ extension ConversationViewController {
         cell.messageViewController = messageViewController
         messageViewController.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self)
         messageViewController.didMove(toParentViewController: self)
-        cell.selectionStyle = .none
-        cell.transform = tableView.transform
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
