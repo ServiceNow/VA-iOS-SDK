@@ -59,10 +59,10 @@ class Chatterbox {
         return "/cs/messages/\(chatId)"
     }
     
-    private let chatId = CBData.uuidString()
+    internal let chatId = CBData.uuidString()
     private var chatSubscription: NOWAMBSubscription?
     
-    private let instance: ServerInstance
+    internal let instance: ServerInstance
     
     private(set) internal lazy var apiManager: APIManager = {
         return APIManager(instance: instance)
@@ -97,6 +97,9 @@ class Chatterbox {
                                 return
                             }
                             self.contextualActions = actionMessage
+                            
+                            self.chatEventListener?.chatterbox(self, didEstablishUserSession: self.session?.id ?? "UNKNOWN_SESSION_ID", forChat: self.chatId)
+                            
                             success(actionMessage)
                             return
                         }
@@ -257,20 +260,7 @@ class Chatterbox {
                 conversationContext.systemConversationId = initEvent.data.conversationId
                 conversationContext.sessionId = initEvent.data.sessionId
                 
-                loadDataFromPersistence { error in
-                    guard error == nil else {
-                        self.logger.logDebug("Error in loading from persistence: \(error.debugDescription)")
-                        
-                        if let completion = self.handshakeCompletedHandler {
-                            completion(nil)
-                        }
-                        return
-                    }
-
-                    // handshake done, setup handler for the topic selection
-                    //  NOTE: handshakeCompletedHandler is called after topic selection, via the topicSelectionHandler
-                    self.messageHandler = self.topicSelectionHandler
-                }
+                self.messageHandler = self.topicSelectionHandler
             }
         }
     }
@@ -615,10 +605,7 @@ extension Chatterbox {
                     }
                     
                     self.logger.logDebug("--> Conversation \(conversation.uniqueId) refreshed: \(conversation)")
-                    
-                    self.chatDataListener?.chatterbox(self, willLoadConversation: conversation.uniqueId, forChat: self.chatId)
                     self.storeConversationAndPublish(conversation)
-                    self.chatDataListener?.chatterbox(self, didLoadConversation: conversation.uniqueId, forChat: self.chatId)
                 }
                 
                 self.chatDataListener?.chatterbox(self, didLoadHistoryForConsumerAccount: consumerId, forChat: self.chatId)

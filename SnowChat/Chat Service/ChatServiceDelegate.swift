@@ -8,14 +8,14 @@
 
 import Foundation
 
-struct ChatUserCredentials {
+public struct ChatUserCredentials {
     var username: String
     var password: String
     
     var vendorId: String
 }
 
-protocol ChatServiceDelegate: AnyObject {
+public protocol ChatServiceDelegate: AnyObject {
     
-    func userCredentials() -> ChatUserCredentials
+    func userCredentials(for chatService: ChatService) -> ChatUserCredentials?
 }
