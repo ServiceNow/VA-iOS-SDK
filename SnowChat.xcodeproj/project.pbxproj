@@ -55,7 +55,6 @@
 		572A4E421FCF07150081318D /* PickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572A4E411FCF07150081318D /* PickerTableViewCell.swift */; };
 		572A4E441FCF70070081318D /* BubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572A4E431FCF70070081318D /* BubbleView.swift */; };
 		572C6BC1200C33BC00F142E2 /* ControlCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C6BC0200C33BC00F142E2 /* ControlCache.swift */; };
-		572F2A4A20263E02004EFEFF /* BottomControlContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572F2A4920263E02004EFEFF /* BottomControlContainerView.swift */; };
 		572FAC181FC47A9C00B0B956 /* MultiSelectControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */; };
 		572FAC1A1FC47B5600B0B956 /* MultiSelectControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC191FC47B5600B0B956 /* MultiSelectControlViewModel.swift */; };
 		573F78F7202275000008391D /* MultiPartControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573F78F6202275000008391D /* MultiPartControl.swift */; };
@@ -194,7 +193,6 @@
 		572A4E411FCF07150081318D /* PickerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerTableViewCell.swift; sourceTree = "<group>"; };
 		572A4E431FCF70070081318D /* BubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleView.swift; sourceTree = "<group>"; };
 		572C6BC0200C33BC00F142E2 /* ControlCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlCache.swift; sourceTree = "<group>"; };
-		572F2A4920263E02004EFEFF /* BottomControlContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomControlContainerView.swift; sourceTree = "<group>"; };
 		572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectControl.swift; sourceTree = "<group>"; };
 		572FAC191FC47B5600B0B956 /* MultiSelectControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectControlViewModel.swift; sourceTree = "<group>"; };
 		573F78F6202275000008391D /* MultiPartControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPartControl.swift; sourceTree = "<group>"; };
@@ -341,7 +339,6 @@
 			children = (
 				57D1DB6A1FEAC94A00082F78 /* ConversationViewCell.swift */,
 				573F78FC202288F40008391D /* MultiPartControlViewCell.swift */,
-				572F2A4920263E02004EFEFF /* BottomControlContainerView.swift */,
 			);
 			path = "Supporting Views";
 			sourceTree = "<group>";
@@ -1080,7 +1077,6 @@
 				572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */,
 				5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */,
 				C43479EE1FE850D20091806D /* AutoCompleteHandler.swift in Sources */,
-				572F2A4A20263E02004EFEFF /* BottomControlContainerView.swift in Sources */,
 				C4A774AD1FE0607D00B6DF68 /* ChatServiceDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
