@@ -224,7 +224,7 @@ class ChatDataController {
             var multiPartMessage = lastPendingMessage as? MultiPartControlMessage {
             
             multiPartMessage.id = multiPartViewModel.id
-            // TODO: increment index
+            multiPartMessage.data.richControl?.uiMetadata?.index = multiPartViewModel.value + 1
             chatterbox.update(control: multiPartMessage)
         }
     }
@@ -352,10 +352,10 @@ extension ChatDataController: ChatDataListener {
             guard messageExchange.message is MultiSelectControlMessage,
                 messageExchange.response is MultiSelectControlMessage else { fatalError("Could not view message as MultiSelectControlMessage in ChatDataListener") }
             self.didCompleteMultiSelectExchange(messageExchange, forChat: chatId)
-//        case .multiPart:
+        case .multiPart:
 //            guard messageExchange.message is MultiPartControlMessage,
 //                messageExchange.response is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
-//            self.didCompleteMultiSelectExchange(messageExchange, forChat: chatId)
+            self.didCompleteMultiPartExchange(messageExchange, forChat: chatId)
         default:
             Logger.default.logError("Unhandled control type in ChatDataListener didCompleteMessageExchange: \(messageExchange.message.controlType)")
         }
@@ -410,6 +410,10 @@ extension ChatDataController: ChatDataListener {
             replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
             presentControlData(ChatMessageModel(model: answerModel, location: .right))
         }
+    }
+    
+    private func didCompleteMultiPartExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
+        // Set flag on chat message model to indicate that MultiPart is answered
     }
     
     // MARK: - ChatDataListener (bulk uopdates / history)

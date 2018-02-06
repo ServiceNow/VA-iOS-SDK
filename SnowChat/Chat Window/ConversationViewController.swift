@@ -31,18 +31,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     private var canFetchOlderMessages = false
     private var timeLastHistoryFetch: Date = Date()
     
-    private lazy var bottomControlContainerView: BottomControlContainerView = {
-        let bottomContainer = BottomControlContainerView()
-        bottomContainer.backgroundColor = UIColor.red
-        bottomContainer.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(bottomContainer)
-        NSLayoutConstraint.activate([bottomContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                     bottomContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     bottomContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-                                     bottomContainer.heightAnchor.constraint(equalToConstant: 100)])
-        return bottomContainer
-    }()
-    
     override var tableView: UITableView {
         // swiftlint:disable:next force_unwrapping
         return super.tableView!
@@ -114,15 +102,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
     }
-    
-    // MARK: BottomControlContainerView
-    
-    private func setBottomControlContainerHidden(_ hidden: Bool, animated: Bool) {
-        bottomControlContainerView.isHidden = hidden
-        if hidden == false {
-            view.bringSubview(toFront: bottomControlContainerView)
-        }
-    }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -184,24 +163,14 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType]) {
         manageInputControl()
         
-        func updateBottomControlWithModel(_ model: ChatMessageModel) {
-            if model.controlModel.type == .multiPart {
-                bottomControlContainerView.model = model
-                bottomControlContainerView.control?.delegate = self
-                setBottomControlContainerHidden(false, animated: true)
-            }
-        }
-        
         func modelUpdates() {
             changes.forEach({ [weak self] change in
                 switch change {
-                case .insert(let index, let model):
-                    updateBottomControlWithModel(model)
+                case .insert(let index, _):
                     self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .top)
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 case .update(let index, _, let model):
-                    updateBottomControlWithModel(model)
                     updateModel(model, atIndex: index)
                 }
             })

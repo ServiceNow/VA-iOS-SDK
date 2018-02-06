@@ -39,7 +39,7 @@ struct MultiPartControlMessage: Codable, CBControlData {
     }
     
     struct MultiFlowMetadata: Codable {
-        let index: Int
+        var index: Int
         let navigationBtnLabel: String
     }
     
