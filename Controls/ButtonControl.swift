@@ -58,7 +58,11 @@ class ButtonControl: ControlProtocol {
     private func setupMoreButton() {
         let moreButton = UIButton(type: .custom)
         moreButton.titleLabel?.font = .preferredFont(forTextStyle: .body)
+        moreButton.layer.cornerRadius = 4
+        moreButton.layer.borderColor = UIColor.agentBubbleBackgroundColor.cgColor
+        moreButton.layer.borderWidth = 1
         moreButton.setTitle(multiPartModel.label, for: .normal)
+        moreButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 15, bottom: 10, right: 15)
         moreButton.setTitleColor(.controlHeaderTextColor, for: .normal)
         moreButton.titleLabel?.adjustsFontSizeToFitWidth = true
         moreButton.translatesAutoresizingMaskIntoConstraints = false

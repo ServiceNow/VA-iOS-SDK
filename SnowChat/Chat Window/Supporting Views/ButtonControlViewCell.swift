@@ -33,8 +33,8 @@ class ButtonControlViewCell: UITableViewCell, ControlPresentable {
         contentView.addSubview(controlView)
         NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
                                      controlView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-                                     controlView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15),
-                                     controlView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15)])
+                                     controlView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
+                                     controlView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)])
         self.control = control
         layoutIfNeeded()
     }
