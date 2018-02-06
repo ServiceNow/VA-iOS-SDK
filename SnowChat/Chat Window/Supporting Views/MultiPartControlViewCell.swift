@@ -14,7 +14,7 @@ class MultiPartControlViewCell: UITableViewCell, ControlPresentable {
     
     private(set) var control: ControlProtocol?
     
-    func configure(with model: MultiPartControlViewModel) {
+    func configure(with model: ButtonControlViewModel) {
         let control = ControlsUtil.controlForViewModel(model)
         addUIControl(control, at: .left)
     }

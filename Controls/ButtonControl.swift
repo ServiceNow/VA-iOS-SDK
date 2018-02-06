@@ -6,7 +6,7 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-class MultiPartControlViewModel: ControlViewModel, ValueRepresentable {
+class ButtonControlViewModel: ControlViewModel, ValueRepresentable {
     
     var label: String?
     
@@ -14,7 +14,7 @@ class MultiPartControlViewModel: ControlViewModel, ValueRepresentable {
     
     let id: String
     
-    let type: ControlType = .multiPart
+    let type: ControlType = .button
     
     var value: Int
     
@@ -33,12 +33,12 @@ class MultiPartControlViewModel: ControlViewModel, ValueRepresentable {
     }
 }
 
-class MultiPartControl: ControlProtocol {
+class ButtonControl: ControlProtocol {
     
     var model: ControlViewModel
     
-    private var multiPartModel: MultiPartControlViewModel {
-        return model as! MultiPartControlViewModel
+    private var multiPartModel: ButtonControlViewModel {
+        return model as! ButtonControlViewModel
     }
     
     var viewController: UIViewController
@@ -46,7 +46,7 @@ class MultiPartControl: ControlProtocol {
     weak var delegate: ControlDelegate?
     
     required init(model: ControlViewModel) {
-        guard let multiPartModel = model as? MultiPartControlViewModel else {
+        guard let multiPartModel = model as? ButtonControlViewModel else {
             fatalError("Tried to assign wrong model type")
         }
         

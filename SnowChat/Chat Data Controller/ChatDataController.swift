@@ -220,7 +220,7 @@ class ChatDataController {
     }
     
     fileprivate func updateMultiPartData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
-        if let multiPartViewModel = data as? MultiPartControlViewModel,
+        if let multiPartViewModel = data as? ButtonControlViewModel,
             var multiPartMessage = lastPendingMessage as? MultiPartControlMessage {
             
             multiPartMessage.id = multiPartViewModel.id

@@ -131,7 +131,7 @@ extension ChatMessageModel {
                 return nil
         }
         
-        let multiPartModel = MultiPartControlViewModel(id: message.id, label: title, value: index)
+        let multiPartModel = ButtonControlViewModel(id: message.id, label: title, value: index)
         let direction = message.data.direction
         let snowViewModel = ChatMessageModel(model: multiPartModel, location: BubbleLocation(direction: direction))
         

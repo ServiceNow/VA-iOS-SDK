@@ -21,8 +21,8 @@ class ControlsUtil {
             return SingleSelectControl(model: model)
         case .typingIndicator:
             return TypingIndicatorControl()
-        case .multiPart:
-            return MultiPartControl(model: model)
+        case .button:
+            return ButtonControl(model: model)
         }
     }
 }
