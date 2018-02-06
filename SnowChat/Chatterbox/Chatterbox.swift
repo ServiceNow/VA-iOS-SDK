@@ -572,30 +572,9 @@ extension Chatterbox {
         }
     }
     
-    fileprivate func removeLastResponse() -> Bool {
-        if let currentConversationId = conversationContext.conversationId,
-           let currentConversation = chatStore.conversation(forId: currentConversationId),
-           let currentExchange = currentConversation.newestExchange(),
-           let response = currentExchange.response {
-            
-            let didRemove = chatStore.removeResponse(from: currentExchange, for: currentConversationId)
-            if didRemove {
-                chatDataListener?.chatterbox(self, didRemoveControlMessage: response, forChat: chatId)
-                return true
-            } else {
-                logger.logError("Failed to remove response \(currentExchange) for conversation \(currentConversationId)")
-            }
-        }
-        return false
-    }
-    
-    fileprivate func syncNoConversationsReturned(_ newestExchange: MessageExchange) {
-        // have to remove our last response (if there was one) as it never made it
-        if newestExchange.response != nil {
-            if removeLastResponse() {
-                return
-            }
-        }
+    fileprivate func syncNoConversationsReturned() {
+        // if no messages were returned, then we have the latest messages, just need to update the input mode
+        logger.logDebug("Sync with NO conversation returned - nothing to do!")
     }
     
     fileprivate func syncCurrentConversation(_ receivedConversation: Conversation, _ newestExchange: MessageExchange) {
@@ -629,11 +608,15 @@ extension Chatterbox {
         
         let newestMessage = newestExchange.message
                 
-        apiManager.fetchNewerConversations(forConsumer: consumerAccountId, beforeMessage: newestMessage.messageId, completionHandler: { [weak self] conversations in
+        apiManager.fetchNewerConversations(forConsumer: consumerAccountId, beforeMessage: newestMessage.messageId, completionHandler: { [weak self] conversationsFromService in
             guard let strongSelf = self else { return }
 
+            // HACK: service is returning user and system conversations, so we remove all system topics here
+            //       remove this when the service is fixed
+            let conversations = strongSelf.filterSystemTopics(conversationsFromService)
+            
             if conversations.count == 0 {
-                strongSelf.syncNoConversationsReturned(newestExchange)
+                strongSelf.syncNoConversationsReturned()
                 completion(0)
                 
             } else if conversations.count == 1 && conversations.first?.conversationId == conversationId {

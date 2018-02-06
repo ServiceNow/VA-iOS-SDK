@@ -120,14 +120,6 @@ class ChatDataController {
         controlData = [data] + controlData
     }
     
-    fileprivate func removeControlFromCollection(_ index: Int) {
-        guard index < controlData.count else {
-            logger.logError("Invalid index in removeControlFromCollection! \(index) exceeds count \(controlData.count)")
-            return
-        }
-        controlData.remove(at: index)
-    }
-    
     fileprivate func addHistoryToCollection(_ viewModels: (message: ControlViewModel, response: ControlViewModel)) {
         // add response, then message, to the tail-end of the control data
         controlData.append(ChatMessageModel(model: viewModels.response, location: BubbleLocation.right))
@@ -146,12 +138,6 @@ class ChatDataController {
             addChange(.insert(index: 0, model: data))
             applyChanges()
         }
-    }
-    
-    fileprivate func removeControlData(atIndex index: Int) {
-        removeControlFromCollection(index)
-        addChange(.delete(index: index))
-        applyChanges()
     }
     
     fileprivate func pushTypingIndicator() {
@@ -323,24 +309,6 @@ extension ChatDataController: ChatDataListener {
             bufferControlMessage(messageModel)
         } else {
             dataConversionError(controlId: message.uniqueId, controlType: message.controlType)
-        }
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didRemoveControlMessage message: CBControlData, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id else {
-            return
-        }
-        
-        // if typing indicator is showing, remove it
-        if isShowingTypingIndicator() {
-            removeControlData(atIndex: 0)
-        }
-        
-        // remove the first control
-        if let control = controlData.first, control.controlModel.id == message.messageId {
-            removeControlData(atIndex: 0)
-        } else {
-            logger.logError("Unable to remove message in didRemoveControlMessage!")
         }
     }
     

@@ -14,7 +14,6 @@ protocol ChatDataListener: AnyObject {
     // Notifies listener that a new control message was delivered from the chat service
     //
     func chatterbox(_ chatterbox: Chatterbox, didReceiveControlMessage message: CBControlData, forChat chatId: String)
-    func chatterbox(_ chatterbox: Chatterbox, didRemoveControlMessage message: CBControlData, forChat chatId: String)
 
     // Notifies listener that a MessageExchange was complete, meaning the user responded to a request for input
     //
