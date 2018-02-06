@@ -42,7 +42,8 @@ class ChatDataController {
     private var bufferProcessingTimer: Timer?
     private var isBufferingEnabled = true
     private var changeSet = [ModelChangeType]()
-    
+    internal let logger = Logger.logger(for: "ChatDataController")
+
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
         self.chatterbox.chatDataListener = self
@@ -77,16 +78,18 @@ class ChatDataController {
     }
     
     func fetchOlderMessages(_ completion: @escaping (Int) -> Void) {
-        Logger.default.logDebug("Fetching older messages...")
+        logger.logDebug("Fetching older messages...")
         
         chatterbox.fetchOlderMessages { count in
-            Logger.default.logDebug("Fetch complete with \(count) messages")            
+            self.logger.logDebug("Fetch complete with \(count) messages")
             completion(count)
         }
     }
     
     func syncConversation() {
-        chatterbox.syncConversation()
+        chatterbox.syncConversation { count in
+            self.logger.logInfo("Synchronized \(count) conversations")
+        }
     }
     
     private func addChange(_ type: ModelChangeType) {
@@ -102,7 +105,7 @@ class ChatDataController {
     
     fileprivate func replaceLastControl(with model: ChatMessageModel) {
         guard controlData.count > 0 else {
-            Logger.default.logError("Attempt to replace last control when no control is present!")
+            logger.logError("Attempt to replace last control when no control is present!")
             return
         }
         
@@ -115,6 +118,14 @@ class ChatDataController {
     fileprivate func addControlToCollection(_ data: ChatMessageModel) {
         // add prepends to the front of the array, as our list is reversed
         controlData = [data] + controlData
+    }
+    
+    fileprivate func removeControlFromCollection(_ index: Int) {
+        guard index < controlData.count else {
+            logger.logError("Invalid index in removeControlFromCollection! \(index) exceeds count \(controlData.count)")
+            return
+        }
+        controlData.remove(at: index)
     }
     
     fileprivate func addHistoryToCollection(_ viewModels: (message: ControlViewModel, response: ControlViewModel)) {
@@ -137,6 +148,12 @@ class ChatDataController {
         }
     }
     
+    fileprivate func removeControlData(atIndex index: Int) {
+        removeControlFromCollection(index)
+        addChange(.delete(index: index))
+        applyChanges()
+    }
+    
     fileprivate func pushTypingIndicator() {
         let model = ChatMessageModel(model: typingIndicator, location: BubbleLocation.left)
         addControlToCollection(model)
@@ -154,7 +171,7 @@ class ChatDataController {
     
     fileprivate func updateChatterbox(_ data: ControlViewModel) {
         guard let conversationId = self.conversationId else {
-            Logger.default.logError("No ConversationID in updateChatterbox!")
+            logger.logError("No ConversationID in updateChatterbox!")
             return
         }
         
@@ -169,13 +186,10 @@ class ChatDataController {
             case .multiSelect:
                 updateMultiSelectData(data, lastPendingMessage)
             default:
-                Logger.default.logDebug("Unhandled control type: \(lastPendingMessage.controlType)")
+                logger.logDebug("Unhandled control type: \(lastPendingMessage.controlType)")
                 return
             }
         }
-        
-        // AFTER updating the controls, push the typing indicator onto the display stack
-        pushTypingIndicator()
     }
     
     fileprivate func updateBooleanData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
@@ -312,8 +326,26 @@ extension ChatDataController: ChatDataListener {
         }
     }
     
+    func chatterbox(_ chatterbox: Chatterbox, didRemoveControlMessage message: CBControlData, forChat chatId: String) {
+        guard chatterbox.id == self.chatterbox.id else {
+            return
+        }
+        
+        // if typing indicator is showing, remove it
+        if isShowingTypingIndicator() {
+            removeControlData(atIndex: 0)
+        }
+        
+        // remove the first control
+        if let control = controlData.first, control.controlModel.id == message.messageId {
+            removeControlData(atIndex: 0)
+        } else {
+            logger.logError("Unable to remove message in didRemoveControlMessage!")
+        }
+    }
+    
     private func dataConversionError(controlId: String, controlType: CBControlType) {
-        Logger.default.logError("Data Conversion Error: \(controlId) : \(controlType)")
+        logger.logError("Data Conversion Error: \(controlId) : \(controlType)")
     }
     
     // MARK: - ChatDataListener (from client)
@@ -325,7 +357,7 @@ extension ChatDataController: ChatDataListener {
         }
         
         guard messageExchange.isComplete else {
-            Logger.default.logError("MessageExchange is not complete in didCompleteMessageExchange: skipping!")
+            logger.logError("MessageExchange is not complete in didCompleteMessageExchange: skipping!")
             return
         }
         
@@ -347,8 +379,11 @@ extension ChatDataController: ChatDataListener {
                 messageExchange.response is MultiSelectControlMessage else { fatalError("Could not view message as MultiSelectControlMessage in ChatDataListener") }
             self.didCompleteMultiSelectExchange(messageExchange, forChat: chatId)
         default:
-            Logger.default.logError("Unhandled control type in ChatDataListener didCompleteMessageExchange: \(messageExchange.message.controlType)")
+            logger.logError("Unhandled control type in ChatDataListener didCompleteMessageExchange: \(messageExchange.message.controlType)")
         }
+        
+        // we updated the controls for the response, so push a typing indicator while we wait for a new control to come in
+        pushTypingIndicator()
     }
     
     private func didCompleteBooleanExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
@@ -405,22 +440,22 @@ extension ChatDataController: ChatDataListener {
     // MARK: - ChatDataListener (bulk uopdates / history)
     
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversation conversationId: String, forChat chatId: String) {
-        Logger.default.logInfo("Conversation \(conversationId) will load")
+        logger.logInfo("Conversation \(conversationId) will load")
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
-        Logger.default.logInfo("Conversation \(conversationId) did load")
+        logger.logInfo("Conversation \(conversationId) did load")
     }
 
     func chatterbox(_ chatterbox: Chatterbox, willLoadHistoryForConsumerAccount consumerAccountId: String, forChat chatId: String) {
-        Logger.default.logInfo("History will load for \(consumerAccountId) - disabling buffering...")
+        logger.logInfo("History will load for \(consumerAccountId) - disabling buffering...")
 
         // disable caching while doing a hiastory load
         isBufferingEnabled = false
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadHistoryForConsumerAccount consumerAccountId: String, forChat chatId: String) {
-        Logger.default.logInfo("History load completed for \(consumerAccountId) - re-enabling buffering.")
+        logger.logInfo("History load completed for \(consumerAccountId) - re-enabling buffering.")
         
         // see if there are any controls to show - if not, add the welcome message
         // 1 because we are showing typing indicator
@@ -462,7 +497,7 @@ extension ChatDataController: ChatDataListener {
                 addHistoryToCollection(viewModel)
             }
         default:
-            Logger.default.logInfo("Unhandled control type in didReceiveHistory: \(historyExchange.message.controlType)")
+            logger.logInfo("Unhandled control type in didReceiveHistory: \(historyExchange.message.controlType)")
         }
     }
 
@@ -473,7 +508,7 @@ extension ChatDataController: ChatDataListener {
             let response = messageExchange.response as? BooleanControlMessage,
             let message = messageExchange.message as? BooleanControlMessage else {
             
-                Logger.default.logError("MessageExchange is not valid in booleanControlFromMessageExchange method - skipping!")
+                logger.logError("MessageExchange is not valid in booleanControlFromMessageExchange method - skipping!")
                 return nil
         }
         // a completed boolean exchange results in two text messages, one with the label and once with the value
@@ -495,7 +530,7 @@ extension ChatDataController: ChatDataListener {
             let messageValue: String = message.data.richControl?.uiMetadata?.label,
             let responseValue: String = response.data.richControl?.value ?? "" else {
             
-                Logger.default.logError("MessageExchange is not valid in inputControlsFromMessageExchange method - skipping!")
+                logger.logError("MessageExchange is not valid in inputControlsFromMessageExchange method - skipping!")
                 return nil
         }
         // a completed input exchange is two text controls, with the value of the message and the value of the response
@@ -513,7 +548,7 @@ extension ChatDataController: ChatDataListener {
             let label = message.data.richControl?.uiMetadata?.label,
             let value: String = response.data.richControl?.value ?? "" else {
             
-                Logger.default.logError("MessageExchange is not valid in pickerControlsFromMessageExchange method - skipping!")
+                logger.logError("MessageExchange is not valid in pickerControlsFromMessageExchange method - skipping!")
                 return nil
         }
         // a completed picker exchange results in two text messages: the picker's label, and the value of the picker response
@@ -533,7 +568,7 @@ extension ChatDataController: ChatDataListener {
             let message = messageExchange.message as? MultiSelectControlMessage,
             let label = message.data.richControl?.uiMetadata?.label,
             let values: [String] = response.data.richControl?.value ?? [""] else {
-                Logger.default.logError("MessageExchange is not valid in multiSelectControlsFromMessageExchange method - skipping!")
+                logger.logError("MessageExchange is not valid in multiSelectControlsFromMessageExchange method - skipping!")
                 return nil
         }
 
@@ -551,7 +586,7 @@ extension ChatDataController: ChatDataListener {
             let textControl = messageExchange.message as? OutputTextControlMessage,
             let value = textControl.data.richControl?.value else {
             
-                Logger.default.logError("MessageExchange is not valid in textControlFromMessageExchange method - skipping!")
+                logger.logError("MessageExchange is not valid in textControlFromMessageExchange method - skipping!")
                 return nil
         }
         
@@ -562,7 +597,7 @@ extension ChatDataController: ChatDataListener {
         guard messageExchange.isComplete,
             let textControl = messageExchange.message as? OutputImageControlMessage,
             let value = textControl.data.richControl?.value else {
-                Logger.default.logError("MessageExchange is not valid in imageControlFromMessageExchange method - skipping!")
+                logger.logError("MessageExchange is not valid in imageControlFromMessageExchange method - skipping!")
                 return nil
         }
         
@@ -578,18 +613,18 @@ extension ChatDataController: ContextItemProvider {
     
     func contextMenuItems() -> [ContextMenuItem] {
         let newConversationItem = ContextMenuItem(withTitle: NSLocalizedString("New Conversation", comment: "Context Menu Item Title")) { viewController, sender in
-            Logger.default.logDebug("New Conversation menu selected")
+            self.logger.logDebug("New Conversation menu selected")
             
             self.newConversation()
         }
         
         let supportItem = ContextMenuItem(withTitle: NSLocalizedString("Contact Support", comment: "Context Menu Item Title")) { viewController, sender in
-            Logger.default.logDebug("Contact Support menu selected")
+            self.logger.logDebug("Contact Support menu selected")
             self.presentSupportOptions(viewController, sender)
         }
         
         let refreshItem = ContextMenuItem(withTitle: NSLocalizedString("Refresh Conversation", comment: "Context Menu Item Title")) { viewController, sender in
-            Logger.default.logDebug("Refresh Conversation menu selected")
+            self.logger.logDebug("Refresh Conversation menu selected")
             
             self.syncConversation()
         }

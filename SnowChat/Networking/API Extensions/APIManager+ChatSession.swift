@@ -80,7 +80,7 @@ extension APIManager {
         fetchConversationsInternal(forConsumer: consumerId, completionHandler: completionHandler)
     }
     
-    func fetchOlderConversations(forConsumer consumerId: String, beforeMessage messageId: String, completionHandler: @escaping ([Conversation]) -> Void) {
+    func fetchNewerConversations(forConsumer consumerId: String, beforeMessage messageId: String, completionHandler: @escaping ([Conversation]) -> Void) {
         fetchConversationsInternal(forConsumer: consumerId, beforeMessage: messageId, completionHandler: completionHandler)
     }
     

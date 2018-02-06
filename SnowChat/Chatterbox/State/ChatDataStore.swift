@@ -18,6 +18,11 @@ class ChatDataStore {
         id = storeId
     }
     
+    internal func reset() {
+        // I hope you mean it - replace all existing data with a new collection
+        conversations = [Conversation]()
+    }
+    
     // storeControlData: find or create a conversation and add a new MessageExchange with the new control data
     //
     func storeControlData(_ data: CBControlData, forConversation conversationId: String, fromChat source: Chatterbox) {
@@ -27,14 +32,20 @@ class ChatDataStore {
     
     // storeResponseData: find the conversation and add the response to it's pending MessageExchange, completing it
     //
-    func storeResponseData(_ data: CBControlData, forConversation conversationId: String) {
-        let index = conversations.index { $0.conversationId == conversationId }
-        
-        if let index = index {
-            conversations[index].storeResponse(data)
-        } else {
+    func storeResponseData(_ data: CBControlData, forConversation conversationId: String) -> MessageExchange? {
+        guard let index = conversations.index(where: { $0.conversationId == conversationId }) else {
             Logger.default.logError("No conversation found for \(conversationId) in storeResponseData")
+            return nil
         }
+        return conversations[index].storeResponse(data)
+    }
+    
+    func removeResponse(from exchange: MessageExchange, for conversationId: String) -> Bool {
+        guard let index = conversations.index(where: { $0.conversationId == conversationId }) else {
+            Logger.default.logError("No conversation found for \(conversationId) in removeResponseData")
+            return false
+        }
+        return conversations[index].removeResponse(from: exchange)
     }
     
     internal func findOrCreateConversation(_ conversationId: String) -> Int {
@@ -127,7 +138,7 @@ struct Conversation: CBStorable, Codable {
         exchanges.append(item)
     }
     
-    mutating func storeResponse(_ data: CBControlData) {
+    @discardableResult mutating func storeResponse(_ data: CBControlData) -> MessageExchange? {
         guard let pending = lastPendingExchange() else { fatalError("No pending message exchange in storeResponse") }
         
         let index = exchanges.count - 1
@@ -136,10 +147,21 @@ struct Conversation: CBStorable, Codable {
         let message = pending.message
         guard message.controlType == data.controlType else {
             Logger.default.logError("Mismatched control types in storeResponse: message is \(message.controlType) while response is \(data.controlType) - skipping")
-            return
+            return nil
         }
         
         exchanges[index].response = data
+        return exchanges[index]
+    }
+    
+    mutating func removeResponse(from exchange: MessageExchange) -> Bool {
+        if let exchangeIndex = exchanges.index(where: { ex in
+            return exchange.message.messageId == ex.message.messageId
+        }) {
+            exchanges[exchangeIndex].response = nil
+            return true
+        }
+        return false
     }
     
     func lastPendingMessage() -> CBStorable? {

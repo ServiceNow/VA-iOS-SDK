@@ -140,7 +140,7 @@ class Chatterbox {
                 return
         }
 
-        apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { conversations in
+        apiManager.fetchNewerConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { conversations in
             var count = 0
             
             self.chatDataListener?.chatterbox(self, willLoadHistoryForConsumerAccount: consumerAccountId, forChat: self.chatId)
@@ -231,15 +231,15 @@ class Chatterbox {
     
     private func setupChatSubscription() {
         chatSubscription = apiManager.ambClient.subscribe(chatChannel) { [weak self] (subscription, message) in
-            guard let 💪 = self else { return }
+            guard let strongSelf = self else { return }
             
-            💪.logger.logDebug(message)
+            strongSelf.logger.logDebug(message)
             
             // when AMB gives us a message we dispatch to the current handler
-            if let messageHandler = 💪.messageHandler {
+            if let messageHandler = strongSelf.messageHandler {
                 messageHandler(message)
             } else {
-                💪.logger.logError("No handler set in Chatterbox setupChatSubscription!")
+                strongSelf.logger.logError("No handler set in Chatterbox setupChatSubscription!")
             }
         }
     }
@@ -438,21 +438,37 @@ class Chatterbox {
         return true
     }
     
+    fileprivate func handleIncomingControlMessage(_ control: CBControlData, forConversation conversationId: String) {
+        chatStore.storeControlData(control, forConversation: conversationId, fromChat: self)
+        chatDataListener?.chatterbox(self, didReceiveControlMessage: control, forChat: chatId)
+    }
+    
+    fileprivate func handleResponseControlMessage(_ control: CBControlData, forConversation conversationId: String) {
+        if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last, !lastExchange.isComplete {
+            if let updatedExchange = chatStore.storeResponseData(control, forConversation: conversationId) {
+                chatDataListener?.chatterbox(self, didCompleteMessageExchange: updatedExchange, forChat: conversationId)
+            }
+        }
+    }
+    
     fileprivate func handleControlMessage(_ control: CBControlData) {
-        
         guard control.controlType != .unknown else {
             handleUnknownControl(control)
             return
         }
         
         if let conversationId = control.conversationId {
-            chatStore.storeControlData(control, forConversation: conversationId, fromChat: self)
-            chatDataListener?.chatterbox(self, didReceiveControlMessage: control, forChat: chatId)
+            switch control.direction {
+            case .fromClient:
+                handleResponseControlMessage(control, forConversation: conversationId)
+            case .fromServer:
+                handleIncomingControlMessage(control, forConversation: conversationId)
+            }
         }
     }
     
     fileprivate func handleUnknownControl(_ control: CBControlData) {
-        logger.logInfo("Ignoring unrecognized control type \(control.controlType)")
+        logger.logError("*** Ignoring unrecognized control type \(control.controlType) ***")
     }
     
     fileprivate func handleTopicFinishedAction(_ action: CBActionMessageData) {
@@ -469,11 +485,8 @@ class Chatterbox {
     // MARK: - Update Controls (outgoing from user)
     
     func update(control: CBControlData) {
-        guard let conversationId = control.conversationId else { fatalError("No conversationId for control in update method!") }
-        
         // based on type, cast the value and push to the store, then send back to service via AMB
         let type = control.controlType
-        
         switch type {
         case .boolean:
             updateBooleanControl(control)
@@ -484,12 +497,8 @@ class Chatterbox {
         case .multiSelect:
             updateMultiSelectControl(control)
         default:
-            logger.logInfo("Unrecognized control type - skipping: \(type)")
+            logger.logError("Unrecognized control type - skipping: \(type)")
             return
-        }
-        
-        if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
-            chatDataListener?.chatterbox(self, didCompleteMessageExchange: lastExchange, forChat: conversationId)
         }
     }
     
@@ -500,36 +509,35 @@ class Chatterbox {
         return message
     }
     
-    fileprivate func storeAndPublish<T: CBControlData>(_ message: T, forConversation conversationId: String) {
-        chatStore.storeResponseData(message, forConversation: conversationId)
+    fileprivate func publishControlUpdate<T: CBControlData>(_ message: T, forConversation conversationId: String) {
         apiManager.ambClient.sendMessage(message, toChannel: chatChannel, encoder: CBData.jsonEncoder)
     }
     
     fileprivate func updateBooleanControl(_ control: CBControlData) {
         if var booleanControl = control as? BooleanControlMessage, let conversationId = booleanControl.data.conversationId {
             booleanControl.data = updateRichControlData(booleanControl.data)
-            storeAndPublish(booleanControl, forConversation: conversationId)
+            publishControlUpdate(booleanControl, forConversation: conversationId)
         }
     }
     
     fileprivate func updateInputControl(_ control: CBControlData) {
         if var inputControl = control as? InputControlMessage, let conversationId = inputControl.data.conversationId {
             inputControl.data = updateRichControlData(inputControl.data)
-            storeAndPublish(inputControl, forConversation: conversationId)
+            publishControlUpdate(inputControl, forConversation: conversationId)
         }
     }
     
     fileprivate func updatePickerControl(_ control: CBControlData) {
         if var pickerControl = control as? PickerControlMessage, let conversationId = pickerControl.data.conversationId {
             pickerControl.data = updateRichControlData(pickerControl.data)
-            storeAndPublish(pickerControl, forConversation: conversationId)
+            publishControlUpdate(pickerControl, forConversation: conversationId)
         }
     }
 
     fileprivate func updateMultiSelectControl(_ control: CBControlData) {
         if var multiSelectControl = control as? MultiSelectControlMessage, let conversationId = multiSelectControl.data.conversationId {
             multiSelectControl.data = updateRichControlData(multiSelectControl.data)
-            storeAndPublish(multiSelectControl, forConversation: conversationId)
+            publishControlUpdate(multiSelectControl, forConversation: conversationId)
         }
     }
     
@@ -564,7 +572,47 @@ extension Chatterbox {
         }
     }
     
-    func syncConversation() {
+    fileprivate func removeLastResponse() -> Bool {
+        if let currentConversationId = conversationContext.conversationId,
+           let currentConversation = chatStore.conversation(forId: currentConversationId),
+           let currentExchange = currentConversation.newestExchange(),
+           let response = currentExchange.response {
+            
+            let didRemove = chatStore.removeResponse(from: currentExchange, for: currentConversationId)
+            if didRemove {
+                chatDataListener?.chatterbox(self, didRemoveControlMessage: response, forChat: chatId)
+                return true
+            } else {
+                logger.logError("Failed to remove response \(currentExchange) for conversation \(currentConversationId)")
+            }
+        }
+        return false
+    }
+    
+    fileprivate func syncNoConversationsReturned(_ newestExchange: MessageExchange) {
+        // have to remove our last response (if there was one) as it never made it
+        if newestExchange.response != nil {
+            if removeLastResponse() {
+                return
+            }
+        }
+    }
+    
+    fileprivate func syncCurrentConversation(_ receivedConversation: Conversation, _ newestExchange: MessageExchange) {
+        guard let firstReceivedExchange = receivedConversation.messageExchanges().first,
+              let receivedResponseId = firstReceivedExchange.response?.messageId,
+              let ourResponseId = newestExchange.response?.messageId,
+              receivedResponseId == ourResponseId  else {
+                // responses do not match!
+                return
+        }
+        
+        // our last response matches the info we received, we are in sync!
+        logger.logInfo("Conversation messages in sync!")
+        syncConversationState(receivedConversation)
+    }
+    
+    func syncConversation(_ completion: @escaping (Int) -> Void) {
         // get the newest message and see if there are any messages newer than that for this consumer
         //
         guard let consumerAccountId = session?.user.consumerAccountId else {
@@ -575,39 +623,35 @@ extension Chatterbox {
               let conversation = chatStore.conversation(forId: conversationId),
               let newestExchange = conversation.newestExchange() else {
             logger.logError("Could not determine last message ID")
+            completion(0)
             return
         }
         
-        let newestMessage: CBControlData = newestExchange.response ?? newestExchange.message
-        
-        apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: newestMessage.messageId, completionHandler: { [weak self] conversations in
+        let newestMessage = newestExchange.message
+                
+        apiManager.fetchNewerConversations(forConsumer: consumerAccountId, beforeMessage: newestMessage.messageId, completionHandler: { [weak self] conversations in
             guard let strongSelf = self else { return }
 
-            conversations.forEach({ conversation in
-                let messages = strongSelf.flattenMessageExchanges(conversation.messageExchanges())
-                strongSelf.syncConversationMessages(conversation.conversationId, messages)
-                strongSelf.syncConversationState(conversation)
-            })
-        })
-    }
-
-    internal func syncConversationMessages(_ conversationId: String, _ messages: [CBControlData]) {
-        messages.forEach({ message in
-            if let pendingMessage = chatStore.lastPendingMessage(forConversation: conversationId) as? CBControlData {
-                guard pendingMessage.controlType == message.controlType else {
-                    logger.logError("Type mismatchin in syncConversationMessages!")
-                    return
-                }
+            if conversations.count == 0 {
+                strongSelf.syncNoConversationsReturned(newestExchange)
+                completion(0)
                 
-                let exchange = MessageExchange(withMessage: pendingMessage, withResponse: message)
-                chatStore.storeResponseData(message, forConversation: conversationId)
-                chatDataListener?.chatterbox(self, didCompleteMessageExchange: exchange, forChat: chatId)
+            } else if conversations.count == 1 && conversations.first?.conversationId == conversationId {
+                // we got back something for the current conversation; make sure it matches the response we have
+                guard let receivedConversation = conversations.first else { return }
+                strongSelf.syncCurrentConversation(receivedConversation, newestExchange)
+                completion(1)
+                
             } else {
-                chatStore.storeControlData(message, forConversation: conversationId, fromChat: self)
+                // if we are here we have to reload everything
+                strongSelf.clearAndReloadFromPersistence(completionHandler: { (error) in
+                    let count = strongSelf.chatStore.conversations.count
+                    completion(count)
+                })
             }
         })
     }
-    
+
     internal func flattenMessageExchanges(_ exchanges: [MessageExchange]) -> [CBControlData] {
         var messages = [CBControlData]()
         
@@ -654,6 +698,11 @@ extension Chatterbox {
         } catch let error {
             logger.logError("Exception storing chatStore: \(error)")
         }
+    }
+    
+    internal func clearAndReloadFromPersistence(completionHandler: @escaping (Error?) -> Void) {
+        chatStore.reset()
+        loadDataFromPersistence(completionHandler: completionHandler)
     }
     
     internal func loadDataFromPersistence(completionHandler: @escaping (Error?) -> Void) {
@@ -776,11 +825,15 @@ extension Chatterbox: TransportStatusListener {
         // TODO:notify UI that input cannot be accepted?
     }
     
+    private static var alreadySynchronizing = false
     func transportDidBecomeAvailable() {
-        logger.logInfo("Network available!")
+        guard !Chatterbox.alreadySynchronizing, conversationContext.conversationId != nil else { return }
         
-        if conversationContext.conversationId != nil {
-            syncConversation()
+        logger.logInfo("Synchronizing conversations due to transport becoming available")
+
+        Chatterbox.alreadySynchronizing = true
+        syncConversation { count in
+            Chatterbox.alreadySynchronizing = false
         }
     }
     
