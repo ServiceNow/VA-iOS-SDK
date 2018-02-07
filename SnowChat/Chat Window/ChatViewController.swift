@@ -12,6 +12,8 @@ public class ChatViewController: UIViewController {
     
     private let chatterbox: Chatterbox
     private var conversationViewController: ConversationViewController?
+    private var banner: NotificationBanner?
+    private var bannerConstraints = [NSLayoutConstraint]()
     
     // MARK: - Initialization
     
@@ -32,6 +34,7 @@ public class ChatViewController: UIViewController {
         
         setupConversationViewController()
         setupContextMenu()
+        setupNotificationBanner()
     }
     
     public override func viewDidDisappear(_ animated: Bool) {
@@ -83,18 +86,75 @@ public class ChatViewController: UIViewController {
         alertController.popoverPresentationController?.barButtonItem = sender
         self.navigationController?.present(alertController, animated: true, completion: nil)
     }
+    
+    func setupNotificationBanner() {
+        let banner = NotificationBanner()
+        banner.translatesAutoresizingMaskIntoConstraints = false
+
+        var offset: CGFloat = 0.0
+        if let navigationController = navigationController {
+            offset = navigationController.navigationBar.frame.size.height
+            offset += navigationController.navigationBar.frame.origin.y
+        }
+        
+        if #available(iOS 11, *) {
+            let guide = view.safeAreaLayoutGuide
+            bannerConstraints = [
+                banner.leadingAnchor.constraint(equalTo: guide.leadingAnchor),
+                banner.topAnchor.constraint(equalTo: guide.topAnchor),
+                banner.widthAnchor.constraint(equalTo: guide.widthAnchor),
+                banner.heightAnchor.constraint(equalToConstant: 30)
+            ]
+        } else {
+            bannerConstraints = [
+                banner.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                banner.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor),
+                banner.widthAnchor.constraint(equalTo: view.widthAnchor),
+                banner.heightAnchor.constraint(equalToConstant: 30)
+            ]
+        }
+        self.banner = banner
+    }
 }
 
 extension ChatViewController: ChatEventListener {
+    func chatterbox(_ chatterbox: Chatterbox, didStartTopic topicInfo: TopicInfo, forChat chatId: String) {
+        conversationViewController?.chatterbox(chatterbox, didStartTopic: topicInfo, forChat: chatId)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didResumeTopic topicInfo: TopicInfo, forChat chatId: String) {
+        conversationViewController?.chatterbox(chatterbox, didResumeTopic: topicInfo, forChat: chatId)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topicInfo: TopicInfo, forChat chatId: String) {
+        conversationViewController?.chatterbox(chatterbox, didFinishTopic: topicInfo, forChat: chatId)
+    }
+
     func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
         conversationViewController?.chatterbox(chatterbox, didEstablishUserSession: sessionId, forChat: chatId)
     }
     
-    func chatterbox(_ chatterbox: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
-        conversationViewController?.chatterbox(chatterbox, didStartTopic: topic, forChat: chatId)
+    func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {
+        switch transportStatus {
+        case .unreachable:
+            showDisconnectedBanner()
+        case .reachable:
+            hideDisconnectedBanner()
+        }
     }
     
-    func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String) {
-        conversationViewController?.chatterbox(chatterbox, didFinishTopic: topic, forChat: chatId)
+    private func showDisconnectedBanner() {
+        guard let banner = banner else { return }
+        banner.text = NSLocalizedString("Disconnected...", comment: "Message in alert banner when network is disconnected")
+        view.addSubview(banner)
+        NSLayoutConstraint.activate(bannerConstraints)
+    }
+    
+    private func hideDisconnectedBanner() {
+        guard let banner = banner else { return }
+
+        banner.text = NSLocalizedString("Reconnected", comment: "Message in alert banner when network is connected after being disconnected (briefly displayed)")
+        banner.removeFromSuperview()
+        NSLayoutConstraint.deactivate(bannerConstraints)
     }
 }

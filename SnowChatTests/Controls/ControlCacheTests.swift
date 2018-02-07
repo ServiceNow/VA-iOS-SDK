@@ -10,6 +10,7 @@ import XCTest
 @testable import SnowChat
 
 class ControlCacheTests: XCTestCase {
+    let apiManager = APIManager(instance: ServerInstance(instanceURL: URL(fileURLWithPath: "./Home")))
     
     private var controlCache = ControlCache()
     
@@ -24,12 +25,12 @@ class ControlCacheTests: XCTestCase {
     
     func testReuseTextControl() {
         let firstTextControlModel = TextControlViewModel(id: "first_text_control", value: "Sample text")
-        let firstTextControl = controlCache.control(forModel: firstTextControlModel)
+        let firstTextControl = controlCache.control(forModel: firstTextControlModel, forResourceProvider: apiManager)
         XCTAssert(firstTextControl.model.id == "first_text_control")
         
         controlCache.cacheControl(forModel: firstTextControlModel)
         let secondTextControlModel = TextControlViewModel(id: "second_text_control", value: "Another sample text")
-        let secondTextControl = controlCache.control(forModel: secondTextControlModel)
+        let secondTextControl = controlCache.control(forModel: secondTextControlModel, forResourceProvider: apiManager)
         
         // Compare objects' addresses
         XCTAssert(firstTextControl === secondTextControl)
@@ -37,25 +38,25 @@ class ControlCacheTests: XCTestCase {
         XCTAssert(secondTextControl.model.id == "second_text_control")
         
         // This should create new control since there nothing to reuse
-        let thirdTextControl = controlCache.control(forModel: firstTextControlModel)
+        let thirdTextControl = controlCache.control(forModel: firstTextControlModel, forResourceProvider: apiManager)
         XCTAssert(secondTextControl !== thirdTextControl)
     }
     
     func testReuseTextAndBooleanControl() {
         let firstTextControlModel = TextControlViewModel(id: "first_text_control", value: "Sample text")
         let booleanControlModel = BooleanControlViewModel(id: "boolean_control", required: true)
-        let booleanControl = controlCache.control(forModel: booleanControlModel)
-        let textControl = controlCache.control(forModel: firstTextControlModel)
+        let booleanControl = controlCache.control(forModel: booleanControlModel, forResourceProvider: apiManager)
+        let textControl = controlCache.control(forModel: firstTextControlModel, forResourceProvider: apiManager)
         
         // Nothing to reuse yet so we should get new TextControl
         let secondTextControlModel = TextControlViewModel(id: "second_text_control", value: "Sample text")
-        let secondTextControl = controlCache.control(forModel: secondTextControlModel)
+        let secondTextControl = controlCache.control(forModel: secondTextControlModel, forResourceProvider: apiManager)
         XCTAssert(secondTextControl !== textControl)
         
         // Prepare for reuse boolean control
         controlCache.cacheControl(forModel: booleanControlModel)
         let thirdTextControlModel = TextControlViewModel(id: "third_text_control", value: "Sample text")
-        let control = controlCache.control(forModel: thirdTextControlModel)
+        let control = controlCache.control(forModel: thirdTextControlModel, forResourceProvider: apiManager)
         
         // Make sure cache is not returning wrong control type
         XCTAssert(control !== booleanControl)

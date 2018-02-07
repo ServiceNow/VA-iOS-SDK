@@ -230,7 +230,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
 
                 if lastControl.controlModel is TextControlViewModel && lastControl.requiresInput {
                     isTextInputbarHidden = false
-                    textView.becomeFirstResponder()
+                    //textView.becomeFirstResponder()
                 } else {
                     isTextInputbarHidden = true
                 }
@@ -292,7 +292,7 @@ extension ConversationViewController {
             autocompleteHandler?.textDidChange(searchText)
         case .inConversation:
             // TODO: validate the text against the input type when we have such a notion...
-            Logger.default.logDebug("Text updated: \(textView.text)")
+            break
         default:
             Logger.default.logDebug("Text updated: state=\(inputState)")
         }
@@ -435,26 +435,42 @@ extension ConversationViewController: ChatEventListener {
         loadHistory()
     }
     
-    func chatterbox(_ chatterbox: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, didStartTopic topicInfo: TopicInfo, forChat chatId: String) {
         guard self.chatterbox.id == chatterbox.id else {
                 return
         }
 
-        dataController.topicDidStart(topic)
+        dataController.topicDidStart(topicInfo)
         
         inputState = .inConversation
         setupInputForState()
     }
     
-    func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, didResumeTopic topicInfo: TopicInfo, forChat chatId: String) {
+        guard self.chatterbox.id == chatterbox.id else {
+            return
+        }
+        
+        dataController.topicDidResume(topicInfo)
+        
+        inputState = .inConversation
+        setupInputForState()
+        manageInputControl()
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topicInfo: TopicInfo, forChat chatId: String) {
         guard self.chatterbox.id == chatterbox.id else {
             return
         }
 
-        dataController.topicDidFinish(topic)
+        dataController.topicDidFinish(topicInfo)
         
         inputState = .inTopicSelection
         setupInputForState()
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {
+        // TODO: is there anything to do here to help the user deal with loss of connectivity?
     }
 }
 

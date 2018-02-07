@@ -39,11 +39,10 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
         chatService?.establishUserSession({ error in
             if let error = error {
                 self.presentError(error)
-                return
-            } else {
-                self.chatWindowCell?.showEnabled(true)
-                self.isChatEnabled = true
             }
+            // enable anyway
+            self.chatWindowCell?.showEnabled(true)
+            self.isChatEnabled = true
         })
     }
     
@@ -72,15 +71,21 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
     }
     
     // MARK: - ChatServiceDelegate
-    
+
     public func userCredentials(for chatService: ChatService) -> ChatUserCredentials? {
-        guard let instanceChatService = self.chatService, instanceChatService == chatService else { return nil }
-        
         let credentials = ChatUserCredentials(username: DebugSettings.shared.username,
                                               password: DebugSettings.shared.password,
                                               vendorId: "c2f0b8f187033200246ddd4c97cb0bb9")
         lastCredentials = credentials
         return credentials
+    }
+    
+    public func shouldRetryAfterAuthorizationFailure(for chatService: ChatService) -> Bool {
+        return false
+    }
+    
+    public func fatalError(for chatService: ChatService) {
+        
     }
     
     // MARK: - Navigation
@@ -96,8 +101,8 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
     }
     
     private func pushChatController() {
-        Logger.logger(for: "AMBClient").logLevel = .Error
-        Logger.logger(for: "Chatterbox").logLevel = .Debug
+        Logger.logger(for: "AMBClient").logLevel = .error
+        Logger.logger(for: "Chatterbox").logLevel = .debug
         
         guard let chatService = chatService else { return }
         

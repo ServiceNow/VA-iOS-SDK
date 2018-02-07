@@ -162,7 +162,7 @@ enum MessageDirection: String, Codable {
     case fromServer = "outbound"
 }
 
-enum MessageConstants: String, Codable {
+enum LoginStage: String, Codable {
     case loginStart = "Start"
     case loginFinish = "Finish"
     case loginUserSession = "UserSession"

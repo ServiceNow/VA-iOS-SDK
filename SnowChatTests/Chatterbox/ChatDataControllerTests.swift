@@ -11,6 +11,9 @@ import XCTest
 @testable import SnowChat
 
 class DataControllerTests: XCTestCase, ViewDataChangeListener {
+    func controllerWillLoadContent(_ dataController: ChatDataController) {
+    }
+    
     func controlllerDidLoadContent(_ dataController: ChatDataController) {
         expectation?.fulfill()
     }
@@ -112,8 +115,8 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
     
     func startConversationAndUpdateBooleanControl() {
         // mimic a started conversation
-        let startTopicMessage = CBDataFactory.actionFromJSON(jsonStartedTopic) as! StartedUserTopicMessage
-        controller?.topicDidStart(startTopicMessage)
+        let topicInfo = TopicInfo(topicId: "f0760de6733a0300d63a566a4cf6a7b6", conversationId: "f0760de6733a0300d63a566a4cf6a7b6")
+        controller?.topicDidStart(topicInfo)
 
         // first add the initial boolean message as if it came from Chatterbox
         let boolMessage = ExampleData.exampleBooleanControlMessage()
@@ -144,15 +147,15 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         
         // make sure there are 3 controls, 2 text and a typing indicator
         XCTAssertEqual(3, controller?.controlCount())
-        XCTAssertEqual(ControlType.text, controller?.controlForIndex(0)?.controlModel.type)
+        XCTAssertEqual(ControlType.typingIndicator, controller?.controlForIndex(0)?.controlModel.type)
         XCTAssertEqual(ControlType.text, controller?.controlForIndex(1)?.controlModel.type)
-        XCTAssertEqual(ControlType.typingIndicator, controller?.controlForIndex(2)?.controlModel.type)
+        XCTAssertEqual(ControlType.text, controller?.controlForIndex(2)?.controlModel.type)
 
         // make sure the label and value are correct
         let label = (booleanMessage as! BooleanControlMessage).data.richControl?.uiMetadata?.label
         let value = "Yes"
-        XCTAssertEqual(value, (controller?.controlForIndex(0)?.controlModel as! TextControlViewModel).value)
-        XCTAssertEqual(label, (controller?.controlForIndex(1)?.controlModel as! TextControlViewModel).value)
+        XCTAssertEqual(value, (controller?.controlForIndex(1)?.controlModel as! TextControlViewModel).value)
+        XCTAssertEqual(label, (controller?.controlForIndex(2)?.controlModel as! TextControlViewModel).value)
 
     }
 }

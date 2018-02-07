@@ -18,42 +18,31 @@ private let logger = Logger.logger(for: "AMBClient")
 internal class AMBClient: NSObject {
     
     private let fayeClient: NOWFayeClient
-    private let reachabilityManager = NetworkReachabilityManager()
     
     init(sessionManager: SessionManager, baseURL: URL) {
         let httpClient = AMBHTTPClient(sessionManager: sessionManager, baseURL: baseURL)
         fayeClient = NOWFayeClient(httpClient: httpClient)
     
         super.init()
-        
-        setupNotificationObserving()
     }
     
     // MARK: - Reachability
     
-    private func setupReachabilityMonitoring() {
-        guard let reachabilityManager = reachabilityManager else { return }
-        reachabilityManager.startListening()
-        
-        reachabilityManager.listener = { [weak self] status in
-            if reachabilityManager.isReachable {
-                self?.fayeClient.reconnectIfNeeded()
-            }
-        }
+    internal func networkReachable() {
+        fayeClient.reconnectIfNeeded()
+    }
+    
+    internal func networkUnreachable() {
+    
     }
     
     // MARK: - Notification Handling
     
-    private func setupNotificationObserving() {
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActiveNotification(_:)), name: Notification.Name.UIApplicationDidBecomeActive, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActiveNotification(_:)), name: Notification.Name.UIApplicationWillResignActive, object: nil)
-    }
-    
-    @objc private func applicationWillResignActiveNotification(_ notification: Notification) {
+    internal func applicationWillResignActiveNotification() {
         fayeClient.pause()
     }
     
-    @objc private func applicationDidBecomeActiveNotification(_ notification: Notification) {
+    internal func applicationDidBecomeActiveNotification() {
         fayeClient.resume()
     }
     

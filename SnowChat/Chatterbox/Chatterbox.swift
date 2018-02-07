@@ -41,6 +41,7 @@ class Chatterbox {
     
     weak var chatDataListener: ChatDataListener?
     weak var chatEventListener: ChatEventListener?
+    weak var chatAuthListener: ChatAuthListener?
     
     private struct ConversationContext {
         var topicName: String?
@@ -65,13 +66,13 @@ class Chatterbox {
     internal let instance: ServerInstance
     
     private(set) internal lazy var apiManager: APIManager = {
-        return APIManager(instance: instance)
+        return APIManager(instance: instance, transportListener: self)
     }()
     
     private var messageHandler: ((String) -> Void)?
     private var handshakeCompletedHandler: ((ContextualActionMessage?) -> Void)?
     
-    private let logger = Logger.logger(for: "Chatterbox")
+    internal let logger = Logger.logger(for: "Chatterbox")
 
     // MARK: - Client Callable methods
     
@@ -155,15 +156,15 @@ class Chatterbox {
                     return
                 }
                 
-                _ = strongSelf.chatStore.findOrCreateConversation(conversation.uniqueId)
+                let conversationId = conversation.conversationId
                 
-                conversation.messageExchanges().reversed().forEach({ [weak self] exchange in
+                _ = strongSelf.chatStore.findOrCreateConversation(conversationId)
+                
+                conversation.messageExchanges().forEach({ [weak self] exchange in
                     guard let strongSelf = self else { return }
 
-                    if exchange.isComplete {
-                        strongSelf.storeHistoryAndPublish(exchange, forConversation: conversation.uniqueId)
-                        count += (exchange.response != nil ? 2 : 1)
-                    }
+                    strongSelf.storeHistoryAndPublish(exchange, forConversation: conversationId)
+                    count += (exchange.response != nil ? 2 : 1)
                 })
             })
             
@@ -191,13 +192,21 @@ class Chatterbox {
         }
         
         apiManager.logIn(username: user.username, password: user.password ?? "") { [weak self] error in
+            guard let strongSelf = self else { return }
+            
             if let error = error {
-                self?.logger.logInfo("AMB Login failed: \(error)")
+                strongSelf.logger.logInfo("AMB Login failed: \(error)")
+                strongSelf.loginFailure()
             } else {
-                self?.logger.logInfo("Login succeeded")
+                strongSelf.logger.logInfo("Login succeeded")
             }
             completion(error)
         }
+    }
+    
+    private func loginFailure() {
+        // bubble up to Chat Service
+        
     }
     
     private func createChatSession(_ completion: @escaping (Error?) -> Void) {
@@ -225,13 +234,15 @@ class Chatterbox {
     
     private func setupChatSubscription() {
         chatSubscription = apiManager.ambClient.subscribe(chatChannel) { [weak self] (subscription, message) in
-            //self?.logger.logDebug(message)
+            guard let strongSelf = self else { return }
+            
+            strongSelf.logger.logDebug(message)
             
             // when AMB gives us a message we dispatch to the current handler
-            if let messageHandler = self?.messageHandler {
+            if let messageHandler = strongSelf.messageHandler {
                 messageHandler(message)
             } else {
-                self?.logger.logError("No handler set in Chatterbox setupChatSubscription!")
+                strongSelf.logger.logError("No handler set in Chatterbox setupChatSubscription!")
             }
         }
     }
@@ -249,19 +260,23 @@ class Chatterbox {
     
     private func handshakeHandler(_ message: String) {
         let event = CBDataFactory.actionFromJSON(message)
+        guard event.eventType == .channelInit, let initEvent = event as? InitMessage  else {
+            return
+        }
         
-        if event.eventType == .channelInit, let initEvent = event as? InitMessage {
-            if initEvent.data.actionMessage.loginStage == MessageConstants.loginStart.rawValue {
-                logger.logDebug("Handshake START message received")
-                startUserSession(withInitEvent: initEvent)
-            } else if initEvent.data.actionMessage.loginStage == MessageConstants.loginFinish.rawValue {
-                logger.logDebug("Handshake FINISH message received: conversationID=\(initEvent.data.conversationId ?? "nil")")
-                
-                conversationContext.systemConversationId = initEvent.data.conversationId
-                conversationContext.sessionId = initEvent.data.sessionId
-                
-                self.messageHandler = self.topicSelectionHandler
-            }
+        switch initEvent.data.actionMessage.loginStage {
+        case .loginStart:
+            logger.logDebug("Handshake START message received")
+            startUserSession(withInitEvent: initEvent)
+        case .loginFinish:
+            logger.logDebug("Handshake FINISH message received: conversationID=\(initEvent.data.conversationId ?? "nil")")
+            
+            conversationContext.systemConversationId = initEvent.data.conversationId
+            conversationContext.sessionId = initEvent.data.sessionId
+            
+            self.messageHandler = self.topicSelectionHandler
+        default:
+            logger.logError("Unexpected loginStage: \(initEvent.data.actionMessage.loginStage)")
         }
     }
     
@@ -288,14 +303,15 @@ class Chatterbox {
         
         initUserEvent.data.direction = .fromClient
         initUserEvent.data.sendTime = Date()
-        initUserEvent.data.actionMessage.loginStage = MessageConstants.loginUserSession.rawValue
+        initUserEvent.data.actionMessage.loginStage = .loginUserSession
         initUserEvent.data.actionMessage.contextHandshake.vendorId = vendor?.vendorId
         initUserEvent.data.actionMessage.contextHandshake.deviceId = deviceIdentifier()
         initUserEvent.data.actionMessage.consumerAcctId = session?.user.consumerAccountId
-        
+
         if let request = initUserEvent.data.actionMessage.contextHandshake.serverContextRequest {
             initUserEvent.data.actionMessage.contextHandshake.serverContextResponse = serverContextResponse(fromRequest: request)
         }
+        
         return initUserEvent
     }
     
@@ -347,18 +363,32 @@ class Chatterbox {
                 }
             }
         } else if actionMessage.eventType == .startedUserTopic {
-            if let startedUserTopic = actionMessage as? StartedUserTopicMessage {
+            if let startUserTopicMessage = actionMessage as? StartedUserTopicMessage {
                 
-                let actionMessage = startedUserTopic.data.actionMessage
+                let actionMessage = startUserTopicMessage.data.actionMessage
+        
                 logger.logInfo("User Topic Started: \(actionMessage.topicName) - \(actionMessage.topicId) - \(actionMessage.ready ? "Ready" : "Not Ready")")
                 
-                conversationContext.conversationId = startedUserTopic.data.actionMessage.vendorTopicId
-
-                chatEventListener?.chatterbox(self, didStartTopic: startedUserTopic, forChat: chatId)
-
-                installTopicMessageHandler()
+                startUserTopic(topicInfo: TopicInfo(topicId: actionMessage.topicId, conversationId: actionMessage.vendorTopicId))
             }
         }
+    }
+    
+    private func beginConversation(topicInfo: TopicInfo) {
+        conversationContext.conversationId = topicInfo.conversationId
+        installTopicMessageHandler()
+    }
+
+    private func startUserTopic(topicInfo: TopicInfo) {
+        beginConversation(topicInfo: topicInfo)
+        chatEventListener?.chatterbox(self, didStartTopic: topicInfo, forChat: chatId)
+    }
+    
+    private func resumeUserTopic(topicInfo: TopicInfo) {
+        if conversationContext.conversationId != topicInfo.conversationId {
+            beginConversation(topicInfo: topicInfo)
+        }
+        chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: chatId)
     }
     
     private func createStartTopicReadyMessage(startUserTopic: StartUserTopicMessage) -> StartUserTopicMessage {
@@ -388,9 +418,8 @@ class Chatterbox {
     }
     
     internal func finishTopic(_ conversationId: String) {
-        let topicFinishedMessage = TopicFinishedMessage(withSessionId: self.conversationContext.sessionId ?? "UNKNOWN_SESSION",
-                                                        withConversationId: conversationId)
-        self.chatEventListener?.chatterbox(self, didFinishTopic: topicFinishedMessage, forChat: self.chatId)
+        let topicInfo = TopicInfo(topicId: "TOPIC_ID", conversationId: conversationId)
+        self.chatEventListener?.chatterbox(self, didFinishTopic: topicInfo, forChat: self.chatId)
     }
     
     // MARK: - Incoming messages (Controls from service)
@@ -408,21 +437,37 @@ class Chatterbox {
         return true
     }
     
+    fileprivate func handleIncomingControlMessage(_ control: CBControlData, forConversation conversationId: String) {
+        chatStore.storeControlData(control, forConversation: conversationId, fromChat: self)
+        chatDataListener?.chatterbox(self, didReceiveControlMessage: control, forChat: chatId)
+    }
+    
+    fileprivate func handleResponseControlMessage(_ control: CBControlData, forConversation conversationId: String) {
+        if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last, !lastExchange.isComplete {
+            if let updatedExchange = chatStore.storeResponseData(control, forConversation: conversationId) {
+                chatDataListener?.chatterbox(self, didCompleteMessageExchange: updatedExchange, forChat: conversationId)
+            }
+        }
+    }
+    
     fileprivate func handleControlMessage(_ control: CBControlData) {
-        
         guard control.controlType != .unknown else {
             handleUnknownControl(control)
             return
         }
         
         if let conversationId = control.conversationId {
-            chatStore.storeControlData(control, forConversation: conversationId, fromChat: self)
-            chatDataListener?.chatterbox(self, didReceiveControlMessage: control, forChat: chatId)
+            switch control.direction {
+            case .fromClient:
+                handleResponseControlMessage(control, forConversation: conversationId)
+            case .fromServer:
+                handleIncomingControlMessage(control, forConversation: conversationId)
+            }
         }
     }
     
     fileprivate func handleUnknownControl(_ control: CBControlData) {
-        logger.logInfo("Ignoring unrecognized control type \(control.controlType)")
+        logger.logError("*** Ignoring unrecognized control type \(control.controlType) ***")
     }
     
     fileprivate func handleTopicFinishedAction(_ action: CBActionMessageData) {
@@ -430,18 +475,17 @@ class Chatterbox {
             conversationContext.conversationId = nil
             
             saveDataToPersistence()
-            chatEventListener?.chatterbox(self, didFinishTopic: topicFinishedMessage, forChat: chatId)
+            
+            let topicInfo = TopicInfo(topicId: "TOPIC_ID", conversationId: topicFinishedMessage.data.conversationId ?? "CONVERSATION_ID")
+            chatEventListener?.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
         }
     }
     
     // MARK: - Update Controls (outgoing from user)
     
     func update(control: CBControlData) {
-        guard let conversationId = control.conversationId else { fatalError("No conversationId for control in update method!") }
-        
         // based on type, cast the value and push to the store, then send back to service via AMB
         let type = control.controlType
-        
         switch type {
         case .boolean:
             updateBooleanControl(control)
@@ -454,12 +498,8 @@ class Chatterbox {
         case .multiPart:
             updateMultiPartControl(control)
         default:
-            logger.logInfo("Unrecognized control type - skipping: \(type)")
+            logger.logError("Unrecognized control type - skipping: \(type)")
             return
-        }
-        
-        if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last {
-            chatDataListener?.chatterbox(self, didCompleteMessageExchange: lastExchange, forChat: conversationId)
         }
     }
     
@@ -470,43 +510,42 @@ class Chatterbox {
         return message
     }
     
-    fileprivate func storeAndPublish<T: CBControlData>(_ message: T, forConversation conversationId: String) {
-        chatStore.storeResponseData(message, forConversation: conversationId)
+    fileprivate func publishControlUpdate<T: CBControlData>(_ message: T, forConversation conversationId: String) {
         apiManager.ambClient.sendMessage(message, toChannel: chatChannel, encoder: CBData.jsonEncoder)
     }
     
     fileprivate func updateBooleanControl(_ control: CBControlData) {
         if var booleanControl = control as? BooleanControlMessage, let conversationId = booleanControl.data.conversationId {
             booleanControl.data = updateRichControlData(booleanControl.data)
-            storeAndPublish(booleanControl, forConversation: conversationId)
+            publishControlUpdate(booleanControl, forConversation: conversationId)
         }
     }
     
     fileprivate func updateInputControl(_ control: CBControlData) {
         if var inputControl = control as? InputControlMessage, let conversationId = inputControl.data.conversationId {
             inputControl.data = updateRichControlData(inputControl.data)
-            storeAndPublish(inputControl, forConversation: conversationId)
+            publishControlUpdate(inputControl, forConversation: conversationId)
         }
     }
     
     fileprivate func updatePickerControl(_ control: CBControlData) {
         if var pickerControl = control as? PickerControlMessage, let conversationId = pickerControl.data.conversationId {
             pickerControl.data = updateRichControlData(pickerControl.data)
-            storeAndPublish(pickerControl, forConversation: conversationId)
+            publishControlUpdate(pickerControl, forConversation: conversationId)
         }
     }
 
     fileprivate func updateMultiSelectControl(_ control: CBControlData) {
         if var multiSelectControl = control as? MultiSelectControlMessage, let conversationId = multiSelectControl.data.conversationId {
             multiSelectControl.data = updateRichControlData(multiSelectControl.data)
-            storeAndPublish(multiSelectControl, forConversation: conversationId)
+            publishControlUpdate(multiSelectControl, forConversation: conversationId)
         }
     }
     
     fileprivate func updateMultiPartControl(_ control: CBControlData) {
         if var multiPartControl = control as? MultiPartControlMessage, let conversationId = multiPartControl.data.conversationId {
             multiPartControl.data = updateRichControlData(multiPartControl.data)
-            storeAndPublish(multiPartControl, forConversation: conversationId)
+            publishControlUpdate(multiPartControl, forConversation: conversationId)
         }
     }
     
@@ -522,30 +561,96 @@ extension Chatterbox {
 
     // MARK: - Sync Current Conversation
     
-    func syncConversation() {
-        guard let conversationId = conversationContext.conversationId else {
-            logger.logError("No conversation ID in syncConversation!")
+    fileprivate func syncConversationState(_ conversation: Conversation) {
+        let conversationId = conversation.conversationId
+        
+        switch conversation.state {
+        case .inProgress:
+            logger.logInfo("Conversation \(conversationId) is in progress")
+            let topicInfo = TopicInfo(topicId: "TOPIC_ID", conversationId: conversationId)
+            resumeUserTopic(topicInfo: topicInfo)
+        case .completed:
+            logger.logInfo("Conversation is no longer in progress - ending current conversations")
+            finishTopic(conversationId)
+        case .unknown:
+            logger.logError("Unknown conversation state in syncConversation!")
+        }
+    }
+    
+    fileprivate func syncNoConversationsReturned() {
+        // if no messages were returned, then we have the latest messages, just need to update the input mode
+        logger.logDebug("Sync with NO conversation returned - nothing to do!")
+    }
+    
+    fileprivate func syncCurrentConversation(_ receivedConversation: Conversation, _ newestExchange: MessageExchange) {
+        guard let firstReceivedExchange = receivedConversation.messageExchanges().first,
+              let receivedResponseId = firstReceivedExchange.response?.messageId,
+              let ourResponseId = newestExchange.response?.messageId,
+              receivedResponseId == ourResponseId  else {
+                // responses do not match!
+                return
+        }
+        
+        // our last response matches the info we received, we are in sync!
+        logger.logInfo("Conversation messages in sync!")
+        syncConversationState(receivedConversation)
+    }
+    
+    func syncConversation(_ completion: @escaping (Int) -> Void) {
+        // get the newest message and see if there are any messages newer than that for this consumer
+        //
+        guard let consumerAccountId = session?.user.consumerAccountId else {
+            logger.logError("No consumerAccountId in syncConversation!")
             return
         }
-        guard let storedConversation = chatStore.conversation(forId: conversationId) else {
-            logger.logError("Conversation not in store! \(conversationId)")
+        guard let conversationId = conversationContext.conversationId,
+              let conversation = chatStore.conversation(forId: conversationId),
+              let newestExchange = conversation.newestExchange() else {
+            logger.logError("Could not determine last message ID")
+            completion(0)
             return
         }
         
-        apiManager.fetchConversation(conversationId, completionHandler: { [weak self] conversation in
-            guard let strongSelf = self, let conversation = conversation else { return }
-            
-            // get any newer messages and add them to the store
-            let oldestStoredExchange = storedConversation.messageExchanges().last
-            strongSelf.addExchanges(conversation.messageExchanges(), newerThan: oldestStoredExchange, forConversation: conversationId)
-            
-            // if the conversation state changed, might have to finish the topic
-            if conversation.state != .inProgress {
-                strongSelf.logger.logInfo("Conversation is no longer in progress - ending current conversations")
+        let newestMessage = newestExchange.message
                 
-                strongSelf.finishTopic(conversationId)
+        apiManager.fetchNewerConversations(forConsumer: consumerAccountId, afterMessage: newestMessage.messageId, completionHandler: { [weak self] conversationsFromService in
+            guard let strongSelf = self else { return }
+
+            // HACK: service is returning user and system conversations, so we remove all system topics here
+            //       remove this when the service is fixed
+            let conversations = strongSelf.filterSystemTopics(conversationsFromService)
+            
+            if conversations.count == 0 {
+                strongSelf.syncNoConversationsReturned()
+                completion(0)
+                
+            } else if conversations.count == 1 && conversations.first?.conversationId == conversationId {
+                // we got back something for the current conversation; make sure it matches the response we have
+                guard let receivedConversation = conversations.first else { return }
+                strongSelf.syncCurrentConversation(receivedConversation, newestExchange)
+                completion(1)
+                
+            } else {
+                // if we are here we have to reload everything
+                strongSelf.clearAndReloadFromPersistence(completionHandler: { (error) in
+                    let count = strongSelf.chatStore.conversations.count
+                    completion(count)
+                })
             }
         })
+    }
+
+    internal func flattenMessageExchanges(_ exchanges: [MessageExchange]) -> [CBControlData] {
+        var messages = [CBControlData]()
+        
+        exchanges.forEach({ exchange in
+            messages.append(exchange.message)
+            if let response = exchange.response {
+                messages.append(response)
+            }
+        })
+        
+        return messages
     }
     
     internal func addExchanges(_ messageExchanges: [MessageExchange], newerThan subjectExchange: MessageExchange?, forConversation conversationId: String) {
@@ -583,6 +688,11 @@ extension Chatterbox {
         }
     }
     
+    internal func clearAndReloadFromPersistence(completionHandler: @escaping (Error?) -> Void) {
+        chatStore.reset()
+        loadDataFromPersistence(completionHandler: completionHandler)
+    }
+    
     internal func loadDataFromPersistence(completionHandler: @escaping (Error?) -> Void) {
         // TODO: load locally stored history and synchronize with the server
         //       for now we just pull from server, no local store
@@ -604,17 +714,27 @@ extension Chatterbox {
             
             self.chatDataListener?.chatterbox(self, willLoadHistoryForConsumerAccount: consumerId, forChat: self.chatId)
 
-            apiManager.fetchConversations(forConsumer: consumerId, completionHandler: { (conversations) in
-                self.logger.logDebug(" --> loaded \(conversations.count) conversations")
+            apiManager.fetchConversations(forConsumer: consumerId, completionHandler: { (conversationsFromService) in
+                
+                // HACK: service is returning user and system conversations, so we remove all system topics here
+                //       remove this when the service is fixed
+                let conversations = self.filterSystemTopics(conversationsFromService)
+                self.logger.logDebug(" --> loaded \(conversationsFromService.count) conversations, \(conversations.count) are for user")
+
+                let lastConversation = conversations.last
                 
                 conversations.forEach { conversation in
-                    if conversation.isForSystemTopic() {
-                        self.logger.logInfo("Skipping conversation from system topic in refreshConversations")
-                        return
-                    }
+                    let conversationId = conversation.conversationId
+                    self.logger.logDebug("--> Conversation \(conversationId) refreshed: \(conversation)")
                     
-                    self.logger.logDebug("--> Conversation \(conversation.uniqueId) refreshed: \(conversation)")
+                    self.chatDataListener?.chatterbox(self, willLoadConversation: conversationId, forChat: self.chatId)
                     self.storeConversationAndPublish(conversation)
+                
+                    self.chatDataListener?.chatterbox(self, didLoadConversation: conversationId, forChat: self.chatId)
+                    
+                    if conversation.conversationId == lastConversation?.conversationId {
+                        self.syncConversationState(conversation)
+                    }
                 }
                 
                 self.chatDataListener?.chatterbox(self, didLoadHistoryForConsumerAccount: consumerId, forChat: self.chatId)
@@ -627,6 +747,12 @@ extension Chatterbox {
         }
     }
     
+    internal func filterSystemTopics(_ conversations: [Conversation]) -> [Conversation] {
+        return conversations.filter({ conversation -> Bool in
+            return conversation.isForSystemTopic() == false
+        })
+    }
+    
     internal func storeHistoryAndPublish(_ exchange: MessageExchange, forConversation conversationId: String) {
         chatStore.storeHistory(exchange, forConversation: conversationId)
         chatDataListener?.chatterbox(self, didReceiveHistory: exchange, forChat: chatId)
@@ -635,20 +761,20 @@ extension Chatterbox {
     internal func storeConversationAndPublish(_ conversation: Conversation) {
         chatStore.storeConversation(conversation)
         
-        chatDataListener?.chatterbox(self, willLoadConversation: conversation.uniqueId, forChat: chatId)
+        let conversationId = conversation.conversationId
+        
+        chatDataListener?.chatterbox(self, willLoadConversation: conversationId, forChat: chatId)
 
         conversation.messageExchanges().forEach { (exchange) in
-            // NOTE: we only process completed message exchanges, since incomplete ones will render incorrectly
-            //       and we will get the completed version (if it exists) via subsequent history calls
-            if exchange.isComplete {
-                notifyMessageExchange(exchange)
-            }
+            notifyMessageExchange(exchange)
         }
         
-        chatDataListener?.chatterbox(self, didLoadConversation: conversation.uniqueId, forChat: chatId)
+        chatDataListener?.chatterbox(self, didLoadConversation: conversationId, forChat: chatId)
     }
 
     internal func notifyMessageExchange(_ exchange: MessageExchange) {
+        logger.logDebug("--> Notifying MessageExchange: message=\(exchange.message.controlType) | response=\(exchange.response?.controlType ?? CBControlType.unknown)")
+        
         let message = exchange.message
         
         notifyMessage(message)
@@ -674,5 +800,35 @@ extension Chatterbox {
         }
         
         chatDataListener.chatterbox(self, didCompleteMessageExchange: exchange, forChat: chatId)
+    }
+}
+
+extension Chatterbox: TransportStatusListener {
+    
+    // MARK: - handle transport notifications
+    
+    func transportDidBecomeUnavailable() {
+        logger.logInfo("Network unavailable....")
+
+        chatEventListener?.chatterbox(self, didReceiveTransportStatus: .unreachable, forChat: chatId)
+    }
+    
+    private static var alreadySynchronizing = false
+    
+    func transportDidBecomeAvailable() {
+        chatEventListener?.chatterbox(self, didReceiveTransportStatus: .reachable, forChat: chatId)
+
+        guard !Chatterbox.alreadySynchronizing, conversationContext.conversationId != nil else { return }
+        
+        logger.logInfo("Synchronizing conversations due to transport becoming available")
+        Chatterbox.alreadySynchronizing = true
+        syncConversation { count in
+            Chatterbox.alreadySynchronizing = false
+        }
+    }
+    
+    func authorizationFailure() {
+        logger.logInfo("Authorization failed!")
+        chatAuthListener?.authorizationFailed()
     }
 }

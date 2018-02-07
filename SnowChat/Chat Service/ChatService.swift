@@ -102,21 +102,45 @@ public class ChatService: Equatable {
 }
 
 extension ChatService: ChatEventListener {
+    func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {
+        Logger.default.logDebug("Transport Status Changed: \(transportStatus)")
+        viewController?.chatterbox(chatterbox, didReceiveTransportStatus: transportStatus, forChat: chatId)
+    }
     
     func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
         Logger.default.logDebug("Session Established: \(sessionId)")
         viewController?.chatterbox(chatterbox, didEstablishUserSession: sessionId, forChat: chatId)
     }
     
-    func chatterbox(_ chatterbox: Chatterbox, didStartTopic topic: StartedUserTopicMessage, forChat chatId: String) {
-        Logger.default.logDebug("Topic Started: \(topic)")
-        
-        viewController?.chatterbox(chatterbox, didStartTopic: topic, forChat: chatId)
+    func chatterbox(_ chatterbox: Chatterbox, didStartTopic topicInfo: TopicInfo, forChat chatId: String) {
+        Logger.default.logDebug("Topic Started: \(topicInfo)")
+        viewController?.chatterbox(chatterbox, didStartTopic: topicInfo, forChat: chatId)
     }
     
-    func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topic: TopicFinishedMessage, forChat chatId: String) {
-        Logger.default.logDebug("Topic Finished: \(topic)")
-        
-        viewController?.chatterbox(chatterbox, didFinishTopic: topic, forChat: chatId)
+    func chatterbox(_ chatterbox: Chatterbox, didResumeTopic topicInfo: TopicInfo, forChat chatId: String) {
+        Logger.default.logDebug("Topic Resumed: \(topicInfo)")
+        viewController?.chatterbox(chatterbox, didResumeTopic: topicInfo, forChat: chatId)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topicInfo: TopicInfo, forChat chatId: String) {
+        Logger.default.logDebug("Topic Finished: \(topicInfo)")
+        viewController?.chatterbox(chatterbox, didFinishTopic: topicInfo, forChat: chatId)
+    }
+}
+
+extension ChatService: ChatAuthListener {
+    func authorizationFailed() {
+        guard let delegate = delegate else { return }
+        let shouldRetry = delegate.shouldRetryAfterAuthorizationFailure(for: self)
+        if shouldRetry {
+            establishUserSession({ error in
+                if let error = error {
+                    Logger.default.logError("Error establishing user session: \(error)")
+                }
+            })
+        } else {
+            Logger.default.logError("Authorization failed, cannot continue")
+            delegate.fatalError(for: self)
+        }
     }
 }

@@ -16,7 +16,7 @@ struct InitMessage: Codable, CBActionMessageData {
     
     struct InitMessageDetails: Codable {
         let type: String
-        var loginStage: String
+        var loginStage: LoginStage
         var systemActionName: String
         var extId: String?
         var userId: String?
