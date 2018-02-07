@@ -8,10 +8,7 @@
 
 import UIKit
 
-class ChatMessageViewController: UIViewController {
-    
-    private let controlMaxWidth: CGFloat = 250
-    private(set) var uiControl: ControlProtocol?
+class ChatMessageViewController: UIViewController, ControlPresentable {
     
     @IBOutlet private weak var bubbleView: BubbleView!
     @IBOutlet private weak var agentImageView: UIImageView!
@@ -20,15 +17,56 @@ class ChatMessageViewController: UIViewController {
     @IBOutlet private weak var bubbleTrailingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var agentImageTopConstraint: NSLayoutConstraint!
     
-    func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
+    var controlCache: ControlCache?
+    var resourceProvider: ControlResourceProvider?
+    
+    private let controlMaxWidth: CGFloat = 250
+    private(set) var uiControl: ControlProtocol?
+    
+    var model: ChatMessageModel? {
+        didSet {
+            guard let chatModel = model, let control = controlCache?.control(forModel: chatModel.controlModel, forResourceProvider: resourceProvider) else {
+                return
+            }
+            
+            if let oldControl = uiControl, isPresentingControl(oldControl) {
+                // TODO: cache it upon removing
+                oldControl.removeFromParent()
+            }
+            
+            addUIControl(control, at: chatModel.location)
+            
+            // if previous uiControl had a delegate we will pass it over to a new control
+            control.delegate = uiControl?.delegate
+            uiControl = control
+        }
+    }
+    
+    func configure(withChatMessageModel model: ChatMessageModel, controlCache cache: ControlCache, controlDelegate delegate: ControlDelegate, resourceProvider provider: ControlResourceProvider) {
+        self.controlCache = cache
+        self.resourceProvider = provider
+        self.model = model
+        uiControl?.delegate = delegate
+    }
+    
+    func prepareForReuse() {
+        if let control = uiControl, isPresentingControl(control) {
+            control.removeFromParent()
+            controlCache?.cacheControl(forModel: control.model)
+        }
+        
+        uiControl = nil
+        resourceProvider = nil
+        model = nil
+    }
+    
+    internal func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
         guard uiControl?.model.id != control.model.id,
             uiControl?.model.type != control.model.type else {
             Logger.default.logDebug("Seems like you try to readd the same model!")
             return
         }
         
-        removeUIControl()
-        uiControl = control
         let controlViewController = control.viewController
         controlViewController.willMove(toParentViewController: self)
         addChildViewController(controlViewController)
@@ -59,14 +97,12 @@ class ChatMessageViewController: UIViewController {
         view.layoutIfNeeded()
     }
     
-    func prepareForReuse() {
-        removeUIControl()
-    }
-    
-    private func removeUIControl() {
-        uiControl?.viewController.removeFromParentViewController()
-        uiControl?.viewController.view.removeFromSuperview()
-        uiControl = nil
+    private func isPresentingControl(_ control: ControlProtocol?) -> Bool {
+        guard let uiControlView = control?.viewController.view else {
+            return false
+        }
+        
+        return uiControlView.superview == bubbleView.contentView
     }
     
     // MARK: - Update Constraints

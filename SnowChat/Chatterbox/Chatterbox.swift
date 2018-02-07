@@ -495,6 +495,8 @@ class Chatterbox {
             updatePickerControl(control)
         case .multiSelect:
             updateMultiSelectControl(control)
+        case .multiPart:
+            updateMultiPartControl(control)
         default:
             logger.logError("Unrecognized control type - skipping: \(type)")
             return
@@ -537,6 +539,13 @@ class Chatterbox {
         if var multiSelectControl = control as? MultiSelectControlMessage, let conversationId = multiSelectControl.data.conversationId {
             multiSelectControl.data = updateRichControlData(multiSelectControl.data)
             publishControlUpdate(multiSelectControl, forConversation: conversationId)
+        }
+    }
+    
+    fileprivate func updateMultiPartControl(_ control: CBControlData) {
+        if var multiPartControl = control as? MultiPartControlMessage, let conversationId = multiPartControl.data.conversationId {
+            multiPartControl.data = updateRichControlData(multiPartControl.data)
+            storeAndPublish(multiPartControl, forConversation: conversationId)
         }
     }
     
