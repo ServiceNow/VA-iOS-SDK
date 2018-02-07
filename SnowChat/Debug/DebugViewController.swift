@@ -80,7 +80,7 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
         return credentials
     }
     
-    public func authorizationFailed(for chatService: ChatService) -> Bool {
+    public func shouldRetryAfterAuthorizationFailure(for chatService: ChatService) -> Bool {
         return false
     }
     

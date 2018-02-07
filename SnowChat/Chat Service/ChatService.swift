@@ -131,7 +131,7 @@ extension ChatService: ChatEventListener {
 extension ChatService: ChatAuthListener {
     func authorizationFailed() {
         guard let delegate = delegate else { return }
-        let shouldRetry = delegate.authorizationFailed(for: self)
+        let shouldRetry = delegate.shouldRetryAfterAuthorizationFailure(for: self)
         if shouldRetry {
             establishUserSession({ error in
                 if let error = error {
