@@ -87,7 +87,7 @@ public class ChatViewController: UIViewController {
     }
     
     func setupNotificationBanner() {
-        
+        banner = NotificationBanner(frame: view.frame)
     }
 }
 
@@ -118,10 +118,12 @@ extension ChatViewController: ChatEventListener {
     }
     
     private func showDisconnectedBanner() {
-        var offset = self.navigationController?.navigationBar.frame.size.height ?? 65
-        offset += self.navigationController?.navigationBar.frame.origin.y ?? 20
-        
-        banner = NotificationBanner(frame: view.frame)
+        var offset: CGFloat = 0.0;
+        if let navigationController = navigationController {
+            offset = navigationController.navigationBar.frame.size.height
+            offset += navigationController.navigationBar.frame.origin.y
+        }
+
         banner?.show(inView: view, withText: "Disconnected...", atOffset: offset)
     }
     
