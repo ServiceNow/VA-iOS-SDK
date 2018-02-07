@@ -807,7 +807,7 @@ extension Chatterbox: TransportStatusListener {
     private static var alreadySynchronizing = false
     
     func transportDidBecomeAvailable() {
-        chatEventListener?.chatterbox(self, didReceiveTransportStatus: .unreachable, forChat: chatId)
+        chatEventListener?.chatterbox(self, didReceiveTransportStatus: .reachable, forChat: chatId)
 
         guard !Chatterbox.alreadySynchronizing, conversationContext.conversationId != nil else { return }
         

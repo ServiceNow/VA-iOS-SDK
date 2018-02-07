@@ -80,8 +80,14 @@ class APIManager: NSObject {
             guard let strongSelf = self else { return }
             if reachabilityManager.isReachable {
                 strongSelf.ambClient.networkReachable()
+                
+                // FIXME: should only send this from AMB notification, but it is not working quite right
+                strongSelf.transportListener?.transportDidBecomeAvailable()
             } else {
                 strongSelf.ambClient.networkUnreachable()
+                
+                // FIXME: should only send this from AMB notification, but it is not working quite right
+                strongSelf.transportListener?.transportDidBecomeUnavailable()
             }
         }
     }

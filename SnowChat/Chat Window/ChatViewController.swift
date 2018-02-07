@@ -12,6 +12,7 @@ public class ChatViewController: UIViewController {
     
     private let chatterbox: Chatterbox
     private var conversationViewController: ConversationViewController?
+    private var banner: NotificationBanner?
     
     // MARK: - Initialization
     
@@ -32,6 +33,7 @@ public class ChatViewController: UIViewController {
         
         setupConversationViewController()
         setupContextMenu()
+        setupNotificationBanner()
     }
     
     public override func viewDidDisappear(_ animated: Bool) {
@@ -83,6 +85,10 @@ public class ChatViewController: UIViewController {
         alertController.popoverPresentationController?.barButtonItem = sender
         self.navigationController?.present(alertController, animated: true, completion: nil)
     }
+    
+    func setupNotificationBanner() {
+        
+    }
 }
 
 extension ChatViewController: ChatEventListener {
@@ -105,11 +111,21 @@ extension ChatViewController: ChatEventListener {
     func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {
         switch transportStatus {
         case .unreachable:
-            Logger.default.logInfo("Transport is unavailable")
-            // TODO: display a notification...
+            showDisconnectedBanner()
         case .reachable:
-            Logger.default.logInfo("Transport is available")
-            // TODO: remove notification...
+            hideDisconnectedBanner()
         }
+    }
+    
+    private func showDisconnectedBanner() {
+        var offset = self.navigationController?.navigationBar.frame.size.height ?? 65
+        offset += self.navigationController?.navigationBar.frame.origin.y ?? 20
+        
+        banner = NotificationBanner(frame: view.frame)
+        banner?.show(inView: view, withText: "Disconnected...", atOffset: offset)
+    }
+    
+    private func hideDisconnectedBanner() {
+        banner?.hide()
     }
 }

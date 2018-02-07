@@ -159,6 +159,7 @@
 		C4CAFEA31FBCF2F8007007F5 /* CBData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA21FBCF2F8007007F5 /* CBData.swift */; };
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
 		C4CAFEA81FBD0912007007F5 /* CBDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */; };
+		C4CB0212202A606B003869F8 /* NotificationBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CB0211202A606B003869F8 /* NotificationBanner.swift */; };
 		C4CED93C1FD713AA008E3E25 /* StartUserTopicMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CED93B1FD713AA008E3E25 /* StartUserTopicMessage.swift */; };
 		C4CED93E1FD72544008E3E25 /* StartedUserTopicMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CED93D1FD72544008E3E25 /* StartedUserTopicMessage.swift */; };
 		C4F3AF2F1FD235D100B27B0D /* Chatterbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4F3AF2E1FD235D100B27B0D /* Chatterbox.swift */; };
@@ -298,6 +299,7 @@
 		C4CAFEA21FBCF2F8007007F5 /* CBData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBData.swift; sourceTree = "<group>"; };
 		C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataTests.swift; sourceTree = "<group>"; };
 		C4CAFEA71FBD0912007007F5 /* CBDataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataFactory.swift; sourceTree = "<group>"; };
+		C4CB0211202A606B003869F8 /* NotificationBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationBanner.swift; sourceTree = "<group>"; };
 		C4CED93B1FD713AA008E3E25 /* StartUserTopicMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartUserTopicMessage.swift; sourceTree = "<group>"; };
 		C4CED93D1FD72544008E3E25 /* StartedUserTopicMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartedUserTopicMessage.swift; sourceTree = "<group>"; };
 		C4F3AF2E1FD235D100B27B0D /* Chatterbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chatterbox.swift; sourceTree = "<group>"; };
@@ -455,6 +457,7 @@
 				C43479EB1FE460700091806D /* TopicSelection.swift */,
 				C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */,
 				57A94513200E4E2F0073B5A1 /* Chat Message */,
+				C4CB0211202A606B003869F8 /* NotificationBanner.swift */,
 			);
 			path = "Chat Window";
 			sourceTree = "<group>";
@@ -1023,6 +1026,7 @@
 				C4F3AF321FD601FE00B27B0D /* Util.swift in Sources */,
 				5706C5791FE43FB3008D70D1 /* ControlsUtil.swift in Sources */,
 				C40565F21FC49CD8004BD28C /* InitMessage.swift in Sources */,
+				C4CB0212202A606B003869F8 /* NotificationBanner.swift in Sources */,
 				5717B1502003DABA00A4252C /* ChatMessageViewControllerCache.swift in Sources */,
 				5771D2ED2011174000FF2483 /* MultiSelectControlMessage.swift in Sources */,
 				57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */,
