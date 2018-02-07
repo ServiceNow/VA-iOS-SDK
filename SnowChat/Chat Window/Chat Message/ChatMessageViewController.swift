@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AlamofireImage
 
 class ChatMessageViewController: UIViewController, ControlPresentable {
     
@@ -47,6 +48,10 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         self.resourceProvider = provider
         self.model = model
         uiControl?.delegate = delegate
+        
+        if let avatarURL = model.avatarURL {
+            agentImageView.af_setImage(withURL: avatarURL)
+        }
     }
     
     func prepareForReuse() {
@@ -58,6 +63,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         uiControl = nil
         resourceProvider = nil
         model = nil
+        agentImageView.af_cancelImageRequest()
     }
     
     internal func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
