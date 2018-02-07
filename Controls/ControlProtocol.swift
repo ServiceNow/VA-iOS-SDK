@@ -20,6 +20,8 @@ enum ControlType {
     
     case typingIndicator
     
+    case button
+    
     func description() -> String {
         switch self {
         case .multiSelect:
@@ -34,6 +36,8 @@ enum ControlType {
             return "Single Select"
         case .typingIndicator:
             return "Typing Indicator"
+        case .button:
+            return "Button"
         }
     }
 }
@@ -58,4 +62,16 @@ protocol ControlProtocol: AnyObject {
     var viewController: UIViewController { get }
     
     weak var delegate: ControlDelegate? { get set }
+    
+    func removeFromParent()
+}
+
+// Code for self-removable control, just like UIView or UIViewController
+
+extension ControlProtocol {
+    func removeFromParent() {
+        viewController.willMove(toParentViewController: nil)
+        viewController.view.removeFromSuperview()
+        viewController.removeFromParentViewController()
+    }
 }

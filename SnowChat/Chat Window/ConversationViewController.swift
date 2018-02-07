@@ -17,7 +17,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         case inConversation             // user is in an active conversation
     }
     
-    private let bottomInset: CGFloat = 30
+    private let bottomInset: CGFloat = 60
     
     private var inputState = InputState.inTopicSelection
     private var autocompleteHandler: AutoCompleteHandler?
@@ -105,11 +105,12 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.separatorStyle = .none
         
         // NOTE: making section header height very tiny as 0 make it default size in iOS11
-        //  see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
+        // see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
         tableView.sectionHeaderHeight = CGFloat(0.01)
         tableView.estimatedRowHeight = 200
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
+        tableView.register(ButtonControlViewCell.self, forCellReuseIdentifier: ButtonControlViewCell.cellIdentifier)
     }
 
     private func setupInputForState() {
@@ -152,16 +153,16 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     // MARK: - ViewDataChangeListener
     
     private func updateModel(_ model: ChatMessageModel, atIndex index: Int) {
-        if let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? ConversationViewCell {
-            addUIControl(forModel: model, inCell: cell)
+        let indexPath = IndexPath(row: index, section: 0)
+        guard let cell = tableView.cellForRow(at: indexPath) as? ConversationViewCell else {
+            return
         }
         
+        cell.messageViewController?.model = model
         UIView.animate(withDuration: 0.3, animations: {
             self.tableView.beginUpdates()
             self.tableView.endUpdates()
         })
-        
-//        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
     }
     
     func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType]) {
@@ -174,8 +175,12 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                     self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .top)
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
-                case .update(let index, _, let model):
-                    updateModel(model, atIndex: index)
+                case .update(let index, let oldModel, let model):
+                    if model.controlModel.type == .button || oldModel.controlModel.type == .button {
+                        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    } else {
+                        updateModel(model, atIndex: index)
+                    }
                 }
             })
         }
@@ -326,6 +331,7 @@ extension ConversationViewController {
         // default is 140, but even on iPhone SE 200 fits fine with keyboard up
         return 200
     }
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         if tableView == autoCompletionView, let handler = autocompleteHandler {
             return handler.numberOfSections()
@@ -351,34 +357,44 @@ extension ConversationViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if tableView == autoCompletionView, let handler = autocompleteHandler {
             return handler.cellForRowAt(indexPath)
-        } else {
-            
-           return conversationCellForRowAt(indexPath)
         }
-    }
-    
-    private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
-        configureConversationCell(cell, at: indexPath)
+            
+        guard let chatMessageModel = dataController.controlForIndex(indexPath.row) else {
+            return UITableViewCell()
+        }
+        
+        let cell: UITableViewCell
+        if chatMessageModel.controlModel.type == .button {
+            let multiPartCell = tableView.dequeueReusableCell(withIdentifier: ButtonControlViewCell.cellIdentifier, for: indexPath) as! ButtonControlViewCell
+            multiPartCell.configure(with: chatMessageModel.controlModel as! ButtonControlViewModel)
+            multiPartCell.control?.delegate = self
+            cell = multiPartCell
+        } else {
+            let conversationCell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
+            configureConversationCell(conversationCell, messageModel: chatMessageModel, at: indexPath)
+            cell = conversationCell
+        }
+        
+        cell.selectionStyle = .none
+        cell.transform = tableView.transform
         return cell
     }
     
-    private func configureConversationCell(_ cell: ConversationViewCell, at indexPath:IndexPath) {
-        if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
-            let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
-            cell.messageViewController = messageViewController
-            addUIControl(forModel: chatMessageModel, inCell: cell)
-            messageViewController.didMove(toParentViewController: self)
+    private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
+        guard let chatMessageModel = dataController.controlForIndex(indexPath.row) else {
+            return UITableViewCell()
         }
-
-        cell.selectionStyle = .none
-        cell.transform = tableView.transform
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
+        configureConversationCell(cell, messageModel: chatMessageModel, at: indexPath)
+        return cell
     }
     
-    private func addUIControl(forModel model: ChatMessageModel, inCell cell: ConversationViewCell) {
-        let uiControl = uiControlCache.control(forModel: model.controlModel, forResourceProvider: chatterbox.apiManager)
-        cell.messageViewController?.addUIControl(uiControl, at: model.location)
-        uiControl.delegate = self
+    private func configureConversationCell(_ cell: ConversationViewCell, messageModel model: ChatMessageModel, at indexPath: IndexPath) {
+        let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
+        cell.messageViewController = messageViewController
+        messageViewController.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self, resourceProvider: chatterbox.apiManager)
+        messageViewController.didMove(toParentViewController: self)
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -400,16 +416,9 @@ extension ConversationViewController {
     }
     
     private func prepareChatMessageViewControllerForReuse(for cell: UITableViewCell) {
-        guard let conversationCell = cell as? ConversationViewCell else {
-            fatalError("Wrong cell's class")
-        }
-        
-        guard let messageViewController = conversationCell.messageViewController else {
+        guard let conversationCell = cell as? ConversationViewCell,
+            let messageViewController = conversationCell.messageViewController else {
             return
-        }
-        
-        if let controlModel = messageViewController.uiControl?.model {
-            uiControlCache.cacheControl(forModel: controlModel)
         }
         
         messageViewControllerCache.cacheViewController(messageViewController)

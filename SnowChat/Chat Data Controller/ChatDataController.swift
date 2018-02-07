@@ -150,6 +150,10 @@ class ChatDataController {
     }
     
     fileprivate func pushTypingIndicator() {
+        if isShowingTypingIndicator() {
+            return
+        }
+        
         let model = ChatMessageModel(model: typingIndicator, location: BubbleLocation.left)
         addControlToCollection(model)
         
@@ -181,6 +185,8 @@ class ChatDataController {
                 updatePickerData(data, lastPendingMessage)
             case .multiSelect:
                 updateMultiSelectData(data, lastPendingMessage)
+            case .multiPart:
+                updateMultiPartData(data, lastPendingMessage)
             default:
                 Logger.default.logDebug("Unhandled control type: \(lastPendingMessage.controlType)")
                 return
@@ -228,6 +234,16 @@ class ChatDataController {
             multiSelectMessage.id = multiSelectViewModel.id
             multiSelectMessage.data.richControl?.value = multiSelectViewModel.resultValue
             chatterbox.update(control: multiSelectMessage)
+        }
+    }
+    
+    fileprivate func updateMultiPartData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
+        if let buttonViewModel = data as? ButtonControlViewModel,
+            var multiPartMessage = lastPendingMessage as? MultiPartControlMessage {
+            
+            multiPartMessage.id = buttonViewModel.id
+            multiPartMessage.data.richControl?.uiMetadata?.index = buttonViewModel.value + 1
+            chatterbox.update(control: multiPartMessage)
         }
     }
 
@@ -315,6 +331,12 @@ extension ChatDataController: ChatDataListener {
         
         if let messageModel = ChatMessageModel.model(withMessage: message) {
             bufferControlMessage(messageModel)
+            
+            // show Button control after nested control of multipart is presented
+            if message.controlType == .multiPart, let buttonModel = ChatMessageModel.buttonModel(withMessage: message as! MultiPartControlMessage) {
+                bufferControlMessage(buttonModel)
+            }
+            
         } else {
             dataConversionError(controlId: message.uniqueId, controlType: message.controlType)
         }
@@ -354,6 +376,10 @@ extension ChatDataController: ChatDataListener {
             guard messageExchange.message is MultiSelectControlMessage,
                 messageExchange.response is MultiSelectControlMessage else { fatalError("Could not view message as MultiSelectControlMessage in ChatDataListener") }
             self.didCompleteMultiSelectExchange(messageExchange, forChat: chatId)
+        case .multiPart:
+            guard messageExchange.message is MultiPartControlMessage,
+                messageExchange.response is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
+            self.didCompleteMultiPartExchange(messageExchange, forChat: chatId)
         default:
             Logger.default.logError("Unhandled control type in ChatDataListener didCompleteMessageExchange: \(messageExchange.message.controlType)")
         }
@@ -408,6 +434,11 @@ extension ChatDataController: ChatDataListener {
             replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
             presentControlData(ChatMessageModel(model: answerModel, location: .right))
         }
+    }
+    
+    private func didCompleteMultiPartExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
+        let typingIndicatorModel = ChatMessageModel(model: typingIndicator, location: BubbleLocation.left)
+        replaceLastControl(with: typingIndicatorModel)        
     }
     
     // MARK: - ChatDataListener (bulk uopdates / history)

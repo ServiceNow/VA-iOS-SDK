@@ -9,7 +9,7 @@
 import AlamofireImage
 
 class ControlsUtil {
-    static func controlForViewModel(_ model: ControlViewModel, resourceProvider provider: ControlResourceProvider) -> ControlProtocol {
+    static func controlForViewModel(_ model: ControlViewModel, resourceProvider provider: ControlResourceProvider? = nil) -> ControlProtocol {
         switch model.type {
         case .multiSelect:
             return MultiSelectControl(model: model)
@@ -17,7 +17,7 @@ class ControlsUtil {
             return TextControl(model: model)
         case .outputImage:
             let outputImageControl = OutputImageControl(model: model)
-            outputImageControl.imageDownloader = provider.imageProvider
+            outputImageControl.imageDownloader = provider?.imageProvider
             return outputImageControl
         case .boolean:
             return BooleanControl(model: model)
@@ -25,6 +25,8 @@ class ControlsUtil {
             return SingleSelectControl(model: model)
         case .typingIndicator:
             return TypingIndicatorControl()
+        case .button:
+            return ButtonControl(model: model)
         }
     }
 }

@@ -84,6 +84,8 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             uiControl = outputImageControl
         case .singleSelect:
             fatalError("Single select not implemented yet")
+        default:
+            fatalError("pfff")
         }
         
         uiControl.delegate = self
@@ -108,7 +110,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
                                                                          uiMetadata: UIMetadata(label:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eleifend dapibus lacus, faucibus efficitur enim malesuada vel.",
                                                                                                required: false,
                                                                                                error: nil),
-                                                                         value: nil))
+                                                                         value: nil, content: nil))
     }
     
 }

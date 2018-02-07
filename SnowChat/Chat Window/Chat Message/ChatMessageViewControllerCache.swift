@@ -21,13 +21,15 @@ class ChatMessageViewControllerCache {
         } else {
             messageViewController = ChatMessageViewController(nibName: "ChatMessageViewController", bundle: Bundle(for: type(of: self)))
         }
-
+        
         messageViewController.willMove(toParentViewController: parent)
         parent.addChildViewController(messageViewController)
         return messageViewController
     }
     
     func cacheViewController(_ viewController: ChatMessageViewController) {
+        viewController.willMove(toParentViewController: nil)
+        viewController.view.removeFromSuperview()
         viewController.removeFromParentViewController()
         viewController.prepareForReuse()
         viewControllersToReuse.insert(viewController)
