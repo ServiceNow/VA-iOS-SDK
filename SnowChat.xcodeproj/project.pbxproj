@@ -469,14 +469,14 @@
 			isa = PBXGroup;
 			children = (
 				573F78FB202288860008391D /* Supporting Views */,
-				BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */,
-				C432A037201A9C5900F328B7 /* ContextMenuItem.swift */,
 				BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */,
+				BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */,
 				C43479EB1FE460700091806D /* TopicSelection.swift */,
 				C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */,
 				579652A62022D32500B61665 /* ControlPresentable.swift */,
-				57A94513200E4E2F0073B5A1 /* Chat Message */,
+				C432A037201A9C5900F328B7 /* ContextMenuItem.swift */,
 				C4CB0211202A606B003869F8 /* NotificationBanner.swift */,
+				57A94513200E4E2F0073B5A1 /* Chat Message */,
 			);
 			path = "Chat Window";
 			sourceTree = "<group>";

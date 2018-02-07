@@ -12,30 +12,23 @@ class NotificationBanner: UIView {
     
     @IBOutlet weak var label: UILabel?
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
+    public var text = "" {
+        didSet {
+            label?.text = text
+        }
+    }
+    
+    init() {
+        super.init(frame: CGRect.zero)
+
+        backgroundColor = UIColor.gray
+        translatesAutoresizingMaskIntoConstraints = false
+
         setupViews()
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    func show(inView parent: UIView, withText text: String, atOffset offset: CGFloat) {
-        label?.text = text
-        parent.addSubview(self)
-        
-        NSLayoutConstraint.activate([
-            leadingAnchor.constraint(equalTo: parent.leadingAnchor),
-            topAnchor.constraint(equalTo: parent.topAnchor, constant: offset),
-            widthAnchor.constraint(equalTo: parent.widthAnchor),
-            heightAnchor.constraint(equalToConstant: 30)
-        ])
-    }
-    
-    func hide() {
-        removeFromSuperview()
     }
     
     private func setupViews() {
@@ -52,8 +45,5 @@ class NotificationBanner: UIView {
             label.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
         self.label = label
-        
-        backgroundColor = UIColor.gray
-        translatesAutoresizingMaskIntoConstraints = false
     }
 }
