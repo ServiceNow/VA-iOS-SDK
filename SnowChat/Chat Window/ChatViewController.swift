@@ -89,6 +89,7 @@ public class ChatViewController: UIViewController {
     
     func setupNotificationBanner() {
         let banner = NotificationBanner()
+        banner.translatesAutoresizingMaskIntoConstraints = false
 
         var offset: CGFloat = 0.0
         if let navigationController = navigationController {

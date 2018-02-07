@@ -22,7 +22,6 @@ class NotificationBanner: UIView {
         super.init(frame: CGRect.zero)
 
         backgroundColor = UIColor.gray
-        translatesAutoresizingMaskIntoConstraints = false
 
         setupViews()
     }
