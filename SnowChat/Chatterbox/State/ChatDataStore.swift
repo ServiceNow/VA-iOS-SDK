@@ -208,8 +208,9 @@ struct MessageExchange: Codable {
         }
     }
     
-    init(withMessage message: CBControlData, withResponse: CBControlData? = nil) {
+    init(withMessage message: CBControlData, withResponse response: CBControlData? = nil) {
         self.message = message
+        self.response = response
     }
     
     private func needsResponse() -> Bool {
