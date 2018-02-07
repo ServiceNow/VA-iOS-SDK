@@ -21,6 +21,7 @@ enum BubbleLocation {
 }
 
 class ChatMessageModel {
+    var avatarURL: URL?
     let controlModel: ControlViewModel
     let location: BubbleLocation
     let requiresInput: Bool
