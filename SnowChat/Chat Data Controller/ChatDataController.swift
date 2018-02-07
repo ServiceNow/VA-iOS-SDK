@@ -196,37 +196,37 @@ class ChatDataController {
         }
     }
     
-    fileprivate func updateBooleanData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
+    fileprivate func updateBooleanData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         if let booleanViewModel = data as? BooleanControlViewModel,
             var boolMessage = lastPendingMessage as? BooleanControlMessage {
             
-            boolMessage.id = CBData.uuidString()
+            boolMessage.id = ChatUtil.uuidString()
             boolMessage.data.richControl?.value = booleanViewModel.resultValue
             chatterbox.update(control: boolMessage)
         }
     }
     
-    fileprivate func updateInputData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
+    fileprivate func updateInputData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         if let textViewModel = data as? TextControlViewModel,
             var inputMessage = lastPendingMessage as? InputControlMessage {
             
-            inputMessage.id = CBData.uuidString()
+            inputMessage.id = ChatUtil.uuidString()
             inputMessage.data.richControl?.value = textViewModel.value
             chatterbox.update(control: inputMessage)
         }
     }
     
-    fileprivate func updatePickerData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
+    fileprivate func updatePickerData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         if let pickerViewModel = data as? SingleSelectControlViewModel,
             var pickerMessage = lastPendingMessage as? PickerControlMessage {
             
-            pickerMessage.id = CBData.uuidString()
+            pickerMessage.id = ChatUtil.uuidString()
             pickerMessage.data.richControl?.value = pickerViewModel.resultValue
             chatterbox.update(control: pickerMessage)
         }
     }
     
-    fileprivate func updateMultiSelectData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
+    fileprivate func updateMultiSelectData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         if let multiSelectViewModel = data as? MultiSelectControlViewModel,
             var multiSelectMessage = lastPendingMessage as? MultiSelectControlMessage {
             
@@ -236,7 +236,7 @@ class ChatDataController {
         }
     }
     
-    fileprivate func updateMultiPartData(_ data: ControlViewModel, _ lastPendingMessage: CBControlData) {
+    fileprivate func updateMultiPartData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         if let buttonViewModel = data as? ButtonControlViewModel,
             var multiPartMessage = lastPendingMessage as? MultiPartControlMessage {
             
@@ -270,13 +270,13 @@ class ChatDataController {
 
     func presentCompletionMessage() {
         let message = NSLocalizedString("Thanks for visiting. If you need anything else, just ask!", comment: "Default end of topic message to show to user")
-        let completionTextControl = TextControlViewModel(id: CBData.uuidString(), value: message)
+        let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         bufferControlMessage(ChatMessageModel(model: completionTextControl, location: .left))
     }
 
     func presentWelcomeMessage() {
         let message = chatterbox.session?.welcomeMessage ?? "Welcome! What can we help you with?"
-        let welcomeTextControl = TextControlViewModel(id: CBData.uuidString(), value: message)
+        let welcomeTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         // NOTE: we do not buffer the welcome message currently - this is intentional
         presentControlData(ChatMessageModel(model: welcomeTextControl, location: .left))
     }
@@ -328,7 +328,7 @@ extension ChatDataController: ChatDataListener {
 
     // MARK: - ChatDataListener (from service)
 
-    func chatterbox(_ chatterbox: Chatterbox, didReceiveControlMessage message: CBControlData, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, didReceiveControlMessage message: ControlData, forChat chatId: String) {
         guard chatterbox.id == self.chatterbox.id, message.direction == .fromServer else {
             return
         }
@@ -346,7 +346,7 @@ extension ChatDataController: ChatDataListener {
         }
     }
     
-    private func dataConversionError(controlId: String, controlType: CBControlType) {
+    private func dataConversionError(controlId: String, controlType: ChatterboxControlType) {
         logger.logError("Data Conversion Error: \(controlId) : \(controlType)")
     }
     
@@ -432,11 +432,11 @@ extension ChatDataController: ChatDataListener {
             let label = message.data.richControl?.uiMetadata?.label,
             let values: [String] = response.data.richControl?.value ?? [""] {
             
-            let questionModel = TextControlViewModel(id: CBData.uuidString(), value: label)
+            let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
             
             let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
             let displayValue = options?.joinedWithCommaSeparator()
-            let answerModel = TextControlViewModel(id: CBData.uuidString(), value: displayValue ?? "")
+            let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue ?? "")
             
             replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
             presentControlData(ChatMessageModel(model: answerModel, location: .right))
@@ -530,8 +530,8 @@ extension ChatDataController: ChatDataListener {
         let value = response.data.richControl?.value ?? false
         let valueString = (value ?? false) ? "Yes" : "No"
         
-        let questionViewModel = TextControlViewModel(id: CBData.uuidString(), value: label)
-        let answerViewModel = TextControlViewModel(id: CBData.uuidString(), value: valueString)
+        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        let answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: valueString)
         
         return (message: questionViewModel, response: answerViewModel)
     }
@@ -548,8 +548,8 @@ extension ChatDataController: ChatDataListener {
         }
         // a completed input exchange is two text controls, with the value of the message and the value of the response
         
-        let questionViewModel = TextControlViewModel(id: CBData.uuidString(), value: messageValue)
-        let answerViewModel = TextControlViewModel(id: CBData.uuidString(), value: responseValue)
+        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: messageValue)
+        let answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: responseValue)
         
         return (message: questionViewModel, response: answerViewModel)
     }
@@ -569,8 +569,8 @@ extension ChatDataController: ChatDataListener {
         let selectedOption = response.data.richControl?.uiMetadata?.options.first(where: { option -> Bool in
             option.value == value
         })
-        let questionViewModel = TextControlViewModel(id: CBData.uuidString(), value: label)
-        let answerViewModel = TextControlViewModel(id: CBData.uuidString(), value: selectedOption?.label ?? value)
+        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        let answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: selectedOption?.label ?? value)
         
         return (message: questionViewModel, response: answerViewModel)
     }
@@ -585,11 +585,11 @@ extension ChatDataController: ChatDataListener {
                 return nil
         }
 
-        let questionModel = TextControlViewModel(id: CBData.uuidString(), value: label)
+        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
         
         let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
         let displayValue = options?.joinedWithCommaSeparator()
-        let answerModel = TextControlViewModel(id: CBData.uuidString(), value: displayValue ?? "")
+        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue ?? "")
         
         return (message: questionModel, response: answerModel)
     }
@@ -603,7 +603,7 @@ extension ChatDataController: ChatDataListener {
                 return nil
         }
         
-        return TextControlViewModel(id: CBData.uuidString(), value: value)
+        return TextControlViewModel(id: ChatUtil.uuidString(), value: value)
     }
     
     func controlForImage(from messageExchange: MessageExchange) -> OutputImageViewModel? {
@@ -615,7 +615,7 @@ extension ChatDataController: ChatDataListener {
         }
         
         if let url = URL(string: value) {
-            return OutputImageViewModel(id: CBData.uuidString(), value: url)
+            return OutputImageViewModel(id: ChatUtil.uuidString(), value: url)
         }
         
         return nil

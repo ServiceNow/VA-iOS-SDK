@@ -6,7 +6,7 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-struct MultiPartControlMessage: Codable, CBControlData {
+struct MultiPartControlMessage: Codable, ControlData {
     
     var uniqueId: String {
         return id
@@ -18,11 +18,11 @@ struct MultiPartControlMessage: Codable, CBControlData {
         return data.direction
     }
     
-    var id: String = CBData.uuidString()
-    var controlType: CBControlType = .multiPart
+    var id: String = ChatUtil.uuidString()
+    var controlType = ChatterboxControlType.multiPart
     
-    var nestedControlType: CBControlType? {
-        guard let uiType = data.richControl?.content?.uiType, let controlType = CBControlType(rawValue: uiType) else { return nil }
+    var nestedControlType: ChatterboxControlType? {
+        guard let uiType = data.richControl?.content?.uiType, let controlType = ChatterboxControlType(rawValue: uiType) else { return nil }
         return controlType
     }
     

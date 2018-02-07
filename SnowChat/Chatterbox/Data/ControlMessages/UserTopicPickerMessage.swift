@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct UserTopicPickerMessage: Codable, CBControlData {
+struct UserTopicPickerMessage: Codable, ControlData {
 
     var uniqueId: String {
         return id
@@ -22,7 +22,7 @@ struct UserTopicPickerMessage: Codable, CBControlData {
     
     var id: String = UUID().uuidString
     
-    var controlType: CBControlType = .topicPicker
+    var controlType = ChatterboxControlType.topicPicker
     
     var messageId: String {
         return data.messageId

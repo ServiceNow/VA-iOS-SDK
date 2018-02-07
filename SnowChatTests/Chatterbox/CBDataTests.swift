@@ -55,7 +55,7 @@ class CBDataTests: XCTestCase {
     func testInvalidTypeFromJSON() {
         let val = "WTF?"
         let json = "{\"typo\":\"unknownControl\",\"value\":\"\(val)\"}"
-        let obj = CBDataFactory.controlFromJSON(json)
+        let obj = ChatDataFactory.controlFromJSON(json)
         XCTAssertNotNil(obj)
         XCTAssert(obj.controlType == .unknown)
         let inputObj = obj as? CBControlDataUnknown
@@ -177,7 +177,7 @@ class CBDataTests: XCTestCase {
     
     func testInitEventFromJSON() {
         
-        let obj = CBDataFactory.actionFromJSON(jsonInitStart)
+        let obj = ChatDataFactory.actionFromJSON(jsonInitStart)
         XCTAssertNotNil(obj)
         XCTAssert(obj.eventType == .channelInit)
         

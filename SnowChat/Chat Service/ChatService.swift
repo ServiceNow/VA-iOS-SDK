@@ -15,7 +15,7 @@ public enum ChatServiceError: Error {
 }
 
 public class ChatService: Equatable {
-    private let id: String = CBData.uuidString()
+    private let id: String = ChatUtil.uuidString()
     
     public static func == (lhs: ChatService, rhs: ChatService) -> Bool {
         return lhs.id == rhs.id
@@ -76,8 +76,8 @@ public class ChatService: Equatable {
         }
         isInitializing = true
         
-        let user = CBUser(id: CBData.uuidString(), token: "123abd", username: userCredentials.username, consumerId: "CONSUMER_ID_IOS", consumerAccountId: "CONSUMER_ACCOUNT_ID_IOS", password: userCredentials.password)
-        let vendor = CBVendor(name: "acme", vendorId: userCredentials.vendorId, consumerId: user.consumerId, consumerAccountId: user.consumerAccountId)
+        let user = ChatUser(id: ChatUtil.uuidString(), token: "123abd", username: userCredentials.username, consumerId: "CONSUMER_ID_IOS", consumerAccountId: "CONSUMER_ACCOUNT_ID_IOS", password: userCredentials.password)
+        let vendor = ChatVendor(name: "acme", vendorId: userCredentials.vendorId, consumerId: user.consumerId, consumerAccountId: user.consumerAccountId)
         
         self.chatterbox.initializeSession(forUser: user, vendor: vendor,
             success: { message in

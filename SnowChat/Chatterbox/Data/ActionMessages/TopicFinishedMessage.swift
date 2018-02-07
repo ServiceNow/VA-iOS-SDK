@@ -8,8 +8,8 @@
 
 import Foundation
 
-struct TopicFinishedMessage: Codable, CBActionMessageData {
-    var eventType: CBActionEventType = .finishedUserTopic
+struct TopicFinishedMessage: Codable, ActionData {
+    var eventType: ChatterboxActionType = .finishedUserTopic
     
     let type: String
     var data: ActionMessageData<TopicFinishMessageDetails>
@@ -21,7 +21,7 @@ struct TopicFinishedMessage: Codable, CBActionMessageData {
     
     init(withSessionId sessionId: String, withConversationId conversationId: String) {
         self.type = "actionMessage"
-        self.data = ActionMessageData<TopicFinishMessageDetails>(taskId: nil, messageId: CBData.uuidString(), sessionId: sessionId, conversationId: conversationId, direction: MessageDirection.fromServer, sendTime: Date(), receiveTime: Date(), actionMessage: TopicFinishedMessage.TopicFinishMessageDetails(type: "TopicFinished", systemActionName: "TopicFinished"))
+        self.data = ActionMessageData<TopicFinishMessageDetails>(taskId: nil, messageId: ChatUtil.uuidString(), sessionId: sessionId, conversationId: conversationId, direction: MessageDirection.fromServer, sendTime: Date(), receiveTime: Date(), actionMessage: TopicFinishedMessage.TopicFinishMessageDetails(type: "TopicFinished", systemActionName: "TopicFinished"))
     }
     
     // define the properties that we decode / encode

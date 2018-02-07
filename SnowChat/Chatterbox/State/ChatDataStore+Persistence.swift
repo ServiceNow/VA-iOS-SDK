@@ -39,7 +39,7 @@ extension ChatDataStore {
         }
         
         let storable = StorableContainer(conversations: conversations)
-        let data = try CBData.jsonEncoder.encode(storable)
+        let data = try ChatUtil.jsonEncoder.encode(storable)
         try data.write(to: archiveURL)
     }
     
@@ -54,7 +54,7 @@ extension ChatDataStore {
         
         let data = try Data(contentsOf: archiveURL, options: [])
         
-        let storable = try CBData.jsonDecoder.decode(StorableContainer.self, from: data)
+        let storable = try ChatUtil.jsonDecoder.decode(StorableContainer.self, from: data)
         
         if storable.version != StorableContainer.currentVersion {
             // TODO: try to do a version-change-fixup?

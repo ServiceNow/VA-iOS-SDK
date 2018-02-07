@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct InputControlMessage: Codable, CBControlData {
+struct InputControlMessage: Codable, ControlData {
 
     var uniqueId: String {
         return id
@@ -20,8 +20,8 @@ struct InputControlMessage: Codable, CBControlData {
         return data.direction
     }
     
-    var id: String = CBData.uuidString()
-    var controlType: CBControlType = .input
+    var id: String = ChatUtil.uuidString()
+    var controlType = ChatterboxControlType.input
     
     var messageId: String {
         return data.messageId

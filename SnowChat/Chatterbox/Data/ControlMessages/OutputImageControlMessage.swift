@@ -6,7 +6,7 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-struct OutputImageControlMessage: Codable, CBControlData {
+struct OutputImageControlMessage: Codable, ControlData {
     
     var uniqueId: String {
         return id
@@ -18,8 +18,8 @@ struct OutputImageControlMessage: Codable, CBControlData {
         return data.direction
     }
     
-    var id: String = CBData.uuidString()
-    var controlType: CBControlType = .outputImage
+    var id: String = ChatUtil.uuidString()
+    var controlType = ChatterboxControlType.outputImage
     
     var messageId: String {
         return data.messageId

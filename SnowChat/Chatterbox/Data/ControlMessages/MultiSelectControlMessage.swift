@@ -6,7 +6,7 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-struct MultiSelectControlMessage: Codable, CBControlData {
+struct MultiSelectControlMessage: Codable, ControlData {
 
     var uniqueId: String {
         return id
@@ -18,8 +18,8 @@ struct MultiSelectControlMessage: Codable, CBControlData {
         return data.direction
     }
     
-    var id: String = CBData.uuidString()
-    var controlType: CBControlType = .multiSelect
+    var id: String = ChatUtil.uuidString()
+    var controlType = ChatterboxControlType.multiSelect
     
     var messageId: String {
         return data.messageId

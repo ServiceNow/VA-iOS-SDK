@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct ContextualActionMessage: Codable, CBControlData {
+struct ContextualActionMessage: Codable, ControlData {
 
     var uniqueId: String {
         return id
@@ -21,7 +21,7 @@ struct ContextualActionMessage: Codable, CBControlData {
     }
     
     var id: String = UUID().uuidString
-    var controlType: CBControlType = .contextualAction
+    var controlType = ChatterboxControlType.contextualAction
 
     var messageId: String {
         return data.messageId
