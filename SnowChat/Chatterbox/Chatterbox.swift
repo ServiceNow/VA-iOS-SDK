@@ -545,7 +545,7 @@ class Chatterbox {
     fileprivate func updateMultiPartControl(_ control: CBControlData) {
         if var multiPartControl = control as? MultiPartControlMessage, let conversationId = multiPartControl.data.conversationId {
             multiPartControl.data = updateRichControlData(multiPartControl.data)
-            storeAndPublish(multiPartControl, forConversation: conversationId)
+            publishControlUpdate(multiPartControl, forConversation: conversationId)
         }
     }
     

@@ -118,7 +118,7 @@ extension ChatViewController: ChatEventListener {
     }
     
     private func showDisconnectedBanner() {
-        var offset: CGFloat = 0.0;
+        var offset: CGFloat = 0.0
         if let navigationController = navigationController {
             offset = navigationController.navigationBar.frame.size.height
             offset += navigationController.navigationBar.frame.origin.y
