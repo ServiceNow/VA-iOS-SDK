@@ -19,6 +19,8 @@ class ControlsUtil {
             let outputImageControl = OutputImageControl(model: model)
             outputImageControl.imageDownloader = provider?.imageProvider
             return outputImageControl
+        case .outputLink:
+            return LinkOutputControl(model: model)
         case .boolean:
             return BooleanControl(model: model)
         case .singleSelect:

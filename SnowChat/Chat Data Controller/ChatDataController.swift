@@ -509,6 +509,10 @@ extension ChatDataController: ChatDataListener {
             if let viewModel = controlForImage(from: historyExchange) {
                 addHistoryToCollection(viewModel)
             }
+        case .outputLink:
+            if let viewModel = controlForLink(from: historyExchange) {
+                addHistoryToCollection(viewModel)
+            }
         default:
             logger.logInfo("Unhandled control type in didReceiveHistory: \(historyExchange.message.controlType)")
         }
@@ -618,6 +622,10 @@ extension ChatDataController: ChatDataListener {
             return OutputImageViewModel(id: ChatUtil.uuidString(), value: url)
         }
         
+        return nil
+    }
+    
+    func controlForLink(from messageExchange: MessageExchange) -> OutputLinkControlViewModel? {
         return nil
     }
 }

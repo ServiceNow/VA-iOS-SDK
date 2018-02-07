@@ -98,6 +98,9 @@
 		57E1AF192019243500D54647 /* OutputImageControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1AF182019243500D54647 /* OutputImageControlMessage.swift */; };
 		57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1EA321FC33D1C009FC76D /* RoundedView.swift */; };
 		57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */; };
+		57E65F4F202BA4640087E5DE /* LinkOutputControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E65F4E202BA4640087E5DE /* LinkOutputControl.swift */; };
+		57E65F51202BA5240087E5DE /* OutputLinkControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E65F50202BA5240087E5DE /* OutputLinkControlViewModel.swift */; };
+		57E65F53202BA5AD0087E5DE /* OutputLinkControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E65F52202BA5AD0087E5DE /* OutputLinkControlMessage.swift */; };
 		57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */; };
 		57EE77DF1FFEC2B1001F689A /* ChatMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */; };
 		57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F7B2531FE17823006D917C /* TextControlViewModel.swift */; };
@@ -241,6 +244,9 @@
 		57E1AF182019243500D54647 /* OutputImageControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputImageControlMessage.swift; sourceTree = "<group>"; };
 		57E1EA321FC33D1C009FC76D /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
 		57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ControlsViewController.xib; sourceTree = "<group>"; };
+		57E65F4E202BA4640087E5DE /* LinkOutputControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkOutputControl.swift; sourceTree = "<group>"; };
+		57E65F50202BA5240087E5DE /* OutputLinkControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputLinkControlViewModel.swift; sourceTree = "<group>"; };
+		57E65F52202BA5AD0087E5DE /* OutputLinkControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputLinkControlMessage.swift; sourceTree = "<group>"; };
 		57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Utils.swift"; sourceTree = "<group>"; };
 		57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageModel.swift; sourceTree = "<group>"; };
 		57F7B2531FE17823006D917C /* TextControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControlViewModel.swift; sourceTree = "<group>"; };
@@ -391,6 +397,7 @@
 				5706C5781FE43FB3008D70D1 /* ControlsUtil.swift */,
 				578632151FBB9E0300FA0282 /* ControlProtocol.swift */,
 				57532BAC1FD777FA001D674C /* TextControl.swift */,
+				57E65F4E202BA4640087E5DE /* LinkOutputControl.swift */,
 				57D1DB6C1FEB592D00082F78 /* OutputImageControl.swift */,
 				57532BAA1FD777AC001D674C /* PickerControl.swift */,
 				57B7E2BB1FBA25A200196BA9 /* BooleanControl.swift */,
@@ -433,6 +440,7 @@
 			children = (
 				5788B2A61FBB38FD00846F33 /* ControlViewModel.swift */,
 				57F7B2531FE17823006D917C /* TextControlViewModel.swift */,
+				57E65F50202BA5240087E5DE /* OutputLinkControlViewModel.swift */,
 				57D1DB6E1FEC74E200082F78 /* OutputImageViewModel.swift */,
 				57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */,
 				5763F3C71FE20FF90035764A /* PickerItem.swift */,
@@ -680,6 +688,7 @@
 				C40565F71FC4F4D3004BD28C /* BooleanControlMessage.swift */,
 				57E1AF182019243500D54647 /* OutputImageControlMessage.swift */,
 				C41EF5D31FDB284600707F45 /* InputControlMessage.swift */,
+				57E65F52202BA5AD0087E5DE /* OutputLinkControlMessage.swift */,
 				5740F430202269E90060B349 /* MultiPartControlMessage.swift */,
 				C41EF5D51FDB327800707F45 /* PickerControlMessage.swift */,
 				C41EF5DB1FDB4CA400707F45 /* OutputTextControlMessage.swift */,
@@ -1018,6 +1027,7 @@
 				57D1DB6F1FEC74E200082F78 /* OutputImageViewModel.swift in Sources */,
 				C4F3AF2F1FD235D100B27B0D /* Chatterbox.swift in Sources */,
 				57532BAB1FD777AC001D674C /* PickerControl.swift in Sources */,
+				57E65F4F202BA4640087E5DE /* LinkOutputControl.swift in Sources */,
 				578EAF5E201786940082264B /* Array+Additions.swift in Sources */,
 				573F78F7202275000008391D /* ButtonControl.swift in Sources */,
 				BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */,
@@ -1037,6 +1047,7 @@
 				C4FFCD4A2006D6A000B835C6 /* ChatDataStore+Persistence.swift in Sources */,
 				C41EF5D41FDB284600707F45 /* InputControlMessage.swift in Sources */,
 				579A48F220125039007CF338 /* PickerMetadata.swift in Sources */,
+				57E65F51202BA5240087E5DE /* OutputLinkControlViewModel.swift in Sources */,
 				579652A72022D32500B61665 /* ControlPresentable.swift in Sources */,
 				C432A038201A9C5900F328B7 /* ContextMenuItem.swift in Sources */,
 				C40565FA1FC4F71D004BD28C /* ControlMessage.swift in Sources */,
@@ -1058,6 +1069,7 @@
 				C4B8D3292021090900871B36 /* TransportStatusListener.swift in Sources */,
 				C4CED93C1FD713AA008E3E25 /* StartUserTopicMessage.swift in Sources */,
 				C40565F01FC491DA004BD28C /* ActionMessage.swift in Sources */,
+				57E65F53202BA5AD0087E5DE /* OutputLinkControlMessage.swift in Sources */,
 				C4F3AF341FD6144800B27B0D /* StartTopicMessage.swift in Sources */,
 				572C6BC1200C33BC00F142E2 /* ControlCache.swift in Sources */,
 				BE782DB81FEB205200F848F5 /* APIManager+ChatSession.swift in Sources */,

@@ -58,6 +58,9 @@ extension ChatMessageModel {
         case .outputImage:
             guard let controlMessage = message as? OutputImageControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage)
+        case .outputLink:
+            guard let controlMessage = message as? OutputLinkControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
         default:
             Logger.default.logError("Unhandled control type in ChatMessageModel: \(message.controlType)")
         }
@@ -168,6 +171,18 @@ extension ChatMessageModel {
         
         let outputImageModel = OutputImageViewModel(id: ChatUtil.uuidString(), value: url)
         let snowViewModel = ChatMessageModel(model: outputImageModel, location: BubbleLocation(direction: direction))
+        return snowViewModel
+    }
+    
+    static func model(withMessage message: OutputLinkControlMessage) -> ChatMessageModel? {
+        guard let value = message.data.richControl?.value else {
+            return nil
+        }
+        
+        let direction = message.data.direction
+        
+        let outputLinkModel = OutputLinkControlViewModel(id: ChatUtil.uuidString(), value: "Test")
+        let snowViewModel = ChatMessageModel(model: outputLinkModel, location: BubbleLocation(direction: direction))
         return snowViewModel
     }
 }
