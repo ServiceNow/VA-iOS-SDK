@@ -21,7 +21,6 @@ enum BubbleLocation {
 }
 
 class ChatMessageModel {
-    
     let controlModel: ControlViewModel
     let location: BubbleLocation
     let requiresInput: Bool
@@ -51,6 +50,9 @@ extension ChatMessageModel {
             return model(withMessage: controlMessage)
         case .text:
             guard let controlMessage = message as? OutputTextControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
+        case .multiPart:
+            guard let controlMessage = message as? MultiPartControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage)
         case .outputImage:
             guard let controlMessage = message as? OutputImageControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
@@ -118,9 +120,38 @@ extension ChatMessageModel {
         }
         
         let direction = message.data.direction
-        let textModel = TextControlViewModel(id: message.id, label: "", value: value)
+        let textModel = TextControlViewModel(id: message.id, value: value)
         let snowViewModel = ChatMessageModel(model: textModel, location: BubbleLocation(direction: direction), requiresInput: true)
         return snowViewModel
+    }
+    
+    static func model(withMessage message: MultiPartControlMessage) -> ChatMessageModel? {
+        guard let nestedControlValue = message.data.richControl?.content?.value,
+            let nestedControlType = message.nestedControlType else {
+                return nil
+        }
+        
+        let direction = message.data.direction
+        
+        if nestedControlType == .text {
+            let controlModel = TextControlViewModel(id: CBData.uuidString(), value: nestedControlValue)
+            let textChatModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
+            return textChatModel
+        }
+        
+        return nil
+    }
+    
+    static func buttonModel(withMessage message: MultiPartControlMessage) -> ChatMessageModel? {
+        guard let title = message.data.richControl?.uiMetadata?.navigationBtnLabel,
+            let index = message.data.richControl?.uiMetadata?.index else {
+                return nil
+        }
+        
+        let buttonModel = ButtonControlViewModel(id: message.id, label: title, value: index)
+        let direction = message.data.direction
+        let buttonChatModel = ChatMessageModel(model: buttonModel, location: BubbleLocation(direction: direction))
+        return buttonChatModel
     }
     
     static func model(withMessage message: OutputImageControlMessage) -> ChatMessageModel? {
