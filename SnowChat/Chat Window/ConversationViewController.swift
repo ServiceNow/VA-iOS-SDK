@@ -319,7 +319,7 @@ extension ConversationViewController {
     
     func processUserInput(_ inputText: String) {
         // send the input as a control update
-        let model = TextControlViewModel(id: CBData.uuidString(), value: inputText)
+        let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
         dataController.updateControlData(model, isSkipped: false)
     }
     

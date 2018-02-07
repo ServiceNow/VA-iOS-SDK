@@ -8,8 +8,8 @@
 
 import Foundation
 
-struct StartUserTopicMessage: Codable, CBActionMessageData {
-    var eventType: CBActionEventType = .startUserTopic
+struct StartUserTopicMessage: Codable, ActionData {
+    var eventType: ChatterboxActionType = .startUserTopic
     
     let type: String
     var data: ActionMessageData<UserTopicMessageDetails>

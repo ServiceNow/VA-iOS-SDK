@@ -25,14 +25,14 @@ class ChatDataStore {
     
     // storeControlData: find or create a conversation and add a new MessageExchange with the new control data
     //
-    func storeControlData(_ data: CBControlData, forConversation conversationId: String, fromChat source: Chatterbox) {
+    func storeControlData(_ data: ControlData, forConversation conversationId: String, fromChat source: Chatterbox) {
         let index = findOrCreateConversation(conversationId)
         conversations[index].add(MessageExchange(withMessage: data))
     }
     
     // storeResponseData: find the conversation and add the response to it's pending MessageExchange, completing it
     //
-    func storeResponseData(_ data: CBControlData, forConversation conversationId: String) -> MessageExchange? {
+    func storeResponseData(_ data: ControlData, forConversation conversationId: String) -> MessageExchange? {
         guard let index = conversations.index(where: { $0.conversationId == conversationId }) else {
             Logger.default.logError("No conversation found for \(conversationId) in storeResponseData")
             return nil
@@ -59,11 +59,11 @@ class ChatDataStore {
     
     // pendingMessage: get the last pendng message for a conversation, if any
     //
-    func lastPendingMessage(forConversation conversationId: String) -> CBStorable? {
+    func lastPendingMessage(forConversation conversationId: String) -> Storable? {
         return conversations.first(where: { $0.conversationId == conversationId })?.lastPendingMessage()
     }
     
-    func oldestMessage() -> CBControlData? {
+    func oldestMessage() -> ControlData? {
         var oldest: MessageExchange?
         
         conversations.forEach { conversation in
@@ -104,7 +104,7 @@ class ChatDataStore {
     }
 }
 
-struct Conversation: CBStorable, Codable {
+struct Conversation: Storable, Codable {
 
     var uniqueId: String {
         return id
@@ -120,7 +120,7 @@ struct Conversation: CBStorable, Codable {
     private var exchanges = [MessageExchange]()
     
     init(withConversationId conversationId: String, withTopic topicName: String = "UNKNOWN", withState state: ConversationState = .inProgress) {
-        id = CBData.uuidString()
+        id = ChatUtil.uuidString()
         self.topicId = conversationId
         self.state = state
         self.topicTypeName = topicName
@@ -138,7 +138,7 @@ struct Conversation: CBStorable, Codable {
         exchanges.append(item)
     }
     
-    @discardableResult mutating func storeResponse(_ data: CBControlData) -> MessageExchange? {
+    @discardableResult mutating func storeResponse(_ data: ControlData) -> MessageExchange? {
         guard let pending = lastPendingExchange() else { fatalError("No pending message exchange in storeResponse") }
         
         let index = exchanges.count - 1
@@ -164,7 +164,7 @@ struct Conversation: CBStorable, Codable {
         return false
     }
     
-    func lastPendingMessage() -> CBStorable? {
+    func lastPendingMessage() -> Storable? {
         guard let pending = lastPendingExchange() else { return nil }
         return pending.message
     }
@@ -196,8 +196,8 @@ struct Conversation: CBStorable, Codable {
 
 struct MessageExchange: Codable {
     
-    let message: CBControlData
-    var response: CBControlData?
+    let message: ControlData
+    var response: ControlData?
     
     var isComplete: Bool {
         // Exchange is complete if there is a response, or if the message type needs no response
@@ -208,7 +208,7 @@ struct MessageExchange: Codable {
         }
     }
     
-    init(withMessage message: CBControlData, withResponse response: CBControlData? = nil) {
+    init(withMessage message: ControlData, withResponse response: ControlData? = nil) {
         self.message = message
         self.response = response
     }
@@ -227,10 +227,10 @@ struct MessageExchange: Codable {
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        if let messageString = try CBDataFactory.jsonStringForControlMessage(message) {
+        if let messageString = try ChatDataFactory.jsonStringForControlMessage(message) {
             try container.encode(messageString, forKey: .message)
         }
-        if let response = response, let responseString = try CBDataFactory.jsonStringForControlMessage(response) {
+        if let response = response, let responseString = try ChatDataFactory.jsonStringForControlMessage(response) {
             try container.encode(responseString, forKey: .response)
         }
     }
@@ -239,11 +239,11 @@ struct MessageExchange: Codable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         
         let messageString = try values.decode(String.self, forKey: .message)
-        message = CBDataFactory.controlFromJSON(messageString)
+        message = ChatDataFactory.controlFromJSON(messageString)
         
         do {
             let responseString = try values.decode(String.self, forKey: .response)
-            response = CBDataFactory.controlFromJSON(responseString)
+            response = ChatDataFactory.controlFromJSON(responseString)
         } catch let error {
             Logger.default.logInfo("No response read from decoder: error=\(error.localizedDescription)")
         }

@@ -15,7 +15,7 @@ extension APIManager {
     
     // MARK: - Session
     
-    func startChatSession(with sessionInfo: CBSession, chatId: String, completion: @escaping (Result<CBSession>) -> Void) {
+    func startChatSession(with sessionInfo: ChatSession, chatId: String, completion: @escaping (Result<ChatSession>) -> Void) {
         var resultSession = sessionInfo
         
         let parameters: Parameters = [ "deviceId": sessionInfo.deviceId,
@@ -130,7 +130,7 @@ extension APIManager {
                 var conversation = Conversation(withConversationId: conversationId, withTopic: topicTypeName, withState: status == "COMPLETED" ? .completed : .inProgress)
                 
                 messages.forEach({ (message) in
-                    if let lastPending = conversation.lastPendingMessage() as? CBControlData,
+                    if let lastPending = conversation.lastPendingMessage() as? ControlData,
                        lastPending.controlType == message.controlType {
                         conversation.storeResponse(message)
                     } else {
@@ -145,10 +145,10 @@ extension APIManager {
         return conversations
     }
     
-    internal static func messagesFromResult(_ result: Any, assumeMessagesReversed: Bool = true) -> [CBControlData] {
+    internal static func messagesFromResult(_ result: Any, assumeMessagesReversed: Bool = true) -> [ControlData] {
         guard let messageArray = result as? [NSDictionary] else { return [] }
         
-        let messages: [CBControlData] = messageArray.flatMap { message in
+        let messages: [ControlData] = messageArray.flatMap { message in
             // message is a dictionary, so we have to make it JSON, then convert back to ControlData
             do {
                 // messages are missing the type/data wrapper, so we create one
@@ -157,7 +157,7 @@ extension APIManager {
                 wrapper["data"] = message
                 let messageData = try JSONSerialization.data(withJSONObject: wrapper, options: JSONSerialization.WritingOptions.prettyPrinted)
                 if let messageString = String(data: messageData, encoding: .utf8) {
-                    let control = CBDataFactory.controlFromJSON(messageString)
+                    let control = ChatDataFactory.controlFromJSON(messageString)
                     if control.controlType != .unknown {
                         return control
                     } else {

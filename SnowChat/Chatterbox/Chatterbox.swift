@@ -34,10 +34,10 @@ enum ChatterboxError: Error {
 }
 
 class Chatterbox {
-    let id = CBData.uuidString()
+    let id = ChatUtil.uuidString()
     
-    var user: CBUser?
-    var vendor: CBVendor?
+    var user: ChatUser?
+    var vendor: ChatVendor?
     
     weak var chatDataListener: ChatDataListener?
     weak var chatEventListener: ChatEventListener?
@@ -54,13 +54,13 @@ class Chatterbox {
     internal var contextualActions: ContextualActionMessage?
     
     private let chatStore = ChatDataStore(storeId: "ChatterboxDataStore")
-    private(set) var session: CBSession?
+    private(set) var session: ChatSession?
     
     private var chatChannel: String {
         return "/cs/messages/\(chatId)"
     }
     
-    internal let chatId = CBData.uuidString()
+    internal let chatId = ChatUtil.uuidString()
     private var chatSubscription: NOWAMBSubscription?
     
     internal let instance: ServerInstance
@@ -82,7 +82,7 @@ class Chatterbox {
         chatEventListener = eventListener
     }
     
-    func initializeSession(forUser: CBUser, vendor: CBVendor,
+    func initializeSession(forUser: ChatUser, vendor: ChatVendor,
                            success: @escaping (ContextualActionMessage) -> Void,
                            failure: @escaping (Error?) -> Void ) {
         self.user = forUser
@@ -122,7 +122,7 @@ class Chatterbox {
             messageHandler = startTopicHandler
             
             let startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
-            apiManager.ambClient.sendMessage(startTopic, toChannel: chatChannel, encoder: CBData.jsonEncoder)
+            apiManager.ambClient.sendMessage(startTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
             
             // TODO: how do we signal an error?
         } else {
@@ -130,8 +130,8 @@ class Chatterbox {
         }
     }
     
-    func lastPendingControlMessage(forConversation conversationId: String) -> CBControlData? {
-        return chatStore.lastPendingMessage(forConversation: conversationId) as? CBControlData
+    func lastPendingControlMessage(forConversation conversationId: String) -> ControlData? {
+        return chatStore.lastPendingMessage(forConversation: conversationId) as? ControlData
     }
     
     func fetchOlderMessages(_ completion: @escaping (Int) -> Void) {
@@ -215,7 +215,7 @@ class Chatterbox {
             return
         }
 
-        let sessionInfo = CBSession(id: UUID().uuidString, user: user, vendor: vendor)
+        let sessionInfo = ChatSession(id: UUID().uuidString, user: user, vendor: vendor)
         
         apiManager.startChatSession(with: sessionInfo, chatId: chatId) { [weak self] result in
             guard let strongSelf = self else { return }
@@ -254,12 +254,12 @@ class Chatterbox {
         setupChatSubscription()
 
         if let sessionId = session?.id {
-            apiManager.ambClient.sendMessage(SystemTopicPickerMessage(forSession: sessionId), toChannel: chatChannel, encoder: CBData.jsonEncoder)
+            apiManager.ambClient.sendMessage(SystemTopicPickerMessage(forSession: sessionId), toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
         }
     }
     
     private func handshakeHandler(_ message: String) {
-        let event = CBDataFactory.actionFromJSON(message)
+        let event = ChatDataFactory.actionFromJSON(message)
         guard event.eventType == .channelInit, let initEvent = event as? InitMessage  else {
             return
         }
@@ -281,7 +281,7 @@ class Chatterbox {
     }
     
     private func topicSelectionHandler(_ message: String) {
-        let choices: CBControlData = CBDataFactory.controlFromJSON(message)
+        let choices: ControlData = ChatDataFactory.controlFromJSON(message)
         
         if choices.controlType == .contextualAction {
             if let completion = handshakeCompletedHandler {
@@ -295,7 +295,7 @@ class Chatterbox {
     
     private func startUserSession(withInitEvent initEvent: InitMessage) {
         let initUserEvent = userSessionInitMessage(fromInitEvent: initEvent)
-        apiManager.ambClient.sendMessage(initUserEvent, toChannel: chatChannel, encoder: CBData.jsonEncoder)
+        apiManager.ambClient.sendMessage(initUserEvent, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
     }
     
     private func userSessionInitMessage(fromInitEvent initEvent: InitMessage) -> InitMessage {
@@ -330,7 +330,7 @@ class Chatterbox {
     private func startTopicHandler(_ message: String) {
         //logger.logDebug("startTopicHandler received: \(message)")
         
-        let picker: CBControlData = CBDataFactory.controlFromJSON(message)
+        let picker: ControlData = ChatDataFactory.controlFromJSON(message)
         
         if picker.controlType == .topicPicker {
             if let topicPicker = picker as? UserTopicPickerMessage {
@@ -342,7 +342,7 @@ class Chatterbox {
                     outgoingMessage.data.richControl?.value = conversationContext.topicName
                     
                     messageHandler = startUserTopicHandshakeHandler
-                    apiManager.ambClient.sendMessage(outgoingMessage, toChannel: chatChannel, encoder: CBData.jsonEncoder)
+                    apiManager.ambClient.sendMessage(outgoingMessage, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
                 }
             }
         }
@@ -351,7 +351,7 @@ class Chatterbox {
     private func startUserTopicHandshakeHandler(_ message: String) {
         //logger.logDebug("startUserTopicHandshake received: \(message)")
         
-        let actionMessage = CBDataFactory.actionFromJSON(message)
+        let actionMessage = ChatDataFactory.actionFromJSON(message)
         
         if actionMessage.eventType == .startUserTopic {
             if let startUserTopic = actionMessage as? StartUserTopicMessage {
@@ -359,7 +359,7 @@ class Chatterbox {
                 // client and server messages are the same, so only look at server responses!
                 if startUserTopic.data.direction == .fromServer {
                     let startUserTopicReadyMessage = createStartTopicReadyMessage(startUserTopic: startUserTopic)
-                    apiManager.ambClient.sendMessage(startUserTopicReadyMessage, toChannel: chatChannel, encoder: CBData.jsonEncoder)
+                    apiManager.ambClient.sendMessage(startUserTopicReadyMessage, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
                 }
             }
         } else if actionMessage.eventType == .startedUserTopic {
@@ -393,7 +393,7 @@ class Chatterbox {
     
     private func createStartTopicReadyMessage(startUserTopic: StartUserTopicMessage) -> StartUserTopicMessage {
         var startUserTopicReady = startUserTopic
-        startUserTopicReady.data.messageId = CBData.uuidString()
+        startUserTopicReady.data.messageId = ChatUtil.uuidString()
         startUserTopicReady.data.sendTime = Date()
         startUserTopicReady.data.direction = .fromClient
         startUserTopicReady.data.actionMessage.ready = true
@@ -412,7 +412,7 @@ class Chatterbox {
         logger.logDebug("userTopicMessage received: \(message)")
         
         if handleEventMessage(message) != true {
-            let control = CBDataFactory.controlFromJSON(message)
+            let control = ChatDataFactory.controlFromJSON(message)
             handleControlMessage(control)
         }
     }
@@ -425,10 +425,10 @@ class Chatterbox {
     // MARK: - Incoming messages (Controls from service)
     
     fileprivate func handleEventMessage(_ message: String) -> Bool {
-        let action = CBDataFactory.actionFromJSON(message)
+        let action = ChatDataFactory.actionFromJSON(message)
         
         switch action.eventType {
-        case CBActionEventType.finishedUserTopic:
+        case ChatterboxActionType.finishedUserTopic:
             handleTopicFinishedAction(action)
         default:
             logger.logInfo("Unhandled event message: \(action.eventType)")
@@ -437,12 +437,12 @@ class Chatterbox {
         return true
     }
     
-    fileprivate func handleIncomingControlMessage(_ control: CBControlData, forConversation conversationId: String) {
+    fileprivate func handleIncomingControlMessage(_ control: ControlData, forConversation conversationId: String) {
         chatStore.storeControlData(control, forConversation: conversationId, fromChat: self)
         chatDataListener?.chatterbox(self, didReceiveControlMessage: control, forChat: chatId)
     }
     
-    fileprivate func handleResponseControlMessage(_ control: CBControlData, forConversation conversationId: String) {
+    fileprivate func handleResponseControlMessage(_ control: ControlData, forConversation conversationId: String) {
         if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last, !lastExchange.isComplete {
             if let updatedExchange = chatStore.storeResponseData(control, forConversation: conversationId) {
                 chatDataListener?.chatterbox(self, didCompleteMessageExchange: updatedExchange, forChat: conversationId)
@@ -450,7 +450,7 @@ class Chatterbox {
         }
     }
     
-    fileprivate func handleControlMessage(_ control: CBControlData) {
+    fileprivate func handleControlMessage(_ control: ControlData) {
         guard control.controlType != .unknown else {
             handleUnknownControl(control)
             return
@@ -466,11 +466,11 @@ class Chatterbox {
         }
     }
     
-    fileprivate func handleUnknownControl(_ control: CBControlData) {
+    fileprivate func handleUnknownControl(_ control: ControlData) {
         logger.logError("*** Ignoring unrecognized control type \(control.controlType) ***")
     }
     
-    fileprivate func handleTopicFinishedAction(_ action: CBActionMessageData) {
+    fileprivate func handleTopicFinishedAction(_ action: ActionData) {
         if let topicFinishedMessage = action as? TopicFinishedMessage {
             conversationContext.conversationId = nil
             
@@ -483,7 +483,7 @@ class Chatterbox {
     
     // MARK: - Update Controls (outgoing from user)
     
-    func update(control: CBControlData) {
+    func update(control: ControlData) {
         // based on type, cast the value and push to the store, then send back to service via AMB
         let type = control.controlType
         switch type {
@@ -510,39 +510,39 @@ class Chatterbox {
         return message
     }
     
-    fileprivate func publishControlUpdate<T: CBControlData>(_ message: T, forConversation conversationId: String) {
-        apiManager.ambClient.sendMessage(message, toChannel: chatChannel, encoder: CBData.jsonEncoder)
+    fileprivate func publishControlUpdate<T: ControlData>(_ message: T, forConversation conversationId: String) {
+        apiManager.ambClient.sendMessage(message, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
     }
     
-    fileprivate func updateBooleanControl(_ control: CBControlData) {
+    fileprivate func updateBooleanControl(_ control: ControlData) {
         if var booleanControl = control as? BooleanControlMessage, let conversationId = booleanControl.data.conversationId {
             booleanControl.data = updateRichControlData(booleanControl.data)
             publishControlUpdate(booleanControl, forConversation: conversationId)
         }
     }
     
-    fileprivate func updateInputControl(_ control: CBControlData) {
+    fileprivate func updateInputControl(_ control: ControlData) {
         if var inputControl = control as? InputControlMessage, let conversationId = inputControl.data.conversationId {
             inputControl.data = updateRichControlData(inputControl.data)
             publishControlUpdate(inputControl, forConversation: conversationId)
         }
     }
     
-    fileprivate func updatePickerControl(_ control: CBControlData) {
+    fileprivate func updatePickerControl(_ control: ControlData) {
         if var pickerControl = control as? PickerControlMessage, let conversationId = pickerControl.data.conversationId {
             pickerControl.data = updateRichControlData(pickerControl.data)
             publishControlUpdate(pickerControl, forConversation: conversationId)
         }
     }
 
-    fileprivate func updateMultiSelectControl(_ control: CBControlData) {
+    fileprivate func updateMultiSelectControl(_ control: ControlData) {
         if var multiSelectControl = control as? MultiSelectControlMessage, let conversationId = multiSelectControl.data.conversationId {
             multiSelectControl.data = updateRichControlData(multiSelectControl.data)
             publishControlUpdate(multiSelectControl, forConversation: conversationId)
         }
     }
     
-    fileprivate func updateMultiPartControl(_ control: CBControlData) {
+    fileprivate func updateMultiPartControl(_ control: ControlData) {
         if var multiPartControl = control as? MultiPartControlMessage, let conversationId = multiPartControl.data.conversationId {
             multiPartControl.data = updateRichControlData(multiPartControl.data)
             publishControlUpdate(multiPartControl, forConversation: conversationId)
@@ -640,8 +640,8 @@ extension Chatterbox {
         })
     }
 
-    internal func flattenMessageExchanges(_ exchanges: [MessageExchange]) -> [CBControlData] {
-        var messages = [CBControlData]()
+    internal func flattenMessageExchanges(_ exchanges: [MessageExchange]) -> [ControlData] {
+        var messages = [ControlData]()
         
         exchanges.forEach({ exchange in
             messages.append(exchange.message)
@@ -773,7 +773,7 @@ extension Chatterbox {
     }
 
     internal func notifyMessageExchange(_ exchange: MessageExchange) {
-        logger.logDebug("--> Notifying MessageExchange: message=\(exchange.message.controlType) | response=\(exchange.response?.controlType ?? CBControlType.unknown)")
+        logger.logDebug("--> Notifying MessageExchange: message=\(exchange.message.controlType) | response=\(exchange.response?.controlType ?? .unknown)")
         
         let message = exchange.message
         
@@ -784,7 +784,7 @@ extension Chatterbox {
         }
     }
     
-    internal func notifyMessage(_ message: CBControlData) {
+    internal func notifyMessage(_ message: ControlData) {
         guard let chatDataListener = chatDataListener else {
             logger.logError("No ChatDataListener in NotifyControlReceived")
             return
@@ -793,7 +793,7 @@ extension Chatterbox {
         chatDataListener.chatterbox(self, didReceiveControlMessage: message, forChat: chatId)
     }
     
-    internal func notifyResponse(_ response: CBControlData, exchange: MessageExchange) {
+    internal func notifyResponse(_ response: ControlData, exchange: MessageExchange) {
         guard let chatDataListener = chatDataListener else {
             logger.logError("No ChatDataListener in notifyResponseReceived")
             return

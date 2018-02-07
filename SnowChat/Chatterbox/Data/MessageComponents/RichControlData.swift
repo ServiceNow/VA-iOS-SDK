@@ -37,7 +37,7 @@ struct RichControlData<T: Codable>: Codable {
     var richControl: T?
     
     init(sessionId: String, conversationId: String?, controlData: T?) {
-        self.messageId = CBData.uuidString()
+        self.messageId = ChatUtil.uuidString()
         self.sessionId = sessionId
         self.conversationId = conversationId
         self.sendTime = Date()

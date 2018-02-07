@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct StartTopicMessage: Codable, CBControlData {
+struct StartTopicMessage: Codable, ControlData {
 
     var uniqueId: String {
         return id
@@ -21,7 +21,7 @@ struct StartTopicMessage: Codable, CBControlData {
     }
     
     var id: String = UUID().uuidString
-    var controlType: CBControlType = .startTopicMessage
+    var controlType = ChatterboxControlType.startTopicMessage
     
     var messageId: String {
         return data.messageId

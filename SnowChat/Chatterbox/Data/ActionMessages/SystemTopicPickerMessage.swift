@@ -8,14 +8,14 @@
 
 import Foundation
 
-struct SystemTopicPickerMessage: Codable, CBActionMessageData {
-    var eventType: CBActionEventType = .topicPicker
+struct SystemTopicPickerMessage: Codable, ActionData {
+    var eventType: ChatterboxActionType = .topicPicker
     
     let type: String
     let data: RichControlData<ControlWrapper>
     
     struct ControlWrapper: Codable {
-        let uiType: String = CBActionEventType.topicPicker.rawValue
+        let uiType: String = ChatterboxActionType.topicPicker.rawValue
         let model: ControlModel
         let value: String
     }

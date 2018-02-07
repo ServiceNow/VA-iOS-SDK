@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct OutputTextControlMessage: Codable, CBControlData {
+struct OutputTextControlMessage: Codable, ControlData {
 
     var uniqueId: String {
         return id
@@ -20,8 +20,8 @@ struct OutputTextControlMessage: Codable, CBControlData {
         return data.direction
     }
     
-    var id: String = CBData.uuidString()
-    var controlType: CBControlType = .text
+    var id: String = ChatUtil.uuidString()
+    var controlType = ChatterboxControlType.text
     
     var messageId: String {
         return data.messageId

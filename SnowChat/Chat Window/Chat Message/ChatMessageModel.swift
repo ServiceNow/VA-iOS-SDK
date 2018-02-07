@@ -34,7 +34,7 @@ class ChatMessageModel {
 
 extension ChatMessageModel {
     //swiftlint:disable:next cyclomatic_complexity
-    static func model(withMessage message: CBControlData) -> ChatMessageModel? {
+    static func model(withMessage message: ControlData) -> ChatMessageModel? {
         switch message.controlType {
         case .boolean:
             guard let controlMessage = message as? BooleanControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
@@ -134,7 +134,7 @@ extension ChatMessageModel {
         let direction = message.data.direction
         
         if nestedControlType == .text {
-            let controlModel = TextControlViewModel(id: CBData.uuidString(), value: nestedControlValue)
+            let controlModel = TextControlViewModel(id: ChatUtil.uuidString(), value: nestedControlValue)
             let textChatModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
             return textChatModel
         }
@@ -165,7 +165,7 @@ extension ChatMessageModel {
             return nil
         }
         
-        let outputImageModel = OutputImageViewModel(id: CBData.uuidString(), value: url)
+        let outputImageModel = OutputImageViewModel(id: ChatUtil.uuidString(), value: url)
         let snowViewModel = ChatMessageModel(model: outputImageModel, location: BubbleLocation(direction: direction))
         return snowViewModel
     }

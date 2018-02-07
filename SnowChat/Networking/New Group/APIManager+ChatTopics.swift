@@ -11,12 +11,12 @@ import Alamofire
 
 extension APIManager {
     
-    func suggestTopics(searchText: String, completionHandler: @escaping([CBTopic]) -> Void) {
+    func suggestTopics(searchText: String, completionHandler: @escaping([ChatTopic]) -> Void) {
         sessionManager.request(apiURLWithPath("cs/topics/suggest"),
             method: .get,
             parameters: ["sysparm_message" : searchText],
             encoding: URLEncoding.queryString).validate().responseJSON { response in
-                var topics = [CBTopic]()
+                var topics = [ChatTopic]()
                 
                 if response.error == nil {
                     if let result = response.result.value {
@@ -27,11 +27,11 @@ extension APIManager {
         }
     }
     
-    func allTopics(completionHandler: @escaping ([CBTopic]) -> Void) {
+    func allTopics(completionHandler: @escaping ([ChatTopic]) -> Void) {
         sessionManager.request(apiURLWithPath("cs/topics/tree"),
             method: .get,
             encoding: JSONEncoding.default).validate().responseJSON { response in
-                var topics = [CBTopic]()
+                var topics = [ChatTopic]()
                 if response.error == nil {
                     if let result = response.result.value {
                         topics = APIManager.topicsFromResult(result)
@@ -43,13 +43,13 @@ extension APIManager {
     
     // MARK: - Response Parsing
     
-    static func topicsFromResult(_ result: Any) -> [CBTopic] {
+    static func topicsFromResult(_ result: Any) -> [ChatTopic] {
         guard let dictionary = result as? NSDictionary,
             let topicDictionaries = dictionary["root"] as? [NSDictionary] else { return [] }
         
-        let topics: [CBTopic] = topicDictionaries.flatMap { topic in
+        let topics: [ChatTopic] = topicDictionaries.flatMap { topic in
             guard let title = topic["title"] as? String, let name = topic["topicName"] as? String else { return nil }
-            return CBTopic(title: title, name: name)
+            return ChatTopic(title: title, name: name)
         }
         
         return topics

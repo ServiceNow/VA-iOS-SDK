@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct PickerControlMessage: Codable, CBControlData {
+struct PickerControlMessage: Codable, ControlData {
     
     var uniqueId: String {
         return id
@@ -20,8 +20,8 @@ struct PickerControlMessage: Codable, CBControlData {
         return data.direction
     }
     
-    var id: String = CBData.uuidString()
-    var controlType: CBControlType = .picker
+    var id: String = ChatUtil.uuidString()
+    var controlType = ChatterboxControlType.picker
     
     var messageId: String {
         return data.messageId

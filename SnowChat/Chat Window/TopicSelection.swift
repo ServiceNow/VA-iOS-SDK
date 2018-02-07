@@ -9,7 +9,7 @@
 import Foundation
 
 class TopicSelectionHandler: AutoCompleteHandler {
-    private var topics = [CBTopic]()
+    private var topics = [ChatTopic]()
     private var isAllTopics = false
     
     private weak var conversationController: ConversationViewController?

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct BooleanControlMessage: Codable, CBControlData {
+struct BooleanControlMessage: Codable, ControlData {
 
     var uniqueId: String {
         return id
@@ -20,8 +20,8 @@ struct BooleanControlMessage: Codable, CBControlData {
         return data.direction
     }
     
-    var id: String = CBData.uuidString()
-    var controlType: CBControlType = .boolean
+    var id: String = ChatUtil.uuidString()
+    var controlType = ChatterboxControlType.boolean
     
     var messageId: String {
         return data.messageId

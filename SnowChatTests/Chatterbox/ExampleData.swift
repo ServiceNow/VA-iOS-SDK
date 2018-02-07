@@ -36,7 +36,7 @@ class ExampleData {
           }
         }
         """
-        return CBDataFactory.controlFromJSON(jsonBoolean) as! BooleanControlMessage
+        return ChatDataFactory.controlFromJSON(jsonBoolean) as! BooleanControlMessage
     }
     
     static func exampleInputControlMessage() -> InputControlMessage {
@@ -71,7 +71,7 @@ class ExampleData {
           "source" : "server"
         }
         """
-        return CBDataFactory.controlFromJSON(jsonInputText) as! InputControlMessage
+        return ChatDataFactory.controlFromJSON(jsonInputText) as! InputControlMessage
     }
     
     // swiftlint:disable:next function_body_length
@@ -125,7 +125,7 @@ class ExampleData {
           "source" : "server"
         }
         """
-        return CBDataFactory.controlFromJSON(jsonPicker) as! PickerControlMessage
+        return ChatDataFactory.controlFromJSON(jsonPicker) as! PickerControlMessage
     }
     
     static func exampleOutputTextControlMessage() -> OutputTextControlMessage {
@@ -157,7 +157,7 @@ class ExampleData {
           "source" : "server"
         }
         """
-        return CBDataFactory.controlFromJSON(jsonOutputText) as! OutputTextControlMessage
+        return ChatDataFactory.controlFromJSON(jsonOutputText) as! OutputTextControlMessage
     }
     
     static func exampleContextualActionMessage() -> ContextualActionMessage {
@@ -226,6 +226,6 @@ class ExampleData {
             "source": "server"
         }
         """
-        return CBDataFactory.controlFromJSON(jsonContextualAction) as! ContextualActionMessage
+        return ChatDataFactory.controlFromJSON(jsonContextualAction) as! ContextualActionMessage
     }
 }
