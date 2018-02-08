@@ -509,8 +509,23 @@ extension ChatDataController: ChatDataListener {
             if let viewModel = controlForImage(from: historyExchange) {
                 addHistoryToCollection(viewModel)
             }
-        default:
-            logger.logInfo("Unhandled control type in didReceiveHistory: \(historyExchange.message.controlType)")
+        case .multiPart:
+            if let viewModel = controlForMultiPart(from: historyExchange) {
+                addHistoryToCollection(viewModel)
+            }
+        case .systemError:
+            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
+                addHistoryToCollection(messageModel.controlModel)
+            }
+
+        case .topicPicker:
+            break
+        case .startTopicMessage:
+            break
+        case .contextualAction:
+            break
+        case .unknown:
+            break
         }
     }
 
@@ -618,6 +633,20 @@ extension ChatDataController: ChatDataListener {
             return OutputImageViewModel(id: ChatUtil.uuidString(), value: url)
         }
         
+        return nil
+    }
+    
+    func controlForMultiPart(from messageExchange: MessageExchange) -> ControlViewModel? {
+        guard let message = messageExchange.message as? MultiPartControlMessage,
+            let nestedControlValue = message.data.richControl?.content?.value,
+            let nestedControlType = message.nestedControlType else {
+                return nil
+        }
+        
+        if nestedControlType == .text {
+            let controlModel = TextControlViewModel(id: message.messageId, value: nestedControlValue)
+            return controlModel
+        }
         return nil
     }
 }
