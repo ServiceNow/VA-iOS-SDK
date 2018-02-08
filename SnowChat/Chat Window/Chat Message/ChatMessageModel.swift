@@ -181,7 +181,7 @@ extension ChatMessageModel {
         
         let direction = message.data.direction
         
-        let outputLinkModel = OutputLinkControlViewModel(id: ChatUtil.uuidString(), value: "Test")
+        let outputLinkModel = OutputLinkControlViewModel(id: ChatUtil.uuidString(), value: URL(fileURLWithPath: value))
         let snowViewModel = ChatMessageModel(model: outputLinkModel, location: BubbleLocation(direction: direction))
         return snowViewModel
     }
