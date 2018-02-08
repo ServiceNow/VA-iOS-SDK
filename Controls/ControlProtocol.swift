@@ -14,6 +14,8 @@ enum ControlType {
     
     case outputImage
     
+    case outputLink
+    
     case dateTime
     
     case boolean
@@ -32,6 +34,8 @@ enum ControlType {
             return "Text"
         case .outputImage:
             return "Image Output"
+        case .outputLink:
+            return "Link Output"
         case .dateTime:
             return "Date Time Picker"
         case .boolean:

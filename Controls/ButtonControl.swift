@@ -52,29 +52,29 @@ class ButtonControl: ControlProtocol {
         
         self.model = multiPartModel
         self.viewController = UIViewController()
-        setupMoreButton()
+        setupButton()
     }
     
-    private func setupMoreButton() {
-        let moreButton = UIButton(type: .custom)
-        moreButton.titleLabel?.font = .preferredFont(forTextStyle: .body)
-        moreButton.layer.cornerRadius = 4
-        moreButton.layer.borderColor = UIColor.agentBubbleBackgroundColor.cgColor
-        moreButton.layer.borderWidth = 1
-        moreButton.setTitle(multiPartModel.label, for: .normal)
-        moreButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 15, bottom: 10, right: 15)
-        moreButton.setTitleColor(.controlHeaderTextColor, for: .normal)
-        moreButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        moreButton.translatesAutoresizingMaskIntoConstraints = false
-        moreButton.addTarget(self, action: #selector(moreButtonPressed(_:)), for: .touchUpInside)
+    private func setupButton() {
+        let button = UIButton(type: .custom)
+        button.titleLabel?.font = .preferredFont(forTextStyle: .body)
+        button.layer.cornerRadius = 4
+        button.layer.borderColor = UIColor.agentBubbleBackgroundColor.cgColor
+        button.layer.borderWidth = 1
+        button.setTitle(multiPartModel.label, for: .normal)
+        button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 15, bottom: 10, right: 15)
+        button.setTitleColor(.controlHeaderTextColor, for: .normal)
+        button.titleLabel?.adjustsFontSizeToFitWidth = true
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
         
-        viewController.view.addSubview(moreButton)
-        NSLayoutConstraint.activate([moreButton.centerXAnchor.constraint(equalTo: viewController.view.centerXAnchor),
-                                     moreButton.topAnchor.constraint(equalTo: viewController.view.topAnchor),
-                                     moreButton.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)])
+        viewController.view.addSubview(button)
+        NSLayoutConstraint.activate([button.centerXAnchor.constraint(equalTo: viewController.view.centerXAnchor),
+                                     button.topAnchor.constraint(equalTo: viewController.view.topAnchor),
+                                     button.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)])
     }
     
-    @objc func moreButtonPressed(_ sender: UIButton) {
+    @objc func buttonPressed(_ sender: UIButton) {
         delegate?.control(self, didFinishWithModel: multiPartModel)
     }
 }

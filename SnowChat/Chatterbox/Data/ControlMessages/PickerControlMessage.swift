@@ -14,7 +14,7 @@ struct PickerControlMessage: Codable, ControlData {
         return id
     }
     
-    // MARK: - CBControlData protocol methods
+    // MARK: - ControlData protocol methods
     
     var direction: MessageDirection {
         return data.direction

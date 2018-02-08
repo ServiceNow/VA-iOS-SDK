@@ -228,4 +228,41 @@ class ExampleData {
         """
         return ChatDataFactory.controlFromJSON(jsonContextualAction) as! ContextualActionMessage
     }
+    
+    static func exampleSystemErrorControlMessage() -> SystemErrorControlMessage {
+        let jsonSystemErrorMessage = """
+        {
+            "type": "systemTextMessage",
+            "data": {
+                "@class": ".MessageDto",
+                "messageId": "08dccafd13ab0300e283b90a6144b061",
+                "richControl": {
+                    "uiType": "SystemError",
+                    "uiMetadata": {
+                        "error": {
+                            "handler": {
+                                "type": "Hmode",
+                                "instruction": "This conversation has been transferred to the Live Agent queue, and someone will be with you momentarily."
+                            },
+                            "message": "An unrecoverable error has occurred.",
+                            "code": "system_error"
+                        }
+                    }
+                },
+                "taskId": "82cc8e7d13ab0300e283b90a6144b07d",
+                "sessionId": "f0cc8ebd13ab0300e283b90a6144b0d5",
+                "conversationId": "8ecc8e7d13ab0300e283b90a6144b07c",
+                "links": [
+
+                ],
+                "sendTime": 1515537492048,
+                "direction": "outbound",
+                "isAgent": false,
+                "receiveTime": 0
+            },
+            "source": "server"
+        }
+        """
+        return ChatDataFactory.controlFromJSON(jsonSystemErrorMessage) as! SystemErrorControlMessage
+    }
 }

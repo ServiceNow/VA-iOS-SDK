@@ -15,7 +15,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
     
     @IBOutlet weak var controlContainerView: UIView!
     
-    private var controls = [ControlType.boolean, ControlType.multiSelect, ControlType.text, ControlType.outputImage, ControlType.typingIndicator]
+    private var controls = [ControlType.boolean, ControlType.multiSelect, ControlType.text, ControlType.outputLink, ControlType.typingIndicator]
     
     private var fakeChatViewController: FakeChatViewController?
     
@@ -82,6 +82,14 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             let outputImageControl = OutputImageControl(model: imageModel)
             outputImageControl.imageDownloader = ImageDownloader()
             uiControl = outputImageControl
+        case .outputLink:
+            guard let url = URL(string: "https://i.ytimg.com/vi/uXF9MqdKlTM/maxresdefault.jpg") else {
+                fatalError()
+            }
+            
+            let linkModel = OutputLinkControlViewModel(id: "image_output_blah_blah_blah", value: url)
+            let outputLinkControl = OutputLinkControl(model: linkModel)
+            uiControl = outputLinkControl
         case .singleSelect:
             fatalError("Single select not implemented yet")
         default:

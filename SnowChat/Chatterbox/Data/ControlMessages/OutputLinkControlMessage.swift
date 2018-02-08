@@ -1,25 +1,24 @@
 //
-//  MultiSelectControlMessage.swift
+//  OutputLinkControlMessage.swift
 //  SnowChat
 //
-//  Created by Michael Borowiec on 1/18/18.
+//  Created by Michael Borowiec on 2/7/18.
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-struct MultiSelectControlMessage: Codable, ControlData {
-
+struct OutputLinkControlMessage: Codable, ControlData {
     var uniqueId: String {
         return id
     }
     
-    // MARK: - ControlData protocol methods
+    // MARK: - CBControlData protocol methods
     
     var direction: MessageDirection {
         return data.direction
     }
     
     var id: String = ChatUtil.uuidString()
-    var controlType = ChatterboxControlType.multiSelect
+    var controlType = ChatterboxControlType.outputLink
     
     var messageId: String {
         return data.messageId
@@ -33,8 +32,8 @@ struct MultiSelectControlMessage: Codable, ControlData {
         return data.sendTime
     }
     
-    let type: String = "consumerTextMessage"
-    var data: RichControlData<ControlWrapper<[String]?, PickerMetadata>>
+    let type: String = "systemTextMessage"
+    var data: RichControlData<ControlWrapper<String, UIMetadata>>
     
     // define the properties that we decode / encode
     private enum CodingKeys: String, CodingKey {
@@ -42,13 +41,7 @@ struct MultiSelectControlMessage: Codable, ControlData {
         case data
     }
     
-    init(withData: RichControlData<ControlWrapper<[String]?, PickerMetadata>>) {
+    init(withData: RichControlData<ControlWrapper<String, UIMetadata>>) {
         data = withData
-    }
-    
-    init(withValue value: [String], fromMessage message: MultiSelectControlMessage) {
-        data = message.data
-        data.sendTime = Date()
-        data.richControl?.value = value
     }
 }
