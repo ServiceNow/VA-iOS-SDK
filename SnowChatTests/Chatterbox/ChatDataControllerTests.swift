@@ -27,18 +27,18 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
     }
     
     class MockChatterbox: Chatterbox {
-        var updatedControl: CBControlData?
-        var pendingControlMessage: CBControlData?
+        var updatedControl: ControlData?
+        var pendingControlMessage: ControlData?
         
         init(instance: ServerInstance) {
             super.init(instance: instance)
         }
         
-        override func lastPendingControlMessage(forConversation conversationId: String) -> CBControlData? {
+        override func lastPendingControlMessage(forConversation conversationId: String) -> ControlData? {
             return pendingControlMessage
         }
         
-        override func update(control: CBControlData) {
+        override func update(control: ControlData) {
             updatedControl = control
         }
     }
@@ -124,7 +124,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         mockChatterbox?.pendingControlMessage = boolMessage
         
         // now update it
-        let modelChanged = BooleanControlViewModel(id: CBData.uuidString(), label: "", required: true, resultValue: true)
+        let modelChanged = BooleanControlViewModel(id: ChatUtil.uuidString(), label: "", required: true, resultValue: true)
         controller?.updateControlData(modelChanged)
     }
 
@@ -132,7 +132,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         startConversationAndUpdateBooleanControl()
         
         // make sure chattertbox got it
-        XCTAssertEqual(CBControlType.boolean, mockChatterbox?.updatedControl!.controlType)
+        XCTAssertEqual(ChatterboxControlType.boolean, mockChatterbox?.updatedControl!.controlType)
     }
     
     func testBooleanUpdateRendersTwoTextControls() {

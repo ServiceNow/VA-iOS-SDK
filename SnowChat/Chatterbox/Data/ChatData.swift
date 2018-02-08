@@ -108,6 +108,7 @@ enum ChatterboxControlType: String, Codable {
     case outputImage = "OutputImage"
     
     case contextualAction = "ContextualAction"
+    case systemError = "SystemError"
     
     case unknown = "unknownControl"
 }

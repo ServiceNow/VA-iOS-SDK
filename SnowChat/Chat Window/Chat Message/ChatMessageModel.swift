@@ -58,6 +58,9 @@ extension ChatMessageModel {
         case .outputImage:
             guard let controlMessage = message as? OutputImageControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage)
+        case .systemError:
+            guard let systemErrorMessage = message as? SystemErrorControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: systemErrorMessage)
         default:
             Logger.default.logError("Unhandled control type in ChatMessageModel: \(message.controlType)")
         }
@@ -71,7 +74,7 @@ extension ChatMessageModel {
         }
         
         let booleanModel = BooleanControlViewModel(id: message.id, label: title, required: required)
-        let direction = message.data.direction
+        let direction = message.direction
         let snowViewModel = ChatMessageModel(model: booleanModel, location: BubbleLocation(direction: direction))
         return snowViewModel
     }
@@ -82,7 +85,8 @@ extension ChatMessageModel {
                 return nil
         }
         
-        let direction = message.data.direction
+        let direction = message.direction
+        
         let options = message.data.richControl?.uiMetadata?.options ?? []
         let items = options.map { PickerItem(label: $0.label, value: $0.value) }
         let pickerModel = SingleSelectControlViewModel(id: message.id, label: title, required: required, items: items)
@@ -96,7 +100,8 @@ extension ChatMessageModel {
                 return nil
         }
         
-        let direction = message.data.direction
+        let direction = message.direction
+        
         let options = message.data.richControl?.uiMetadata?.options ?? []
         let items = options.map { PickerItem(label: $0.label, value: $0.value) }
         let multiSelectModel = MultiSelectControlViewModel(id: message.id, label: title, required: required, items: items)
@@ -120,7 +125,8 @@ extension ChatMessageModel {
             return nil
         }
         
-        let direction = message.data.direction
+        let direction = message.direction
+        
         let textModel = TextControlViewModel(id: message.id, value: value)
         let snowViewModel = ChatMessageModel(model: textModel, location: BubbleLocation(direction: direction), requiresInput: true)
         return snowViewModel
@@ -132,7 +138,7 @@ extension ChatMessageModel {
                 return nil
         }
         
-        let direction = message.data.direction
+        let direction = message.direction
         
         if nestedControlType == .text {
             let controlModel = TextControlViewModel(id: ChatUtil.uuidString(), value: nestedControlValue)
@@ -160,7 +166,7 @@ extension ChatMessageModel {
             return nil
         }
         
-        let direction = message.data.direction
+        let direction = message.direction
         
         guard let url = URL(string: value) else {
             return nil
@@ -169,5 +175,19 @@ extension ChatMessageModel {
         let outputImageModel = OutputImageViewModel(id: ChatUtil.uuidString(), value: url)
         let snowViewModel = ChatMessageModel(model: outputImageModel, location: BubbleLocation(direction: direction))
         return snowViewModel
+    }
+    
+    static func model(withMessage message: SystemErrorControlMessage) -> ChatMessageModel? {
+        guard let value = message.data.richControl?.uiMetadata?.error.message,
+              let instruction = message.data.richControl?.uiMetadata?.error.handler.instruction else {
+            return nil
+        }
+        
+        let direction = message.direction
+        
+        let outputTextModel = TextControlViewModel(id: message.id, value: "\(value)\n\(instruction)")
+        let textChatModel = ChatMessageModel(model: outputTextModel, location: BubbleLocation(direction: direction), requiresInput: false)
+        
+        return textChatModel
     }
 }
