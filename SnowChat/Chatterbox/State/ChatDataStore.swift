@@ -222,7 +222,7 @@ struct MessageExchange: Codable {
         case response
     }
     
-    // need custom encoder / decoder for MessageExchange because the CBControlData protocol cannot automatically be encoded or decoded
+    // need custom encoder / decoder for MessageExchange because the ControlData protocol cannot automatically be encoded or decoded
     // - our approach is to use the controlType to serialize and deserialize to and from JSON, then store and load that
     
     func encode(to encoder: Encoder) throws {

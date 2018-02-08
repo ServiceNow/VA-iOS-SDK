@@ -26,6 +26,8 @@ class ChatDataFactory {
                     return try ChatUtil.jsonDecoder.decode(ContextualActionMessage.self, from: jsonData)
                 case.topicPicker:
                     return try ChatUtil.jsonDecoder.decode(UserTopicPickerMessage.self, from: jsonData)
+                case .systemError:
+                    return try ChatUtil.jsonDecoder.decode(SystemErrorControlMessage.self, from: jsonData)
                 case .boolean:
                     return try ChatUtil.jsonDecoder.decode(BooleanControlMessage.self, from: jsonData)
                 case .input:
@@ -42,8 +44,11 @@ class ChatDataFactory {
                     return try ChatUtil.jsonDecoder.decode(OutputImageControlMessage.self, from: jsonData)
                 case .outputLink:
                     return try ChatUtil.jsonDecoder.decode(OutputLinkControlMessage.self, from: jsonData)
-                default:
-                    Logger.default.logError("Unrecognized UI Control: \(controlType)")
+                    
+                case .startTopicMessage:
+                    break
+                case .unknown:
+                    break
                 }
             } catch let parseError {
                 print(parseError)
@@ -112,10 +117,13 @@ class ChatDataFactory {
             data = try ChatUtil.jsonEncoder.encode(message as? ContextualActionMessage)
         case .unknown:
             data = try ChatUtil.jsonEncoder.encode(message as? ControlDataUnknown)
+            
+        case .systemError:
+            data = nil
         case .topicPicker:
-            return nil
+            data = nil
         case .startTopicMessage:
-            return nil
+            data = nil
         }
         
         if let data = data {
