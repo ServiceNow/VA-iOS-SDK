@@ -13,7 +13,7 @@ class OutputLinkControlViewModel: ControlViewModel {
     
     let id: String
     
-    let type: ControlType = .text
+    let type: ControlType = .outputLink
     
     let value: URL
     

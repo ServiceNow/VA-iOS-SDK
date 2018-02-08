@@ -22,6 +22,7 @@ class OutputLinkControl: NSObject, ControlProtocol {
             textView.dataDetectorTypes = [.link]
             textView.isScrollEnabled = false
             textView.isEditable = false
+            textView.font = .preferredFont(forTextStyle: .body)
             textView.translatesAutoresizingMaskIntoConstraints = false
             
             view.addSubview(textView)
