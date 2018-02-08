@@ -95,6 +95,8 @@
 		57D1DB731FEC83D000082F78 /* mark.png in Resources */ = {isa = PBXBuildFile; fileRef = 57D1DB721FEC83D000082F78 /* mark.png */; };
 		57D1DB791FEC88D200082F78 /* OutputImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB781FEC88D200082F78 /* OutputImageViewController.swift */; };
 		57D997AB1FE5B00000394A6D /* ChatMessageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57D997AA1FE5B00000394A6D /* ChatMessageViewController.xib */; };
+		57DF7C38202CC1D6008D013A /* DateTimePickerControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DF7C37202CC1D6008D013A /* DateTimePickerControl.swift */; };
+		57DF7C3A202CC416008D013A /* DateTimePickerControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DF7C39202CC416008D013A /* DateTimePickerControlViewModel.swift */; };
 		57E1AF192019243500D54647 /* OutputImageControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1AF182019243500D54647 /* OutputImageControlMessage.swift */; };
 		57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1EA321FC33D1C009FC76D /* RoundedView.swift */; };
 		57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */; };
@@ -238,6 +240,8 @@
 		57D1DB721FEC83D000082F78 /* mark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mark.png; sourceTree = "<group>"; };
 		57D1DB781FEC88D200082F78 /* OutputImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputImageViewController.swift; sourceTree = "<group>"; };
 		57D997AA1FE5B00000394A6D /* ChatMessageViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatMessageViewController.xib; sourceTree = "<group>"; };
+		57DF7C37202CC1D6008D013A /* DateTimePickerControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimePickerControl.swift; sourceTree = "<group>"; };
+		57DF7C39202CC416008D013A /* DateTimePickerControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimePickerControlViewModel.swift; sourceTree = "<group>"; };
 		57E1AF182019243500D54647 /* OutputImageControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputImageControlMessage.swift; sourceTree = "<group>"; };
 		57E1EA321FC33D1C009FC76D /* RoundedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedView.swift; sourceTree = "<group>"; };
 		57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ControlsViewController.xib; sourceTree = "<group>"; };
@@ -391,6 +395,7 @@
 				5706C5781FE43FB3008D70D1 /* ControlsUtil.swift */,
 				578632151FBB9E0300FA0282 /* ControlProtocol.swift */,
 				57532BAC1FD777FA001D674C /* TextControl.swift */,
+				57DF7C37202CC1D6008D013A /* DateTimePickerControl.swift */,
 				57D1DB6C1FEB592D00082F78 /* OutputImageControl.swift */,
 				57532BAA1FD777AC001D674C /* PickerControl.swift */,
 				57B7E2BB1FBA25A200196BA9 /* BooleanControl.swift */,
@@ -435,6 +440,7 @@
 				57F7B2531FE17823006D917C /* TextControlViewModel.swift */,
 				57D1DB6E1FEC74E200082F78 /* OutputImageViewModel.swift */,
 				57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */,
+				57DF7C39202CC416008D013A /* DateTimePickerControlViewModel.swift */,
 				5763F3C71FE20FF90035764A /* PickerItem.swift */,
 				5778CF9D1FE07023004F77D8 /* SingleSelectControlViewModel.swift */,
 				57B7E2CF1FBA6DA500196BA9 /* BooleanControlViewModel.swift */,
@@ -1027,6 +1033,7 @@
 				BE29E0CF1FDF06C20029D1F0 /* ChatDataController.swift in Sources */,
 				BE6FBE401FBFB3060062A0EB /* AMBHTTPClient.swift in Sources */,
 				C4F3AF361FD6291E00B27B0D /* SystemTopicPickerMessage.swift in Sources */,
+				57DF7C3A202CC416008D013A /* DateTimePickerControlViewModel.swift in Sources */,
 				57067C8D1FE62EE900812266 /* FakeChatViewCell.swift in Sources */,
 				C46A7D881FCE23D300DC12AC /* ActionMessageData.swift in Sources */,
 				572FAC1A1FC47B5600B0B956 /* MultiSelectControlViewModel.swift in Sources */,
@@ -1091,6 +1098,7 @@
 				BE69327F1FFEB46100DD5A2A /* ServerInstance+URL.swift in Sources */,
 				5796E4481FD0B3E0009D2035 /* CGPath+Bubble.swift in Sources */,
 				5706C5811FE49F78008D70D1 /* ChatMessageViewController.swift in Sources */,
+				57DF7C38202CC1D6008D013A /* DateTimePickerControl.swift in Sources */,
 				57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */,
 				5778CF9E1FE07023004F77D8 /* SingleSelectControlViewModel.swift in Sources */,
 				57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */,

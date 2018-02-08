@@ -19,6 +19,8 @@ class ControlsUtil {
             let outputImageControl = OutputImageControl(model: model)
             outputImageControl.imageDownloader = provider?.imageProvider
             return outputImageControl
+        case .dateTime:
+            return DateTimePickerControl(model: model)
         case .boolean:
             return BooleanControl(model: model)
         case .singleSelect:
