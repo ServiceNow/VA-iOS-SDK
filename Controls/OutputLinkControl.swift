@@ -1,12 +1,12 @@
 //
-//  LinkOutputControl.swift
+//  OutputLinkControl.swift
 //  SnowChat
 //
 //  Created by Michael Borowiec on 2/7/18.
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-class LinkOutputControl: ControlProtocol {
+class OutputLinkControl: ControlProtocol {
     var model: ControlViewModel
     
     let viewController: UIViewController
@@ -14,11 +14,11 @@ class LinkOutputControl: ControlProtocol {
     weak var delegate: ControlDelegate?
     
     required init(model: ControlViewModel) {
-        guard let linkOutputModel = model as? OutputLinkControlViewModel else {
+        guard let outputLinkModel = model as? OutputLinkControlViewModel else {
             fatalError("Wrong model class")
         }
         
-        self.model = linkOutputModel
+        self.model = outputLinkModel
         self.viewController = UIViewController()
     }
 }

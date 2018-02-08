@@ -15,9 +15,9 @@ class OutputLinkControlViewModel: ControlViewModel {
     
     let type: ControlType = .text
     
-    let value: String
+    let value: URL
     
-    init(id: String, label: String? = nil, value: String) {
+    init(id: String, label: String? = nil, value: URL) {
         self.label = label
         self.value = value
         self.id = id
