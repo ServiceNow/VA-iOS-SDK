@@ -42,6 +42,8 @@ class ChatDataFactory {
                     return try ChatUtil.jsonDecoder.decode(MultiPartControlMessage.self, from: jsonData)
                 case .outputImage:
                     return try ChatUtil.jsonDecoder.decode(OutputImageControlMessage.self, from: jsonData)
+                case .outputLink:
+                    return try ChatUtil.jsonDecoder.decode(OutputLinkControlMessage.self, from: jsonData)
                     
                 case .startTopicMessage:
                     break
@@ -88,7 +90,7 @@ class ChatDataFactory {
     }
     
     // MARK: - Message to JSON helper
-    
+
     //swiftlint:disable:next cyclomatic_complexity
     static func jsonStringForControlMessage(_ message: ControlData) throws -> String? {
         let data: Data?
@@ -108,7 +110,9 @@ class ChatDataFactory {
             data = try ChatUtil.jsonEncoder.encode(message as? MultiPartControlMessage)
         case .outputImage:
             data = try ChatUtil.jsonEncoder.encode(message as? OutputImageControlMessage)
-        
+        case .outputLink:
+            data = try ChatUtil.jsonEncoder.encode(message as? OutputLinkControlMessage)
+            
         // seldom used control messages
         case .contextualAction:
             data = try ChatUtil.jsonEncoder.encode(message as? ContextualActionMessage)

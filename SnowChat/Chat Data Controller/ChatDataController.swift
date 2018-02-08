@@ -503,6 +503,12 @@ extension ChatDataController: ChatDataListener {
             if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
                 addHistoryToCollection(messageModel.controlModel)
             }
+        case .outputLink:
+            if let viewModel = controlForLink(from: historyExchange) {
+                addHistoryToCollection(viewModel)
+            }
+            
+        // MARK: - output-only
         case .outputImage:
             if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
                 addHistoryToCollection(messageModel.controlModel)
@@ -515,7 +521,8 @@ extension ChatDataController: ChatDataListener {
             if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
                 addHistoryToCollection(messageModel.controlModel)
             }
-
+            
+        // MARK: - unrendered
         case .topicPicker:
             break
         case .startTopicMessage:
@@ -605,6 +612,21 @@ extension ChatDataController: ChatDataListener {
         let answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: responseValue)
         
         return (message: questionViewModel, response: answerViewModel)
+    }
+    
+    func controlForLink(from messageExchange: MessageExchange) -> OutputLinkControlViewModel? {
+        guard messageExchange.isComplete,
+            let outputLinkControl = messageExchange.message as? OutputLinkControlMessage,
+            let value = outputLinkControl.data.richControl?.value else {
+                logger.logError("MessageExchange is not valid in outputLinkFromMessageExchange method - skipping!")
+                return nil
+        }
+        
+        if let url = URL(string: value) {
+            return OutputLinkControlViewModel(id: ChatUtil.uuidString(), value: url)
+        }
+        
+        return nil
     }
 }
 
