@@ -12,10 +12,16 @@ import WebKit
 class ControlWebViewController: UIViewController, WKNavigationDelegate {
     
     private var request: URLRequest?
+    private var htmlString: String?
     private(set) var webView: WKWebView?
     
     init(request: URLRequest) {
         self.request = request
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    init(htmlString: String) {
+        self.htmlString = htmlString
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -50,6 +56,10 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
         
         if let request = self.request {
             webView.load(request)
+        }
+        
+        if let htmlString = htmlString {
+            webView.loadHTMLString(htmlString, baseURL: nil)
         }
         
         self.webView = webView

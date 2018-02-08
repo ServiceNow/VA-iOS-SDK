@@ -16,6 +16,8 @@ enum ControlType {
     
     case outputLink
     
+    case outputHtml
+    
     case boolean
     
     case singleSelect
@@ -34,6 +36,8 @@ enum ControlType {
             return "Image Output"
         case .outputLink:
             return "Link Output"
+        case .outputHtml:
+            return "Output HTML"
         case .boolean:
             return "Boolean"
         case .singleSelect:
@@ -68,6 +72,9 @@ protocol ControlProtocol: AnyObject {
     weak var delegate: ControlDelegate? { get set }
     
     func removeFromParent()
+    
+    // If provided - control will be limited to that size
+    var preferredContentSize: CGSize? { get }
 }
 
 // Code for self-removable control, just like UIView or UIViewController
