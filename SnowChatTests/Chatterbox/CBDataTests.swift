@@ -9,7 +9,7 @@
 import XCTest
 @testable import SnowChat
 
-class TestControlData: CBControlData {
+class TestControlData: ControlData {
     var direction: MessageDirection { return .fromClient }
     var uniqueId: String { return id }
     
@@ -18,12 +18,12 @@ class TestControlData: CBControlData {
     var messageTime: Date
     
     let id: String
-    let controlType: CBControlType
+    let controlType: ChatterboxControlType
     
     init() {
         id = "123"
         controlType = .unknown
-        messageId = CBData.uuidString()
+        messageId = ChatUtil.uuidString()
         messageTime = Date()
     }
 }
@@ -36,9 +36,8 @@ class CBDataTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        encoder = CBData.jsonEncoder
-
-        decoder = CBData.jsonDecoder
+        encoder = ChatUtil.jsonEncoder
+        decoder = ChatUtil.jsonDecoder
     }
     
     override func tearDown() {
@@ -58,7 +57,7 @@ class CBDataTests: XCTestCase {
         let obj = ChatDataFactory.controlFromJSON(json)
         XCTAssertNotNil(obj)
         XCTAssert(obj.controlType == .unknown)
-        let inputObj = obj as? CBControlDataUnknown
+        let inputObj = obj as? ControlDataUnknown
         XCTAssertNotNil(inputObj)
     }
 
@@ -114,6 +113,17 @@ class CBDataTests: XCTestCase {
         XCTAssertEqual(contextualAction.options[0].value, "showTopic")
         XCTAssertEqual(contextualAction.options[1].value, "startTopic")
         XCTAssertEqual(contextualAction.options[2].value, "brb")
+    }
+    
+    func testSystemErrorMessageExample() {
+        let systemError = ExampleData.exampleSystemErrorControlMessage()
+        
+        XCTAssertNotNil(systemError)
+        XCTAssertEqual(systemError.controlType, .systemError)
+        XCTAssertEqual(systemError.data.richControl?.uiType, "SystemError")
+        XCTAssertEqual(systemError.data.richControl?.uiMetadata?.error.message, "An unrecoverable error has occurred.")
+        XCTAssertEqual(systemError.data.richControl?.uiMetadata?.error.handler.type, "Hmode")
+        XCTAssertEqual(systemError.data.richControl?.uiMetadata?.error.handler.instruction, "This conversation has been transferred to the Live Agent queue, and someone will be with you momentarily.")
     }
     
     let jsonInitStart = """
@@ -223,57 +233,10 @@ class CBDataTests: XCTestCase {
         }
     }
     
-    func testSystemErrorMessage() {
-        let json = """
-        {
-          "type" : "systemTextMessage",
-          "data" : {
-            "@class" : ".MessageDto",
-            "messageId" : "d5b33f3073320300d63a566a4cf6a74d",
-            "richControl" : {
-              "uiType" : "SystemError",
-              "uiMetadata" : {
-                "error" : {
-                  "handler" : {
-                    "type" : "Hmode",
-                    "instruction" : "This conversation has been transferred to the Live Agent queue, and someone will be with you momentarily."
-                  },
-                  "message" : "An unrecoverable error has occurred.",
-                  "code" : "system_error"
-                }
-              }
-            },
-            "taskId" : "ccb33f3073320300d63a566a4cf6a715",
-            "sessionId" : "88a3f33073320300d63a566a4cf6a724",
-            "conversationId" : "48b33f3073320300d63a566a4cf6a715",
-            "links" : [
-
-            ],
-            "sendTime" : 1512074803616,
-            "direction" : "outbound",
-            "isAgent" : false,
-            "receiveTime" : 0
-          },
-          "source" : "server"
-        }
-        """
-        let jsonData = json.data(using: .utf8)
-        let decoder = JSONDecoder()
-        do {
-            let systemMessage = try decoder.decode(ControlMessage<Any?, UIMetadata>.self, from: jsonData!) as ControlMessage
-            XCTAssert(systemMessage.data.richControl?.uiType == "SystemError")
-            XCTAssert(systemMessage.data.richControl?.uiMetadata?.error?.message == "An unrecoverable error has occurred.")
-        } catch let error {
-            Logger.default.logInfo(error.localizedDescription)
-            XCTAssert(false)
-        }
-        
-    }
-    
     func testStartTopic() {
         do {
             let startTopic = StartTopicMessage(withSessionId: "session_id", withConversationId: "conversation_id")
-            let jsonData = try CBData.jsonEncoder.encode(startTopic)
+            let jsonData = try ChatUtil.jsonEncoder.encode(startTopic)
             let jsonString: String = String(data: jsonData, encoding: .utf8)!
             Logger.default.logInfo(jsonString)
             

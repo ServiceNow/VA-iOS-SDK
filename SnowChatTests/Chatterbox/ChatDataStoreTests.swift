@@ -88,7 +88,7 @@ class DataStoreTests: XCTestCase {
         XCTAssertNotNil(store.lastPendingMessage(forConversation: "testConversationID")?.uniqueId)
         XCTAssertNotNil(store.lastPendingMessage(forConversation: "testConversationID2")?.uniqueId)
         
-        store.storeResponseData(control, forConversation: "testConversationID")
+        _ = store.storeResponseData(control, forConversation: "testConversationID")
         
         XCTAssertNil(store.lastPendingMessage(forConversation: "testConversationID"))
         XCTAssertNotNil(store.lastPendingMessage(forConversation: "testConversationID2")?.uniqueId)
@@ -100,8 +100,8 @@ class DataStoreTests: XCTestCase {
         let booleanControl = ExampleData.exampleBooleanControlMessage()
         store.storeControlData(booleanControl, forConversation: "testConversationID", fromChat: chatterbox!)
         var booleanReply = booleanControl
-        booleanReply.id = CBData.uuidString()
-        store.storeResponseData(booleanReply, forConversation: "testConversationID")
+        booleanReply.id = ChatUtil.uuidString()
+        _ = store.storeResponseData(booleanReply, forConversation: "testConversationID")
         
         let inputControl = ExampleData.exampleInputControlMessage()
         store.storeControlData(inputControl, forConversation: "testConversationID", fromChat: chatterbox!)
