@@ -34,9 +34,7 @@ class OutputLinkControl: NSObject, ControlProtocol {
         
         // MARK: UITextViewDelegate
         func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-            // TODO: display URL in a modal web view
             let webViewController = ControlWebViewController(request: URLRequest(url: URL))
-            
             let localizedDoneString = NSLocalizedString("Done", comment: "Done button")
             let doneButton = UIBarButtonItem(title: localizedDoneString, style: .done, target: webViewController, action: #selector(finishModalPresentation(_:)))
             webViewController.navigationItem.leftBarButtonItem = doneButton
