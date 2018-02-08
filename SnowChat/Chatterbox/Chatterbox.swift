@@ -76,7 +76,7 @@ class Chatterbox {
     }()
     
     private var messageHandler: ((String) -> Void)?
-    private var onHandshakeCompleted: ((ContextualActionMessage?) -> Void)?
+    private var handshakeCompletedHandler: ((ContextualActionMessage?) -> Void)?
     
     internal let logger = Logger.logger(for: "Chatterbox")
 
@@ -254,7 +254,7 @@ class Chatterbox {
     }
     
     private func performChatHandshake(_ completion: @escaping (ContextualActionMessage?) -> Void) {
-        onHandshakeCompleted = completion
+        handshakeCompletedHandler = completion
         messageHandler = handshakeHandler
         
         setupChatSubscription()
@@ -290,9 +290,9 @@ class Chatterbox {
         let choices: ControlData = ChatDataFactory.controlFromJSON(message)
         
         if choices.controlType == .contextualAction {
-            if let onHandshakeCompleted = onHandshakeCompleted {
+            if let completion = handshakeCompletedHandler {
                 let topicChoices = choices as? ContextualActionMessage
-                onHandshakeCompleted(topicChoices)
+                completion(topicChoices)
             } else {
                 logger.logFatal("Could not call user session completion handler: invalid message or no handler provided")
             }
@@ -559,7 +559,7 @@ class Chatterbox {
     
     private func clearMessageHandlers() {
         messageHandler = nil
-        onHandshakeCompleted = nil
+        handshakeCompletedHandler = nil
     }
 }
 
