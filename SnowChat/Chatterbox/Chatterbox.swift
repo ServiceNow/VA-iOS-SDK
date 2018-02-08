@@ -13,15 +13,21 @@
 //  1) Call initializeSession to start login and initiate the system-topic for a user. A ContextualActionMessage is
 //  provided upon success. Options for picking a topic are in the messages inputControls.uiMetadata property
 //
-//  2) After session is initialized, call startTopic, providing a topic name (obtained from the to
-//  During the chat session controls are delivered to clients via the chatDataListener, which must be set by the caller
-//  Additionally, chat lifecycle events are deliverd via the chatEventListener, which must also be set by the caller
+//  2) After session is initialized, call startTopic, providing a topic name (obtained from the topic information returned
+//  from APIManager's suggestTopics or allTopics methods (or any other way of obtaining valid topicNames)
+//
+//  During the chat session controls are delivered to clients via the chatDataListener, which must be set by the caller.
+//  Additionally, chat lifecycle events are deliverd via the chatEventListener, which must also be set by the caller.
 //   NOTE: both listeners are easily set when the Chattertbox instance is created via
 //         'init(dataListener: ChatDataListener?, eventListener: ChatEventListener?)'
 //
 //  3) As user interaction takes place, push state changes via
-//     'update(control controlId: String, ofType: CBControlType, withValue: Any)', passing the original
-//     control ID and the user-entered value
+//     'update(control: CongtrolData)'
+//  passing a control message with the value set (not the control message is generally a clone of the original control from the server, with
+//  the direction changed, a new ID, and the value set)
+//
+//  After an update is sent to the server, either a new control message will come in, or the topic will end, with the
+//  corresponding chatDataListener and chatEventListener methods being called.
 //
 
 import Foundation
@@ -70,7 +76,7 @@ class Chatterbox {
     }()
     
     private var messageHandler: ((String) -> Void)?
-    private var handshakeCompletedHandler: ((ContextualActionMessage?) -> Void)?
+    private var onHandshakeCompleted: ((ContextualActionMessage?) -> Void)?
     
     internal let logger = Logger.logger(for: "Chatterbox")
 
@@ -248,7 +254,7 @@ class Chatterbox {
     }
     
     private func performChatHandshake(_ completion: @escaping (ContextualActionMessage?) -> Void) {
-        handshakeCompletedHandler = completion
+        onHandshakeCompleted = completion
         messageHandler = handshakeHandler
         
         setupChatSubscription()
@@ -284,9 +290,9 @@ class Chatterbox {
         let choices: ControlData = ChatDataFactory.controlFromJSON(message)
         
         if choices.controlType == .contextualAction {
-            if let completion = handshakeCompletedHandler {
+            if let onHandshakeCompleted = onHandshakeCompleted {
                 let topicChoices = choices as? ContextualActionMessage
-                completion(topicChoices)
+                onHandshakeCompleted(topicChoices)
             } else {
                 logger.logFatal("Could not call user session completion handler: invalid message or no handler provided")
             }
@@ -553,7 +559,7 @@ class Chatterbox {
     
     private func clearMessageHandlers() {
         messageHandler = nil
-        handshakeCompletedHandler = nil
+        onHandshakeCompleted = nil
     }
 }
 
