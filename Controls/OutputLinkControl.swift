@@ -6,7 +6,38 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-class OutputLinkControl: NSObject, ControlProtocol, UITextViewDelegate {
+class OutputLinkControl: NSObject, ControlProtocol {
+    
+    class OutputLinkViewController: UIViewController, UITextViewDelegate {
+        
+        private(set) var textView = UITextView()
+        
+        override func viewDidLoad() {
+            super.viewDidLoad()
+            setupTextView()
+        }
+        
+        private func setupTextView() {
+            textView.delegate = self
+            textView.dataDetectorTypes = [.link]
+            textView.isScrollEnabled = false
+            textView.isEditable = false
+            textView.translatesAutoresizingMaskIntoConstraints = false
+            
+            view.addSubview(textView)
+            NSLayoutConstraint.activate([textView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                                         textView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                                         textView.topAnchor.constraint(equalTo: view.topAnchor),
+                                         textView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
+        }
+        
+        // MARK: UITextViewDelegate
+        func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+            // TODO: display URL in a modal web view
+            return true
+        }
+    }
+    
     var model: ControlViewModel
     
     let viewController: UIViewController
@@ -23,29 +54,10 @@ class OutputLinkControl: NSObject, ControlProtocol, UITextViewDelegate {
         }
         
         self.model = outputLinkModel
-        self.viewController = UIViewController()
-        setupTextView()
-    }
-    
-    private func setupTextView() {
-        let textView = UITextView()
-        textView.delegate = self
-        textView.dataDetectorTypes = [.link]
-        textView.isScrollEnabled = false
-        textView.isEditable = false
-        textView.text = outputLinkModel.value.absoluteString
-        textView.translatesAutoresizingMaskIntoConstraints = false
+        let outputLinkVC = OutputLinkViewController()
+        self.viewController = outputLinkVC
+        outputLinkVC.loadViewIfNeeded()
+        outputLinkVC.textView.text = outputLinkModel.value.absoluteString
         
-        viewController.view.addSubview(textView)
-        NSLayoutConstraint.activate([textView.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
-                                     textView.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
-                                     textView.topAnchor.constraint(equalTo: viewController.view.topAnchor),
-                                     textView.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)])
-    }
-    
-    // MARK: UITextViewDelegate
-    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        // TODO: display URL in a modal web view
-        return true
     }
 }
