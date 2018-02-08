@@ -83,7 +83,10 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             outputImageControl.imageDownloader = ImageDownloader()
             uiControl = outputImageControl
         case .outputLink:
-            let url = URL(string: "https://i.ytimg.com/vi/uXF9MqdKlTM/maxresdefault.jpg")!
+            guard let url = URL(string: "https://i.ytimg.com/vi/uXF9MqdKlTM/maxresdefault.jpg") else {
+                fatalError()
+            }
+            
             let linkModel = OutputLinkControlViewModel(id: "image_output_blah_blah_blah", value: url)
             let outputLinkControl = OutputLinkControl(model: linkModel)
             uiControl = outputLinkControl

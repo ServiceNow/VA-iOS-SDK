@@ -612,8 +612,8 @@ extension ChatDataController: ChatDataListener {
     
     func controlForImage(from messageExchange: MessageExchange) -> OutputImageViewModel? {
         guard messageExchange.isComplete,
-            let textControl = messageExchange.message as? OutputImageControlMessage,
-            let value = textControl.data.richControl?.value else {
+            let outputImageControl = messageExchange.message as? OutputImageControlMessage,
+            let value = outputImageControl.data.richControl?.value else {
                 logger.logError("MessageExchange is not valid in imageControlFromMessageExchange method - skipping!")
                 return nil
         }
@@ -626,6 +626,17 @@ extension ChatDataController: ChatDataListener {
     }
     
     func controlForLink(from messageExchange: MessageExchange) -> OutputLinkControlViewModel? {
+        guard messageExchange.isComplete,
+            let outputLinkControl = messageExchange.message as? OutputLinkControlMessage,
+            let value = outputLinkControl.data.richControl?.value else {
+                logger.logError("MessageExchange is not valid in outputLinkFromMessageExchange method - skipping!")
+                return nil
+        }
+        
+        if let url = URL(string: value) {
+            return OutputLinkControlViewModel(id: ChatUtil.uuidString(), value: url)
+        }
+        
         return nil
     }
 }
