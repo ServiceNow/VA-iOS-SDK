@@ -177,8 +177,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 case .update(let index, let oldModel, let model):
-                    if (model.controlModel.type == .button || oldModel.controlModel.type == .button) ||
-                       (model.controlModel.type == .startTopicDivider || oldModel.controlModel.type == .startTopicDivider) {
+                    if model.controlModel.type == .button || oldModel.controlModel.type == .button {
                         self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                     } else {
                         updateModel(model, atIndex: index)

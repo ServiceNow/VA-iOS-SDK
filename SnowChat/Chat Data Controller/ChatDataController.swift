@@ -273,10 +273,8 @@ class ChatDataController {
     func topicDidFinish(_ topicInfo: TopicInfo) {
         conversationId = nil
         
-        // TEMPORARY: add a completion message. This will eventually come from the service but for now we synthesize it
+        // FIXME: add a completion message. This will eventually come from the service but for now we synthesize it
         presentCompletionMessage()
-        
-        // TODO: how to treat old messages visually?
     }
 
     func presentCompletionMessage() {
