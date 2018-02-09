@@ -117,11 +117,23 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         XCTAssertEqual(BubbleLocation(direction: MessageDirection.fromServer), controller?.controlForIndex(0)?.location)
     }
     
-    func startConversationAndUpdateBooleanControl() {
+    func testStartTopicDivider() {
+        XCTAssertEqual(0, controller?.controlCount())
+        startConversation()
+        XCTAssertEqual(2, controller?.controlCount())
+        XCTAssertEqual(ControlType.typingIndicator, controller?.controlForIndex(0)?.controlModel.type)
+        XCTAssertEqual(ControlType.startTopicDivider, controller?.controlForIndex(1)?.controlModel.type)
+    }
+    
+    func startConversation() {
         // mimic a started conversation
         let topicInfo = TopicInfo(topicId: "f0760de6733a0300d63a566a4cf6a7b6", conversationId: "f0760de6733a0300d63a566a4cf6a7b6")
         controller?.topicDidStart(topicInfo)
-
+    }
+    
+    func startConversationAndUpdateBooleanControl() {
+        startConversation()
+        
         // first add the initial boolean message as if it came from Chatterbox
         let boolMessage = ExampleData.exampleBooleanControlMessage()
         controller?.chatterbox(mockChatterbox!, didReceiveControlMessage: boolMessage, forChat: "chatID")
