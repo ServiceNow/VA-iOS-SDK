@@ -159,6 +159,11 @@ extension ChatMessageModel {
                 let controlModel = OutputImageViewModel(id: ChatUtil.uuidString(), value: url)
                 chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
             }
+        case .outputLink:
+            if let url = URL(string: nestedControlValue) {
+                let controlModel = OutputLinkControlViewModel(id: ChatUtil.uuidString(), value: url)
+                chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
+            }
         default:
             chatMessageModel = nil
         }
