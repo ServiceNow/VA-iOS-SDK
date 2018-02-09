@@ -74,14 +74,14 @@ protocol ControlProtocol: AnyObject {
     func removeFromParent()
     
     // If provided - control will be limited to that size
-    var preferredContentSize: CGSize? { get }
+    var maxContentSize: CGSize? { get }
 }
 
 // Code for self-removable control, just like UIView or UIViewController
 
 extension ControlProtocol {
     
-    var preferredContentSize: CGSize? {
+    var maxContentSize: CGSize? {
         return nil
     }
     
