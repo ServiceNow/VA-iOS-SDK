@@ -146,13 +146,24 @@ extension ChatMessageModel {
         
         let direction = message.direction
         
-        if nestedControlType == .text {
-            let controlModel = TextControlViewModel(id: message.messageId, value: nestedControlValue)
-            let textChatModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
-            return textChatModel
+        var chatMessageModel: ChatMessageModel?
+        switch nestedControlType {
+        case .text:
+            let controlModel = TextControlViewModel(id: ChatUtil.uuidString(), value: nestedControlValue)
+            chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
+        case .outputHtml:
+            let controlModel = OutputHtmlControlViewModel(id: ChatUtil.uuidString(), value: nestedControlValue)
+            chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
+        case .outputImage:
+            if let url = URL(string: nestedControlValue) {
+                let controlModel = OutputImageViewModel(id: ChatUtil.uuidString(), value: url)
+                chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
+            }
+        default:
+            chatMessageModel = nil
         }
         
-        return nil
+        return chatMessageModel
     }
     
     static func buttonModel(withMessage message: MultiPartControlMessage) -> ChatMessageModel? {
