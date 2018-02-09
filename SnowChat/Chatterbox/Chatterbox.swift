@@ -555,6 +555,16 @@ class Chatterbox {
         }
     }
     
+    func currentConversationHasControlData(forId messageId: String) -> Bool {
+        guard let conversationId = conversationContext.conversationId else { return false }
+        
+        let message = chatStore.conversation(forId: conversationId)?.messageExchanges().first(where: { (exchange) -> Bool in
+            exchange.message.messageId == messageId
+        })
+        
+        return message != nil
+    }
+    
     // MARK: - Cleanup
     
     private func clearMessageHandlers() {

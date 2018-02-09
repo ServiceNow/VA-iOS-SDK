@@ -90,6 +90,7 @@ class ChatDataFactory {
     }
     
     // MARK: - Message to JSON helper
+
     //swiftlint:disable:next cyclomatic_complexity
     static func jsonStringForControlMessage(_ message: ControlData) throws -> String? {
         let data: Data?
