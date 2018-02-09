@@ -26,7 +26,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     var model: ChatMessageModel? {
         didSet {
-            guard let chatModel = model, let control = controlCache?.control(forModel: chatModel.controlModel, forResourceProvider: resourceProvider) else {
+            guard let chatModel = model, chatModel.controlModel.type != .startTopicDivider, let control = controlCache?.control(forModel: chatModel.controlModel, forResourceProvider: resourceProvider) else {
                 return
             }
             

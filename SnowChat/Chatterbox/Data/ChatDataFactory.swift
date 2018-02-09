@@ -44,9 +44,9 @@ class ChatDataFactory {
                     return try ChatUtil.jsonDecoder.decode(OutputImageControlMessage.self, from: jsonData)
                 case .outputLink:
                     return try ChatUtil.jsonDecoder.decode(OutputLinkControlMessage.self, from: jsonData)
-                    
                 case .startTopicMessage:
-                    break
+                    return try ChatUtil.jsonDecoder.decode(StartTopicMessage.self, from: jsonData)
+                    
                 case .unknown:
                     break
                 }

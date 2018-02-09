@@ -64,6 +64,9 @@ extension ChatMessageModel {
         case .systemError:
             guard let systemErrorMessage = message as? SystemErrorControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: systemErrorMessage)
+        case .startTopicMessage:
+            guard let startTopicMessage = message as? StartTopicMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: startTopicMessage)
         default:
             Logger.default.logError("Unhandled control type in ChatMessageModel: \(message.controlType)")
         }
@@ -150,6 +153,12 @@ extension ChatMessageModel {
         }
         
         return nil
+    }
+    
+    static func model(withMessage message: StartTopicMessage) -> ChatMessageModel? {
+        let direction = MessageDirection.fromClient
+        let controlModel = StartTopicViewModel(id: message.messageId, date: message.messageTime)
+        return ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
     }
     
     static func buttonModel(withMessage message: MultiPartControlMessage) -> ChatMessageModel? {

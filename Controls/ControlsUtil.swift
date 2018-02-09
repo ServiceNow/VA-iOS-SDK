@@ -29,6 +29,8 @@ class ControlsUtil {
             return TypingIndicatorControl()
         case .button:
             return ButtonControl(model: model)
+        case .startTopicDivider:
+            fatalError("No control for StartTopicViewModel!")
         }
     }
 }

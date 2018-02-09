@@ -260,7 +260,8 @@ class ChatDataController {
     
     func topicDidStart(_ topicInfo: TopicInfo) {
         conversationId = topicInfo.conversationId
-        
+    
+        pushTopicStartDivider(topicInfo)
         pushTypingIndicator()
     }
 
@@ -289,6 +290,20 @@ class ChatDataController {
         let welcomeTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         // NOTE: we do not buffer the welcome message currently - this is intentional
         presentControlData(ChatMessageModel(model: welcomeTextControl, location: .left))
+    }
+    
+    func pushTopicStartDivider(_ topicInfo: TopicInfo) {
+        let date = Date() // TODO: get from TopicInfo when we decide to display it
+        let dividerControl = StartTopicViewModel(id: ChatUtil.uuidString(), date: date)
+        
+        // NOTE: we do not buffer the divider currently - this is intentional
+        presentControlData(ChatMessageModel(model: dividerControl, location: .left))
+    }
+    
+    func appendTopicStartDivider(_ topicInfo: TopicInfo) {
+        let date = Date() // TODO: get from TopicInfo when we decide to display it
+        let dividerControl = StartTopicViewModel(id: ChatUtil.uuidString(), date: date)
+        addHistoryToCollection(dividerControl)
     }
     
     // MARK: - Control Buffer
@@ -454,9 +469,25 @@ extension ChatDataController: ChatDataListener {
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
         logger.logInfo("Conversation \(conversationId) did load")
+        
+        let topicId = conversationId
+        pushTopicStartDivider(TopicInfo(topicId: topicId, conversationId: conversationId))
     }
 
-    func chatterbox(_ chatterbox: Chatterbox, willLoadHistoryForConsumerAccount consumerAccountId: String, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, willLoadConversationHistory conversationId: String, forChat chatId: String) {
+        logger.logInfo("Conversation \(conversationId) will load from history")
+        let topicId = conversationId
+        
+        // NOTE: until the service delivers entire conversations this will cause the occasional extra-divider to appear...
+        //       do not fix this as the service is suppossed to fix it
+        appendTopicStartDivider(TopicInfo(topicId: topicId, conversationId: conversationId))
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didLoadConversationHistory conversationId: String, forChat chatId: String) {
+        logger.logInfo("Conversation \(conversationId) did load from history")
+    }
+
+    func chatterbox(_ chatterbox: Chatterbox, willLoadConversationsForConsumerAccount consumerAccountId: String, forChat chatId: String) {
         logger.logInfo("History will load for \(consumerAccountId) - disabling buffering...")
 
         // disable caching while doing a hiastory load
@@ -465,7 +496,7 @@ extension ChatDataController: ChatDataListener {
         changeListener?.controllerWillLoadContent(self)
     }
     
-    func chatterbox(_ chatterbox: Chatterbox, didLoadHistoryForConsumerAccount consumerAccountId: String, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, didLoadConversationsForConsumerAccount consumerAccountId: String, forChat chatId: String) {
         logger.logInfo("History load completed for \(consumerAccountId) - re-enabling buffering.")
         
         // see if there are any controls to show - if not, add the welcome message

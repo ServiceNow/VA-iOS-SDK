@@ -24,6 +24,8 @@ enum ControlType {
     
     case button
     
+    case startTopicDivider
+    
     func description() -> String {
         switch self {
         case .multiSelect:
@@ -42,6 +44,8 @@ enum ControlType {
             return "Typing Indicator"
         case .button:
             return "Button"
+        case .startTopicDivider:
+            return "Start of Topic Divider"
         }
     }
 }
