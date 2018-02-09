@@ -149,19 +149,19 @@ extension ChatMessageModel {
         var chatMessageModel: ChatMessageModel?
         switch nestedControlType {
         case .text:
-            let controlModel = TextControlViewModel(id: ChatUtil.uuidString(), value: nestedControlValue)
+            let controlModel = TextControlViewModel(id: message.messageId, value: nestedControlValue)
             chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
         case .outputHtml:
-            let controlModel = OutputHtmlControlViewModel(id: ChatUtil.uuidString(), value: nestedControlValue)
+            let controlModel = OutputHtmlControlViewModel(id: message.messageId, value: nestedControlValue)
             chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
         case .outputImage:
             if let url = URL(string: nestedControlValue) {
-                let controlModel = OutputImageViewModel(id: ChatUtil.uuidString(), value: url)
+                let controlModel = OutputImageViewModel(id: message.messageId, value: url)
                 chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
             }
         case .outputLink:
             if let url = URL(string: nestedControlValue) {
-                let controlModel = OutputLinkControlViewModel(id: ChatUtil.uuidString(), value: url)
+                let controlModel = OutputLinkControlViewModel(id: message.messageId, value: url)
                 chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
             }
         default:
