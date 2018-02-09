@@ -14,6 +14,7 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
     private var request: URLRequest?
     private var htmlString: String?
     private(set) var webView: WKWebView?
+    private let fullSizeContainer = FullSizeScrollViewContainerView()
     
     init(request: URLRequest) {
         self.request = request
@@ -27,6 +28,10 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func loadView() {
+        self.view = fullSizeContainer
     }
     
     // MARK: - View Life Cycle
@@ -47,12 +52,14 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
         webView.navigationDelegate = self
         webView.allowsBackForwardNavigationGestures = true
         
+        fullSizeContainer.maxHeight = 400
+        fullSizeContainer.scrollView = webView.scrollView
         webView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(webView)
-        NSLayoutConstraint.activate([webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                     webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     webView.topAnchor.constraint(equalTo: view.topAnchor),
-                                     webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
+        fullSizeContainer.addSubview(webView)
+        NSLayoutConstraint.activate([webView.leadingAnchor.constraint(equalTo: fullSizeContainer.leadingAnchor),
+                                     webView.trailingAnchor.constraint(equalTo: fullSizeContainer.trailingAnchor),
+                                     webView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
+                                     webView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor)])
         
         if let request = self.request {
             webView.load(request)
