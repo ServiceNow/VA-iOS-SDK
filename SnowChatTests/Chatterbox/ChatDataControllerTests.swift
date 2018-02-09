@@ -41,6 +41,10 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         override func update(control: ControlData) {
             updatedControl = control
         }
+        
+        override func currentConversationHasControlData(forId messageId: String) -> Bool {
+            return true
+        }
     }
     
     var expectation: XCTestExpectation?
@@ -108,7 +112,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         // test that the control is of the correct type
         XCTAssertEqual(ControlType.boolean, controller?.controlForIndex(0)?.controlModel.type)
         // test the control model has the same ID
-        XCTAssertEqual(boolMessage.uniqueId, controller?.controlForIndex(0)?.controlModel.id)
+        XCTAssertEqual(boolMessage.messageId, controller?.controlForIndex(0)?.controlModel.id)
         // test the ChatMessageData has the correct direction
         XCTAssertEqual(BubbleLocation(direction: MessageDirection.fromServer), controller?.controlForIndex(0)?.location)
     }
@@ -124,7 +128,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         mockChatterbox?.pendingControlMessage = boolMessage
         
         // now update it
-        let modelChanged = BooleanControlViewModel(id: ChatUtil.uuidString(), label: "", required: true, resultValue: true)
+        let modelChanged = BooleanControlViewModel(id: boolMessage.messageId, label: "", required: true, resultValue: true)
         controller?.updateControlData(modelChanged)
     }
 

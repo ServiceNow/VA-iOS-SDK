@@ -74,7 +74,17 @@ class ChatDataController {
             fatalError("No control data exists, nothing to update")
         }
         
+        guard data.type == .text || currentConversationHasControlData(forId: data.id) else {
+            // no conversations, just skip it
+            logger.logError("Control is not from current conversation! ignoring update request")
+            return
+        }
+        
         updateChatterbox(data)
+    }
+    
+    private func currentConversationHasControlData(forId messageId: String) -> Bool {
+        return chatterbox.currentConversationHasControlData(forId: messageId)
     }
     
     func loadHistory(_ completion: @escaping (Error?) -> Void) {
@@ -393,10 +403,6 @@ extension ChatDataController: ChatDataListener {
     }
     
     private func didCompleteBooleanExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id else {
-            return
-        }
-        
         if let viewModels = controlsForBoolean(from: messageExchange) {
             replaceLastControl(with: ChatMessageModel(model: viewModels.message, location: .left))
             presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
@@ -404,20 +410,12 @@ extension ChatDataController: ChatDataListener {
    }
     
     private func didCompleteInputExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id else {
-            return
-        }
-        
         if let viewModels = controlsForInput(from: messageExchange) {
             presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
         }
     }
     
     private func didCompletePickerExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id else {
-            return
-        }
-        
         if let viewModels = controlsForPicker(from: messageExchange) {
             replaceLastControl(with: ChatMessageModel(model: viewModels.message, location: .left))
             presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
@@ -502,19 +500,37 @@ extension ChatDataController: ChatDataListener {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
         case .text:
-            if let viewModel = controlForText(from: historyExchange) {
-                addHistoryToCollection(viewModel)
-            }
-        case .outputImage:
-            if let viewModel = controlForImage(from: historyExchange) {
-                addHistoryToCollection(viewModel)
+            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
+                addHistoryToCollection(messageModel.controlModel)
             }
         case .outputLink:
             if let viewModel = controlForLink(from: historyExchange) {
                 addHistoryToCollection(viewModel)
             }
-        default:
-            logger.logInfo("Unhandled control type in didReceiveHistory: \(historyExchange.message.controlType)")
+            
+        // MARK: - output-only
+        case .outputImage:
+            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
+                addHistoryToCollection(messageModel.controlModel)
+            }
+        case .multiPart:
+            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
+                addHistoryToCollection(messageModel.controlModel)
+            }
+        case .systemError:
+            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
+                addHistoryToCollection(messageModel.controlModel)
+            }
+            
+        // MARK: - unrendered
+        case .topicPicker:
+            break
+        case .startTopicMessage:
+            break
+        case .contextualAction:
+            break
+        case .unknown:
+            break
         }
     }
 
@@ -536,24 +552,6 @@ extension ChatDataController: ChatDataListener {
         
         let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
         let answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: valueString)
-        
-        return (message: questionViewModel, response: answerViewModel)
-    }
-    
-    func controlsForInput(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
-        guard messageExchange.isComplete,
-            let response = messageExchange.response as? InputControlMessage,
-            let message = messageExchange.message as? InputControlMessage,
-            let messageValue: String = message.data.richControl?.uiMetadata?.label,
-            let responseValue: String = response.data.richControl?.value ?? "" else {
-            
-                logger.logError("MessageExchange is not valid in inputControlsFromMessageExchange method - skipping!")
-                return nil
-        }
-        // a completed input exchange is two text controls, with the value of the message and the value of the response
-        
-        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: messageValue)
-        let answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: responseValue)
         
         return (message: questionViewModel, response: answerViewModel)
     }
@@ -597,32 +595,23 @@ extension ChatDataController: ChatDataListener {
         
         return (message: questionModel, response: answerModel)
     }
-    
-    func controlForText(from messageExchange: MessageExchange) -> TextControlViewModel? {
+
+    func controlsForInput(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
         guard messageExchange.isComplete,
-            let textControl = messageExchange.message as? OutputTextControlMessage,
-            let value = textControl.data.richControl?.value else {
-            
-                logger.logError("MessageExchange is not valid in textControlFromMessageExchange method - skipping!")
+            let response = messageExchange.response as? InputControlMessage,
+            let message = messageExchange.message as? InputControlMessage,
+            let messageValue: String = message.data.richControl?.uiMetadata?.label,
+            let responseValue: String = response.data.richControl?.value ?? "" else {
+                
+                logger.logError("MessageExchange is not valid in inputControlsFromMessageExchange method - skipping!")
                 return nil
         }
+        // a completed input exchange is two text controls, with the value of the message and the value of the response
         
-        return TextControlViewModel(id: ChatUtil.uuidString(), value: value)
-    }
-    
-    func controlForImage(from messageExchange: MessageExchange) -> OutputImageViewModel? {
-        guard messageExchange.isComplete,
-            let outputImageControl = messageExchange.message as? OutputImageControlMessage,
-            let value = outputImageControl.data.richControl?.value else {
-                logger.logError("MessageExchange is not valid in imageControlFromMessageExchange method - skipping!")
-                return nil
-        }
+        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: messageValue)
+        let answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: responseValue)
         
-        if let url = URL(string: value) {
-            return OutputImageViewModel(id: ChatUtil.uuidString(), value: url)
-        }
-        
-        return nil
+        return (message: questionViewModel, response: answerViewModel)
     }
     
     func controlForLink(from messageExchange: MessageExchange) -> OutputLinkControlViewModel? {
