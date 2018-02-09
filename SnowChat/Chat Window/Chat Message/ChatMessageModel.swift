@@ -61,6 +61,9 @@ extension ChatMessageModel {
         case .outputLink:
             guard let controlMessage = message as? OutputLinkControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage)
+        case .outputHtml:
+            guard let controlMessage = message as? OutputHtmlControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
         case .systemError:
             guard let systemErrorMessage = message as? SystemErrorControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: systemErrorMessage)
@@ -189,6 +192,18 @@ extension ChatMessageModel {
         
         let outputLinkModel = OutputLinkControlViewModel(id: ChatUtil.uuidString(), value: URL(fileURLWithPath: value))
         let snowViewModel = ChatMessageModel(model: outputLinkModel, location: BubbleLocation(direction: direction))
+        return snowViewModel
+    }
+    
+    static func model(withMessage message: OutputHtmlControlMessage) -> ChatMessageModel? {
+        guard let value = message.data.richControl?.value else {
+            return nil
+        }
+        
+        let direction = message.data.direction
+        
+        let outputHtmlModel = OutputHtmlControlViewModel(id: ChatUtil.uuidString(), value: value)
+        let snowViewModel = ChatMessageModel(model: outputHtmlModel, location: BubbleLocation(direction: direction))
         return snowViewModel
     }
     

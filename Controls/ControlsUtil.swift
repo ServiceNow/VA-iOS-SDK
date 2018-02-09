@@ -21,6 +21,8 @@ class ControlsUtil {
             return outputImageControl
         case .outputLink:
             return OutputLinkControl(model: model)
+        case .outputHtml:
+            return OutputHtmlControl(model: model)
         case .boolean:
             return BooleanControl(model: model)
         case .singleSelect:

@@ -517,6 +517,10 @@ extension ChatDataController: ChatDataListener {
             if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
                 addHistoryToCollection(messageModel.controlModel)
             }
+        case .outputHtml:
+            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
+                addHistoryToCollection(messageModel.controlModel)
+            }
         case .systemError:
             if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
                 addHistoryToCollection(messageModel.controlModel)

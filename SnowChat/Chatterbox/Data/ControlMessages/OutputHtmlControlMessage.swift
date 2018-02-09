@@ -18,7 +18,7 @@ struct OutputHtmlControlMessage: Codable, ControlData {
     }
     
     var id: String = ChatUtil.uuidString()
-    var controlType = ChatterboxControlType.outputLink
+    var controlType = ChatterboxControlType.outputHtml
     
     var messageId: String {
         return data.messageId

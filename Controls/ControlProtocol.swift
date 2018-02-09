@@ -80,6 +80,11 @@ protocol ControlProtocol: AnyObject {
 // Code for self-removable control, just like UIView or UIViewController
 
 extension ControlProtocol {
+    
+    var preferredContentSize: CGSize? {
+        return nil
+    }
+    
     func removeFromParent() {
         viewController.willMove(toParentViewController: nil)
         viewController.view.removeFromSuperview()

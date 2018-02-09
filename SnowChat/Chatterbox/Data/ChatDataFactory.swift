@@ -44,6 +44,8 @@ class ChatDataFactory {
                     return try ChatUtil.jsonDecoder.decode(OutputImageControlMessage.self, from: jsonData)
                 case .outputLink:
                     return try ChatUtil.jsonDecoder.decode(OutputLinkControlMessage.self, from: jsonData)
+                case .outputHtml:
+                    return try ChatUtil.jsonDecoder.decode(OutputHtmlControlMessage.self, from: jsonData)
                     
                 case .startTopicMessage:
                     break
@@ -112,6 +114,8 @@ class ChatDataFactory {
             data = try ChatUtil.jsonEncoder.encode(message as? OutputImageControlMessage)
         case .outputLink:
             data = try ChatUtil.jsonEncoder.encode(message as? OutputLinkControlMessage)
+        case .outputHtml:
+            data = try ChatUtil.jsonEncoder.encode(message as? OutputHtmlControlMessage)
             
         // seldom used control messages
         case .contextualAction:
