@@ -558,12 +558,11 @@ class Chatterbox {
     func currentConversationHasControlData(forId messageId: String) -> Bool {
         guard let conversationId = conversationContext.conversationId else { return false }
         
-        if nil != chatStore.conversation(forId: conversationId)?.messageExchanges().first(where: { (exchange) -> Bool in
+        let message = chatStore.conversation(forId: conversationId)?.messageExchanges().first(where: { (exchange) -> Bool in
             exchange.message.messageId == messageId
-        }) {
-            return true
-        }
-        return false
+        })
+        
+        return message != nil
     }
     
     // MARK: - Cleanup
