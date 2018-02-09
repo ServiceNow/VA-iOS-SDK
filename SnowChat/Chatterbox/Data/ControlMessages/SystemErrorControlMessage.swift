@@ -35,6 +35,10 @@ struct SystemErrorControlMessage: Codable, ControlData {
         return data.sendTime
     }
     
+    var outputOnly: Bool {
+        return true
+    }
+
     let type: String
     let data: RichControlData<SystemErrorWrapper>
     

@@ -142,6 +142,8 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
     func testBooleanUpdateRendersTwoTextControls() {
         startConversationAndUpdateBooleanControl()
         
+        let initialCount = controller?.controlCount()
+        
         // now mimic chatterbox sending out the notification of the update
         let booleanMessage = mockChatterbox?.pendingControlMessage
         var me = MessageExchange(withMessage: booleanMessage!)
@@ -149,11 +151,13 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         
         controller?.chatterbox(mockChatterbox!, didCompleteMessageExchange: me, forChat: "ChatID")
         
-        // make sure there are 3 controls, 2 text and a typing indicator
-        XCTAssertEqual(3, controller?.controlCount())
-        XCTAssertEqual(ControlType.typingIndicator, controller?.controlForIndex(0)?.controlModel.type)
+        // make sure 2 controls were added
+        XCTAssertEqual(initialCount! + 2, controller?.controlCount())
         XCTAssertEqual(ControlType.text, controller?.controlForIndex(1)?.controlModel.type)
         XCTAssertEqual(ControlType.text, controller?.controlForIndex(2)?.controlModel.type)
+        
+        // typing indicator gets put as first control after a response is entered
+        XCTAssertEqual(ControlType.typingIndicator, controller?.controlForIndex(0)?.controlModel.type)
 
         // make sure the label and value are correct
         let label = (booleanMessage as! BooleanControlMessage).data.richControl?.uiMetadata?.label

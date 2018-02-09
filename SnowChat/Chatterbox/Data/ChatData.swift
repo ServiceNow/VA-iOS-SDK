@@ -123,6 +123,14 @@ protocol ControlData: Storable, Codable {
     
     var direction: MessageDirection { get }
     var messageTime: Date { get }
+    
+    var outputOnly: Bool { get }
+}
+
+extension ControlData {
+    var outputOnly: Bool {
+        return false
+    }
 }
 
 struct ControlDataUnknown: ControlData {
@@ -135,6 +143,10 @@ struct ControlDataUnknown: ControlData {
     
     var uniqueId: String {
         return id
+    }
+    
+    var outputOnly: Bool {
+        return true
     }
 }
 

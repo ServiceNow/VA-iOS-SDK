@@ -32,6 +32,10 @@ struct OutputLinkControlMessage: Codable, ControlData {
         return data.sendTime
     }
     
+    var outputOnly: Bool {
+        return true
+    }
+
     let type: String = "systemTextMessage"
     var data: RichControlData<ControlWrapper<String, UIMetadata>>
     
