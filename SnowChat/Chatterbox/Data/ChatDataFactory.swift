@@ -17,8 +17,9 @@ class ChatDataFactory {
             do {
                 let controlMessage = try ChatUtil.jsonDecoder.decode(ControlMessageStub.self, from: jsonData)
                 
-                guard let controlType = ChatterboxControlType(rawValue: controlMessage.data.richControl.uiType) else {
-                    return ControlDataUnknown()
+                let uiType = controlMessage.data.richControl.uiType
+                guard let controlType = ChatterboxControlType(rawValue: uiType) else {
+                    return ControlDataUnknown(label: uiType)
                 }
                 
                 switch controlType {

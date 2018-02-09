@@ -67,6 +67,9 @@ extension ChatMessageModel {
         case .systemError:
             guard let systemErrorMessage = message as? SystemErrorControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: systemErrorMessage)
+        case .unknown:
+            guard let controlMessage = message as? ControlDataUnknown else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
         default:
             Logger.default.logError("Unhandled control type in ChatMessageModel: \(message.controlType)")
         }
@@ -164,6 +167,11 @@ extension ChatMessageModel {
                 let controlModel = OutputLinkControlViewModel(id: message.messageId, value: url)
                 chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
             }
+        case .unknown:
+            if let nestedControlTypeString = message.nestedControlTypeString {
+                let outputTextModel = TextControlViewModel(id: message.messageId, value: "Unsupported control: \(nestedControlTypeString)")
+                chatMessageModel = ChatMessageModel(model: outputTextModel, location: BubbleLocation(direction: direction), requiresInput: false)
+            }
         default:
             chatMessageModel = nil
         }
@@ -232,6 +240,18 @@ extension ChatMessageModel {
         let direction = message.direction
         
         let outputTextModel = TextControlViewModel(id: message.messageId, value: "\(value)\n\(instruction)")
+        let textChatModel = ChatMessageModel(model: outputTextModel, location: BubbleLocation(direction: direction), requiresInput: false)
+        
+        return textChatModel
+    }
+    
+    static func model(withMessage message: ControlDataUnknown) -> ChatMessageModel? {
+        guard let value = message.label else {
+            return nil
+        }
+        
+        let direction = message.direction
+        let outputTextModel = TextControlViewModel(id: message.messageId, value: "Unsupported control: \(value)")
         let textChatModel = ChatMessageModel(model: outputTextModel, location: BubbleLocation(direction: direction), requiresInput: false)
         
         return textChatModel

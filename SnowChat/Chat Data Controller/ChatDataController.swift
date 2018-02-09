@@ -503,12 +503,12 @@ extension ChatDataController: ChatDataListener {
             if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
                 addHistoryToCollection(messageModel.controlModel)
             }
+            
+        // MARK: - output-only
         case .outputLink:
             if let viewModel = controlForLink(from: historyExchange) {
                 addHistoryToCollection(viewModel)
             }
-            
-        // MARK: - output-only
         case .outputImage:
             if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
                 addHistoryToCollection(messageModel.controlModel)
