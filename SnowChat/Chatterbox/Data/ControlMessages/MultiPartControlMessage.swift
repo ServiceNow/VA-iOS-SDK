@@ -22,8 +22,12 @@ struct MultiPartControlMessage: Codable, ControlData {
     var controlType = ChatterboxControlType.multiPart
     
     var nestedControlType: ChatterboxControlType? {
-        guard let uiType = data.richControl?.content?.uiType, let controlType = ChatterboxControlType(rawValue: uiType) else { return nil }
+        guard let uiType = nestedControlTypeString, let controlType = ChatterboxControlType(rawValue: uiType) else { return ChatterboxControlType.unknown }
         return controlType
+    }
+    
+    var nestedControlTypeString: String? {
+        return data.richControl?.content?.uiType
     }
     
     var messageId: String {

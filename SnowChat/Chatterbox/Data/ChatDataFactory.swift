@@ -17,8 +17,9 @@ class ChatDataFactory {
             do {
                 let controlMessage = try ChatUtil.jsonDecoder.decode(ControlMessageStub.self, from: jsonData)
                 
-                guard let controlType = ChatterboxControlType(rawValue: controlMessage.data.richControl.uiType) else {
-                    return ControlDataUnknown()
+                let uiType = controlMessage.data.richControl.uiType
+                guard let controlType = ChatterboxControlType(rawValue: uiType) else {
+                    return ControlDataUnknown(label: uiType)
                 }
                 
                 switch controlType {
@@ -44,6 +45,8 @@ class ChatDataFactory {
                     return try ChatUtil.jsonDecoder.decode(OutputImageControlMessage.self, from: jsonData)
                 case .outputLink:
                     return try ChatUtil.jsonDecoder.decode(OutputLinkControlMessage.self, from: jsonData)
+                case .outputHtml:
+                    return try ChatUtil.jsonDecoder.decode(OutputHtmlControlMessage.self, from: jsonData)
                     
                 case .startTopicMessage:
                     break
@@ -112,6 +115,8 @@ class ChatDataFactory {
             data = try ChatUtil.jsonEncoder.encode(message as? OutputImageControlMessage)
         case .outputLink:
             data = try ChatUtil.jsonEncoder.encode(message as? OutputLinkControlMessage)
+        case .outputHtml:
+            data = try ChatUtil.jsonEncoder.encode(message as? OutputHtmlControlMessage)
             
         // seldom used control messages
         case .contextualAction:
