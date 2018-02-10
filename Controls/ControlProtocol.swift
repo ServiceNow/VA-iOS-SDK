@@ -16,6 +16,8 @@ enum ControlType {
     
     case outputLink
     
+    case outputHtml
+    
     case dateTime
     
     case boolean
@@ -36,6 +38,8 @@ enum ControlType {
             return "Image Output"
         case .outputLink:
             return "Link Output"
+        case .outputHtml:
+            return "Output HTML"
         case .dateTime:
             return "Date Time Picker"
         case .boolean:
@@ -72,11 +76,19 @@ protocol ControlProtocol: AnyObject {
     weak var delegate: ControlDelegate? { get set }
     
     func removeFromParent()
+    
+    // If provided - control will be limited to that size
+    var maxContentSize: CGSize? { get }
 }
 
 // Code for self-removable control, just like UIView or UIViewController
 
 extension ControlProtocol {
+    
+    var maxContentSize: CGSize? {
+        return nil
+    }
+    
     func removeFromParent() {
         viewController.willMove(toParentViewController: nil)
         viewController.view.removeFromSuperview()

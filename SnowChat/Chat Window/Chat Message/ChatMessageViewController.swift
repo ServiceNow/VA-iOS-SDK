@@ -21,7 +21,6 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     var controlCache: ControlCache?
     var resourceProvider: ControlResourceProvider?
     
-    private let controlMaxWidth: CGFloat = 250
     private(set) var uiControl: ControlProtocol?
     
     var model: ChatMessageModel? {
@@ -86,10 +85,14 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
                                      controlView.topAnchor.constraint(equalTo: bubbleView.contentView.topAnchor),
                                      controlView.bottomAnchor.constraint(equalTo: bubbleView.contentView.bottomAnchor)])
         
-        // all controls but text will be limited to 250 points of width.
-        // For now doing it across all class sizes. Might get adjusted when we get specs.
-        if control.model.type != .text, control.model.type != .outputImage {
-            controlView.widthAnchor.constraint(lessThanOrEqualToConstant: controlMaxWidth).isActive = true
+        if let preferredControlSize = control.maxContentSize {
+            if preferredControlSize.width != .greatestFiniteMagnitude {
+                controlView.widthAnchor.constraint(lessThanOrEqualToConstant: preferredControlSize.width).isActive = true
+            }
+            
+            if preferredControlSize.height != .greatestFiniteMagnitude {
+                controlView.heightAnchor.constraint(lessThanOrEqualToConstant: preferredControlSize.height).isActive = true
+            }
         }
         
         updateConstraints(forLocation: location)

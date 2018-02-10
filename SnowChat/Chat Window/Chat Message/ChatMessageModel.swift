@@ -61,9 +61,15 @@ extension ChatMessageModel {
         case .outputLink:
             guard let controlMessage = message as? OutputLinkControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage)
+        case .outputHtml:
+            guard let controlMessage = message as? OutputHtmlControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
         case .systemError:
             guard let systemErrorMessage = message as? SystemErrorControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: systemErrorMessage)
+        case .unknown:
+            guard let controlMessage = message as? ControlDataUnknown else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
         default:
             Logger.default.logError("Unhandled control type in ChatMessageModel: \(message.controlType)")
         }
@@ -143,13 +149,34 @@ extension ChatMessageModel {
         
         let direction = message.direction
         
-        if nestedControlType == .text {
+        var chatMessageModel: ChatMessageModel?
+        switch nestedControlType {
+        case .text:
             let controlModel = TextControlViewModel(id: message.messageId, value: nestedControlValue)
-            let textChatModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
-            return textChatModel
+            chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
+        case .outputHtml:
+            let controlModel = OutputHtmlControlViewModel(id: message.messageId, value: nestedControlValue)
+            chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
+        case .outputImage:
+            if let url = URL(string: nestedControlValue) {
+                let controlModel = OutputImageViewModel(id: message.messageId, value: url)
+                chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
+            }
+        case .outputLink:
+            if let url = URL(string: nestedControlValue) {
+                let controlModel = OutputLinkControlViewModel(id: message.messageId, value: url)
+                chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
+            }
+        case .unknown:
+            if let nestedControlTypeString = message.nestedControlTypeString {
+                let outputTextModel = TextControlViewModel(id: message.messageId, value: "Unsupported control: \(nestedControlTypeString)")
+                chatMessageModel = ChatMessageModel(model: outputTextModel, location: BubbleLocation(direction: direction), requiresInput: false)
+            }
+        default:
+            chatMessageModel = nil
         }
         
-        return nil
+        return chatMessageModel
     }
     
     static func buttonModel(withMessage message: MultiPartControlMessage) -> ChatMessageModel? {
@@ -187,8 +214,20 @@ extension ChatMessageModel {
         
         let direction = message.data.direction
         
-        let outputLinkModel = OutputLinkControlViewModel(id: ChatUtil.uuidString(), value: URL(fileURLWithPath: value))
+        let outputLinkModel = OutputLinkControlViewModel(id: message.messageId, value: URL(fileURLWithPath: value))
         let snowViewModel = ChatMessageModel(model: outputLinkModel, location: BubbleLocation(direction: direction))
+        return snowViewModel
+    }
+    
+    static func model(withMessage message: OutputHtmlControlMessage) -> ChatMessageModel? {
+        guard let value = message.data.richControl?.value else {
+            return nil
+        }
+        
+        let direction = message.data.direction
+        
+        let outputHtmlModel = OutputHtmlControlViewModel(id: message.messageId, value: value)
+        let snowViewModel = ChatMessageModel(model: outputHtmlModel, location: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
@@ -201,6 +240,18 @@ extension ChatMessageModel {
         let direction = message.direction
         
         let outputTextModel = TextControlViewModel(id: message.messageId, value: "\(value)\n\(instruction)")
+        let textChatModel = ChatMessageModel(model: outputTextModel, location: BubbleLocation(direction: direction), requiresInput: false)
+        
+        return textChatModel
+    }
+    
+    static func model(withMessage message: ControlDataUnknown) -> ChatMessageModel? {
+        guard let value = message.label else {
+            return nil
+        }
+        
+        let direction = message.direction
+        let outputTextModel = TextControlViewModel(id: message.messageId, value: "Unsupported control: \(value)")
         let textChatModel = ChatMessageModel(model: outputTextModel, location: BubbleLocation(direction: direction), requiresInput: false)
         
         return textChatModel

@@ -214,7 +214,7 @@ struct MessageExchange: Codable {
     }
     
     private func needsResponse() -> Bool {
-        return !(message is OutputTextControlMessage) && !(message is OutputImageControlMessage) && !(message is OutputLinkControlMessage)
+        return !(message is OutputTextControlMessage) && !(message is OutputImageControlMessage) && !(message is OutputLinkControlMessage) && !(message is OutputHtmlControlMessage)
     }
     
     enum CodingKeys: String, CodingKey {

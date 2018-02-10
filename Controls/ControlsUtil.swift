@@ -21,6 +21,8 @@ class ControlsUtil {
             return outputImageControl
         case .outputLink:
             return OutputLinkControl(model: model)
+        case .outputHtml:
+            return OutputHtmlControl(model: model)
         case .dateTime:
             return DateTimePickerControl(model: model)
         case .boolean:

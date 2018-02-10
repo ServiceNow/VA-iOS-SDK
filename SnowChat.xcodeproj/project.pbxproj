@@ -97,6 +97,9 @@
 		57D997AB1FE5B00000394A6D /* ChatMessageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57D997AA1FE5B00000394A6D /* ChatMessageViewController.xib */; };
 		57DF7C34202C1066008D013A /* ControlWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DF7C33202C1066008D013A /* ControlWebViewController.swift */; };
 		57DF7C36202CBAAE008D013A /* UIViewController+ModalNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DF7C35202CBAAE008D013A /* UIViewController+ModalNavigation.swift */; };
+		57DF7C3D202CD97C008D013A /* OutputHtmlControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DF7C3C202CD97C008D013A /* OutputHtmlControl.swift */; };
+		57DF7C3F202CD991008D013A /* OutputHtmlControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DF7C3E202CD991008D013A /* OutputHtmlControlViewModel.swift */; };
+		57DF7C41202CED4C008D013A /* OutputHtmlControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DF7C40202CED4C008D013A /* OutputHtmlControlMessage.swift */; };
 		57DF7C38202CC1D6008D013A /* DateTimePickerControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DF7C37202CC1D6008D013A /* DateTimePickerControl.swift */; };
 		57DF7C3A202CC416008D013A /* DateTimePickerControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DF7C39202CC416008D013A /* DateTimePickerControlViewModel.swift */; };
 		57E1AF192019243500D54647 /* OutputImageControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E1AF182019243500D54647 /* OutputImageControlMessage.swift */; };
@@ -248,6 +251,9 @@
 		57D997AA1FE5B00000394A6D /* ChatMessageViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatMessageViewController.xib; sourceTree = "<group>"; };
 		57DF7C33202C1066008D013A /* ControlWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlWebViewController.swift; sourceTree = "<group>"; };
 		57DF7C35202CBAAE008D013A /* UIViewController+ModalNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+ModalNavigation.swift"; sourceTree = "<group>"; };
+		57DF7C3C202CD97C008D013A /* OutputHtmlControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputHtmlControl.swift; sourceTree = "<group>"; };
+		57DF7C3E202CD991008D013A /* OutputHtmlControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputHtmlControlViewModel.swift; sourceTree = "<group>"; };
+		57DF7C40202CED4C008D013A /* OutputHtmlControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputHtmlControlMessage.swift; sourceTree = "<group>"; };
 		57DF7C37202CC1D6008D013A /* DateTimePickerControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimePickerControl.swift; sourceTree = "<group>"; };
 		57DF7C39202CC416008D013A /* DateTimePickerControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimePickerControlViewModel.swift; sourceTree = "<group>"; };
 		57E1AF182019243500D54647 /* OutputImageControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputImageControlMessage.swift; sourceTree = "<group>"; };
@@ -410,6 +416,7 @@
 				57E65F4E202BA4640087E5DE /* OutputLinkControl.swift */,
 				57DF7C37202CC1D6008D013A /* DateTimePickerControl.swift */,
 				57D1DB6C1FEB592D00082F78 /* OutputImageControl.swift */,
+				57DF7C3C202CD97C008D013A /* OutputHtmlControl.swift */,
 				57532BAA1FD777AC001D674C /* PickerControl.swift */,
 				57B7E2BB1FBA25A200196BA9 /* BooleanControl.swift */,
 				5778CF9B1FE06F08004F77D8 /* SingleSelectControl.swift */,
@@ -453,6 +460,7 @@
 				5788B2A61FBB38FD00846F33 /* ControlViewModel.swift */,
 				57F7B2531FE17823006D917C /* TextControlViewModel.swift */,
 				57E65F50202BA5240087E5DE /* OutputLinkControlViewModel.swift */,
+				57DF7C3E202CD991008D013A /* OutputHtmlControlViewModel.swift */,
 				57D1DB6E1FEC74E200082F78 /* OutputImageViewModel.swift */,
 				57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */,
 				57DF7C39202CC416008D013A /* DateTimePickerControlViewModel.swift */,
@@ -703,6 +711,7 @@
 				57E1AF182019243500D54647 /* OutputImageControlMessage.swift */,
 				C41EF5D31FDB284600707F45 /* InputControlMessage.swift */,
 				57E65F52202BA5AD0087E5DE /* OutputLinkControlMessage.swift */,
+				57DF7C40202CED4C008D013A /* OutputHtmlControlMessage.swift */,
 				5740F430202269E90060B349 /* MultiPartControlMessage.swift */,
 				C41EF5D51FDB327800707F45 /* PickerControlMessage.swift */,
 				C41EF5DB1FDB4CA400707F45 /* OutputTextControlMessage.swift */,
@@ -1116,12 +1125,15 @@
 				57B7E2C31FBA25A200196BA9 /* BooleanControl.swift in Sources */,
 				BE876FDD1FDF4F75008EEF04 /* ChatService.swift in Sources */,
 				5760C8CE1FBF4C920055B73D /* PickerViewController.swift in Sources */,
+				57DF7C41202CED4C008D013A /* OutputHtmlControlMessage.swift in Sources */,
 				57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */,
 				572A4E441FCF70070081318D /* BubbleView.swift in Sources */,
 				57B7E2C61FBA25A200196BA9 /* SelectableViewCell.swift in Sources */,
 				BE69327F1FFEB46100DD5A2A /* ServerInstance+URL.swift in Sources */,
 				5796E4481FD0B3E0009D2035 /* CGPath+Bubble.swift in Sources */,
 				5706C5811FE49F78008D70D1 /* ChatMessageViewController.swift in Sources */,
+				57DF7C3D202CD97C008D013A /* OutputHtmlControl.swift in Sources */,
+				57DF7C3F202CD991008D013A /* OutputHtmlControlViewModel.swift in Sources */,
 				57DF7C38202CC1D6008D013A /* DateTimePickerControl.swift in Sources */,
 				57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */,
 				5778CF9E1FE07023004F77D8 /* SingleSelectControlViewModel.swift in Sources */,

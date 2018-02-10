@@ -23,7 +23,10 @@ class APIManager: NSObject {
     internal weak var transportListener: TransportStatusListener?
     
     private(set) internal lazy var imageDownloader: ImageDownloader = {
-        return ImageDownloader(sessionManager: sessionManager)
+        // TODO: Find out if images need to be authenticated. If not we don't have to use our sessionManager.
+        // IF we do have to use a sessionManager - there's behavior where ImageDownloader sets `startRequestsImmediately` flag of session manager to `false`
+        // and causes bug, where request are not being resumed. That breaks all our API requests.
+        return ImageDownloader()
     }()
     
     internal let ambClient: AMBClient
