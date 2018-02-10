@@ -21,7 +21,7 @@ class StartTopicDividerCell: UITableViewCell, ControlPresentable {
     func configure(with model: ChatMessageModel) {
         self.model = model
         
-        addViews()
+        setupViewsIfNeeded()
     }
     
     override func prepareForReuse() {
@@ -31,13 +31,11 @@ class StartTopicDividerCell: UITableViewCell, ControlPresentable {
     
     // MARK: ControlPresentable
     
-    func addViews() {
+    func setupViewsIfNeeded() {
         
-        if lineView == nil {
-            lineView = UIView()
-        }
+        guard self.lineView == nil else { return }
         
-        guard let lineView = self.lineView else { return }
+        let lineView = UIView()
         
         lineView.translatesAutoresizingMaskIntoConstraints = false
         lineView.backgroundColor = UIColor.controlHeaderBackgroundColor
@@ -49,5 +47,7 @@ class StartTopicDividerCell: UITableViewCell, ControlPresentable {
                                      lineView.heightAnchor.constraint(equalToConstant: 2.0),
                                      contentView.bottomAnchor.constraint(equalTo: lineView.bottomAnchor, constant: 10.0)])
         layoutIfNeeded()
+        
+        self.lineView = lineView
     }
 }
