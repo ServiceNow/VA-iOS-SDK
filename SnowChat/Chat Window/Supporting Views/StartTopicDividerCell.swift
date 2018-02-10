@@ -15,12 +15,13 @@ class StartTopicDividerCell: UITableViewCell, ControlPresentable {
     
     static let cellIdentifier = "StartTopicDividerCell"
     
-    var model: StartTopicViewModel?
+    var model: ChatMessageModel?
+    var lineView: UIView?
     
-    func configure(with model: ControlViewModel) {
-        self.model = model as? StartTopicViewModel
+    func configure(with model: ChatMessageModel) {
+        self.model = model
         
-        addLabel()
+        addViews()
     }
     
     override func prepareForReuse() {
@@ -30,19 +31,23 @@ class StartTopicDividerCell: UITableViewCell, ControlPresentable {
     
     // MARK: ControlPresentable
     
-    func addLabel() {
+    func addViews() {
         
-        let labelView = UILabel()
+        if lineView == nil {
+            lineView = UIView()
+        }
         
-        labelView.translatesAutoresizingMaskIntoConstraints = false
-        labelView.backgroundColor = UIColor.controlHeaderBackgroundColor
+        guard let lineView = self.lineView else { return }
         
-        contentView.addSubview(labelView)
-        NSLayoutConstraint.activate([labelView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5.0),
-                                     labelView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5.0),
-                                     labelView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10.0),
-                                     labelView.heightAnchor.constraint(equalToConstant: 2.0),
-                                     contentView.bottomAnchor.constraint(equalTo: labelView.bottomAnchor, constant: 10.0)])
+        lineView.translatesAutoresizingMaskIntoConstraints = false
+        lineView.backgroundColor = UIColor.controlHeaderBackgroundColor
+        
+        contentView.addSubview(lineView)
+        NSLayoutConstraint.activate([lineView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5.0),
+                                     lineView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5.0),
+                                     lineView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10.0),
+                                     lineView.heightAnchor.constraint(equalToConstant: 2.0),
+                                     contentView.bottomAnchor.constraint(equalTo: lineView.bottomAnchor, constant: 10.0)])
         layoutIfNeeded()
     }
 }

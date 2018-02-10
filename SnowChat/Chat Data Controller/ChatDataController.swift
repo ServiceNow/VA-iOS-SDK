@@ -149,7 +149,11 @@ class ChatDataController {
     }
     
     fileprivate func addHistoryToCollection(_ viewModel: ControlViewModel, location: BubbleLocation = .left) {
-        controlData.append(ChatMessageModel(model: viewModel, location: location))
+        addHistoryToCollection(ChatMessageModel(model: viewModel, location: location))
+    }
+
+    fileprivate func addHistoryToCollection(_ chatModel: ChatMessageModel) {
+        controlData.append(chatModel)
     }
     
     fileprivate func presentControlData(_ data: ChatMessageModel) {
@@ -175,7 +179,7 @@ class ChatDataController {
     }
     
     fileprivate func isShowingTypingIndicator() -> Bool {
-        guard controlData.count > 0, controlData[0].controlModel.type == .typingIndicator else {
+        guard controlData.count > 0, controlData[0].controlModel?.type == .typingIndicator else {
             return false
         }
         return true
@@ -291,17 +295,12 @@ class ChatDataController {
     }
     
     func pushTopicStartDivider(_ topicInfo: TopicInfo) {
-        let date = Date() // TODO: get from TopicInfo when we decide to display it
-        let dividerControl = StartTopicViewModel(id: ChatUtil.uuidString(), date: date)
-        
         // NOTE: we do not buffer the divider currently - this is intentional
-        presentControlData(ChatMessageModel(model: dividerControl, location: .left))
+        presentControlData(ChatMessageModel(type: .topicDivider))
     }
     
     func appendTopicStartDivider(_ topicInfo: TopicInfo) {
-        let date = Date() // TODO: get from TopicInfo when we decide to display it
-        let dividerControl = StartTopicViewModel(id: ChatUtil.uuidString(), date: date)
-        addHistoryToCollection(dividerControl)
+        addHistoryToCollection(ChatMessageModel(type: .topicDivider))
     }
     
     // MARK: - Control Buffer
@@ -529,8 +528,9 @@ extension ChatDataController: ChatDataListener {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
         case .text:
-            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
-                addHistoryToCollection(messageModel.controlModel)
+            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message),
+               let controlModel = messageModel.controlModel {
+                addHistoryToCollection(controlModel)
             }
         case .outputLink:
             if let viewModel = controlForLink(from: historyExchange) {
@@ -538,27 +538,19 @@ extension ChatDataController: ChatDataListener {
             }
             
         // MARK: - output-only
-        case .outputImage:
-            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
-                addHistoryToCollection(messageModel.controlModel)
-            }
-        case .multiPart:
-            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
-                addHistoryToCollection(messageModel.controlModel)
-            }
-        case .systemError:
-            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
-                addHistoryToCollection(messageModel.controlModel)
+        case .outputImage,
+             .multiPart,
+             .systemError:
+            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message),
+               let controlModel = messageModel.controlModel {
+                addHistoryToCollection(controlModel)
             }
             
         // MARK: - unrendered
-        case .topicPicker:
-            break
-        case .startTopicMessage:
-            break
-        case .contextualAction:
-            break
-        case .unknown:
+        case .topicPicker,
+             .startTopicMessage,
+             .contextualAction,
+             .unknown:
             break
         }
     }

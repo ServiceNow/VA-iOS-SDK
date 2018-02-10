@@ -177,7 +177,10 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 case .update(let index, let oldModel, let model):
-                    if model.controlModel.type == .button || oldModel.controlModel.type == .button {
+                    guard let controlModel = model.controlModel,
+                          let oldModel = oldModel.controlModel else { fatalError("Only control-types allowed in didChangeModel udpates!") }
+                    
+                    if controlModel.type == .button || oldModel.type == .button {
                         self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                     } else {
                         updateModel(model, atIndex: index)
@@ -365,21 +368,25 @@ extension ConversationViewController {
         }
         
         let cell: UITableViewCell
-        switch chatMessageModel.controlModel.type {
+        
+        switch chatMessageModel.type {
             
-        case .button:
-            let multiPartCell = tableView.dequeueReusableCell(withIdentifier: ButtonControlViewCell.cellIdentifier, for: indexPath) as! ButtonControlViewCell
-            multiPartCell.configure(with: chatMessageModel.controlModel as! ButtonControlViewModel)
-            multiPartCell.control?.delegate = self
-            cell = multiPartCell
-        case .startTopicDivider:
+        case .control:
+            guard let controlModel = chatMessageModel.controlModel else { return UITableViewCell() }
+            if controlModel.type == .button {
+                let multiPartCell = tableView.dequeueReusableCell(withIdentifier: ButtonControlViewCell.cellIdentifier, for: indexPath) as! ButtonControlViewCell
+                multiPartCell.configure(with: chatMessageModel.controlModel as! ButtonControlViewModel)
+                multiPartCell.control?.delegate = self
+                cell = multiPartCell
+            } else {
+                let conversationCell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
+                configureConversationCell(conversationCell, messageModel: chatMessageModel, at: indexPath)
+                cell = conversationCell
+            }
+        case .topicDivider:
             let dividerCell = tableView.dequeueReusableCell(withIdentifier: StartTopicDividerCell.cellIdentifier, for: indexPath) as! StartTopicDividerCell
-            dividerCell.configure(with: chatMessageModel.controlModel)
+            dividerCell.configure(with: chatMessageModel)
             cell = dividerCell
-        default:
-            let conversationCell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
-            configureConversationCell(conversationCell, messageModel: chatMessageModel, at: indexPath)
-            cell = conversationCell
         }
         
         cell.selectionStyle = .none
