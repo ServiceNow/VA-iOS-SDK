@@ -110,9 +110,9 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         // test a control is saved
         XCTAssertEqual(1, controller?.controlCount())
         // test that the control is of the correct type
-        XCTAssertEqual(ControlType.boolean, controller?.controlForIndex(0)?.controlModel.type)
+        XCTAssertEqual(ControlType.boolean, controller?.controlForIndex(0)?.controlModel?.type)
         // test the control model has the same ID
-        XCTAssertEqual(boolMessage.messageId, controller?.controlForIndex(0)?.controlModel.id)
+        XCTAssertEqual(boolMessage.messageId, controller?.controlForIndex(0)?.controlModel?.id)
         // test the ChatMessageData has the correct direction
         XCTAssertEqual(BubbleLocation(direction: MessageDirection.fromServer), controller?.controlForIndex(0)?.location)
     }
@@ -121,8 +121,8 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         XCTAssertEqual(0, controller?.controlCount())
         startConversation()
         XCTAssertEqual(2, controller?.controlCount())
-        XCTAssertEqual(ControlType.typingIndicator, controller?.controlForIndex(0)?.controlModel.type)
-        XCTAssertEqual(ControlType.startTopicDivider, controller?.controlForIndex(1)?.controlModel.type)
+        XCTAssertEqual(ControlType.typingIndicator, controller?.controlForIndex(0)?.controlModel?.type)
+        XCTAssertEqual(ChatMessageType.topicDivider, controller?.controlForIndex(1)?.type)
     }
     
     func startConversation() {
@@ -165,11 +165,11 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         
         // make sure 2 controls were added
         XCTAssertEqual(initialCount! + 2, controller?.controlCount())
-        XCTAssertEqual(ControlType.text, controller?.controlForIndex(1)?.controlModel.type)
-        XCTAssertEqual(ControlType.text, controller?.controlForIndex(2)?.controlModel.type)
+        XCTAssertEqual(ControlType.text, controller?.controlForIndex(1)?.controlModel?.type)
+        XCTAssertEqual(ControlType.text, controller?.controlForIndex(2)?.controlModel?.type)
         
         // typing indicator gets put as first control after a response is entered
-        XCTAssertEqual(ControlType.typingIndicator, controller?.controlForIndex(0)?.controlModel.type)
+        XCTAssertEqual(ControlType.typingIndicator, controller?.controlForIndex(0)?.controlModel?.type)
 
         // make sure the label and value are correct
         let label = (booleanMessage as! BooleanControlMessage).data.richControl?.uiMetadata?.label

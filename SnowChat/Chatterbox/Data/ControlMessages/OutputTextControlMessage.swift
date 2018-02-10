@@ -38,7 +38,7 @@ struct OutputTextControlMessage: Codable, ControlData {
     let type: String = "systemTextMessage"
     var data: RichControlData<ControlWrapper<String, UIMetadata>>
     
-    var outputOnly: Bool {
+    var isOutputOnly: Bool {
         return true
     }
     

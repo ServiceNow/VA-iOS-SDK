@@ -35,7 +35,7 @@ struct SystemErrorControlMessage: Codable, ControlData {
         return data.sendTime
     }
     
-    var outputOnly: Bool {
+    var isOutputOnly: Bool {
         return true
     }
 

@@ -214,7 +214,7 @@ struct MessageExchange: Codable {
     }
     
     private func needsResponse() -> Bool {
-        return !message.outputOnly
+        return !message.isOutputOnly
     }
     
     enum CodingKeys: String, CodingKey {
