@@ -38,6 +38,10 @@ struct OutputTextControlMessage: Codable, ControlData {
     let type: String = "systemTextMessage"
     var data: RichControlData<ControlWrapper<String, UIMetadata>>
     
+    var isOutputOnly: Bool {
+        return true
+    }
+    
     // define the properties that we decode / encode
     private enum CodingKeys: String, CodingKey {
         case type

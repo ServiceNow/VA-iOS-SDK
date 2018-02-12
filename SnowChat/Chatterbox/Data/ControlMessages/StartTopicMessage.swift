@@ -35,6 +35,10 @@ struct StartTopicMessage: Codable, ControlData {
         return data.sendTime
     }
     
+    var isOutputOnly: Bool {
+        return true
+    }
+
     let type: String
     let data: RichControlData<StartTopicWrapper>
     
@@ -47,7 +51,7 @@ struct StartTopicMessage: Codable, ControlData {
     init(withSessionId: String, withConversationId: String) {
         type = "consumerTextMessage"
         let controlData: StartTopicWrapper = ControlWrapper(model: ControlModel(type: "task", name: nil), uiType: "ContextualAction", uiMetadata: nil, value: "startTopic", content: nil)
-        data = RichControlData<StartTopicWrapper>(sessionId: withSessionId, conversationId: withConversationId, controlData: controlData)
+        data = RichControlData<StartTopicWrapper>(sessionId: withSessionId, conversationId: withConversationId, direction: .fromServer, controlData: controlData)
     }
     
     private enum CodingKeys: String, CodingKey {

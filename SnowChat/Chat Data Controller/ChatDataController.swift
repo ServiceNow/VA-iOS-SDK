@@ -149,7 +149,11 @@ class ChatDataController {
     }
     
     fileprivate func addHistoryToCollection(_ viewModel: ControlViewModel, location: BubbleLocation = .left) {
-        controlData.append(ChatMessageModel(model: viewModel, location: location))
+        addHistoryToCollection(ChatMessageModel(model: viewModel, location: location))
+    }
+
+    fileprivate func addHistoryToCollection(_ chatModel: ChatMessageModel) {
+        controlData.append(chatModel)
     }
     
     fileprivate func presentControlData(_ data: ChatMessageModel) {
@@ -175,7 +179,7 @@ class ChatDataController {
     }
     
     fileprivate func isShowingTypingIndicator() -> Bool {
-        guard controlData.count > 0, controlData[0].controlModel.type == .typingIndicator else {
+        guard controlData.count > 0, controlData[0].controlModel?.type == .typingIndicator else {
             return false
         }
         return true
@@ -260,7 +264,8 @@ class ChatDataController {
     
     func topicDidStart(_ topicInfo: TopicInfo) {
         conversationId = topicInfo.conversationId
-        
+    
+        pushTopicStartDivider(topicInfo)
         pushTypingIndicator()
     }
 
@@ -272,10 +277,8 @@ class ChatDataController {
     func topicDidFinish(_ topicInfo: TopicInfo) {
         conversationId = nil
         
-        // TEMPORARY: add a completion message. This will eventually come from the service but for now we synthesize it
+        // FIXME: add a completion message. This will eventually come from the service but for now we synthesize it
         presentCompletionMessage()
-        
-        // TODO: how to treat old messages visually?
     }
 
     func presentCompletionMessage() {
@@ -289,6 +292,15 @@ class ChatDataController {
         let welcomeTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         // NOTE: we do not buffer the welcome message currently - this is intentional
         presentControlData(ChatMessageModel(model: welcomeTextControl, location: .left))
+    }
+    
+    func pushTopicStartDivider(_ topicInfo: TopicInfo) {
+        // NOTE: we do not buffer the divider currently - this is intentional
+        presentControlData(ChatMessageModel(type: .topicDivider))
+    }
+    
+    func appendTopicStartDivider(_ topicInfo: TopicInfo) {
+        addHistoryToCollection(ChatMessageModel(type: .topicDivider))
     }
     
     // MARK: - Control Buffer
@@ -454,9 +466,25 @@ extension ChatDataController: ChatDataListener {
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
         logger.logInfo("Conversation \(conversationId) did load")
+        
+        let topicId = conversationId
+        pushTopicStartDivider(TopicInfo(topicId: topicId, conversationId: conversationId))
     }
 
-    func chatterbox(_ chatterbox: Chatterbox, willLoadHistoryForConsumerAccount consumerAccountId: String, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, willLoadConversationHistory conversationId: String, forChat chatId: String) {
+        logger.logInfo("Conversation \(conversationId) will load from history")
+        let topicId = conversationId
+        
+        // NOTE: until the service delivers entire conversations this will cause the occasional extra-divider to appear...
+        //       do not fix this as the service is suppossed to fix it
+        appendTopicStartDivider(TopicInfo(topicId: topicId, conversationId: conversationId))
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didLoadConversationHistory conversationId: String, forChat chatId: String) {
+        logger.logInfo("Conversation \(conversationId) did load from history")
+    }
+
+    func chatterbox(_ chatterbox: Chatterbox, willLoadConversationsForConsumerAccount consumerAccountId: String, forChat chatId: String) {
         logger.logInfo("History will load for \(consumerAccountId) - disabling buffering...")
 
         // disable caching while doing a hiastory load
@@ -465,7 +493,7 @@ extension ChatDataController: ChatDataListener {
         changeListener?.controllerWillLoadContent(self)
     }
     
-    func chatterbox(_ chatterbox: Chatterbox, didLoadHistoryForConsumerAccount consumerAccountId: String, forChat chatId: String) {
+    func chatterbox(_ chatterbox: Chatterbox, didLoadConversationsForConsumerAccount consumerAccountId: String, forChat chatId: String) {
         logger.logInfo("History load completed for \(consumerAccountId) - re-enabling buffering.")
         
         // see if there are any controls to show - if not, add the welcome message
@@ -500,8 +528,9 @@ extension ChatDataController: ChatDataListener {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
         case .text:
-            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
-                addHistoryToCollection(messageModel.controlModel)
+            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message),
+               let controlModel = messageModel.controlModel {
+                addHistoryToCollection(controlModel)
             }
             
         // MARK: - output-only
@@ -509,31 +538,22 @@ extension ChatDataController: ChatDataListener {
             if let viewModel = controlForLink(from: historyExchange) {
                 addHistoryToCollection(viewModel)
             }
-        case .outputImage:
-            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
-                addHistoryToCollection(messageModel.controlModel)
-            }
-        case .multiPart:
-            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
-                addHistoryToCollection(messageModel.controlModel)
-            }
-        case .outputHtml:
-            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
-                addHistoryToCollection(messageModel.controlModel)
-            }
-        case .systemError:
-            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message) {
-                addHistoryToCollection(messageModel.controlModel)
+
+        // MARK: - output-only
+        case .outputImage,
+             .multiPart,
+             .outputHtml,
+             .systemError:
+            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message),
+               let controlModel = messageModel.controlModel {
+                addHistoryToCollection(controlModel)
             }
             
         // MARK: - unrendered
-        case .topicPicker:
-            break
-        case .startTopicMessage:
-            break
-        case .contextualAction:
-            break
-        case .unknown:
+        case .topicPicker,
+             .startTopicMessage,
+             .contextualAction,
+             .unknown:
             break
         }
     }
