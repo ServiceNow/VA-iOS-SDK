@@ -51,6 +51,10 @@ protocol PickerControlProtocol: ControlProtocol, PickerViewControllerDelegate {
 
 extension PickerControlProtocol {
     
+    var maxContentSize: CGSize? {
+        return CGSize(width: 250, height: CGFloat.greatestFiniteMagnitude)
+    }
+    
     // default implementation of protocol method. returns viewController based on provided style of the picker
     func viewController(forStyle style: PickerControlStyle, model: ControlViewModel) -> UIViewController {
         guard let model = model as? PickerControlViewModel else {

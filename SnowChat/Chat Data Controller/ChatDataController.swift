@@ -532,14 +532,17 @@ extension ChatDataController: ChatDataListener {
                let controlModel = messageModel.controlModel {
                 addHistoryToCollection(controlModel)
             }
+            
+        // MARK: - output-only
         case .outputLink:
             if let viewModel = controlForLink(from: historyExchange) {
                 addHistoryToCollection(viewModel)
             }
-            
+
         // MARK: - output-only
         case .outputImage,
              .multiPart,
+             .outputHtml,
              .systemError:
             if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message),
                let controlModel = messageModel.controlModel {

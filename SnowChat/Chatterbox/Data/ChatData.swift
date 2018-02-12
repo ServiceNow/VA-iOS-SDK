@@ -107,6 +107,7 @@ enum ChatterboxControlType: String, Codable {
     case multiPart = "MultiPartOutput"
     case outputImage = "OutputImage"
     case outputLink = "OutputLink"
+    case outputHtml = "OutputHtml"
     
     case contextualAction = "ContextualAction"
     case systemError = "SystemError"
@@ -134,12 +135,18 @@ extension ControlData {
 }
 
 struct ControlDataUnknown: ControlData {
-    var id: String = "UNKNOWN"
-    var controlType: ChatterboxControlType = .unknown
-    var messageId: String = "UNKNOWN_MESSAGE_ID"
-    var conversationId: String? = "UNKNOWN_CONVERSATION_ID"
-    var messageTime: Date = Date()
-    var direction: MessageDirection = .fromServer
+    
+    init(label: String? = nil) {
+        self.label = label
+    }
+    
+    let id: String = "UNKNOWN"
+    let controlType: ChatterboxControlType = .unknown
+    let messageId: String = "UNKNOWN_MESSAGE_ID"
+    let conversationId: String? = "UNKNOWN_CONVERSATION_ID"
+    let messageTime: Date = Date()
+    let direction: MessageDirection = .fromServer
+    var label: String?
     
     var uniqueId: String {
         return id
