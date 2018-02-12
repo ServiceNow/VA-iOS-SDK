@@ -8,13 +8,16 @@
 
 class DateTimePickerControl: ControlProtocol {
     
+    var model: ControlViewModel
+    var viewController: UIViewController
+    
     private var dateTimeViewModel: DateTimePickerControlViewModel {
         return model as! DateTimePickerControlViewModel
     }
     
-    var model: ControlViewModel
-    
-    var viewController: UIViewController
+    private var dateTimeViewController: DateTimePickerViewController {
+        return viewController as! DateTimePickerViewController
+    }
     
     weak var delegate: ControlDelegate?
     
@@ -24,6 +27,9 @@ class DateTimePickerControl: ControlProtocol {
         }
         
         self.model = dateTimeViewModel
-        self.viewController = UIViewController()
+        
+        let bundle = Bundle(for: DateTimePickerViewController.self)
+        let dateTimeViewController = DateTimePickerViewController(nibName: "DateTimePickerViewController", bundle: bundle)
+        self.viewController = dateTimeViewController
     }
 }

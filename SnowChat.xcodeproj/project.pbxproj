@@ -77,6 +77,8 @@
 		5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5788B2A61FBB38FD00846F33 /* ControlViewModel.swift */; };
 		578EAF5E201786940082264B /* Array+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578EAF5D201786940082264B /* Array+Additions.swift */; };
 		579479322031E44900C4C5C5 /* DateTimePickerControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579479312031E44900C4C5C5 /* DateTimePickerControlMessage.swift */; };
+		579479342031F44F00C4C5C5 /* DateTimePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579479332031F44F00C4C5C5 /* DateTimePickerViewController.swift */; };
+		579479362031F60900C4C5C5 /* DateTimePickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 579479352031F60900C4C5C5 /* DateTimePickerViewController.xib */; };
 		579652A72022D32500B61665 /* ControlPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579652A62022D32500B61665 /* ControlPresentable.swift */; };
 		5796E4481FD0B3E0009D2035 /* CGPath+Bubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5796E4471FD0B3E0009D2035 /* CGPath+Bubble.swift */; };
 		579A48F220125039007CF338 /* PickerMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579A48F120125039007CF338 /* PickerMetadata.swift */; };
@@ -232,6 +234,8 @@
 		5788B2A61FBB38FD00846F33 /* ControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlViewModel.swift; sourceTree = "<group>"; };
 		578EAF5D201786940082264B /* Array+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Additions.swift"; sourceTree = "<group>"; };
 		579479312031E44900C4C5C5 /* DateTimePickerControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimePickerControlMessage.swift; sourceTree = "<group>"; };
+		579479332031F44F00C4C5C5 /* DateTimePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimePickerViewController.swift; sourceTree = "<group>"; };
+		579479352031F60900C4C5C5 /* DateTimePickerViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DateTimePickerViewController.xib; sourceTree = "<group>"; };
 		579652A62022D32500B61665 /* ControlPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlPresentable.swift; sourceTree = "<group>"; };
 		5796E4471FD0B3E0009D2035 /* CGPath+Bubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPath+Bubble.swift"; sourceTree = "<group>"; };
 		579A48F120125039007CF338 /* PickerMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerMetadata.swift; sourceTree = "<group>"; };
@@ -437,6 +441,8 @@
 			isa = PBXGroup;
 			children = (
 				5760C8CD1FBF4C920055B73D /* PickerViewController.swift */,
+				579479332031F44F00C4C5C5 /* DateTimePickerViewController.swift */,
+				579479352031F60900C4C5C5 /* DateTimePickerViewController.xib */,
 				575566A8200FAF1D000953F7 /* PickerHeaderFooterView.swift */,
 				57D1DB781FEC88D200082F78 /* OutputImageViewController.swift */,
 				57DF7C33202C1066008D013A /* ControlWebViewController.swift */,
@@ -917,6 +923,7 @@
 				572A4E401FCF06320081318D /* PickerTableViewCell.xib in Resources */,
 				57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */,
 				BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */,
+				579479362031F60900C4C5C5 /* DateTimePickerViewController.xib in Resources */,
 				57D1DB731FEC83D000082F78 /* mark.png in Resources */,
 				57B7E2C91FBA25A200196BA9 /* SelectableView.xib in Resources */,
 				BE50E2241FB9305C00948FBC /* Cartfile in Resources */,
@@ -1040,6 +1047,7 @@
 				572A4E421FCF07150081318D /* PickerTableViewCell.swift in Sources */,
 				572FAC181FC47A9C00B0B956 /* MultiSelectControl.swift in Sources */,
 				C4A774A91FDF22E200B6DF68 /* ChatEventListener.swift in Sources */,
+				579479342031F44F00C4C5C5 /* DateTimePickerViewController.swift in Sources */,
 				BE9E8BA91FBF826300499960 /* APIManager.swift in Sources */,
 				C43479EC1FE460700091806D /* TopicSelection.swift in Sources */,
 				C48441C8202CB6C600D67757 /* SystemErrorControlMessage.swift in Sources */,

@@ -33,8 +33,8 @@ struct DateTimePickerControlMessage: ControlData {
         return data.sendTime
     }
     
-    let type: String = "consumerTextMessage"
-    var data: RichControlData<ControlWrapper<Date?, PickerMetadata>>
+    let type: String = "systemTextMessage"
+    var data: RichControlData<ControlWrapper<Date?, UIMetadata>>
     
     // define the properties that we decode / encode
     private enum CodingKeys: String, CodingKey {
@@ -42,7 +42,7 @@ struct DateTimePickerControlMessage: ControlData {
         case data
     }
     
-    init(withData: RichControlData<ControlWrapper<Date?, PickerMetadata>>) {
+    init(withData: RichControlData<ControlWrapper<Date?, UIMetadata>>) {
         data = withData
     }
     

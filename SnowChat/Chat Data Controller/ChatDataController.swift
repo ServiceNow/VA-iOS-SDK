@@ -402,6 +402,10 @@ extension ChatDataController: ChatDataListener {
             guard messageExchange.message is MultiSelectControlMessage,
                 messageExchange.response is MultiSelectControlMessage else { fatalError("Could not view message as MultiSelectControlMessage in ChatDataListener") }
             self.didCompleteMultiSelectExchange(messageExchange, forChat: chatId)
+        case .dateTime:
+            guard messageExchange.message is DateTimePickerControlMessage,
+                messageExchange.response is DateTimePickerControlMessage else { fatalError("Could not view message as DateTimePickerControlMessage in ChatDataListener") }
+            self.didCompleteDateTimeExchange(messageExchange, forChat: chatId)
         case .multiPart:
             guard messageExchange.message is MultiPartControlMessage,
                 messageExchange.response is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
@@ -447,6 +451,24 @@ extension ChatDataController: ChatDataListener {
             let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
             let displayValue = options?.joinedWithCommaSeparator()
             let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue ?? "")
+            
+            replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
+            presentControlData(ChatMessageModel(model: answerModel, location: .right))
+        }
+    }
+    
+    private func didCompleteDateTimeExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
+        // replace the picker with the picker's label, and add the response
+        
+        if let response = messageExchange.response as? DateTimePickerControlMessage,
+            let message = messageExchange.message as? DateTimePickerControlMessage,
+            let label = message.data.richControl?.uiMetadata?.label,
+            let value: Date = response.data.richControl?.value ?? Date() {
+            
+            let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+            
+            let dateFormatter = DateFormatter()
+            let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: dateFormatter.string(from: value))
             
             replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
             presentControlData(ChatMessageModel(model: answerModel, location: .right))
