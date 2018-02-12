@@ -9,6 +9,7 @@
 enum BubbleLocation {
     case left
     case right
+    case unspecified
     
     init(direction: MessageDirection) {
         switch direction {
@@ -20,17 +21,33 @@ enum BubbleLocation {
     }
 }
 
+enum ChatMessageType {
+    case control
+    case topicDivider
+}
+
 class ChatMessageModel {
+    let type: ChatMessageType
     var avatarURL: URL?
-    let controlModel: ControlViewModel
+    let controlModel: ControlViewModel?
     let location: BubbleLocation
     let requiresInput: Bool
     
     init(model: ControlViewModel, location: BubbleLocation, requiresInput: Bool = false) {
+        self.type = .control
         self.controlModel = model
         self.location = location
         self.requiresInput = requiresInput
     }
+    
+    init(type: ChatMessageType) {
+        guard type == .topicDivider else { fatalError("initializer only supports non-control types") }
+        self.type = type
+        self.controlModel = nil
+        self.location = .unspecified
+        self.requiresInput = false
+    }
+
 }
 
 extension ChatMessageModel {
@@ -67,6 +84,9 @@ extension ChatMessageModel {
         case .systemError:
             guard let systemErrorMessage = message as? SystemErrorControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: systemErrorMessage)
+        case .startTopicMessage:
+            guard let startTopicMessage = message as? StartTopicMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: startTopicMessage)
         case .unknown:
             guard let controlMessage = message as? ControlDataUnknown else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage)

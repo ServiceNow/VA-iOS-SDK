@@ -36,12 +36,12 @@ struct RichControlData<T: Codable>: Codable {
 
     var richControl: T?
     
-    init(sessionId: String, conversationId: String?, controlData: T?) {
+    init(sessionId: String, conversationId: String?, direction: MessageDirection = .fromClient, controlData: T?) {
         self.messageId = ChatUtil.uuidString()
         self.sessionId = sessionId
         self.conversationId = conversationId
         self.sendTime = Date()
-        self.direction = .fromClient
+        self.direction = direction
         self.richControl = controlData
     }
 }

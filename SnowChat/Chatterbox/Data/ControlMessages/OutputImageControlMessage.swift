@@ -33,6 +33,10 @@ struct OutputImageControlMessage: Codable, ControlData {
         return data.sendTime
     }
     
+    var isOutputOnly: Bool {
+        return true
+    }
+
     let type: String = "systemTextMessage"
     var data: RichControlData<ControlWrapper<String, UIMetadata>>
     
