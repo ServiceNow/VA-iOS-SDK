@@ -1,12 +1,12 @@
 //
-//  PickerControlMessage.swift
+//  DateTimePickerControlMessage.swift
 //  SnowChat
 //
-//  Created by Marc Attinasi on 12/8/17.
-//  Copyright © 2017 ServiceNow. All rights reserved.
+//  Created by Michael Borowiec on 2/12/18.
+//  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-struct PickerControlMessage: Codable, ControlData {
+struct DateTimePickerControlMessage: ControlData {
     
     var uniqueId: String {
         return id
@@ -19,7 +19,7 @@ struct PickerControlMessage: Codable, ControlData {
     }
     
     var id: String = ChatUtil.uuidString()
-    var controlType = ChatterboxControlType.picker
+    var controlType = ChatterboxControlType.dateTime
     
     var messageId: String {
         return data.messageId
@@ -34,7 +34,7 @@ struct PickerControlMessage: Codable, ControlData {
     }
     
     let type: String = "consumerTextMessage"
-    var data: RichControlData<ControlWrapper<String?, PickerMetadata>>
+    var data: RichControlData<ControlWrapper<Date?, PickerMetadata>>
     
     // define the properties that we decode / encode
     private enum CodingKeys: String, CodingKey {
@@ -42,11 +42,11 @@ struct PickerControlMessage: Codable, ControlData {
         case data
     }
     
-    init(withData: RichControlData<ControlWrapper<String?, PickerMetadata>>) {
+    init(withData: RichControlData<ControlWrapper<Date?, PickerMetadata>>) {
         data = withData
     }
     
-    init(withValue value: String, fromMessage message: PickerControlMessage) {
+    init(withValue value: Date, fromMessage message: DateTimePickerControlMessage) {
         data = message.data
         data.sendTime = Date()
         data.richControl?.value = value

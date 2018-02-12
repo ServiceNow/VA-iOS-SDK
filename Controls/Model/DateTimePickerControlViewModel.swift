@@ -6,7 +6,8 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-class DateTimePickerControlViewModel: ControlViewModel {
+class DateTimePickerControlViewModel: ControlViewModel, ValueRepresentable {
+    
     let label: String?
     
     let isRequired: Bool
@@ -16,6 +17,14 @@ class DateTimePickerControlViewModel: ControlViewModel {
     let type: ControlType = .dateTime
     
     var value: Date?
+    
+    var resultValue: Date? {
+        return nil
+    }
+    
+    var displayValue: String? {
+        return nil
+    }
     
     init(id: String, label: String? = nil, required: Bool, resultValue: Date? = nil) {
         self.label = label

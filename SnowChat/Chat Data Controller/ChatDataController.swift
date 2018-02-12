@@ -197,6 +197,8 @@ class ChatDataController {
                 updatePickerData(data, lastPendingMessage)
             case .multiSelect:
                 updateMultiSelectData(data, lastPendingMessage)
+            case .dateTime:
+                updateDateTimeData(data, lastPendingMessage)
             case .multiPart:
                 updateMultiPartData(data, lastPendingMessage)
             default:
@@ -243,6 +245,16 @@ class ChatDataController {
             multiSelectMessage.id = multiSelectViewModel.id
             multiSelectMessage.data.richControl?.value = multiSelectViewModel.resultValue
             chatterbox.update(control: multiSelectMessage)
+        }
+    }
+    
+    fileprivate func updateDateTimeData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
+        if let dateTimeViewModel = data as? DateTimePickerControlViewModel,
+            var dateTimeMessage = lastPendingMessage as? DateTimePickerControlMessage {
+            
+            dateTimeMessage.id = dateTimeViewModel.id
+            dateTimeMessage.data.richControl?.value = dateTimeViewModel.resultValue
+            chatterbox.update(control: dateTimeMessage)
         }
     }
     
@@ -495,6 +507,10 @@ extension ChatDataController: ChatDataListener {
             if let viewModels = controlsForMultiSelect(from: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
+        case .dateTime:
+            if let viewModels = controlsForDateTimePicker(from: historyExchange) {
+                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+            }
         case .input:
             if let viewModels = controlsForInput(from: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
@@ -596,6 +612,25 @@ extension ChatDataController: ChatDataListener {
         let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
         let displayValue = options?.joinedWithCommaSeparator()
         let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue ?? "")
+        
+        return (message: questionModel, response: answerModel)
+    }
+    
+    func controlsForDateTimePicker(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
+        guard messageExchange.isComplete,
+            let response = messageExchange.response as? DateTimePickerControlMessage,
+            let message = messageExchange.message as? DateTimePickerControlMessage,
+            let label = message.data.richControl?.uiMetadata?.label,
+            let values: Date = response.data.richControl?.value ?? Date() else {
+                logger.logError("MessageExchange is not valid in multiSelectControlsFromMessageExchange method - skipping!")
+                return nil
+        }
+        
+        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        
+//        let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
+//        let displayValue = options?.joinedWithCommaSeparator()
+        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: "")
         
         return (message: questionModel, response: answerModel)
     }

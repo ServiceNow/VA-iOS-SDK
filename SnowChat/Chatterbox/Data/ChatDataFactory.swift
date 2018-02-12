@@ -41,6 +41,8 @@ class ChatDataFactory {
                     return try ChatUtil.jsonDecoder.decode(OutputTextControlMessage.self, from: jsonData)
                 case .multiPart:
                     return try ChatUtil.jsonDecoder.decode(MultiPartControlMessage.self, from: jsonData)
+                case .dateTime:
+                    return try ChatUtil.jsonDecoder.decode(DateTimePickerControlMessage.self, from: jsonData)
                 case .outputImage:
                     return try ChatUtil.jsonDecoder.decode(OutputImageControlMessage.self, from: jsonData)
                 case .outputLink:
@@ -111,6 +113,8 @@ class ChatDataFactory {
             data = try ChatUtil.jsonEncoder.encode(message as? OutputTextControlMessage)
         case .multiPart:
             data = try ChatUtil.jsonEncoder.encode(message as? MultiPartControlMessage)
+        case .dateTime:
+            data = try ChatUtil.jsonEncoder.encode(message as? DateTimePickerControlMessage)
         case .outputImage:
             data = try ChatUtil.jsonEncoder.encode(message as? OutputImageControlMessage)
         case .outputLink:
