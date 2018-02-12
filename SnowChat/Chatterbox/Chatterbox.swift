@@ -31,7 +31,7 @@
 //
 
 import Foundation
-import AMBClient
+import SNOWAMBClient
 
 enum ChatterboxError: Error {
     case invalidParameter(details: String)
@@ -67,7 +67,7 @@ class Chatterbox {
     }
     
     internal let chatId = ChatUtil.uuidString()
-    private var chatSubscription: NOWAMBSubscription?
+    private var chatSubscription: SNOWAMBSubscription?
     
     internal let instance: ServerInstance
     
@@ -240,18 +240,23 @@ class Chatterbox {
             completion(result.error)
         }
     }
-    
+
     private func setupChatSubscription() {
-        chatSubscription = apiManager.ambClient.subscribe(chatChannel) { [weak self] (subscription, message) in
+        chatSubscription = apiManager.ambClient.subscribe(chatChannel) { [weak self] (result, subscription) in
             guard let strongSelf = self else { return }
             
-            strongSelf.logger.logDebug(message)
-            
-            // when AMB gives us a message we dispatch to the current handler
-            if let messageHandler = strongSelf.messageHandler {
-                messageHandler(message)
-            } else {
-                strongSelf.logger.logError("No handler set in Chatterbox setupChatSubscription!")
+            switch result {
+            case .success:
+                // when AMB gives us a message we dispatch to the current handler
+                if let messageHandler = self?.messageHandler,
+                    let message = result.value {
+                    strongSelf.logger.logDebug(message.jsonDataString)
+                    messageHandler(message.jsonDataString)
+                } else {
+                    strongSelf.logger.logError("No handler set in Chatterbox setupChatSubscription!")
+                }
+            case .failure:
+                strongSelf.logger.logError("AMB message parser error")
             }
         }
     }

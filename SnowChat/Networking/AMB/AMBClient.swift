@@ -8,7 +8,7 @@
 
 import UIKit
 import Alamofire
-import AMBClient
+import SNOWAMBClient
 
 // A wrapped; self contained AMB client
 // Probably remove this?
@@ -17,11 +17,11 @@ private let logger = Logger.logger(for: "AMBClient")
 
 internal class AMBClient: NSObject {
     
-    private let fayeClient: NOWFayeClient
+    private let fayeClient: SNOWAMBClient
     
     init(sessionManager: SessionManager, baseURL: URL) {
         let httpClient = AMBHTTPClient(sessionManager: sessionManager, baseURL: baseURL)
-        fayeClient = NOWFayeClient(httpClient: httpClient)
+        fayeClient = SNOWAMBClient(httpClient: httpClient)
     
         super.init()
     }
@@ -39,39 +39,36 @@ internal class AMBClient: NSObject {
     // MARK: - Notification Handling
     
     internal func applicationWillResignActiveNotification() {
-        fayeClient.pause()
+        fayeClient.paused = true
     }
     
     internal func applicationDidBecomeActiveNotification() {
-        fayeClient.resume()
+        fayeClient.paused = false
     }
     
     // MARK: - Faye Method Proxies
     
-    @discardableResult func connect() -> Bool {
-        return fayeClient.connect()
+    func connect() {
+        fayeClient.connect()
     }
     
     // FIXME: Don't go from data, to string, to dictionary, to JSON, to string :)
     // Need to remove when new AMB client is ready
-    func subscribe(_ channelName: String, messages messageHandler: @escaping ((NOWAMBSubscription?, String) -> Void)) -> NOWAMBSubscription {
-        let subscription: NOWAMBSubscription = fayeClient.subscribe(channelName) { (subscription, message) in
-            
-            guard let message = message else {
-                // NOTE: this seems to happen in normal conditions- why?
-                logger.logInfo("Nil-message received on channel \(channelName)")
-                return
+    func subscribe(_ channelName: String, messages messageHandler: @escaping SNOWAMBMessageHandler) -> SNOWAMBSubscription {
+        let subscription : SNOWAMBSubscription = fayeClient.subscribe(channel: channelName, messageHandler: { (result, subscription) in
+            switch result {
+            case .success:
+                if let message = result.value {
+                    logger.logInfo("Incoming AMB Message: \(message.jsonDataString)")
+                    messageHandler(result, subscription)
+                }
+            case .failure:
+                messageHandler(result, subscription)
             }
-            
-            if let messageString = AMBClient.toJSONString(fromDictionary: message) {
-                logger.logInfo("Incoming AMB Message: \(messageString)")
-                messageHandler(subscription, messageString)
-            }
-
-        }
+        })
         return subscription
     }
-    
+
     private static func toJSONString(fromDictionary: [AnyHashable : Any]) -> String? {
         do {
             let msgData = try JSONSerialization.data(withJSONObject: fromDictionary, options: JSONSerialization.WritingOptions.prettyPrinted)
@@ -84,12 +81,12 @@ internal class AMBClient: NSObject {
         return nil
     }
     
-    func unsubscribe(_ subscription: NOWAMBSubscription) {
-        fayeClient.unsubscribe(subscription)
+    func unsubscribe(_ subscription: SNOWAMBSubscription) {
+        fayeClient.unsubscribe(subscription: subscription)
     }
     
     func sendMessage(_ message: [String: Any], toChannel channel: String ) {
-        fayeClient.sendMessage(message, toChannel: channel)
+        fayeClient.publishMessage(message, toChannel: channel, withExtension:[:])
     }
     
     func sendMessage<T>(_ message: T, toChannel channel: String, encoder: JSONEncoder) where T: Encodable {
