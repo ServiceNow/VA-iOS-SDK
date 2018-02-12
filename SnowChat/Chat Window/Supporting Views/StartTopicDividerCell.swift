@@ -8,20 +8,25 @@
 
 import Foundation
 
-class StartTopicDividerCell: UITableViewCell, ControlPresentable {
-    func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
-        
-    }
-    
+class StartTopicDividerCell: UITableViewCell {
+   
     static let cellIdentifier = "StartTopicDividerCell"
     
     var model: ChatMessageModel?
-    var lineView: UIView?
+    let lineView = UIView()
+
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        setupViews()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     func configure(with model: ChatMessageModel) {
         self.model = model
-        
-        setupViewsIfNeeded()
     }
     
     override func prepareForReuse() {
@@ -31,12 +36,7 @@ class StartTopicDividerCell: UITableViewCell, ControlPresentable {
     
     // MARK: ControlPresentable
     
-    func setupViewsIfNeeded() {
-        
-        guard self.lineView == nil else { return }
-        
-        let lineView = UIView()
-        
+    func setupViews() {
         lineView.translatesAutoresizingMaskIntoConstraints = false
         lineView.backgroundColor = UIColor.controlHeaderBackgroundColor
         
@@ -47,7 +47,5 @@ class StartTopicDividerCell: UITableViewCell, ControlPresentable {
                                      lineView.heightAnchor.constraint(equalToConstant: 2.0),
                                      contentView.bottomAnchor.constraint(equalTo: lineView.bottomAnchor, constant: 10.0)])
         layoutIfNeeded()
-        
-        self.lineView = lineView
     }
 }

@@ -172,12 +172,6 @@ extension ChatMessageModel {
         return nil
     }
     
-    static func model(withMessage message: StartTopicMessage) -> ChatMessageModel? {
-        let direction = MessageDirection.fromClient
-        let controlModel = StartTopicViewModel(id: message.messageId, date: message.messageTime)
-        return ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
-    }
-    
     static func buttonModel(withMessage message: MultiPartControlMessage) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.navigationBtnLabel,
             let index = message.data.richControl?.uiMetadata?.index else {
