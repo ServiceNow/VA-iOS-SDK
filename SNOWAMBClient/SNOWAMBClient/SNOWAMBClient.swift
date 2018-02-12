@@ -123,6 +123,9 @@ public class SNOWAMBClient {
                     retryAttempt = 0
                 }
             }
+            if newClientStatus == .disconnected {
+                cancelAllDataTasks()
+            }
         }
     }
     
@@ -220,6 +223,12 @@ private extension SNOWAMBClient {
     func startConnectRequest(after interval: TimeInterval = 0.0) {
         
         guard !paused else {
+            NSLog("Client is paused. Connect request is skipped")
+            return
+        }
+        
+        guard self.clientStatus != .disconnected else {
+            NSLog("Client is not connected. Connect request is skipped")
             return
         }
         
@@ -252,9 +261,9 @@ private extension SNOWAMBClient {
     }
     
     func cancelAllDataTasks() {
-//        connectDataTask?.cancel()
-        dataTasks.forEach( {
-            (id, task) in task.cancel()
+        self.scheduledConnectTask?.cancel()
+        self.scheduledConnectTask = nil
+        dataTasks.forEach({(id, task) in task.cancel()
         })
     }
     
@@ -357,6 +366,7 @@ private extension SNOWAMBClient {
         if  let advice = ambMessage.advice,
             let reconnectAdvice = advice["reconnect"] as? String {
             if reconnectAdvice == "handshake" {
+                self.clientStatus = .disconnected
                 sendBayeuxHandshakeMessage()
                 return
             }
@@ -402,6 +412,13 @@ private extension SNOWAMBClient {
             return
         }
         subscribedChannels.insert(channel)
+        if let subscriptions = subscriptionsByChannel[channel] {
+            subscriptions.forEach({(subscriptionWrapper) in
+                if let subscription = subscriptionWrapper.subscription {
+                    subscription.subscribed = true
+                }
+            })
+        }
     }
     
     func parseUnsubscribeMessage(_ ambMessage : SNOWAMBMessage) {
@@ -541,11 +558,11 @@ private extension SNOWAMBClient {
         let fullPath = String(format:"/amb/%@", path)
         
         let task = httpClient.post(fullPath, jsonParameters: myMessage as Any, timeout: timeout,
-        success: { (responseObject: Any?) -> Void in
-            self.parseResponseObject(responseObject)
-        },
-        failure: { (error: Any?) -> Void in
-            self.handleHTTPResponseError(message: myMessage, error: error as! Error)
+            success: { (responseObject: Any?) -> Void in
+                self.parseResponseObject(responseObject)
+            },
+            failure: { (error: Any?) -> Void in
+                self.handleHTTPResponseError(message: myMessage, error: error as! Error)
         })
 
         if let taskIdentifier = task?.taskIdentifier {
