@@ -32,6 +32,10 @@ public class SNOWAMBSubscription : Equatable {
         client.unsubscribe(subscription: self)
     }
     
+    deinit {
+        client.unsubscribe(subscription: self)
+    }
+    
 }
 
 public struct SNOWAMBSubscriptionWeakWrapper {

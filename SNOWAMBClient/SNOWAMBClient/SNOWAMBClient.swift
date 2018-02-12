@@ -156,11 +156,6 @@ public class SNOWAMBClient {
         startConnectRequest()
     }
     
-    public func publishMessage(_ message: String, toChannel: String) {
-        //sendBayeuxPublishMessage()
-        //TODO: Implement!!!
-    }
-    
     public func publishMessage(_ message: SNOWAMBMessageDictionary,
                                toChannel channel: String,
                                withExtension ext: SNOWAMBMessageDataExtention) {
@@ -194,16 +189,21 @@ public class SNOWAMBClient {
             return
         }
         
-        subscription.subscribed = false
+        for (index, subscriptionWrapper) in subscriptions.enumerated() {
+            if let curSubscription = subscriptionWrapper.subscription {
+                if curSubscription.uuid == subscription.uuid {
+                    subscription.subscribed = false
+                    subscriptions[index].subscription = subscription
+                }
+            }
+        }
         
         subscriptions = subscriptions
-            .filter( { (subscriptionWrapper) in
+            .filter({ (subscriptionWrapper) in
                     subscriptionWrapper.subscription?.subscribed ?? false
             })
 
-        let needToUnsubscribe = subscriptions.isEmpty
-        
-        if needToUnsubscribe {
+        if subscriptions.isEmpty {
             sendBayeuxUnsubscribeMessage(channel: subscription.channel)
         }
     }
@@ -313,9 +313,11 @@ private extension SNOWAMBClient {
             
         default:
             if subscribedChannels.contains(channel) {
-                let subscriptionWrappers = subscriptionsByChannel[channel]
-                if subscriptionWrappers != nil {
-                    subscriptionWrappers?.forEach( { subscriptionWrapper in
+                guard ambMessage.data != nil else {
+                    return
+                }
+                if let subscriptionWrappers = subscriptionsByChannel[channel] {
+                    subscriptionWrappers.forEach({ subscriptionWrapper in
                         if let subscription = subscriptionWrapper.subscription {
                             subscription.messageHandler(SNOWAMBResult.success(ambMessage), subscription)
                         }
@@ -336,7 +338,7 @@ private extension SNOWAMBClient {
         if ambMessage.successful {
             retryAttempt = 0
             self.clientId = ambMessage.clientId
-            self.clientStatus = SNOWAMBClientStatus.handshake
+            self.clientStatus = .connected
         } else {
             delegate?.didFail(client: self,
                               withError: SNOWAMBError(SNOWAMBErrorType.handshakeFailed, "Faye could not handshake with error:\(ambMessage.errorString ?? "")"))
@@ -352,9 +354,9 @@ private extension SNOWAMBClient {
             let oldSubscribedChannels = subscribedChannels
             subscribedChannels.removeAll()
             
-            oldSubscribedChannels.forEach( { (channel) in
+            oldSubscribedChannels.forEach({ (channel) in
                 if let subscriptions = subscriptionsByChannel[channel] {
-                    subscriptions.forEach( { (subscriptionWrapper) in
+                    subscriptions.forEach({ (subscriptionWrapper) in
                         if let subscription = subscriptionWrapper.subscription {
                             resubscribe(subscription: subscription)
                         }
@@ -378,9 +380,7 @@ private extension SNOWAMBClient {
                 reopenSubscriptions()
             }
             
-            if self.clientStatus == .retrying {
-                self.clientStatus = .connected
-            }
+            self.clientStatus = .connected
             
             if  let advice = ambMessage.advice {
                 let interval = advice["interval"] as? TimeInterval ?? 0.0
@@ -408,16 +408,20 @@ private extension SNOWAMBClient {
     }
     
     func parseSubscribeMessage(_ ambMessage : SNOWAMBMessage) {
-        guard let channel = ambMessage.channel else {
+        guard let channel = ambMessage.subscription else {
             return
         }
         subscribedChannels.insert(channel)
         if let subscriptions = subscriptionsByChannel[channel] {
-            subscriptions.forEach({(subscriptionWrapper) in
+            var updatedSubscriptions = [SNOWAMBSubscriptionWeakWrapper]()
+            subscriptions.forEach({ (subscriptionWrapper) in
                 if let subscription = subscriptionWrapper.subscription {
                     subscription.subscribed = true
+                    let updatedWrapper = SNOWAMBSubscriptionWeakWrapper(subscription)
+                    updatedSubscriptions.append(updatedWrapper)
                 }
             })
+            subscriptionsByChannel[channel] = updatedSubscriptions
         }
     }
     
@@ -439,7 +443,7 @@ private extension SNOWAMBClient {
             "supportedConnections" : BayeuxSupportedConnections
             ] as [String : Any]
     
-        self.clientStatus = SNOWAMBClientStatus.handshake
+        self.clientStatus = .handshake
         postBayeuxMessage(message)
     }
     
@@ -509,7 +513,7 @@ private extension SNOWAMBClient {
 //        sentMessageCount += 1
 //        let messageId = Data(String(sentMessageCount).utf8).base64EncodedString()
         
-        var message = [
+        var bayeuxMessage = [
             "channel"  : channel,
             "clientId" : clientId,
             "data" : message
@@ -517,10 +521,10 @@ private extension SNOWAMBClient {
         ]  as [String : Any]
         
         if ext != nil {
-            message["ext"] = ext
+            bayeuxMessage["ext"] = ext
         }
         
-        postBayeuxMessage(message)
+        postBayeuxMessage(bayeuxMessage)
     }
     
     @discardableResult func postBayeuxMessage(_ message: [String : Any], timeout : TimeInterval = 0.0) -> URLSessionDataTask? {
@@ -545,17 +549,24 @@ private extension SNOWAMBClient {
         }
         
         func cleanupCompleteDataTasks() {
-            dataTasks = dataTasks.filter( {
-                $1.state != URLSessionTask.State.completed
+            dataTasks = dataTasks.filter({ $1.state != URLSessionTask.State.completed
             })
+        }
+        
+        guard let channel = message["channel"] as? String else {
+            delegate?.didFail(client: self, withError:SNOWAMBError(SNOWAMBErrorType.httpRequestFailed, "AMB Message is missing a channel name"))
+            return nil
         }
         
         var myMessage = message
         myMessage["messageId"] = String(messageId)
         messageId += 1
-        let channel = message["channel"] as? String ?? ""
+
         let path = channelNameToPath(channel)
         let fullPath = String(format:"/amb/%@", path)
+        
+        // TODO: Remove it. For debugging purposes!
+        NSLog("AMB HTTP Post: \(myMessage)")
         
         let task = httpClient.post(fullPath, jsonParameters: myMessage as Any, timeout: timeout,
             success: { (responseObject: Any?) -> Void in
@@ -569,12 +580,6 @@ private extension SNOWAMBClient {
             dataTasks[taskIdentifier] = task
         }
         cleanupCompleteDataTasks()
-/*
-        if path == "connect" {
-            connectDataTask?.cancel()
-            connectDataTask = task
-        }
-*/
         
         return task
     }
