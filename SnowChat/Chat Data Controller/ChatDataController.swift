@@ -185,6 +185,15 @@ class ChatDataController {
         return true
     }
     
+    fileprivate func popTypingIndicator() {
+        if !isShowingTypingIndicator() {
+            return
+        }
+        controlData.remove(at: 0)
+        addChange(ModelChangeType.delete(index: 0))
+        applyChanges()
+    }
+    
     fileprivate func updateChatterbox(_ data: ControlViewModel) {
         guard let conversationId = self.conversationId else {
             logger.logError("No ConversationID in updateChatterbox!")
@@ -290,11 +299,15 @@ class ChatDataController {
     func presentWelcomeMessage() {
         let message = chatterbox.session?.welcomeMessage ?? "Welcome! What can we help you with?"
         let welcomeTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
+        
         // NOTE: we do not buffer the welcome message currently - this is intentional
         presentControlData(ChatMessageModel(model: welcomeTextControl, location: .left))
     }
     
     func pushTopicStartDivider(_ topicInfo: TopicInfo) {
+        // if there is a typing indicator we want to remove that first
+        popTypingIndicator()
+        
         // NOTE: we do not buffer the divider currently - this is intentional
         presentControlData(ChatMessageModel(type: .topicDivider))
     }
@@ -694,7 +707,7 @@ extension ChatDataController: ContextItemProvider {
         }
         
         let agent = UIAlertAction(title: NSLocalizedString("Chat with and Agent", comment: "Support Menu item"), style: .default) { (action) in
-            // TODO: transfer to live agent chat
+            self.chatterbox.transferToLiveAgent()
         }
         
         let call = UIAlertAction(title: NSLocalizedString("Call Support (Daily 5AM - 11PM)", comment: "Support Menu item"), style: .default) { (action) in

@@ -136,6 +136,22 @@ class Chatterbox {
         }
     }
     
+    func transferToLiveAgent() {
+        if let sessionId = session?.id, let conversationId = conversationContext.systemConversationId {
+            messageHandler = startLiveAgentHandshakeHandler
+            
+            var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
+            startTopic.data.richControl?.value = "brb"
+            startTopic.data.direction = .fromClient
+            startTopic.data.richControl?.uiMetadata = contextualActions?.data.richControl?.uiMetadata
+            
+            apiManager.ambClient.sendMessage(startTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+            
+        } else {
+            logger.logError("Session must be initialized before startTopic is called")
+        }
+    }
+    
     func lastPendingControlMessage(forConversation conversationId: String) -> ControlData? {
         return chatStore.lastPendingMessage(forConversation: conversationId) as? ControlData
     }
@@ -358,7 +374,7 @@ class Chatterbox {
     }
     
     private func startUserTopicHandshakeHandler(_ message: String) {
-        //logger.logDebug("startUserTopicHandshake received: \(message)")
+        logger.logDebug("**** startUserTopicHandshake received: \(message)")
         
         let actionMessage = ChatDataFactory.actionFromJSON(message)
         
@@ -379,6 +395,26 @@ class Chatterbox {
                 logger.logInfo("User Topic Started: \(actionMessage.topicName) - \(actionMessage.topicId) - \(actionMessage.ready ? "Ready" : "Not Ready")")
                 
                 startUserTopic(topicInfo: TopicInfo(topicId: actionMessage.topicId, conversationId: actionMessage.vendorTopicId))
+            }
+        }
+    }
+    
+    private func startLiveAgentHandshakeHandler(_ message: String) {
+        logger.logDebug("**** startLiveAgentHandshakeHandler received: \(message)")
+        
+        let actionMessage = ChatDataFactory.actionFromJSON(message)
+
+        if actionMessage.eventType == .startAgentChat {
+            if let startAgentChatMessage = actionMessage as? StartAgentChatMessage,
+               startAgentChatMessage.data.direction == .fromServer,
+               startAgentChatMessage.data.actionMessage.chatStage == "ConnectToAgent" {
+                let startAgentChatReadyMessage = createStartAgentChatReadyMessage(fromMessage: startAgentChatMessage)
+                apiManager.ambClient.sendMessage(startAgentChatReadyMessage, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+            
+                let conversationId = startAgentChatMessage.data.actionMessage.topicId
+                let topicInfo = TopicInfo(topicId: "brb", conversationId: conversationId)
+                beginConversation(topicInfo: topicInfo)
+                chatEventListener?.chatterbox(self, didStartTopic: topicInfo, forChat: chatId)
             }
         }
     }
@@ -407,6 +443,15 @@ class Chatterbox {
         startUserTopicReady.data.direction = .fromClient
         startUserTopicReady.data.actionMessage.ready = true
         return startUserTopicReady
+    }
+    
+    private func createStartAgentChatReadyMessage(fromMessage message: StartAgentChatMessage) -> StartAgentChatMessage {
+        var startChatReady = message
+        startChatReady.data.messageId = ChatUtil.uuidString()
+        startChatReady.data.sendTime = Date()
+        startChatReady.data.direction = .fromClient
+        startChatReady.data.actionMessage.ready = true
+        return startChatReady
     }
     
     // MARK: User Topic Message Handler Methods
@@ -449,6 +494,10 @@ class Chatterbox {
     fileprivate func handleIncomingControlMessage(_ control: ControlData, forConversation conversationId: String) {
         chatStore.storeControlData(control, forConversation: conversationId, fromChat: self)
         chatDataListener?.chatterbox(self, didReceiveControlMessage: control, forChat: chatId)
+        
+        if control.controlType == .systemError {
+            transferToLiveAgent()
+        }
     }
     
     fileprivate func handleResponseControlMessage(_ control: ControlData, forConversation conversationId: String) {
@@ -461,7 +510,6 @@ class Chatterbox {
     
     fileprivate func handleControlMessage(_ control: ControlData) {
         guard control.controlType != .unknown else {
-            handleUnknownControl(control)
             return
         }
         
@@ -473,10 +521,6 @@ class Chatterbox {
                 handleIncomingControlMessage(control, forConversation: conversationId)
             }
         }
-    }
-    
-    fileprivate func handleUnknownControl(_ control: ControlData) {
-        logger.logError("*** Ignoring unrecognized control type \(control.controlType) ***")
     }
     
     fileprivate func handleTopicFinishedAction(_ action: ActionData) {

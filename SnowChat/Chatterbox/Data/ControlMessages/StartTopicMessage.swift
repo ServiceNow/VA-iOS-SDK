@@ -40,9 +40,9 @@ struct StartTopicMessage: Codable, ControlData {
     }
 
     let type: String
-    let data: RichControlData<StartTopicWrapper>
+    var data: RichControlData<StartTopicWrapper>
     
-    typealias StartTopicWrapper = ControlWrapper<String?, ContextualActionMetadata>
+    typealias StartTopicWrapper = ControlWrapper<String?, ContextualActionMessage.ContextualActionMetadata>
     
     struct ContextualActionMetadata: Codable {
         // nothing more to add for this one

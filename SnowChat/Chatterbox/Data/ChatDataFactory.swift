@@ -80,6 +80,8 @@ class ChatDataFactory {
                     return try ChatUtil.jsonDecoder.decode(TopicFinishedMessage.self, from: jsonData)
                 case .topicPicker:
                     return try ChatUtil.jsonDecoder.decode(SystemTopicPickerMessage.self, from: jsonData)
+                case .startAgentChat:
+                    return try ChatUtil.jsonDecoder.decode(StartAgentChatMessage.self, from: jsonData)
                 case .unknown:
                     return ActionDataUnknown()
                 }                
