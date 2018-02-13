@@ -165,18 +165,20 @@ class Chatterbox {
                 return
         }
 
-        apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { conversations in
+        apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { [weak self] conversationsFromService in
             var count = 0
+            guard let strongSelf = self else {
+                completion(0)
+                return
+            }
             
-            self.chatDataListener?.chatterbox(self, willLoadConversationsForConsumerAccount: consumerAccountId, forChat: self.chatId)
+            strongSelf.chatDataListener?.chatterbox(strongSelf, willLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
 
+            // TODO: remove this filter when the service stops returning system messages
+            let conversations = strongSelf.filterSystemTopics(conversationsFromService)
+            
             conversations.forEach({ [weak self] conversation in
                 guard let strongSelf = self else { return }
-                
-                if conversation.isForSystemTopic() {
-                    strongSelf.logger.logInfo("Skipping System Topic conversation in fetchOlderMessages")
-                    return
-                }
                 
                 let conversationId = conversation.conversationId
                 _ = strongSelf.chatStore.findOrCreateConversation(conversationId)
@@ -193,7 +195,7 @@ class Chatterbox {
                 strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationHistory: conversationId, forChat: strongSelf.chatId)
             })
             
-            self.chatDataListener?.chatterbox(self, didLoadConversationsForConsumerAccount: consumerAccountId, forChat: self.chatId)
+            strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
             
             completion(count)
         })
