@@ -145,12 +145,12 @@ class ChatDataController {
     
     fileprivate func addHistoryToCollection(_ viewModels: (message: ControlViewModel, response: ControlViewModel)) {
         // add response, then message, to the tail-end of the control data
-        controlData.append(ChatMessageModel(model: viewModels.response, location: BubbleLocation.right))
-        controlData.append(ChatMessageModel(model: viewModels.message, location: BubbleLocation.left))
+        controlData.append(ChatMessageModel(model: viewModels.response, bubbleLocation: BubbleLocation.right))
+        controlData.append(ChatMessageModel(model: viewModels.message, bubbleLocation: BubbleLocation.left))
     }
     
     fileprivate func addHistoryToCollection(_ viewModel: ControlViewModel, location: BubbleLocation = .left) {
-        addHistoryToCollection(ChatMessageModel(model: viewModel, location: location))
+        addHistoryToCollection(ChatMessageModel(model: viewModel, bubbleLocation: location))
     }
 
     fileprivate func addHistoryToCollection(_ chatModel: ChatMessageModel) {
@@ -167,10 +167,14 @@ class ChatDataController {
         }
     }
     
-    fileprivate func presentAuxiliaryData(forMessage message: ControlData) {
-        guard let auxiliaryModel = ChatMessageModel.auxiliaryModel(withMessage: message) else { return }
-        auxiliaryData = auxiliaryModel
-        changeListener?.controller(self, didChangeAuxiliaryModel: .insert(index: 0, model: auxiliaryModel))
+    fileprivate func presentAuxiliaryDataIfNeeded(forMessageModel model: ChatMessageModel) {
+        guard let auxiliaryModel = model.auxiliaryMessageModel else { return }
+        switch auxiliaryModel.location {
+        case .`default`:
+            bufferControlMessage(auxiliaryModel)
+        case .bottom:
+            changeListener?.controller(self, didChangeAuxiliaryModel: .insert(index: 0, model: auxiliaryModel))
+        }
     }
     
     fileprivate func pushTypingIndicator() {
@@ -178,7 +182,7 @@ class ChatDataController {
             return
         }
         
-        let model = ChatMessageModel(model: typingIndicator, location: BubbleLocation.left)
+        let model = ChatMessageModel(model: typingIndicator, bubbleLocation: BubbleLocation.left)
         addControlToCollection(model)
         
         addChange(.insert(index: 0, model: model))
@@ -303,14 +307,14 @@ class ChatDataController {
     func presentCompletionMessage() {
         let message = NSLocalizedString("Thanks for visiting. If you need anything else, just ask!", comment: "Default end of topic message to show to user")
         let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
-        bufferControlMessage(ChatMessageModel(model: completionTextControl, location: .left))
+        bufferControlMessage(ChatMessageModel(model: completionTextControl, bubbleLocation: .left))
     }
 
     func presentWelcomeMessage() {
         let message = chatterbox.session?.welcomeMessage ?? "Welcome! What can we help you with?"
         let welcomeTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         // NOTE: we do not buffer the welcome message currently - this is intentional
-        presentControlData(ChatMessageModel(model: welcomeTextControl, location: .left))
+        presentControlData(ChatMessageModel(model: welcomeTextControl, bubbleLocation: .left))
     }
     
     func pushTopicStartDivider(_ topicInfo: TopicInfo) {
@@ -377,10 +381,8 @@ extension ChatDataController: ChatDataListener {
         if let messageModel = ChatMessageModel.model(withMessage: message) {
             bufferControlMessage(messageModel)
             
-            // show Button control after nested control of multipart is presented
-            if message.controlType == .multiPart, let buttonModel = ChatMessageModel.buttonModel(withMessage: message as! MultiPartControlMessage) {
-                bufferControlMessage(buttonModel)
-            }
+            // Only some controls have auxiliary data. They might appear as part of the conversation table view or on the bottom.
+            presentAuxiliaryDataIfNeeded(forMessageModel: messageModel)
             
         } else {
             dataConversionError(controlId: message.uniqueId, controlType: message.controlType)
@@ -439,21 +441,21 @@ extension ChatDataController: ChatDataListener {
     
     private func didCompleteBooleanExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForBoolean(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, location: .left))
-            presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, bubbleLocation: .left))
+            presentControlData(ChatMessageModel(model: viewModels.response, bubbleLocation: .right))
         }
    }
     
     private func didCompleteInputExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForInput(from: messageExchange) {
-            presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
+            presentControlData(ChatMessageModel(model: viewModels.response, bubbleLocation: .right))
         }
     }
     
     private func didCompletePickerExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForPicker(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, location: .left))
-            presentControlData(ChatMessageModel(model: viewModels.response, location: .right))
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, bubbleLocation: .left))
+            presentControlData(ChatMessageModel(model: viewModels.response, bubbleLocation: .right))
         }
     }
     
@@ -471,8 +473,8 @@ extension ChatDataController: ChatDataListener {
             let displayValue = options?.joinedWithCommaSeparator()
             let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue ?? "")
             
-            replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
-            presentControlData(ChatMessageModel(model: answerModel, location: .right))
+            replaceLastControl(with: ChatMessageModel(model: questionModel, bubbleLocation: .left))
+            presentControlData(ChatMessageModel(model: answerModel, bubbleLocation: .right))
         }
     }
     
@@ -489,13 +491,13 @@ extension ChatDataController: ChatDataListener {
             let dateFormatter = DateFormatter()
             let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: dateFormatter.string(from: value))
             
-            replaceLastControl(with: ChatMessageModel(model: questionModel, location: .left))
-            presentControlData(ChatMessageModel(model: answerModel, location: .right))
+            replaceLastControl(with: ChatMessageModel(model: questionModel, bubbleLocation: .left))
+            presentControlData(ChatMessageModel(model: answerModel, bubbleLocation: .right))
         }
     }
     
     private func didCompleteMultiPartExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        let typingIndicatorModel = ChatMessageModel(model: typingIndicator, location: BubbleLocation.left)
+        let typingIndicatorModel = ChatMessageModel(model: typingIndicator, bubbleLocation: BubbleLocation.left)
         replaceLastControl(with: typingIndicatorModel)        
     }
     

@@ -34,13 +34,15 @@ class ChatMessageModel {
     let type: ChatMessageType
     var avatarURL: URL?
     let controlModel: ControlViewModel?
+    var auxiliaryMessageModel: ChatMessageModel?
     var location: MessageLocation = .default
     var bubbleLocation: BubbleLocation?
     let requiresInput: Bool
     
-    init(model: ControlViewModel, bubbleLocation: BubbleLocation, requiresInput: Bool = false) {
+    init(model: ControlViewModel, location: MessageLocation = .default, bubbleLocation: BubbleLocation, requiresInput: Bool = false) {
         self.type = .control
         self.controlModel = model
+        self.location = location
         self.bubbleLocation = bubbleLocation
         self.requiresInput = requiresInput
     }
@@ -153,6 +155,8 @@ extension ChatMessageModel {
         
         let textViewModel = TextControlViewModel(id: message.messageId, value: title)
         let snowViewModel = ChatMessageModel(model: textViewModel, bubbleLocation: BubbleLocation(direction: direction))
+        
+        snowViewModel.auxiliaryMessageModel = ChatMessageModel.auxiliaryModel(withMessage: message)
         return snowViewModel
     }
     
@@ -177,18 +181,6 @@ extension ChatMessageModel {
         let textModel = TextControlViewModel(id: message.messageId, value: value)
         let snowViewModel = ChatMessageModel(model: textModel, bubbleLocation: BubbleLocation(direction: direction), requiresInput: true)
         return snowViewModel
-    }
-    
-    static func buttonModel(withMessage message: MultiPartControlMessage) -> ChatMessageModel? {
-        guard let title = message.data.richControl?.uiMetadata?.navigationBtnLabel,
-            let index = message.data.richControl?.uiMetadata?.index else {
-                return nil
-        }
-        
-        let buttonModel = ButtonControlViewModel(id: message.messageId, label: title, value: index)
-        let direction = message.data.direction
-        let buttonChatModel = ChatMessageModel(model: buttonModel, bubbleLocation: BubbleLocation(direction: direction))
-        return buttonChatModel
     }
     
     static func model(withMessage message: OutputImageControlMessage) -> ChatMessageModel? {
@@ -259,10 +251,7 @@ extension ChatMessageModel {
     
     // MARK: Auxiliary models
     
-    static func auxiliaryModel(withMessage message: ControlData) -> ChatMessageModel? {
-        
-        // TODO: Right now we only have auxiliary data for DateTime picker. But we might need to generalize it in the future
-        guard let message = message as? DateTimePickerControlMessage else { return nil }
+    static func auxiliaryModel(withMessage message: DateTimePickerControlMessage) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
             let required = message.data.richControl?.uiMetadata?.required else {
                 return nil

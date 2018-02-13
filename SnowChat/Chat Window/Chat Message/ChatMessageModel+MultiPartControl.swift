@@ -22,29 +22,43 @@ extension ChatMessageModel {
         switch nestedControlType {
         case .text:
             let controlModel = TextControlViewModel(id: message.messageId, value: nestedControlValue)
-            chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
+            chatMessageModel = ChatMessageModel(model: controlModel, bubbleLocation: BubbleLocation(direction: direction))
         case .outputHtml:
             let controlModel = OutputHtmlControlViewModel(id: message.messageId, value: nestedControlValue)
-            chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
+            chatMessageModel = ChatMessageModel(model: controlModel, bubbleLocation: BubbleLocation(direction: direction))
         case .outputImage:
             if let url = URL(string: nestedControlValue) {
                 let controlModel = OutputImageViewModel(id: message.messageId, value: url)
-                chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
+                chatMessageModel = ChatMessageModel(model: controlModel, bubbleLocation: BubbleLocation(direction: direction))
             }
         case .outputLink:
             if let url = URL(string: nestedControlValue) {
                 let controlModel = OutputLinkControlViewModel(id: message.messageId, value: url)
-                chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
+                chatMessageModel = ChatMessageModel(model: controlModel, bubbleLocation: BubbleLocation(direction: direction))
             }
         case .unknown:
             if let nestedControlTypeString = message.nestedControlTypeString {
                 let outputTextModel = TextControlViewModel(id: message.messageId, value: "Unsupported control: \(nestedControlTypeString)")
-                chatMessageModel = ChatMessageModel(model: outputTextModel, location: BubbleLocation(direction: direction), requiresInput: false)
+                chatMessageModel = ChatMessageModel(model: outputTextModel, bubbleLocation: BubbleLocation(direction: direction), requiresInput: false)
             }
         default:
             chatMessageModel = nil
         }
         
+        // Show the "More" button after each nested control
+        chatMessageModel?.auxiliaryMessageModel = ChatMessageModel.buttonModel(withMessage: message)
         return chatMessageModel
+    }
+    
+    static func buttonModel(withMessage message: MultiPartControlMessage) -> ChatMessageModel? {
+        guard let title = message.data.richControl?.uiMetadata?.navigationBtnLabel,
+            let index = message.data.richControl?.uiMetadata?.index else {
+                return nil
+        }
+        
+        let buttonModel = ButtonControlViewModel(id: message.messageId, label: title, value: index)
+        let direction = message.data.direction
+        let buttonChatModel = ChatMessageModel(model: buttonModel, bubbleLocation: BubbleLocation(direction: direction))
+        return buttonChatModel
     }
 }
