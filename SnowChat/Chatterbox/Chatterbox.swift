@@ -568,6 +568,10 @@ class Chatterbox {
         return message != nil
     }
     
+    func conversation(forId conversationId: String) -> Conversation? {
+        return chatStore.conversation(forId: conversationId)
+    }
+    
     // MARK: - Cleanup
     
     private func clearMessageHandlers() {
@@ -746,7 +750,7 @@ extension Chatterbox {
                     var conversation = conversation
                     
                     let conversationId = conversation.conversationId
-                    let isInProgress = conversation.state == .inProgress && (conversation.conversationId == lastConversation?.conversationId)
+                    let isInProgress = conversation.conversationId == lastConversation?.conversationId && conversation.state == .inProgress
                     conversation.state = isInProgress ? .inProgress : .completed
                     
                     self.logger.logDebug("--> Conversation \(conversationId) refreshed: \(conversation)")
