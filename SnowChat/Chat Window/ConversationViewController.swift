@@ -181,10 +181,12 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 case .update(let index, let oldModel, let model):
-                    guard let controlModel = model.controlModel,
-                          let oldModel = oldModel.controlModel else { fatalError("Only control-types allowed in didChangeModel udpates!") }
+                    guard model.controlModel != nil,
+                          oldModel.controlModel != nil else { fatalError("Only control-types allowed in didChangeModel udpates!") }
                     
-                    if controlModel.type == .button || oldModel.type == .button || controlModel.type == .dateTime || oldModel.type == .dateTime {
+                    // If type of the chat message model changed or its location - we will need to reload cell
+                    // For example if model that displays bubble
+                    if model.type != oldModel.type || model.auxiliaryMessageModel != nil {
                         self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                     } else {
                         updateModel(model, atIndex: index)

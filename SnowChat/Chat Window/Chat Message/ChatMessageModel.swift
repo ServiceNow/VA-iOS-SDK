@@ -20,11 +20,6 @@ enum BubbleLocation {
     }
 }
 
-enum MessageLocation {
-    case bottom
-    case `default`
-}
-
 enum ChatMessageType {
     case control
     case topicDivider
@@ -35,14 +30,12 @@ class ChatMessageModel {
     var avatarURL: URL?
     let controlModel: ControlViewModel?
     var auxiliaryMessageModel: ChatMessageModel?
-    var location: MessageLocation = .default
     var bubbleLocation: BubbleLocation?
     let requiresInput: Bool
     
-    init(model: ControlViewModel, location: MessageLocation = .default, bubbleLocation: BubbleLocation, requiresInput: Bool = false) {
+    init(model: ControlViewModel, bubbleLocation: BubbleLocation, requiresInput: Bool = false) {
         self.type = .control
         self.controlModel = model
-        self.location = location
         self.bubbleLocation = bubbleLocation
         self.requiresInput = requiresInput
     }
