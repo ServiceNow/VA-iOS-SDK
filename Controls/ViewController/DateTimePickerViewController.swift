@@ -13,4 +13,12 @@ class DateTimePickerViewController: UIViewController {
     @IBOutlet private weak var datePicker: UIDatePicker!
     @IBOutlet private weak var doneButton: UIButton!
     @IBOutlet private weak var titleLabel: UILabel!
+    
+    var model: DateTimePickerControlViewModel?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        datePicker.backgroundColor = UIColor.white
+    }
 }

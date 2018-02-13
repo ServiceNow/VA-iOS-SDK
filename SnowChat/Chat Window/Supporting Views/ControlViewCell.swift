@@ -1,5 +1,5 @@
 //
-//  ConversationMultiPartViewCell.swift
+//  ControlViewCell.swift
 //  SnowChat
 //
 //  Created by Michael Borowiec on 1/31/18.
@@ -8,13 +8,13 @@
 
 import UIKit
 
-class ButtonControlViewCell: UITableViewCell, ControlPresentable {
+class ControlViewCell: UITableViewCell, ControlPresentable {
     
-    static let cellIdentifier = "ButtonControlViewCell"
+    static let cellIdentifier = "ControlViewCell"
     
     private(set) var control: ControlProtocol?
     
-    func configure(with model: ButtonControlViewModel) {
+    func configure(with model: ControlViewModel) {
         let control = ControlsUtil.controlForViewModel(model)
         addUIControl(control, at: .left)
     }
@@ -36,6 +36,5 @@ class ButtonControlViewCell: UITableViewCell, ControlPresentable {
                                      controlView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
                                      controlView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)])
         self.control = control
-        layoutIfNeeded()
     }
 }

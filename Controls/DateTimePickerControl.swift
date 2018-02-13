@@ -30,6 +30,7 @@ class DateTimePickerControl: ControlProtocol {
         
         let bundle = Bundle(for: DateTimePickerViewController.self)
         let dateTimeViewController = DateTimePickerViewController(nibName: "DateTimePickerViewController", bundle: bundle)
+        dateTimeViewController.model = dateTimeViewModel
         self.viewController = dateTimeViewController
     }
 }

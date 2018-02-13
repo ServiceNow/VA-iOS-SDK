@@ -110,7 +110,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.estimatedRowHeight = 200
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
-        tableView.register(ButtonControlViewCell.self, forCellReuseIdentifier: ButtonControlViewCell.cellIdentifier)
+        tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
         tableView.register(StartTopicDividerCell.self, forCellReuseIdentifier: StartTopicDividerCell.cellIdentifier)
     }
 
@@ -166,6 +166,10 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         })
     }
     
+    func controller(_ dataController: ChatDataController, didChangeAuxiliaryModel change: ModelChangeType) {
+        fatalError("Implement that!")
+    }
+    
     func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType]) {
         manageInputControl()
         
@@ -180,7 +184,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                     guard let controlModel = model.controlModel,
                           let oldModel = oldModel.controlModel else { fatalError("Only control-types allowed in didChangeModel udpates!") }
                     
-                    if controlModel.type == .button || oldModel.type == .button {
+                    if controlModel.type == .button || oldModel.type == .button || controlModel.type == .dateTime || oldModel.type == .dateTime {
                         self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                     } else {
                         updateModel(model, atIndex: index)
@@ -373,11 +377,11 @@ extension ConversationViewController {
             
         case .control:
             guard let controlModel = chatMessageModel.controlModel else { return UITableViewCell() }
-            if controlModel.type == .button {
-                let multiPartCell = tableView.dequeueReusableCell(withIdentifier: ButtonControlViewCell.cellIdentifier, for: indexPath) as! ButtonControlViewCell
-                multiPartCell.configure(with: chatMessageModel.controlModel as! ButtonControlViewModel)
-                multiPartCell.control?.delegate = self
-                cell = multiPartCell
+            if controlModel.type == .button || controlModel.type == .dateTime {
+                let controlCell = tableView.dequeueReusableCell(withIdentifier: ControlViewCell.cellIdentifier, for: indexPath) as! ControlViewCell
+                controlCell.configure(with: controlModel)
+                controlCell.control?.delegate = self
+                cell = controlCell
             } else {
                 let conversationCell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
                 configureConversationCell(conversationCell, messageModel: chatMessageModel, at: indexPath)

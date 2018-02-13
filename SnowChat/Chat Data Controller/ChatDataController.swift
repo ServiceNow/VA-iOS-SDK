@@ -33,6 +33,7 @@ class ChatDataController {
     
     private(set) var conversationId: String?
     private let chatterbox: Chatterbox
+    private var auxiliaryData: ChatMessageModel?
     private var controlData = [ChatMessageModel]()
     private let typingIndicator = TypingIndicatorViewModel()
     
@@ -164,6 +165,12 @@ class ChatDataController {
             addChange(.insert(index: 0, model: data))
             applyChanges()
         }
+    }
+    
+    fileprivate func presentAuxiliaryData(forMessage message: ControlData) {
+        guard let auxiliaryModel = ChatMessageModel.auxiliaryModel(withMessage: message) else { return }
+        auxiliaryData = auxiliaryModel
+        changeListener?.controller(self, didChangeAuxiliaryModel: .insert(index: 0, model: auxiliaryModel))
     }
     
     fileprivate func pushTypingIndicator() {

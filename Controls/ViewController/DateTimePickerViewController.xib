@@ -14,7 +14,7 @@
             <connections>
                 <outlet property="datePicker" destination="Pm4-xA-d9C" id="pBa-nQ-s8I"/>
                 <outlet property="doneButton" destination="iZD-Pa-XOK" id="haP-cb-uzu"/>
-                <outlet property="titleLabel" destination="kuR-E2-3py" id="Ke4-09-2oh"/>
+                <outlet property="view" destination="lUf-9k-pli" id="RgH-Lr-CSZ"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -23,17 +23,12 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="Pm4-xA-d9C">
-                    <rect key="frame" x="0.0" y="46" width="438" height="321"/>
+                    <rect key="frame" x="0.0" y="5" width="438" height="362"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <date key="date" timeIntervalSinceReferenceDate="540145203.67385697">
                         <!--2018-02-12 16:20:03 +0000-->
                     </date>
                 </datePicker>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kuR-E2-3py">
-                    <rect key="frame" x="10" y="5" width="418" height="21"/>
-                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
-                    <nil key="textColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
                 <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iZD-Pa-XOK">
                     <rect key="frame" x="196" y="377" width="46" height="30"/>
                     <state key="normal" title="Button"/>
@@ -43,13 +38,10 @@
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="iZD-Pa-XOK" secondAttribute="bottom" constant="5" id="05s-Cg-mtm"/>
                 <constraint firstItem="3kw-JA-APD" firstAttribute="trailing" secondItem="Pm4-xA-d9C" secondAttribute="trailing" id="6aj-gS-p9R"/>
-                <constraint firstItem="kuR-E2-3py" firstAttribute="leading" secondItem="3kw-JA-APD" secondAttribute="leading" constant="10" id="GRo-bg-7P0"/>
                 <constraint firstItem="Pm4-xA-d9C" firstAttribute="leading" secondItem="3kw-JA-APD" secondAttribute="leading" id="KDZ-6m-74E"/>
-                <constraint firstItem="3kw-JA-APD" firstAttribute="trailing" secondItem="kuR-E2-3py" secondAttribute="trailing" constant="10" id="MqV-vB-iBF"/>
-                <constraint firstItem="kuR-E2-3py" firstAttribute="top" secondItem="lUf-9k-pli" secondAttribute="top" constant="5" id="Ypy-e0-aom"/>
+                <constraint firstItem="Pm4-xA-d9C" firstAttribute="top" secondItem="lUf-9k-pli" secondAttribute="top" constant="5" id="PVI-Qr-hJy"/>
                 <constraint firstItem="iZD-Pa-XOK" firstAttribute="top" secondItem="Pm4-xA-d9C" secondAttribute="bottom" constant="10" id="pZj-BG-F8O"/>
                 <constraint firstItem="iZD-Pa-XOK" firstAttribute="centerX" secondItem="lUf-9k-pli" secondAttribute="centerX" id="s2B-Xe-gHR"/>
-                <constraint firstItem="Pm4-xA-d9C" firstAttribute="top" secondItem="kuR-E2-3py" secondAttribute="bottom" constant="20" id="z9y-aA-PkX"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <viewLayoutGuide key="safeArea" id="3kw-JA-APD"/>
