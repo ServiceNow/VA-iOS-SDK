@@ -401,11 +401,9 @@ private extension SNOWAMBClient {
                 
                 if interval > 0 {
                     log("AMB Client: Delaying connection by: \(interval)")
-                    DispatchQueue.main.asyncAfter(deadline: .now() + interval) {
-                        self.sendBayeuxConnectMessage()
-                    }
+                    startConnectRequest(after: interval)
                 } else {
-                    sendBayeuxConnectMessage()
+                    startConnectRequest()
                 }
             }
         } else {
@@ -414,34 +412,45 @@ private extension SNOWAMBClient {
     }
     
     func parseDisconnectMessage(_ ambMessage : SNOWAMBMessage) {
-        cancelAllDataTasks()
-        subscribedChannels.removeAll()
+        if (ambMessage.successful) {
+            cancelAllDataTasks()
+            subscribedChannels.removeAll()
+        } else {
+            delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.disconnectFailed, "AMB Disconnect was unsuccessful"))
+        }
     }
     
     func parseSubscribeMessage(_ ambMessage : SNOWAMBMessage) {
-        guard let channel = ambMessage.subscription else {
-            return
-        }
-        subscribedChannels.insert(channel)
-        if let subscriptions = subscriptionsByChannel[channel] {
-            var updatedSubscriptions = [SNOWAMBSubscriptionWeakWrapper]()
-            subscriptions.forEach({ (subscriptionWrapper) in
-                if let subscription = subscriptionWrapper.subscription {
-                    subscription.subscribed = true
-                    let updatedWrapper = SNOWAMBSubscriptionWeakWrapper(subscription)
-                    updatedSubscriptions.append(updatedWrapper)
-                }
-            })
-            subscriptionsByChannel[channel] = updatedSubscriptions
+        if ambMessage.successful {
+            guard let channel = ambMessage.subscription else {
+                return
+            }
+            subscribedChannels.insert(channel)
+            if let subscriptions = subscriptionsByChannel[channel] {
+                var updatedSubscriptions = [SNOWAMBSubscriptionWeakWrapper]()
+                subscriptions.forEach({ (subscriptionWrapper) in
+                    if let subscription = subscriptionWrapper.subscription {
+                        subscription.subscribed = true
+                        let updatedWrapper = SNOWAMBSubscriptionWeakWrapper(subscription)
+                        updatedSubscriptions.append(updatedWrapper)
+                    }
+                })
+                subscriptionsByChannel[channel] = updatedSubscriptions
+            }
+        } else {
+            delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.disconnectFailed, "AMB Subscribe was unsuccessful"))
         }
     }
     
     func parseUnsubscribeMessage(_ ambMessage : SNOWAMBMessage) {
-        guard let channel = ambMessage.channel else {
-            return
+        if ambMessage.successful {
+            guard let channel = ambMessage.channel else {
+                return
+            }
+            subscribedChannels.remove(channel)
+        } else {
+            delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.disconnectFailed, "AMB Unsubscribe was unsuccessful"))
         }
-        
-        subscribedChannels.remove(channel)
     }
 
     // MARK: Bayeux messages
