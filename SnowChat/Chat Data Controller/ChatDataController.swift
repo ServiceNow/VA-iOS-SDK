@@ -212,7 +212,7 @@ class ChatDataController {
                 updatePickerData(data, lastPendingMessage)
             case .multiSelect:
                 updateMultiSelectData(data, lastPendingMessage)
-            case .dateTime:
+            case .dateTime, .date, .time:
                 updateDateTimeData(data, lastPendingMessage)
             case .multiPart:
                 updateMultiPartData(data, lastPendingMessage)
@@ -423,7 +423,7 @@ extension ChatDataController: ChatDataListener {
             guard messageExchange.message is MultiSelectControlMessage,
                 messageExchange.response is MultiSelectControlMessage else { fatalError("Could not view message as MultiSelectControlMessage in ChatDataListener") }
             self.didCompleteMultiSelectExchange(messageExchange, forChat: chatId)
-        case .dateTime:
+        case .dateTime, .date, .time:
             guard messageExchange.message is DateTimePickerControlMessage,
                 messageExchange.response is DateTimePickerControlMessage else { fatalError("Could not view message as DateTimePickerControlMessage in ChatDataListener") }
             self.didCompleteDateTimeExchange(messageExchange, forChat: chatId)
@@ -561,7 +561,7 @@ extension ChatDataController: ChatDataListener {
             if let viewModels = controlsForMultiSelect(from: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
-        case .dateTime:
+        case .dateTime, .date, .time:
             if let viewModels = controlsForDateTimePicker(from: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }

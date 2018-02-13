@@ -77,7 +77,7 @@ extension ChatMessageModel {
         case .multiPart:
             guard let controlMessage = message as? MultiPartControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage)
-        case .dateTime:
+        case .dateTime, .date, .time:
             guard let controlMessage = message as? DateTimePickerControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage)
         case .outputImage:

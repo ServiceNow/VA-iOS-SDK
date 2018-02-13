@@ -102,6 +102,8 @@ enum ChatterboxControlType: String, Codable {
     case boolean = "Boolean"
     case input = "InputText"
     case picker = "Picker"
+    case time = "Time"
+    case date = "Date"
     case dateTime = "DateTime"
     case multiSelect = "Multiselect"
     case text = "OutputText"

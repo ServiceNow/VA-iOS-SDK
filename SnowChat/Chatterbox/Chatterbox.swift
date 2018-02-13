@@ -506,7 +506,7 @@ class Chatterbox {
             updateMultiSelectControl(control)
         case .multiPart:
             updateMultiPartControl(control)
-        case .dateTime:
+        case .dateTime, .date, .time:
             updateDateTimeControl(control)
         default:
             logger.logError("Unrecognized control type - skipping: \(type)")

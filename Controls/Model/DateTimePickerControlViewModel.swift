@@ -14,7 +14,9 @@ class DateTimePickerControlViewModel: ControlViewModel, ValueRepresentable {
     
     let id: String
     
-    let type: ControlType = .dateTime
+    var type: ControlType {
+        return .dateTime
+    }
     
     var value: Date?
     
@@ -33,5 +35,17 @@ class DateTimePickerControlViewModel: ControlViewModel, ValueRepresentable {
         self.value = resultValue
         self.id = id
         self.isRequired = required
+    }
+}
+
+class DatePickerControlViewModel: DateTimePickerControlViewModel {
+    override var type: ControlType {
+        return .date
+    }
+}
+
+class TimePickerControlViewModel: DateTimePickerControlViewModel {
+    override var type: ControlType {
+        return .time
     }
 }
