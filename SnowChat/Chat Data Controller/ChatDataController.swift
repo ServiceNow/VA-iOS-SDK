@@ -479,20 +479,15 @@ extension ChatDataController: ChatDataListener {
     }
     
     private func didCompleteDateTimeExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        // replace the picker with the picker's label, and add the response
         
+        // Behavior for this control is a little bit different since it is "auxiliary model".
+        // Which means we only have to replace last shown model (question is already displayed)
         if let response = messageExchange.response as? DateTimePickerControlMessage,
-            let message = messageExchange.message as? DateTimePickerControlMessage,
-            let label = message.data.richControl?.uiMetadata?.label,
             let value: Date = response.data.richControl?.value ?? Date() {
             
-            let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
-            
-            let dateFormatter = DateFormatter()
+            let dateFormatter = DateFormatter.chatDateFormatter()
             let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: dateFormatter.string(from: value))
-            
-            replaceLastControl(with: ChatMessageModel(model: questionModel, bubbleLocation: .left))
-            presentControlData(ChatMessageModel(model: answerModel, bubbleLocation: .right))
+            replaceLastControl(with: ChatMessageModel(model: answerModel, bubbleLocation: .right))
         }
     }
     

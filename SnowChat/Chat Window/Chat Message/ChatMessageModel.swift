@@ -153,7 +153,7 @@ extension ChatMessageModel {
         
         let direction = message.direction
         
-        let textViewModel = TextControlViewModel(id: message.messageId, value: title)
+        let textViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: title)
         let snowViewModel = ChatMessageModel(model: textViewModel, bubbleLocation: BubbleLocation(direction: direction))
         
         snowViewModel.auxiliaryMessageModel = ChatMessageModel.auxiliaryModel(withMessage: message)
@@ -259,7 +259,7 @@ extension ChatMessageModel {
         
         let direction = message.direction
         
-        let dateTimeViewModel = DateTimePickerControlViewModel(id: ChatUtil.uuidString(), label: title, required: required)
+        let dateTimeViewModel = DateTimePickerControlViewModel(id: message.messageId, label: title, required: required)
         let snowViewModel = ChatMessageModel(model: dateTimeViewModel, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }

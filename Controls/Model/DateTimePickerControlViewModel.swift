@@ -19,11 +19,13 @@ class DateTimePickerControlViewModel: ControlViewModel, ValueRepresentable {
     var value: Date?
     
     var resultValue: Date? {
-        return nil
+        return value
     }
     
     var displayValue: String? {
-        return nil
+        guard let value = value else { return nil }
+        let dateFormatter = DateFormatter.chatDateFormatter()
+        return dateFormatter.string(from: value)
     }
     
     init(id: String, label: String? = nil, required: Bool, resultValue: Date? = nil) {

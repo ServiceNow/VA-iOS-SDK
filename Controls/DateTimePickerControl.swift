@@ -32,5 +32,12 @@ class DateTimePickerControl: ControlProtocol {
         let dateTimeViewController = DateTimePickerViewController(nibName: "DateTimePickerViewController", bundle: bundle)
         dateTimeViewController.model = dateTimeViewModel
         self.viewController = dateTimeViewController
+        dateTimeViewController.loadViewIfNeeded()
+        
+        dateTimeViewController.doneButton.addTarget(self, action: #selector(selectedDoneButton(_:)), for: .touchUpInside)
+    }
+    
+    @objc func selectedDoneButton(_ sender: UIButton) {
+        delegate?.control(self, didFinishWithModel: model)
     }
 }

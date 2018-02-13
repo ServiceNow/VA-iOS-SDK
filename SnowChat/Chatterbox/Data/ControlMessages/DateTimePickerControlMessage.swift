@@ -33,7 +33,7 @@ struct DateTimePickerControlMessage: ControlData {
         return data.sendTime
     }
     
-    let type: String = "systemTextMessage"
+    let type: String = "consumerTextMessage"
     var data: RichControlData<ControlWrapper<Date?, UIMetadata>>
     
     // define the properties that we decode / encode
