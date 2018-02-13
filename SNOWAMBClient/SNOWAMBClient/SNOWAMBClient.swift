@@ -109,7 +109,7 @@ public class SNOWAMBClient {
     private let retryInterval = 1.0
     private var retryAttempt = 0
     private var reopenChannelsAfterSuccessfulConnectMessages = true
-    private var dataTasks = [Int : URLSessionDataTask]()
+    private var dataTasks = [URLSessionDataTask]()
 //    private var connectDataTask : URLSessionDataTask?
     
     private var scheduledConnectTask: DispatchWorkItem?
@@ -144,6 +144,13 @@ public class SNOWAMBClient {
     
     public init(httpClient: SNOWHTTPSessionClientProtocol) {
         self.httpClient = httpClient
+    }
+
+    // TODO: Use Logger instead?
+    func log(_ logString: String) {
+        #if DEBUG
+            NSLog(logString)
+        #endif
     }
     
     // MARK: public methods
@@ -223,12 +230,12 @@ private extension SNOWAMBClient {
     func startConnectRequest(after interval: TimeInterval = 0.0) {
         
         guard !paused else {
-            NSLog("Client is paused. Connect request is skipped")
+            log("Client is paused. Connect request is skipped")
             return
         }
         
         guard self.clientStatus != .disconnected else {
-            NSLog("Client is not connected. Connect request is skipped")
+            log("Client is not connected. Connect request is skipped")
             return
         }
         
@@ -263,8 +270,12 @@ private extension SNOWAMBClient {
     func cancelAllDataTasks() {
         self.scheduledConnectTask?.cancel()
         self.scheduledConnectTask = nil
-        dataTasks.forEach({(id, task) in task.cancel()
-        })
+        dataTasks.forEach({ $0.cancel() })
+        cleanupCompleteDataTasks()
+    }
+    
+    func cleanupCompleteDataTasks() {
+        dataTasks = dataTasks.filter({ $0.state != URLSessionTask.State.completed })
     }
     
     // MARK: AMB/Bayeux message handlers
@@ -389,7 +400,7 @@ private extension SNOWAMBClient {
                 }
                 
                 if interval > 0 {
-                    NSLog("AMB Client: Delaying connection by: \(interval)")
+                    log("AMB Client: Delaying connection by: \(interval)")
                     DispatchQueue.main.asyncAfter(deadline: .now() + interval) {
                         self.sendBayeuxConnectMessage()
                     }
@@ -548,11 +559,6 @@ private extension SNOWAMBClient {
             return path
         }
         
-        func cleanupCompleteDataTasks() {
-            dataTasks = dataTasks.filter({ $1.state != URLSessionTask.State.completed
-            })
-        }
-        
         guard let channel = message["channel"] as? String else {
             delegate?.didFail(client: self, withError:SNOWAMBError(SNOWAMBErrorType.httpRequestFailed, "AMB Message is missing a channel name"))
             return nil
@@ -566,7 +572,7 @@ private extension SNOWAMBClient {
         let fullPath = String(format:"/amb/%@", path)
         
         // TODO: Remove it. For debugging purposes!
-        NSLog("AMB HTTP Post: \(myMessage)")
+        log("AMB HTTP Post: \(myMessage)")
         
         let task = httpClient.post(fullPath, jsonParameters: myMessage as Any, timeout: timeout,
             success: { (responseObject: Any?) -> Void in
@@ -576,8 +582,8 @@ private extension SNOWAMBClient {
                 self.handleHTTPResponseError(message: myMessage, error: error as! Error)
         })
 
-        if let taskIdentifier = task?.taskIdentifier {
-            dataTasks[taskIdentifier] = task
+        if let task = task {
+            dataTasks.append(task)
         }
         cleanupCompleteDataTasks()
         
