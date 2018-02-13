@@ -143,9 +143,11 @@ class ChatDataController {
         controlData = [data] + controlData
     }
     
-    fileprivate func addHistoryToCollection(_ viewModels: (message: ControlViewModel, response: ControlViewModel)) {
+    fileprivate func addHistoryToCollection(_ viewModels: (message: ControlViewModel, response: ControlViewModel?)) {
         // add response, then message, to the tail-end of the control data
-        controlData.append(ChatMessageModel(model: viewModels.response, bubbleLocation: BubbleLocation.right))
+        if let response = viewModels.response {
+            controlData.append(ChatMessageModel(model: response, bubbleLocation: BubbleLocation.right))
+        }
         controlData.append(ChatMessageModel(model: viewModels.message, bubbleLocation: BubbleLocation.left))
     }
     
@@ -401,35 +403,25 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        guard messageExchange.isComplete else {
-            logger.logError("MessageExchange is not complete in didCompleteMessageExchange: skipping!")
-            return
-        }
-        
         switch messageExchange.message.controlType {
         case .boolean:
-            guard messageExchange.message is BooleanControlMessage,
-                messageExchange.response is BooleanControlMessage else { fatalError("Could not view message as BooleanControlMessage in ChatDataListener") }
+            guard messageExchange.message is BooleanControlMessage else { fatalError("Could not view message as BooleanControlMessage in ChatDataListener") }
             self.didCompleteBooleanExchange(messageExchange, forChat: chatId)
         case .input:
-            guard messageExchange.message is InputControlMessage,
-                messageExchange.response is InputControlMessage else { fatalError("Could not view message as InputControlMessage in ChatDataListener") }
+            guard messageExchange.message is InputControlMessage else { fatalError("Could not view message as InputControlMessage in ChatDataListener") }
             self.didCompleteInputExchange(messageExchange, forChat: chatId)
         case .picker:
-            guard messageExchange.message is PickerControlMessage,
-                messageExchange.response is PickerControlMessage else { fatalError("Could not view message as PickerControlMessage in ChatDataListener") }
+            guard messageExchange.message is PickerControlMessage else { fatalError("Could not view message as PickerControlMessage in ChatDataListener") }
             self.didCompletePickerExchange(messageExchange, forChat: chatId)
         case .multiSelect:
-            guard messageExchange.message is MultiSelectControlMessage,
-                messageExchange.response is MultiSelectControlMessage else { fatalError("Could not view message as MultiSelectControlMessage in ChatDataListener") }
+            guard messageExchange.message is MultiSelectControlMessage else { fatalError("Could not view message as MultiSelectControlMessage in ChatDataListener") }
             self.didCompleteMultiSelectExchange(messageExchange, forChat: chatId)
         case .dateTime, .date, .time:
             guard messageExchange.message is DateTimePickerControlMessage,
                 messageExchange.response is DateTimePickerControlMessage else { fatalError("Could not view message as DateTimePickerControlMessage in ChatDataListener") }
             self.didCompleteDateTimeExchange(messageExchange, forChat: chatId)
         case .multiPart:
-            guard messageExchange.message is MultiPartControlMessage,
-                messageExchange.response is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
+            guard messageExchange.message is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
             self.didCompleteMultiPartExchange(messageExchange, forChat: chatId)
         default:
             logger.logError("Unhandled control type in ChatDataListener didCompleteMessageExchange: \(messageExchange.message.controlType)")
@@ -442,39 +434,34 @@ extension ChatDataController: ChatDataListener {
     private func didCompleteBooleanExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForBoolean(from: messageExchange) {
             replaceLastControl(with: ChatMessageModel(model: viewModels.message, bubbleLocation: .left))
-            presentControlData(ChatMessageModel(model: viewModels.response, bubbleLocation: .right))
+            if let response = viewModels.response {
+                presentControlData(ChatMessageModel(model: response, bubbleLocation: .right))
+            }
         }
    }
     
     private func didCompleteInputExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        if let viewModels = controlsForInput(from: messageExchange) {
-            presentControlData(ChatMessageModel(model: viewModels.response, bubbleLocation: .right))
+        if let viewModels = controlsForInput(from: messageExchange), let response = viewModels.response {
+            presentControlData(ChatMessageModel(model: response, bubbleLocation: .right))
         }
     }
     
     private func didCompletePickerExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForPicker(from: messageExchange) {
             replaceLastControl(with: ChatMessageModel(model: viewModels.message, bubbleLocation: .left))
-            presentControlData(ChatMessageModel(model: viewModels.response, bubbleLocation: .right))
+            if let response = viewModels.response {
+                presentControlData(ChatMessageModel(model: response, bubbleLocation: .right))
+            }
         }
     }
     
     private func didCompleteMultiSelectExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         // replace the picker with the picker's label, and add the response
-        
-        if let response = messageExchange.response as? MultiSelectControlMessage,
-            let message = messageExchange.message as? MultiSelectControlMessage,
-            let label = message.data.richControl?.uiMetadata?.label,
-            let values: [String] = response.data.richControl?.value ?? [""] {
-            
-            let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
-            
-            let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
-            let displayValue = options?.joinedWithCommaSeparator()
-            let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue ?? "")
-            
-            replaceLastControl(with: ChatMessageModel(model: questionModel, bubbleLocation: .left))
-            presentControlData(ChatMessageModel(model: answerModel, bubbleLocation: .right))
+        if let viewModels = controlsForMultiSelect(from: messageExchange) {
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, bubbleLocation: .left))
+            if let response = viewModels.response {
+                presentControlData(ChatMessageModel(model: response, bubbleLocation: .right))
+            }
         }
     }
     
@@ -504,7 +491,13 @@ extension ChatDataController: ChatDataListener {
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
         logger.logInfo("Conversation \(conversationId) did load")
-        
+
+        if let conversation = chatterbox.conversation(forId: conversationId) {
+            if conversation.state == .inProgress {
+                // do not push the start-topic divider if this is the active conversation
+                return
+            }
+        }
         let topicId = conversationId
         pushTopicStartDivider(TopicInfo(topicId: topicId, conversationId: conversationId))
     }
@@ -602,62 +595,71 @@ extension ChatDataController: ChatDataListener {
 
     // MARK: - Model to ViewModel methods
     
-    func controlsForBoolean(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
-        guard messageExchange.isComplete,
-            let response = messageExchange.response as? BooleanControlMessage,
-            let message = messageExchange.message as? BooleanControlMessage else {
-            
+    func controlsForBoolean(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel?)? {
+        guard let message = messageExchange.message as? BooleanControlMessage else {
                 logger.logError("MessageExchange is not valid in booleanControlFromMessageExchange method - skipping!")
                 return nil
         }
         // a completed boolean exchange results in two text messages, one with the label and once with the value
+        // an incomplete boolean results is just the question as a text message
         
         let label = message.data.richControl?.uiMetadata?.label ?? "???"
-        let value = response.data.richControl?.value ?? false
-        let valueString = (value ?? false) ? "Yes" : "No"
-        
         let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
-        let answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: valueString)
+        
+        let answerViewModel: TextControlViewModel?
+        if let response = messageExchange.response as? BooleanControlMessage {
+            let value = response.data.richControl?.value ?? false
+            let valueString = (value ?? false) ? "Yes" : "No"
+            answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: valueString)
+        } else {
+            answerViewModel = nil
+        }
         
         return (message: questionViewModel, response: answerViewModel)
     }
     
-    func controlsForPicker(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
-        guard messageExchange.isComplete,
-            let response = messageExchange.response as? PickerControlMessage,
-            let message = messageExchange.message as? PickerControlMessage,
-            let label = message.data.richControl?.uiMetadata?.label,
-            let value: String = response.data.richControl?.value ?? "" else {
-            
+    func controlsForPicker(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel?)? {
+        guard let message = messageExchange.message as? PickerControlMessage,
+            let label = message.data.richControl?.uiMetadata?.label else {
                 logger.logError("MessageExchange is not valid in pickerControlsFromMessageExchange method - skipping!")
                 return nil
         }
+        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        
+        let answerViewModel: TextControlViewModel?
+        
         // a completed picker exchange results in two text messages: the picker's label, and the value of the picker response
         
-        let selectedOption = response.data.richControl?.uiMetadata?.options.first(where: { option -> Bool in
-            option.value == value
-        })
-        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
-        let answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: selectedOption?.label ?? value)
+        if let response = messageExchange.response as? PickerControlMessage,
+           let value: String = response.data.richControl?.value ?? "" {
+            let selectedOption = response.data.richControl?.uiMetadata?.options.first(where: { option -> Bool in
+                option.value == value
+            })
+            answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: selectedOption?.label ?? value)
+        } else {
+            answerViewModel = nil
+        }
         
         return (message: questionViewModel, response: answerViewModel)
     }
     
-    func controlsForMultiSelect(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
-        guard messageExchange.isComplete,
-            let response = messageExchange.response as? MultiSelectControlMessage,
-            let message = messageExchange.message as? MultiSelectControlMessage,
-            let label = message.data.richControl?.uiMetadata?.label,
-            let values: [String] = response.data.richControl?.value ?? [""] else {
+    func controlsForMultiSelect(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel?)? {
+        guard let message = messageExchange.message as? MultiSelectControlMessage,
+            let label = message.data.richControl?.uiMetadata?.label else {
                 logger.logError("MessageExchange is not valid in multiSelectControlsFromMessageExchange method - skipping!")
                 return nil
         }
-
         let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
         
-        let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
-        let displayValue = options?.joinedWithCommaSeparator()
-        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue ?? "")
+        let answerModel: TextControlViewModel?
+        if let response = messageExchange.response as? MultiSelectControlMessage,
+           let values: [String] = response.data.richControl?.value ?? [""] {
+            let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
+            let displayValue = options?.joinedWithCommaSeparator()
+            answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue ?? "")
+        } else {
+            answerModel = nil
+        }
         
         return (message: questionModel, response: answerModel)
     }
@@ -681,7 +683,7 @@ extension ChatDataController: ChatDataListener {
         return (message: questionModel, response: answerModel)
     }
 
-    func controlsForInput(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
+    func controlsForInput(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel?)? {
         guard messageExchange.isComplete,
             let response = messageExchange.response as? InputControlMessage,
             let message = messageExchange.message as? InputControlMessage,

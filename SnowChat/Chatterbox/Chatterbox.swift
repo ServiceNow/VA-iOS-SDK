@@ -577,6 +577,10 @@ class Chatterbox {
         return message != nil
     }
     
+    func conversation(forId conversationId: String) -> Conversation? {
+        return chatStore.conversation(forId: conversationId)
+    }
+    
     // MARK: - Cleanup
     
     private func clearMessageHandlers() {
@@ -752,7 +756,12 @@ extension Chatterbox {
                 let lastConversation = conversations.last
                 
                 conversations.forEach { conversation in
+                    var conversation = conversation
+                    
                     let conversationId = conversation.conversationId
+                    let isInProgress = conversation.conversationId == lastConversation?.conversationId && conversation.state == .inProgress
+                    conversation.state = isInProgress ? .inProgress : .completed
+                    
                     self.logger.logDebug("--> Conversation \(conversationId) refreshed: \(conversation)")
                     
                     self.chatDataListener?.chatterbox(self, willLoadConversation: conversationId, forChat: self.chatId)
@@ -789,19 +798,11 @@ extension Chatterbox {
         chatStore.storeConversation(conversation)
         
         conversation.messageExchanges().forEach { (exchange) in
-            notifyMessageExchange(exchange)
-        }
-    }
-
-    internal func notifyMessageExchange(_ exchange: MessageExchange) {
-        logger.logDebug("--> Notifying MessageExchange: message=\(exchange.message.controlType) | response=\(exchange.response?.controlType ?? .unknown)")
-        
-        let message = exchange.message
-        
-        notifyMessage(message)
-        
-        if let response = exchange.response {
-            notifyResponse(response, exchange: exchange)
+            if conversation.state == .inProgress && !exchange.isComplete {
+                notifyMessage(exchange.message)
+            } else {
+                notifyMessageExchange(exchange)
+            }
         }
     }
     
@@ -810,11 +811,13 @@ extension Chatterbox {
             logger.logError("No ChatDataListener in NotifyControlReceived")
             return
         }
-
+        
         chatDataListener.chatterbox(self, didReceiveControlMessage: message, forChat: chatId)
     }
     
-    internal func notifyResponse(_ response: ControlData, exchange: MessageExchange) {
+    internal func notifyMessageExchange(_ exchange: MessageExchange) {
+        logger.logDebug("--> Notifying MessageExchange: message=\(exchange.message.controlType) | response=\(exchange.response?.controlType ?? .unknown)")
+        
         guard let chatDataListener = chatDataListener else {
             logger.logError("No ChatDataListener in notifyResponseReceived")
             return

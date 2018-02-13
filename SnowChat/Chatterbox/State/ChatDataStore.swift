@@ -111,7 +111,7 @@ struct Conversation: Storable, Codable {
     }
     
     private let id: String
-    private(set) var state: ConversationState
+    internal var state: ConversationState
     private(set) var topicTypeName: String
     private var topicId: String
     internal var conversationId: String {
