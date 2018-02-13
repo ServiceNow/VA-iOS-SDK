@@ -411,8 +411,7 @@ extension ChatDataController: ChatDataListener {
             guard messageExchange.message is MultiSelectControlMessage else { fatalError("Could not view message as MultiSelectControlMessage in ChatDataListener") }
             self.didCompleteMultiSelectExchange(messageExchange, forChat: chatId)
         case .dateTime, .date, .time:
-            guard messageExchange.message is DateTimePickerControlMessage,
-                messageExchange.response is DateTimePickerControlMessage else { fatalError("Could not view message as DateTimePickerControlMessage in ChatDataListener") }
+            guard messageExchange.message is DateTimePickerControlMessage else { fatalError("Could not view message as DateTimePickerControlMessage in ChatDataListener") }
             self.didCompleteDateTimeExchange(messageExchange, forChat: chatId)
         case .multiPart:
             guard messageExchange.message is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }

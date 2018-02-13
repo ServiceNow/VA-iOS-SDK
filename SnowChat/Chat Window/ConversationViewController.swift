@@ -166,10 +166,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         })
     }
     
-    func controller(_ dataController: ChatDataController, didChangeAuxiliaryModel change: ModelChangeType) {
-        fatalError("Implement that!")
-    }
-    
     func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType]) {
         manageInputControl()
         
@@ -186,7 +182,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                     
                     // If type of the chat message model changed or its location - we will need to reload cell
                     // For example if model that displays bubble
-                    if model.type != oldModel.type || model.auxiliaryMessageModel != nil {
+                    if model.type != oldModel.type || model.isAuxiliary != oldModel.isAuxiliary {
                         self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                     } else {
                         updateModel(model, atIndex: index)

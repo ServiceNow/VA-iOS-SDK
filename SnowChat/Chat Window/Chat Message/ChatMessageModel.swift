@@ -29,9 +29,15 @@ class ChatMessageModel {
     let type: ChatMessageType
     var avatarURL: URL?
     let controlModel: ControlViewModel?
-    var auxiliaryMessageModel: ChatMessageModel?
+    var isAuxiliary: Bool = false
     var bubbleLocation: BubbleLocation?
     let requiresInput: Bool
+    
+    var auxiliaryMessageModel: ChatMessageModel? {
+        didSet {
+            auxiliaryMessageModel?.isAuxiliary = true
+        }
+    }
     
     init(model: ControlViewModel, bubbleLocation: BubbleLocation, requiresInput: Bool = false) {
         self.type = .control
