@@ -4,6 +4,10 @@ public typealias SNOWAMBMessageDictionary = [String : Any]
 public typealias SNOWAMBMessageDataExtention = [String : Any]
 public typealias SNOWAMBMessageHandler = (SNOWAMBResult<SNOWAMBMessage>, SNOWAMBSubscription) -> Void
 
+//
+// SNOWAMBResult
+//
+
 public enum SNOWAMBResult<Value> {
     case success(Value)
     case failure(SNOWAMBError)
@@ -19,6 +23,25 @@ public enum SNOWAMBResult<Value> {
 }
 
 //
+// SNOWAMBGlideStatus
+//
+
+public struct SNOWAMBGlideStatus {
+    let ambActive: Bool
+    let sessionStatus: String?
+    
+    init(ambActive: Bool, sessionStatus: String?) {
+        self.ambActive = ambActive
+        self.sessionStatus = sessionStatus
+    }
+    
+    static public func != (lhs: SNOWAMBGlideStatus, rhs: SNOWAMBGlideStatus) -> Bool {
+        return lhs.ambActive != rhs.ambActive &&
+               lhs.sessionStatus != rhs.sessionStatus
+    }
+}
+
+//
 // SNOWAMBClientDelegate
 //
 
@@ -29,7 +52,8 @@ public protocol SNOWAMBClientDelegate: class {
     func didSubscribe(client: SNOWAMBClient, toChannel: String)
     func didUnsubscribe(client: SNOWAMBClient, fromchannel: String)
     func didReceive(client: SNOWAMBClient, message: SNOWAMBMessage, fromChannel channel: String)
-    func didChangeStatus(client: SNOWAMBClient, status: SNOWAMBClientStatus)
+    func didClientStatusChange(client: SNOWAMBClient, status: SNOWAMBClientStatus)
+    func didGlideStatusChange(client: SNOWAMBClient, status: SNOWAMBGlideStatus)
 }
 
 //
@@ -41,7 +65,7 @@ public enum SNOWAMBClientStatus {
     case handshake
     case connected
     case retrying
-    case maximumHandshakeRetriesReached
+    case maximumRetriesReached
 }
 
 enum AMBChannel {
@@ -101,30 +125,44 @@ public class SNOWAMBClient {
     
     public var clientId: String?
     
+    public var maximumRetryAttempts = 5
+    
     private var subscriptionsByChannel = [String : [SNOWAMBSubscriptionWeakWrapper]]()
     private var subscribedChannels = Set<String>()
-//    private var pendingSubscriptions = Set<SNOWAMBSubscriptionWeakWrapper>
+    private var queuedSubscriptionChannels = Set<String>()
     private var longPollingInterval : TimeInterval = 0.0
     private var longPollingTimeout : TimeInterval = 0.0
     private let retryInterval = 1.0
     private var retryAttempt = 0
     private var reopenChannelsAfterSuccessfulConnectMessages = true
     private var dataTasks = [URLSessionDataTask]()
-//    private var connectDataTask : URLSessionDataTask?
     
     private var scheduledConnectTask: DispatchWorkItem?
+    private weak var connectDataTask: URLSessionDataTask?
     private var messageId = 0
     
     public var clientStatus: SNOWAMBClientStatus = .disconnected {
         willSet(newClientStatus) {
             if newClientStatus != self.clientStatus {
-                delegate?.didChangeStatus(client: self, status: newClientStatus)
-                if newClientStatus == .retrying {
+                delegate?.didClientStatusChange(client: self, status: newClientStatus)
+                switch newClientStatus {
+                case .retrying, .handshake:
                     retryAttempt = 0
+                case .connected:
+                    subscribeQueuedChannels()
+                case .disconnected:
+                    cancelAllDataTasks()
+                case .maximumRetriesReached:
+                    delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.connectFailed, "Maximum connect retry attempts have been reached"))
                 }
             }
-            if newClientStatus == .disconnected {
-                cancelAllDataTasks()
+        }
+    }
+    
+    public var glideStatus: SNOWAMBGlideStatus = SNOWAMBGlideStatus(ambActive: false, sessionStatus: nil) {
+        willSet(newGlideStatus) {
+            if newGlideStatus != self.glideStatus {
+                delegate?.didGlideStatusChange(client: self, status: newGlideStatus)
             }
         }
     }
@@ -177,8 +215,11 @@ public class SNOWAMBClient {
         } else {
             subscriptionsByChannel[channel]?.append(newWrapper)
         }
-
-        sendBayeuxSubscribeMessage(channel: channel)
+        if self.clientStatus == .connected {
+            sendBayeuxSubscribeMessage(channel: channel)
+        } else {
+            queuedSubscriptionChannels.insert(channel)
+        }
         
         return subscription
     }
@@ -235,7 +276,7 @@ private extension SNOWAMBClient {
         }
         
         guard self.clientStatus != .disconnected else {
-            log("Client is not connected. Connect request is skipped")
+            log("Client is disconnected. Connect request is skipped. Handshake must be completed first")
             return
         }
         
@@ -271,16 +312,19 @@ private extension SNOWAMBClient {
         self.scheduledConnectTask?.cancel()
         self.scheduledConnectTask = nil
         dataTasks.forEach({ $0.cancel() })
-        cleanupCompleteDataTasks()
+        cleanupCompletedDataTasks()
     }
     
-    func cleanupCompleteDataTasks() {
+    func cleanupCompletedDataTasks() {
         dataTasks = dataTasks.filter({ $0.state != URLSessionTask.State.completed })
     }
     
     // MARK: AMB/Bayeux message handlers
     
     private func parseResponseObject(_ responseObject: Any?) {
+        // TODO: For debugging purposes (remove!)
+        log("<<<<<<<<<<<<  \(String(describing: responseObject))")
+        
         guard responseObject as? [SNOWAMBMessageDictionary] != nil else {
             delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.messageParserError, "AMB Messages structure is not Array"))
             return
@@ -357,23 +401,35 @@ private extension SNOWAMBClient {
         self.reopenChannelsAfterSuccessfulConnectMessages = true
         startConnectRequest()
     }
+
+    func subscribeQueuedChannels() {
+        queuedSubscriptionChannels.forEach({ sendBayeuxSubscribeMessage(channel: $0) })
+    }
+    
+    func reopenSubscriptions() {
+        //let oldSubscribedChannels = subscribedChannels.map { $0 }
+        let oldSubscribedChannels = subscribedChannels.union(queuedSubscriptionChannels)
+        subscribedChannels.removeAll()
+        queuedSubscriptionChannels.removeAll()
+        
+        oldSubscribedChannels.forEach({ (channel) in
+            if let subscriptions = subscriptionsByChannel[channel] {
+                subscriptions.forEach({ (subscriptionWrapper) in
+                    if let subscription = subscriptionWrapper.subscription {
+                        resubscribe(subscription: subscription)
+                    }
+                })
+            }
+        })
+    }
     
     func parseConnectMessage(_ ambMessage: SNOWAMBMessage) {
         
-        func reopenSubscriptions() {
-            //let oldSubscribedChannels = subscribedChannels.map { $0 }
-            let oldSubscribedChannels = subscribedChannels
-            subscribedChannels.removeAll()
-            
-            oldSubscribedChannels.forEach({ (channel) in
-                if let subscriptions = subscriptionsByChannel[channel] {
-                    subscriptions.forEach({ (subscriptionWrapper) in
-                        if let subscription = subscriptionWrapper.subscription {
-                            resubscribe(subscription: subscription)
-                        }
-                    })
-                }
-            })
+        func parseGlideSessionStatus(_ ext: [String : Any]?) {
+            if let ext = ext {
+                self.glideStatus = SNOWAMBGlideStatus(ambActive: ext["glide.amb.active"] as? Bool ?? false,
+                                                      sessionStatus: ext["glide.session.status"] as? String)
+            }
         }
         
         if  let advice = ambMessage.advice,
@@ -386,6 +442,10 @@ private extension SNOWAMBClient {
         }
         
         if ambMessage.successful {
+            scheduledConnectTask = nil
+    
+            parseGlideSessionStatus(ambMessage.ext)
+            
             if self.reopenChannelsAfterSuccessfulConnectMessages {
                 self.reopenChannelsAfterSuccessfulConnectMessages = false
                 reopenSubscriptions()
@@ -402,19 +462,30 @@ private extension SNOWAMBClient {
                 if interval > 0 {
                     log("AMB Client: Delaying connection by: \(interval)")
                     startConnectRequest(after: interval)
-                } else {
-                    startConnectRequest()
+                    return
                 }
             }
+            startConnectRequest()
         } else {
-            delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.connectFailed, "AMB Connect was unsuccessful"))
+            if self.clientStatus == .retrying {
+                retryAttempt += 1
+                if retryAttempt > maximumRetryAttempts {
+                    self.clientStatus = .maximumRetriesReached
+                } else {
+                    // connect will be scheduled in 10.0f.
+                    startConnectRequest()
+                }
+            } else {
+                delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.connectFailed, "AMB Connect was unsuccessful"))
+            }
         }
     }
     
     func parseDisconnectMessage(_ ambMessage : SNOWAMBMessage) {
-        if (ambMessage.successful) {
+        if ambMessage.successful {
             cancelAllDataTasks()
             subscribedChannels.removeAll()
+            subscriptionsByChannel.removeAll()
         } else {
             delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.disconnectFailed, "AMB Disconnect was unsuccessful"))
         }
@@ -467,7 +538,7 @@ private extension SNOWAMBClient {
         postBayeuxMessage(message)
     }
     
-    func sendBayeuxConnectMessage(reconnecting : Bool = false) {
+    func sendBayeuxConnectMessage() {
         guard let clientId = self.clientId else {
             delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.connectFailed, "Connect message can't be send because clientId is not received yet"))
             return
@@ -480,7 +551,7 @@ private extension SNOWAMBClient {
             ] as [String : Any]
         
         var timeout : TimeInterval = self.longPollingInterval
-        if reconnecting {
+        if self.clientStatus == .retrying {
             timeout = 10.0
         }
         
@@ -540,7 +611,7 @@ private extension SNOWAMBClient {
 //            "id" : messageId // ???
         ]  as [String : Any]
         
-        if ext != nil {
+        if let ext = ext, !ext.isEmpty {
             bayeuxMessage["ext"] = ext
         }
         
@@ -581,7 +652,7 @@ private extension SNOWAMBClient {
         let fullPath = String(format:"/amb/%@", path)
         
         // TODO: Remove it. For debugging purposes!
-        log("AMB HTTP Post: \(myMessage)")
+        log(">>>>>>>>>>>>>> AMB HTTP Post: \(myMessage)")
         
         let task = httpClient.post(fullPath, jsonParameters: myMessage as Any, timeout: timeout,
             success: { (responseObject: Any?) -> Void in
@@ -593,16 +664,28 @@ private extension SNOWAMBClient {
 
         if let task = task {
             dataTasks.append(task)
+            if channel == "\(AMBChannel.connect)" {
+                connectDataTask = task
+            }
         }
-        cleanupCompleteDataTasks()
+        cleanupCompletedDataTasks()
         
         return task
     }
     
     private func handleHTTPResponseError(message: SNOWAMBMessageDictionary, error: Error) {
+        cleanupCompletedDataTasks()
+
         delegate?.didFail(client: self,
-                          withError: SNOWAMBError(SNOWAMBErrorType.httpRequestFailed, "HTTP Request failed with error:\(error)"))
-        self.clientStatus = .retrying
+                          withError: SNOWAMBError(SNOWAMBErrorType.httpRequestFailed, "AMB HTTP Request failed with error:\(error)"))
+        if self.clientStatus == .handshake {
+            delegate?.didFail(client: self,
+                              withError: SNOWAMBError(SNOWAMBErrorType.handshakeFailed, "AMB Handshake failed"))
+            return
+        }
+        if self.clientStatus == .connected {
+            self.clientStatus = .retrying
+        }
         startConnectRequest(after: retryInterval)
     }
     
