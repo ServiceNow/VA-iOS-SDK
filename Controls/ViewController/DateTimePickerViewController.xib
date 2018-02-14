@@ -13,6 +13,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="DateTimePickerViewController" customModule="SnowChat" customModuleProvider="target">
             <connections>
                 <outlet property="datePicker" destination="Pm4-xA-d9C" id="pBa-nQ-s8I"/>
+                <outlet property="dateTitleLabel" destination="PK4-t3-yTo" id="ADg-E7-eqm"/>
                 <outlet property="doneButton" destination="iZD-Pa-XOK" id="haP-cb-uzu"/>
                 <outlet property="selectedDateLabel" destination="ViG-rB-8RZ" id="4bI-2Y-bV3"/>
                 <outlet property="view" destination="lUf-9k-pli" id="RgH-Lr-CSZ"/>
