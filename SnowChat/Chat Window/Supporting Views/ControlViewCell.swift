@@ -29,10 +29,8 @@ class ControlViewCell: UITableViewCell, ControlPresentable {
     func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
         guard let controlView = control.viewController.view else { return }
         controlView.translatesAutoresizingMaskIntoConstraints = false
-        
         contentView.addSubview(controlView)
-        NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-                                     controlView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+        NSLayoutConstraint.activate([controlView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
                                      controlView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
                                      controlView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)])
         self.control = control

@@ -21,30 +21,30 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="lUf-9k-pli">
-            <rect key="frame" x="0.0" y="0.0" width="435" height="418"/>
+            <rect key="frame" x="0.0" y="0.0" width="508" height="428"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="06u-4m-EAZ" customClass="RoundedView" customModule="SnowChat" customModuleProvider="target">
-                    <rect key="frame" x="30" y="0.0" width="375" height="408"/>
+                <view contentMode="scaleToFill" horizontalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="06u-4m-EAZ" customClass="RoundedView" customModule="SnowChat" customModuleProvider="target">
+                    <rect key="frame" x="0.0" y="0.0" width="508" height="418"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ONZ-Kg-AZW">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="60"/>
+                            <rect key="frame" x="0.0" y="0.0" width="508" height="60"/>
                             <subviews>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ILe-29-MAm">
-                                    <rect key="frame" x="0.0" y="59" width="375" height="1"/>
+                                    <rect key="frame" x="0.0" y="59" width="508" height="1"/>
                                     <color key="backgroundColor" red="0.9137254901960784" green="0.92941176470588238" blue="0.94117647058823528" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="1" id="zZx-1F-fd3"/>
                                     </constraints>
                                 </view>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select time and date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PK4-t3-yTo">
-                                    <rect key="frame" x="10" y="8" width="355" height="14.5"/>
+                                    <rect key="frame" x="10" y="8" width="488" height="14.5"/>
                                     <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="time and date value" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ViG-rB-8RZ">
-                                    <rect key="frame" x="10" y="28" width="355" height="24"/>
+                                    <rect key="frame" x="10" y="28" width="488" height="24"/>
                                     <fontDescription key="fontDescription" style="UICTFontTextStyleTitle2"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
@@ -65,21 +65,21 @@
                             </constraints>
                         </view>
                         <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="Pm4-xA-d9C">
-                            <rect key="frame" x="0.0" y="60" width="375" height="298"/>
+                            <rect key="frame" x="0.0" y="60" width="508" height="308"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <date key="date" timeIntervalSinceReferenceDate="540145203.67385697">
                                 <!--2018-02-12 16:20:03 +0000-->
                             </date>
                         </datePicker>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Gim-Ud-YlN">
-                            <rect key="frame" x="0.0" y="357" width="375" height="1"/>
+                            <rect key="frame" x="0.0" y="367" width="508" height="1"/>
                             <color key="backgroundColor" red="0.91372549020000005" green="0.92941176469999998" blue="0.94117647059999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1" id="D4r-3j-xZV"/>
                             </constraints>
                         </view>
                         <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iZD-Pa-XOK">
-                            <rect key="frame" x="0.0" y="358" width="375" height="50"/>
+                            <rect key="frame" x="0.0" y="368" width="508" height="50"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="50" id="x6v-7U-e40"/>
                             </constraints>
@@ -120,13 +120,13 @@
             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="06u-4m-EAZ" secondAttribute="bottom" constant="10" id="XfM-eh-XKV"/>
-                <constraint firstItem="06u-4m-EAZ" firstAttribute="leading" secondItem="3kw-JA-APD" secondAttribute="leading" constant="30" id="njS-lU-cTO"/>
+                <constraint firstItem="06u-4m-EAZ" firstAttribute="leading" secondItem="3kw-JA-APD" secondAttribute="leading" id="aCs-Cc-4HB"/>
+                <constraint firstItem="3kw-JA-APD" firstAttribute="trailing" secondItem="06u-4m-EAZ" secondAttribute="trailing" id="nAt-pM-GPU"/>
                 <constraint firstItem="06u-4m-EAZ" firstAttribute="top" secondItem="lUf-9k-pli" secondAttribute="top" id="nog-r5-11u"/>
-                <constraint firstItem="3kw-JA-APD" firstAttribute="trailing" secondItem="06u-4m-EAZ" secondAttribute="trailing" constant="30" id="uhp-aD-lNe"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <viewLayoutGuide key="safeArea" id="3kw-JA-APD"/>
-            <point key="canvasLocation" x="-184.5" y="105"/>
+            <point key="canvasLocation" x="-221" y="110"/>
         </view>
     </objects>
 </document>
