@@ -465,11 +465,6 @@ class Chatterbox {
     }
     
     fileprivate func handleControlMessage(_ control: ControlData) {
-        guard control.controlType != .unknown else {
-            handleUnknownControl(control)
-            return
-        }
-        
         if let conversationId = control.conversationId {
             switch control.direction {
             case .fromClient:
