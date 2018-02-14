@@ -361,10 +361,10 @@ extension ConversationViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if tableView == autoCompletionView, let handler = autocompleteHandler {
-            return handler.cellForRowAt(indexPath)
+        if tableView == autoCompletionView {
+            return autocompleteHandler?.cellForRowAt(indexPath) ?? UITableViewCell()
         }
-            
+        
         guard let chatMessageModel = dataController.controlForIndex(indexPath.row) else {
             return UITableViewCell()
         }
