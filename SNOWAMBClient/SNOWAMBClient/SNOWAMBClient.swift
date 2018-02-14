@@ -168,9 +168,9 @@ public class SNOWAMBClient {
     }
     
     public var paused: Bool = false {
-        didSet(newPauseState) {
-            if newPauseState != self.paused {
-                if newPauseState {
+        didSet {
+            if paused != oldValue {
+                if paused {
                     // TODO: Think what to do here exactly!
                 } else {
                     self.clientStatus = .retrying
