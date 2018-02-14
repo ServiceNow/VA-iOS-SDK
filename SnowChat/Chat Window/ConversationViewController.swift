@@ -180,8 +180,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                     guard model.controlModel != nil,
                           oldModel.controlModel != nil else { fatalError("Only control-types allowed in didChangeModel udpates!") }
                     
-                    // If type of the chat message model changed or its location - we will need to reload cell
-                    // For example if model that displays bubble
                     if model.type != oldModel.type || model.isAuxiliary != oldModel.isAuxiliary {
                         self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                     } else {

@@ -662,16 +662,14 @@ extension ChatDataController: ChatDataListener {
             let response = messageExchange.response as? DateTimePickerControlMessage,
             let message = messageExchange.message as? DateTimePickerControlMessage,
             let label = message.data.richControl?.uiMetadata?.label,
-            let values: Date = response.data.richControl?.value ?? Date() else {
-                logger.logError("MessageExchange is not valid in multiSelectControlsFromMessageExchange method - skipping!")
+            let value: Date = response.data.richControl?.value ?? Date() else {
+                logger.logError("MessageExchange is not valid in dateTimePickerControlsFromMessageExchange method - skipping!")
                 return nil
         }
         
+        let dateFormatter = DateFormatter.chatDateFormatter()
         let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
-        
-//        let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
-//        let displayValue = options?.joinedWithCommaSeparator()
-        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: "")
+        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: dateFormatter.string(from: value))
         
         return (message: questionModel, response: answerModel)
     }
