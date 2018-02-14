@@ -266,10 +266,7 @@ extension ChatMessageModel {
     }
     
     static func model(withMessage message: ControlDataUnknown) -> ChatMessageModel? {
-        guard let value = message.label else {
-            return nil
-        }
-        
+        let value = message.label ?? ""
         let direction = message.direction
         let outputTextModel = TextControlViewModel(id: message.messageId, value: "Unsupported control: \(value)")
         let textChatModel = ChatMessageModel(model: outputTextModel, location: BubbleLocation(direction: direction), requiresInput: false)
