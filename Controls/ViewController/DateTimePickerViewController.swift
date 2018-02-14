@@ -64,7 +64,7 @@ class DateTimePickerViewController: UIViewController {
             title = NSLocalizedString("Select date", comment: "Title label for date picker")
         }
         
-        selectedDateLabel.text = title
+        dateTitleLabel.text = title
     }
     
     private func updatePickerMode() {
