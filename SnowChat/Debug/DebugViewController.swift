@@ -85,7 +85,7 @@ public class DebugViewController: UITableViewController, ChatServiceDelegate {
     }
     
     public func fatalError(for chatService: ChatService) {
-        
+
     }
     
     // MARK: - Navigation
