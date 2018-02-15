@@ -20,6 +20,15 @@ public enum SNOWAMBResult<Value> {
             return nil
         }
     }
+    
+    public var error: SNOWAMBError? {
+        switch self {
+        case .success:
+            return nil
+        case .failure(let error):
+            return error
+        }
+    }
 }
 
 //
@@ -36,7 +45,7 @@ public struct SNOWAMBGlideStatus {
     }
     
     static public func != (lhs: SNOWAMBGlideStatus, rhs: SNOWAMBGlideStatus) -> Bool {
-        return lhs.ambActive != rhs.ambActive &&
+        return lhs.ambActive != rhs.ambActive ||
                lhs.sessionStatus != rhs.sessionStatus
     }
 }
@@ -68,32 +77,15 @@ public enum SNOWAMBClientStatus {
     case maximumRetriesReached
 }
 
-enum AMBChannel {
-    case handshake
-    case connect
-    case disconnect
-    case subscribe
-    case unsubscribe
+enum AMBChannel: String {
+    case handshake = "/meta/handshake"
+    case connect = "/meta/connect"
+    case disconnect = "/meta/disconnect"
+    case subscribe = "/meta/subscribe"
+    case unsubscribe = "/meta/unsubscribe"
     
-    var name : String {
-        switch self {
-        case .handshake:
-            return "/meta/handshake"
-        case .connect:
-            return "/meta/connect"
-        case .disconnect:
-            return "/meta/disconnect"
-        case .subscribe:
-            return "/meta/subscribe"
-        case .unsubscribe:
-            return "/meta/unsubscribe"
-        }
-    }
-}
-
-extension AMBChannel : CustomStringConvertible {
-    var description : String {
-        return self.name
+    var name: String {
+        return self.rawValue
     }
 }
 
@@ -171,7 +163,7 @@ public class SNOWAMBClient {
         didSet {
             if paused != oldValue {
                 if paused {
-                    // TODO: Think what to do here exactly!
+                    // nothing to do here
                 } else {
                     self.clientStatus = .retrying
                     startConnectRequest()
@@ -224,6 +216,7 @@ public class SNOWAMBClient {
         return subscription
     }
     
+    // TODO: Probably move to SMOWAMBSubscription
     public func resubscribe(subscription: SNOWAMBSubscription) {
         if subscribedChannels.contains(subscription.channel) {
             subscription.subscribed = true
@@ -367,25 +360,29 @@ private extension SNOWAMBClient {
             parseUnsubscribeMessage(ambMessage)
             
         default:
-            if subscribedChannels.contains(channel) {
-                guard ambMessage.data != nil else {
-                    return
-                }
-                if let subscriptionWrappers = subscriptionsByChannel[channel] {
-                    subscriptionWrappers.forEach({ subscriptionWrapper in
-                        if let subscription = subscriptionWrapper.subscription {
-                            subscription.messageHandler(SNOWAMBResult.success(ambMessage), subscription)
-                        }
-                    })
-                } else {
-                    // no handler for this channel, using delegate
-                    delegate?.didReceive(client: self, message: ambMessage, fromChannel: channel)
-                }
-            } else {
-                // message was received for a channel client is not subscribed to
-                delegate?.didFail(client: self,
-                                  withError: SNOWAMBError(SNOWAMBErrorType.unhandledMessageReceived, "AMB Client: Unhandled Bayuex message: \(ambMessage) for channel: \(channel)"))
+            parseChannelMessage(ambMessage, channel: channel)
+        }
+    }
+    
+    func parseChannelMessage(_ ambMessage: SNOWAMBMessage, channel: String) {
+        if subscribedChannels.contains(channel) {
+            guard ambMessage.data != nil else {
+                return
             }
+            if let subscriptionWrappers = subscriptionsByChannel[channel] {
+                subscriptionWrappers.forEach({ subscriptionWrapper in
+                    if let subscription = subscriptionWrapper.subscription {
+                        subscription.messageHandler(SNOWAMBResult.success(ambMessage), subscription)
+                    }
+                })
+            } else {
+                // no handler for this channel, using delegate
+                delegate?.didReceive(client: self, message: ambMessage, fromChannel: channel)
+            }
+        } else {
+            // message was received for a channel client is not subscribed to
+            delegate?.didFail(client: self,
+                              withError: SNOWAMBError(SNOWAMBErrorType.unhandledMessageReceived, "AMB Client: Unhandled Bayuex message: \(ambMessage) for channel: \(channel)"))
         }
     }
     
@@ -407,7 +404,6 @@ private extension SNOWAMBClient {
     }
     
     func reopenSubscriptions() {
-        //let oldSubscribedChannels = subscribedChannels.map { $0 }
         let oldSubscribedChannels = subscribedChannels.union(queuedSubscriptionChannels)
         subscribedChannels.removeAll()
         queuedSubscriptionChannels.removeAll()
@@ -600,7 +596,9 @@ private extension SNOWAMBClient {
             delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.publishFailed, "AMB Publish for channel\(channel) can't be done. clientId was not set yet"))
             return
         }
-        
+
+        // Faye client was sending `id` as base64 encoded sequential number
+        // however old AMB client was overriding `id` with uint32 value (alex a, 02-14-18)
 //        sentMessageCount += 1
 //        let messageId = Data(String(sentMessageCount).utf8).base64EncodedString()
         
@@ -608,7 +606,6 @@ private extension SNOWAMBClient {
             "channel"  : channel,
             "clientId" : clientId,
             "data" : message
-//            "id" : messageId // ???
         ]  as [String : Any]
         
         if let ext = ext, !ext.isEmpty {
@@ -628,9 +625,9 @@ private extension SNOWAMBClient {
                     return ""
                 }
                 switch lastPart {
-                case "\(AMBChannel.handshake)":
+                case AMBChannel.handshake.name:
                     path = lastPart
-                case "\(AMBChannel.connect)":
+                case AMBChannel.connect.name:
                     path = lastPart
                 default:
                     path = ""
@@ -664,7 +661,7 @@ private extension SNOWAMBClient {
 
         if let task = task {
             dataTasks.append(task)
-            if channel == "\(AMBChannel.connect)" {
+            if channel == AMBChannel.connect.name {
                 connectDataTask = task
             }
         }
