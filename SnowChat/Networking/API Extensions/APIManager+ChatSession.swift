@@ -159,11 +159,7 @@ extension APIManager {
                 let messageData = try JSONSerialization.data(withJSONObject: wrapper, options: JSONSerialization.WritingOptions.prettyPrinted)
                 if let messageString = String(data: messageData, encoding: .utf8) {
                     let control = ChatDataFactory.controlFromJSON(messageString)
-                    if control.controlType != .unknown {
-                        return control
-                    } else {
-                        Logger.default.logError("message in result is not a control - skipping: \(messageString)")
-                    }
+                    return control
                 }
             } catch let err {
                 Logger.default.logError("Error \(err) decoding message: \(message)")

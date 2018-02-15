@@ -148,7 +148,7 @@ class Chatterbox {
         apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { conversations in
             var count = 0
             
-            self.chatDataListener?.chatterbox(self, willLoadHistoryForConsumerAccount: consumerAccountId, forChat: self.chatId)
+            self.chatDataListener?.chatterbox(self, willLoadConversationsForConsumerAccount: consumerAccountId, forChat: self.chatId)
 
             conversations.forEach({ [weak self] conversation in
                 guard let strongSelf = self else { return }
@@ -159,18 +159,21 @@ class Chatterbox {
                 }
                 
                 let conversationId = conversation.conversationId
-                
                 _ = strongSelf.chatStore.findOrCreateConversation(conversationId)
                 
+                strongSelf.chatDataListener?.chatterbox(strongSelf, willLoadConversationHistory: conversationId, forChat: strongSelf.chatId)
+
                 conversation.messageExchanges().forEach({ [weak self] exchange in
                     guard let strongSelf = self else { return }
 
                     strongSelf.storeHistoryAndPublish(exchange, forConversation: conversationId)
                     count += (exchange.response != nil ? 2 : 1)
                 })
+
+                strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationHistory: conversationId, forChat: strongSelf.chatId)
             })
             
-            self.chatDataListener?.chatterbox(self, didLoadHistoryForConsumerAccount: consumerAccountId, forChat: self.chatId)
+            self.chatDataListener?.chatterbox(self, didLoadConversationsForConsumerAccount: consumerAccountId, forChat: self.chatId)
             
             completion(count)
         })
@@ -352,7 +355,7 @@ class Chatterbox {
 
     private func startUserTopic(topicInfo: TopicInfo) {
         beginConversation(topicInfo: topicInfo)
-        chatEventListener?.chatterbox(self, didStartTopic: topicInfo, forChat: chatId)
+        chatEventListener?.chatterbox(self, didStartTopic: topicInfo, forChat: chatId)        
     }
     
     private func resumeUserTopic(topicInfo: TopicInfo) {
@@ -422,11 +425,6 @@ class Chatterbox {
     }
     
     fileprivate func handleControlMessage(_ control: ControlData) {
-        guard control.controlType != .unknown else {
-            handleUnknownControl(control)
-            return
-        }
-        
         if let conversationId = control.conversationId {
             switch control.direction {
             case .fromClient:
@@ -528,6 +526,10 @@ class Chatterbox {
         })
         
         return message != nil
+    }
+    
+    func conversation(forId conversationId: String) -> Conversation? {
+        return chatStore.conversation(forId: conversationId)
     }
     
     // MARK: - Cleanup
@@ -693,7 +695,7 @@ extension Chatterbox {
         if let consumerId = session?.user.consumerAccountId {
             logger.logDebug("--> Loading conversations for \(consumerId)")
             
-            self.chatDataListener?.chatterbox(self, willLoadHistoryForConsumerAccount: consumerId, forChat: self.chatId)
+            self.chatDataListener?.chatterbox(self, willLoadConversationsForConsumerAccount: consumerId, forChat: self.chatId)
 
             apiManager.fetchConversations(forConsumer: consumerId, completionHandler: { (conversationsFromService) in
                 
@@ -705,12 +707,16 @@ extension Chatterbox {
                 let lastConversation = conversations.last
                 
                 conversations.forEach { conversation in
+                    var conversation = conversation
+                    
                     let conversationId = conversation.conversationId
+                    let isInProgress = conversation.conversationId == lastConversation?.conversationId && conversation.state == .inProgress
+                    conversation.state = isInProgress ? .inProgress : .completed
+                    
                     self.logger.logDebug("--> Conversation \(conversationId) refreshed: \(conversation)")
                     
                     self.chatDataListener?.chatterbox(self, willLoadConversation: conversationId, forChat: self.chatId)
                     self.storeConversationAndPublish(conversation)
-                
                     self.chatDataListener?.chatterbox(self, didLoadConversation: conversationId, forChat: self.chatId)
                     
                     if conversation.conversationId == lastConversation?.conversationId {
@@ -718,7 +724,7 @@ extension Chatterbox {
                     }
                 }
                 
-                self.chatDataListener?.chatterbox(self, didLoadHistoryForConsumerAccount: consumerId, forChat: self.chatId)
+                self.chatDataListener?.chatterbox(self, didLoadConversationsForConsumerAccount: consumerId, forChat: self.chatId)
                 
                 completionHandler(nil)
             })
@@ -742,26 +748,12 @@ extension Chatterbox {
     internal func storeConversationAndPublish(_ conversation: Conversation) {
         chatStore.storeConversation(conversation)
         
-        let conversationId = conversation.conversationId
-        
-        chatDataListener?.chatterbox(self, willLoadConversation: conversationId, forChat: chatId)
-
         conversation.messageExchanges().forEach { (exchange) in
-            notifyMessageExchange(exchange)
-        }
-        
-        chatDataListener?.chatterbox(self, didLoadConversation: conversationId, forChat: chatId)
-    }
-
-    internal func notifyMessageExchange(_ exchange: MessageExchange) {
-        logger.logDebug("--> Notifying MessageExchange: message=\(exchange.message.controlType) | response=\(exchange.response?.controlType ?? .unknown)")
-        
-        let message = exchange.message
-        
-        notifyMessage(message)
-        
-        if let response = exchange.response {
-            notifyResponse(response, exchange: exchange)
+            if conversation.state == .inProgress && !exchange.isComplete {
+                notifyMessage(exchange.message)
+            } else {
+                notifyMessageExchange(exchange)
+            }
         }
     }
     
@@ -770,11 +762,13 @@ extension Chatterbox {
             logger.logError("No ChatDataListener in NotifyControlReceived")
             return
         }
-
+        
         chatDataListener.chatterbox(self, didReceiveControlMessage: message, forChat: chatId)
     }
     
-    internal func notifyResponse(_ response: ControlData, exchange: MessageExchange) {
+    internal func notifyMessageExchange(_ exchange: MessageExchange) {
+        logger.logDebug("--> Notifying MessageExchange: message=\(exchange.message.controlType) | response=\(exchange.response?.controlType ?? .unknown)")
+        
         guard let chatDataListener = chatDataListener else {
             logger.logError("No ChatDataListener in notifyResponseReceived")
             return

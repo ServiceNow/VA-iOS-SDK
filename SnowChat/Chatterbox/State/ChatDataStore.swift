@@ -111,7 +111,7 @@ struct Conversation: Storable, Codable {
     }
     
     private let id: String
-    private(set) var state: ConversationState
+    internal var state: ConversationState
     private(set) var topicTypeName: String
     private var topicId: String
     internal var conversationId: String {
@@ -214,7 +214,7 @@ struct MessageExchange: Codable {
     }
     
     private func needsResponse() -> Bool {
-        return !(message is OutputTextControlMessage) && !(message is OutputImageControlMessage) && !(message is OutputLinkControlMessage) && !(message is OutputHtmlControlMessage)
+        return !message.isOutputOnly
     }
     
     enum CodingKeys: String, CodingKey {
