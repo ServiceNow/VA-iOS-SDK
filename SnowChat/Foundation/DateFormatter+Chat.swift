@@ -25,7 +25,6 @@ extension DateFormatter {
         return formatter
     }
     
-
     static func chatDateOnlyDateFormatter() -> DateFormatter {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
