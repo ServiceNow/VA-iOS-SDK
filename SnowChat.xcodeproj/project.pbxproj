@@ -109,15 +109,14 @@
 		57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */; };
 		57EE77DF1FFEC2B1001F689A /* ChatMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */; };
 		57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F7B2531FE17823006D917C /* TextControlViewModel.swift */; };
-		8B5CF99A2034AB930020DF53 /* ChatServiceNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5CF9992034AB930020DF53 /* ChatServiceNotifications.swift */; };
-		8BBAAA892031FD5100D50F66 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAAA882031FD5100D50F66 /* User.swift */; };
-		8BBAAA8F20324C0C00D50F66 /* OAuthToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAAA8E20324C0C00D50F66 /* OAuthToken.swift */; };
 		8BA70BB120250CCB0067EBF3 /* BaseAuthTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */; };
 		8BA70BB520250D2F0067EBF3 /* InstanceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB420250D2F0067EBF3 /* InstanceConfiguration.swift */; };
 		8BA70BB920250E660067EBF3 /* SessionTimeoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB820250E660067EBF3 /* SessionTimeoutTests.swift */; };
 		8BA70BBB20250F090067EBF3 /* PublicAPISessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BBA20250F090067EBF3 /* PublicAPISessionTests.swift */; };
 		8BA70BBD20250F380067EBF3 /* AMBSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BBC20250F380067EBF3 /* AMBSessionTests.swift */; };
 		8BB9FAF42019960D009CBD48 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
+		8BBAAA892031FD5100D50F66 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAAA882031FD5100D50F66 /* User.swift */; };
+		8BBAAA8F20324C0C00D50F66 /* OAuthToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAAA8E20324C0C00D50F66 /* OAuthToken.swift */; };
 		BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = BE2925A01FC3391D005E55CA /* .swiftlint.yml */; };
 		BE29E0C91FDEF74C0029D1F0 /* SlackTextViewController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */; };
 		BE29E0CC1FDEFA5B0029D1F0 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */; };
@@ -273,14 +272,13 @@
 		57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Utils.swift"; sourceTree = "<group>"; };
 		57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageModel.swift; sourceTree = "<group>"; };
 		57F7B2531FE17823006D917C /* TextControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControlViewModel.swift; sourceTree = "<group>"; };
-		8B5CF9992034AB930020DF53 /* ChatServiceNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceNotifications.swift; sourceTree = "<group>"; };
-		8BBAAA882031FD5100D50F66 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		8BBAAA8E20324C0C00D50F66 /* OAuthToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthToken.swift; sourceTree = "<group>"; };
 		8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseAuthTestCase.swift; sourceTree = "<group>"; };
 		8BA70BB420250D2F0067EBF3 /* InstanceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceConfiguration.swift; sourceTree = "<group>"; };
 		8BA70BB820250E660067EBF3 /* SessionTimeoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTimeoutTests.swift; sourceTree = "<group>"; };
 		8BA70BBA20250F090067EBF3 /* PublicAPISessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicAPISessionTests.swift; sourceTree = "<group>"; };
 		8BA70BBC20250F380067EBF3 /* AMBSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBSessionTests.swift; sourceTree = "<group>"; };
+		8BBAAA882031FD5100D50F66 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		8BBAAA8E20324C0C00D50F66 /* OAuthToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthToken.swift; sourceTree = "<group>"; };
 		BE2925A01FC3391D005E55CA /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .swiftlint.yml; sourceTree = SOURCE_ROOT; };
 		BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SlackTextViewController.framework; path = Carthage/Build/iOS/SlackTextViewController.framework; sourceTree = "<group>"; };
 		BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
@@ -626,7 +624,6 @@
 			children = (
 				BE876FDC1FDF4F75008EEF04 /* ChatService.swift */,
 				C4A774AC1FE0607D00B6DF68 /* ChatServiceDelegate.swift */,
-				8B5CF9992034AB930020DF53 /* ChatServiceNotifications.swift */,
 			);
 			path = "Chat Service";
 			sourceTree = "<group>";
@@ -1158,7 +1155,6 @@
 				57E65F51202BA5240087E5DE /* OutputLinkControlViewModel.swift in Sources */,
 				579652A72022D32500B61665 /* ControlPresentable.swift in Sources */,
 				C432A038201A9C5900F328B7 /* ContextMenuItem.swift in Sources */,
-				8B5CF99A2034AB930020DF53 /* ChatServiceNotifications.swift in Sources */,
 				C40565FA1FC4F71D004BD28C /* ControlMessage.swift in Sources */,
 				C41EF5DC1FDB4CA400707F45 /* OutputTextControlMessage.swift in Sources */,
 				57CBFE021FE8D921006396E8 /* UILayoutPriority+Additions.swift in Sources */,
