@@ -373,7 +373,7 @@ extension ConversationViewController {
             
         case .control:
             guard let controlModel = chatMessageModel.controlModel else { return UITableViewCell() }
-            if controlModel.type == .button || controlModel.type == .dateTime {
+            if chatMessageModel.isAuxiliary {
                 let controlCell = tableView.dequeueReusableCell(withIdentifier: ControlViewCell.cellIdentifier, for: indexPath) as! ControlViewCell
                 controlCell.configure(with: controlModel)
                 controlCell.control?.delegate = self
