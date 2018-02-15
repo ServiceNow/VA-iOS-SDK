@@ -128,7 +128,7 @@ class Chatterbox {
             messageHandler = startTopicHandler
             
             let startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
-            apiManager.ambClient.sendMessage(startTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+           publishMessage(startTopic)
             
             // TODO: how do we signal an error?
         } else {
@@ -145,7 +145,7 @@ class Chatterbox {
             startTopic.data.direction = .fromClient
             startTopic.data.richControl?.uiMetadata = contextualActions?.data.richControl?.uiMetadata
             
-            apiManager.ambClient.sendMessage(startTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+            publishMessage(startTopic)
             
         } else {
             logger.logError("Session must be initialized before startTopic is called")
@@ -262,15 +262,25 @@ class Chatterbox {
     private func setupChatSubscription() {
         chatSubscription = apiManager.ambClient.subscribe(chatChannel) { [weak self] (subscription, message) in
             guard let strongSelf = self else { return }
+            guard let messageHandler = strongSelf.messageHandler else {
+                strongSelf.logger.logError("No handler set in Chatterbox setupChatSubscription!")
+                return
+            }
             
-            strongSelf.logger.logDebug(message)
+            strongSelf.logger.logDebug("Received from AMB: \(message)")
             
             // when AMB gives us a message we dispatch to the current handler
-            if let messageHandler = strongSelf.messageHandler {
-                messageHandler(message)
-            } else {
-                strongSelf.logger.logError("No handler set in Chatterbox setupChatSubscription!")
+            
+            // but FIRST we check for a general system events (system error, updated ContextualAction, etc)
+            let systemError = ChatDataFactory.controlFromJSON(message)
+            guard systemError.controlType != .systemError else {
+                strongSelf.logger.logError("System Error received: transferring to Live Agent...")
+                strongSelf.transferToLiveAgent()
+                return
             }
+            
+            // forward to current message handler
+            messageHandler(message)
         }
     }
     
@@ -281,13 +291,14 @@ class Chatterbox {
         setupChatSubscription()
 
         if let sessionId = session?.id {
-            apiManager.ambClient.sendMessage(SystemTopicPickerMessage(forSession: sessionId), toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+            publishMessage(SystemTopicPickerMessage(forSession: sessionId))
         }
     }
     
     private func handshakeHandler(_ message: String) {
         let event = ChatDataFactory.actionFromJSON(message)
-        guard event.eventType == .channelInit, let initEvent = event as? InitMessage  else {
+        guard event.eventType == .channelInit,
+              let initEvent = event as? InitMessage else {
             return
         }
         
@@ -303,7 +314,7 @@ class Chatterbox {
             
             self.messageHandler = self.topicSelectionHandler
         default:
-            logger.logError("Unexpected loginStage: \(initEvent.data.actionMessage.loginStage)")
+            break
         }
     }
     
@@ -322,7 +333,7 @@ class Chatterbox {
     
     private func startUserSession(withInitEvent initEvent: InitMessage) {
         let initUserEvent = userSessionInitMessage(fromInitEvent: initEvent)
-        apiManager.ambClient.sendMessage(initUserEvent, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+        publishMessage(initUserEvent)
     }
     
     private func userSessionInitMessage(fromInitEvent initEvent: InitMessage) -> InitMessage {
@@ -352,10 +363,14 @@ class Chatterbox {
         return response
     }
 
+    fileprivate func publishMessage<T>(_ message: T) where T: Encodable {
+        logger.logInfo("Chatterbox publishing message: \(message)")
+        apiManager.ambClient.sendMessage(message, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+    }
+    
     // MARK: - User Topic Methods
     
     private func startTopicHandler(_ message: String) {
-        //logger.logDebug("startTopicHandler received: \(message)")
         
         let picker: ControlData = ChatDataFactory.controlFromJSON(message)
         
@@ -369,9 +384,11 @@ class Chatterbox {
                     outgoingMessage.data.richControl?.value = conversationContext.topicName
                     
                     messageHandler = startUserTopicHandshakeHandler
-                    apiManager.ambClient.sendMessage(outgoingMessage, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+                    publishMessage(outgoingMessage)
                 }
             }
+        } else {
+            logger.logError("Unexpected message in StartTopic flow: \(picker)")
         }
     }
     
@@ -385,8 +402,8 @@ class Chatterbox {
                 
                 // client and server messages are the same, so only look at server responses!
                 if startUserTopic.data.direction == .fromServer {
-                    let startUserTopicReadyMessage = createStartTopicReadyMessage(startUserTopic: startUserTopic)
-                    apiManager.ambClient.sendMessage(startUserTopicReadyMessage, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+                    let startUserTopicReadyMessage = createStartTopicReadyMessage(fromMessage: startUserTopic)
+                    publishMessage(startUserTopicReadyMessage)
                 }
             }
         } else if actionMessage.eventType == .startedUserTopic {
@@ -404,42 +421,59 @@ class Chatterbox {
     private func startLiveAgentHandshakeHandler(_ message: String) {
         logger.logDebug("**** startLiveAgentHandshakeHandler received: \(message)")
         
-        let actionMessage = ChatDataFactory.actionFromJSON(message)
+        let controlMessage = ChatDataFactory.controlFromJSON(message)
 
-        if actionMessage.eventType == .startAgentChat {
-            if let startAgentChatMessage = actionMessage as? StartAgentChatMessage,
-               startAgentChatMessage.data.direction == .fromServer,
-               startAgentChatMessage.data.actionMessage.chatStage == "ConnectToAgent" {
-                let startAgentChatReadyMessage = createStartAgentChatReadyMessage(fromMessage: startAgentChatMessage)
-                apiManager.ambClient.sendMessage(startAgentChatReadyMessage, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
-            
-                let conversationId = startAgentChatMessage.data.actionMessage.topicId
-                let topicInfo = TopicInfo(topicId: "brb", conversationId: conversationId)
-                beginConversation(topicInfo: topicInfo)
-                chatEventListener?.chatterbox(self, didStartTopic: topicInfo, forChat: chatId)
-            }
+        if controlMessage.controlType == .text {
+            logger.logDebug("*** Text Message in LiveAgentHandler")
+            handleControlMessage(controlMessage)
+            return
+        }
+        
+        let actionMessage = ChatDataFactory.actionFromJSON(message)
+        
+        if actionMessage.eventType == .startAgentChat,
+            let startAgentChatMessage = actionMessage as? StartAgentChatMessage,
+            startAgentChatMessage.data.direction == .fromServer,
+            startAgentChatMessage.data.actionMessage.chatStage == "ConnectToAgent" {
+
+            logger.logDebug("*** ConnectToAgent Message in LiveAgentHandler, sending ready=true")
+
+            // send reponse message that we are ready
+            let startAgentChatReadyMessage = createStartAgentChatReadyMessage(fromMessage: startAgentChatMessage)
+            publishMessage(startAgentChatReadyMessage)
+        
+            // begin the agent topic
+            let conversationId = startAgentChatMessage.data.actionMessage.topicId
+            let topicInfo = TopicInfo(topicId: "brb", conversationId: conversationId)
+            startAgentTopic(topicInfo: topicInfo)
         }
     }
     
-    private func beginConversation(topicInfo: TopicInfo) {
-        conversationContext.conversationId = topicInfo.conversationId
-        installTopicMessageHandler()
-    }
-
     private func startUserTopic(topicInfo: TopicInfo) {
-        beginConversation(topicInfo: topicInfo)
+        setupForConversation(topicInfo: topicInfo)
         chatEventListener?.chatterbox(self, didStartTopic: topicInfo, forChat: chatId)        
+    }
+    
+    private func startAgentTopic(topicInfo: TopicInfo) {
+        setupForConversation(topicInfo: topicInfo)
+        chatEventListener?.chatterbox(self, didStartTopic: topicInfo, forChat: chatId)
     }
     
     private func resumeUserTopic(topicInfo: TopicInfo) {
         if conversationContext.conversationId != topicInfo.conversationId {
-            beginConversation(topicInfo: topicInfo)
+            setupForConversation(topicInfo: topicInfo)
         }
         chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: chatId)
     }
+
+    private func setupForConversation(topicInfo: TopicInfo) {
+        conversationContext.conversationId = topicInfo.conversationId
+        logger.logDebug("*** Setting topic mesdsage handler")
+        installTopicMessageHandler()
+    }
     
-    private func createStartTopicReadyMessage(startUserTopic: StartUserTopicMessage) -> StartUserTopicMessage {
-        var startUserTopicReady = startUserTopic
+    private func createStartTopicReadyMessage(fromMessage message: StartUserTopicMessage) -> StartUserTopicMessage {
+        var startUserTopicReady = message
         startUserTopicReady.data.messageId = ChatUtil.uuidString()
         startUserTopicReady.data.sendTime = Date()
         startUserTopicReady.data.direction = .fromClient
@@ -496,10 +530,6 @@ class Chatterbox {
     fileprivate func handleIncomingControlMessage(_ control: ControlData, forConversation conversationId: String) {
         chatStore.storeControlData(control, forConversation: conversationId, fromChat: self)
         chatDataListener?.chatterbox(self, didReceiveControlMessage: control, forChat: chatId)
-        
-        if control.controlType == .systemError {
-            transferToLiveAgent()
-        }
     }
     
     fileprivate func handleResponseControlMessage(_ control: ControlData, forConversation conversationId: String) {
@@ -566,7 +596,7 @@ class Chatterbox {
     }
     
     fileprivate func publishControlUpdate<T: ControlData>(_ message: T, forConversation conversationId: String) {
-        apiManager.ambClient.sendMessage(message, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+        publishMessage(message)
     }
     
     fileprivate func updateBooleanControl(_ control: ControlData) {

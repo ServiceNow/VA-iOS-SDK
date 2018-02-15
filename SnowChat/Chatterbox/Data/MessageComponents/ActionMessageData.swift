@@ -12,9 +12,9 @@ struct ActionMessageData<T: Codable>: Codable {
     let taskId: String?
     
     var messageId: String
-    let sessionId: String
+    var sessionId: String
     
-    let conversationId: String?
+    var conversationId: String?
 
     var direction: MessageDirection
     var sendTime: Date
