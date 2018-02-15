@@ -109,6 +109,12 @@
 		57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */; };
 		57EE77DF1FFEC2B1001F689A /* ChatMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */; };
 		57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F7B2531FE17823006D917C /* TextControlViewModel.swift */; };
+		8BA70BB120250CCB0067EBF3 /* BaseAuthTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */; };
+		8BA70BB520250D2F0067EBF3 /* InstanceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB420250D2F0067EBF3 /* InstanceConfiguration.swift */; };
+		8BA70BB920250E660067EBF3 /* SessionTimeoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB820250E660067EBF3 /* SessionTimeoutTests.swift */; };
+		8BA70BBB20250F090067EBF3 /* PublicAPISessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BBA20250F090067EBF3 /* PublicAPISessionTests.swift */; };
+		8BA70BBD20250F380067EBF3 /* AMBSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BBC20250F380067EBF3 /* AMBSessionTests.swift */; };
+		8BB9FAF42019960D009CBD48 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
 		BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = BE2925A01FC3391D005E55CA /* .swiftlint.yml */; };
 		BE29E0C91FDEF74C0029D1F0 /* SlackTextViewController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */; };
 		BE29E0CC1FDEFA5B0029D1F0 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */; };
@@ -132,6 +138,7 @@
 		BE782DB81FEB205200F848F5 /* APIManager+ChatSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE782DB71FEB205200F848F5 /* APIManager+ChatSession.swift */; };
 		BE876FDD1FDF4F75008EEF04 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE876FDC1FDF4F75008EEF04 /* ChatService.swift */; };
 		BE876FDF1FDF5177008EEF04 /* ConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */; };
+		BE8C51062017B4EF0032BD05 /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEB6C8571FB92CD700B1D497 /* SnowChat.framework */; };
 		BE9E8B631FBF5AEC00499960 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9E8B621FBF5AEC00499960 /* AMBClient.framework */; };
 		BE9E8BA11FBF7F3600499960 /* AMBClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8B9E1FBF7F3500499960 /* AMBClient.swift */; };
 		BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */; };
@@ -186,6 +193,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		BE8C51072017B4EF0032BD05 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BEB6C84E1FB92CD600B1D497 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BEB6C8561FB92CD700B1D497;
+			remoteInfo = SnowChat;
+		};
 		BEB6C8621FB92CD700B1D497 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BEB6C84E1FB92CD600B1D497 /* Project object */;
@@ -262,6 +276,11 @@
 		57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Utils.swift"; sourceTree = "<group>"; };
 		57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageModel.swift; sourceTree = "<group>"; };
 		57F7B2531FE17823006D917C /* TextControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControlViewModel.swift; sourceTree = "<group>"; };
+		8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseAuthTestCase.swift; sourceTree = "<group>"; };
+		8BA70BB420250D2F0067EBF3 /* InstanceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceConfiguration.swift; sourceTree = "<group>"; };
+		8BA70BB820250E660067EBF3 /* SessionTimeoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTimeoutTests.swift; sourceTree = "<group>"; };
+		8BA70BBA20250F090067EBF3 /* PublicAPISessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicAPISessionTests.swift; sourceTree = "<group>"; };
+		8BA70BBC20250F380067EBF3 /* AMBSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBSessionTests.swift; sourceTree = "<group>"; };
 		BE2925A01FC3391D005E55CA /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .swiftlint.yml; sourceTree = SOURCE_ROOT; };
 		BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SlackTextViewController.framework; path = Carthage/Build/iOS/SlackTextViewController.framework; sourceTree = "<group>"; };
 		BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
@@ -285,6 +304,8 @@
 		BE782DB71FEB205200F848F5 /* APIManager+ChatSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "APIManager+ChatSession.swift"; path = "SnowChat/Networking/API Extensions/APIManager+ChatSession.swift"; sourceTree = SOURCE_ROOT; };
 		BE876FDC1FDF4F75008EEF04 /* ChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatService.swift; sourceTree = "<group>"; };
 		BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewController.swift; sourceTree = "<group>"; };
+		BE8C51012017B4EF0032BD05 /* SnowChatAuthIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnowChatAuthIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE8C51052017B4EF0032BD05 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BE9E8B621FBF5AEC00499960 /* AMBClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AMBClient.framework; path = Carthage/Build/iOS/AMBClient.framework; sourceTree = "<group>"; };
 		BE9E8B9E1FBF7F3500499960 /* AMBClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AMBClient.swift; sourceTree = "<group>"; };
 		BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthHeadersAdapter.swift; sourceTree = "<group>"; };
@@ -340,6 +361,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		BE8C50FE2017B4EF0032BD05 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BE8C51062017B4EF0032BD05 /* SnowChat.framework in Frameworks */,
+				8BB9FAF42019960D009CBD48 /* Alamofire.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BEB6C8531FB92CD700B1D497 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -617,6 +647,19 @@
 			path = "Chat Service";
 			sourceTree = "<group>";
 		};
+		BE8C51022017B4EF0032BD05 /* SnowChatAuthIntegrationTests */ = {
+			isa = PBXGroup;
+			children = (
+				8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */,
+				BE8C51052017B4EF0032BD05 /* Info.plist */,
+				8BA70BB420250D2F0067EBF3 /* InstanceConfiguration.swift */,
+				8BA70BB820250E660067EBF3 /* SessionTimeoutTests.swift */,
+				8BA70BBA20250F090067EBF3 /* PublicAPISessionTests.swift */,
+				8BA70BBC20250F380067EBF3 /* AMBSessionTests.swift */,
+			);
+			path = SnowChatAuthIntegrationTests;
+			sourceTree = "<group>";
+		};
 		BE9E8B9B1FBF7F1700499960 /* Networking */ = {
 			isa = PBXGroup;
 			children = (
@@ -635,10 +678,11 @@
 			isa = PBXGroup;
 			children = (
 				BE50E2221FB9305300948FBC /* Deployment */,
+				BE50E2251FB9337D00948FBC /* Frameworks */,
 				BEB6C8581FB92CD700B1D497 /* Products */,
 				BEB6C8591FB92CD700B1D497 /* SnowChat */,
+				BE8C51022017B4EF0032BD05 /* SnowChatAuthIntegrationTests */,
 				BEB6C8641FB92CD700B1D497 /* SnowChatTests */,
-				BE50E2251FB9337D00948FBC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -647,6 +691,7 @@
 			children = (
 				BEB6C8571FB92CD700B1D497 /* SnowChat.framework */,
 				BEB6C8601FB92CD700B1D497 /* SnowChatTests.xctest */,
+				BE8C51012017B4EF0032BD05 /* SnowChatAuthIntegrationTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -807,6 +852,25 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		BE8C51002017B4EF0032BD05 /* SnowChatAuthIntegrationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BE8C510B2017B4EF0032BD05 /* Build configuration list for PBXNativeTarget "SnowChatAuthIntegrationTests" */;
+			buildPhases = (
+				BE8C50FD2017B4EF0032BD05 /* Sources */,
+				BE8C50FE2017B4EF0032BD05 /* Frameworks */,
+				BE8C50FF2017B4EF0032BD05 /* Resources */,
+				8BB9FAF3201995CD009CBD48 /* Copy Carthage Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BE8C51082017B4EF0032BD05 /* PBXTargetDependency */,
+			);
+			name = SnowChatAuthIntegrationTests;
+			productName = SnowChatAuthIntegrationTests;
+			productReference = BE8C51012017B4EF0032BD05 /* SnowChatAuthIntegrationTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		BEB6C8561FB92CD700B1D497 /* SnowChat */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = BEB6C86B1FB92CD700B1D497 /* Build configuration list for PBXNativeTarget "SnowChat" */;
@@ -852,7 +916,7 @@
 		BEB6C84E1FB92CD600B1D497 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0910;
+				LastSwiftUpdateCheck = 0920;
 				LastUpgradeCheck = 0910;
 				ORGANIZATIONNAME = ServiceNow;
 				TargetAttributes = {
@@ -866,6 +930,10 @@
 					};
 					BE6F4E371FE9740A007294BA = {
 						CreatedOnToolsVersion = 9.1;
+						ProvisioningStyle = Automatic;
+					};
+					BE8C51002017B4EF0032BD05 = {
+						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
 					};
 					BEB6C8561FB92CD700B1D497 = {
@@ -896,11 +964,19 @@
 				BE5C65881FE88F53001A3EEE /* Carthage Bootstrap */,
 				BE5C658D1FE88FA6001A3EEE /* Install Certificates */,
 				BE6F4E371FE9740A007294BA /* Deploy Staging */,
+				BE8C51002017B4EF0032BD05 /* SnowChatAuthIntegrationTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		BE8C50FF2017B4EF0032BD05 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BEB6C8551FB92CD700B1D497 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -928,6 +1004,22 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		8BB9FAF3201995CD009CBD48 /* Copy Carthage Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
+			);
+			name = "Copy Carthage Frameworks";
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Alamofire.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
+		};
 		BE04BA691FE9BAA400422B5E /* Carthage Pre-Check */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1024,6 +1116,18 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		BE8C50FD2017B4EF0032BD05 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8BA70BBB20250F090067EBF3 /* PublicAPISessionTests.swift in Sources */,
+				8BA70BB520250D2F0067EBF3 /* InstanceConfiguration.swift in Sources */,
+				8BA70BB120250CCB0067EBF3 /* BaseAuthTestCase.swift in Sources */,
+				8BA70BB920250E660067EBF3 /* SessionTimeoutTests.swift in Sources */,
+				8BA70BBD20250F380067EBF3 /* AMBSessionTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BEB6C8521FB92CD700B1D497 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1163,6 +1267,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		BE8C51082017B4EF0032BD05 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BEB6C8561FB92CD700B1D497 /* SnowChat */;
+			targetProxy = BE8C51072017B4EF0032BD05 /* PBXContainerItemProxy */;
+		};
 		BEB6C8631FB92CD700B1D497 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = BEB6C8561FB92CD700B1D497 /* SnowChat */;
@@ -1216,6 +1325,42 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		BE8C51092017B4EF0032BD05 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = SnowChatAuthIntegrationTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowChatAuthIntegrationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BE8C510A2017B4EF0032BD05 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = SnowChatAuthIntegrationTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SnowChatAuthIntegrationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1453,6 +1598,15 @@
 			buildConfigurations = (
 				BE6F4E391FE9740A007294BA /* Debug */,
 				BE6F4E3A1FE9740A007294BA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BE8C510B2017B4EF0032BD05 /* Build configuration list for PBXNativeTarget "SnowChatAuthIntegrationTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BE8C51092017B4EF0032BD05 /* Debug */,
+				BE8C510A2017B4EF0032BD05 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
