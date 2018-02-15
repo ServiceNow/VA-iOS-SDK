@@ -9,23 +9,31 @@
 import Foundation
 import Alamofire
 
-// FIXME: Remove this. Added basic auth to get us up and running.
-
 class AuthHeadersAdapter: RequestAdapter {
     
-    let authValue: String
+    private let accessToken: String
+    private let instanceURL: URL
     
-    init(username: String, password: String) {
-        let credentials = "\(username):\(password)"
-        let data = credentials.data(using: .utf8)
-        let base64Auth = data?.base64EncodedString() ?? ""
-        authValue = "Basic \(base64Auth)"
+    init(instanceURL: URL, accessToken: String) {
+        self.accessToken = accessToken
+        self.instanceURL = instanceURL
     }
     
     func adapt(_ urlRequest: URLRequest) throws -> URLRequest {
+        
+        // Only add auth headers for requests to the instance
+        guard let requestHost = urlRequest.url?.host,
+            let instanceHost = instanceURL.host,
+            requestHost.lowercased() == instanceHost.lowercased() else {
+                return urlRequest
+        }
+        
         var urlRequest = urlRequest
         
-        urlRequest.setValue(authValue, forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        // This enables us to be authenticated with a session cookie even if the access token has expired
+        urlRequest.setValue("true", forHTTPHeaderField: "X-AuthorizeByCookieFirst")
         
         return urlRequest
     }

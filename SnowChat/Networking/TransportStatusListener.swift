@@ -11,11 +11,12 @@ import Foundation
 protocol TransportStatusListener: AnyObject {
     
     // transport is not available means no AMB and no REST calls
-    func transportDidBecomeUnavailable()
+    func apiManagerTransportDidBecomeUnavailable(_ apiManager: APIManager)
     
     // transport available means AMB and REST can be called
-    func transportDidBecomeAvailable()
+    func apiManagerTransportDidBecomeAvailable(_ apiManager: APIManager)
     
-    // credentials are invalid, need to get new ones from the app
-    func authorizationFailure()
+    // user authentication did become invalid, need to get new token
+    func apiManagerAuthenticationDidBecomeInvalid(_ apiManager: APIManager)
+    
 }

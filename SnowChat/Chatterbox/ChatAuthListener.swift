@@ -9,5 +9,7 @@
 import Foundation
 
 protocol ChatAuthListener: AnyObject {
-    func authorizationFailed()
+    
+    func chatterboxAuthenticationDidBecomeInvalid(_ chatterbox: Chatterbox)
+    
 }
