@@ -27,17 +27,12 @@ enum ChatMessageType {
 
 class ChatMessageModel {
     let type: ChatMessageType
-    var avatarURL: URL?
     let controlModel: ControlViewModel?
-    var isAuxiliary: Bool = false
-    var bubbleLocation: BubbleLocation?
     let requiresInput: Bool
     
-    var auxiliaryMessageModel: ChatMessageModel? {
-        didSet {
-            auxiliaryMessageModel?.isAuxiliary = true
-        }
-    }
+    var avatarURL: URL?
+    var isAuxiliary: Bool = false
+    var bubbleLocation: BubbleLocation?
     
     init(model: ControlViewModel, bubbleLocation: BubbleLocation, requiresInput: Bool = false) {
         self.type = .control
@@ -154,8 +149,6 @@ extension ChatMessageModel {
         
         let textViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: title)
         let snowViewModel = ChatMessageModel(model: textViewModel, bubbleLocation: BubbleLocation(direction: direction))
-        
-        snowViewModel.auxiliaryMessageModel = ChatMessageModel.auxiliaryModel(withMessage: message)
         return snowViewModel
     }
     
@@ -243,20 +236,5 @@ extension ChatMessageModel {
         let textChatModel = ChatMessageModel(model: outputTextModel, bubbleLocation: BubbleLocation(direction: direction), requiresInput: false)
         
         return textChatModel
-    }
-    
-    // MARK: Auxiliary models
-    
-    static func auxiliaryModel(withMessage message: DateTimePickerControlMessage) -> ChatMessageModel? {
-        guard let title = message.data.richControl?.uiMetadata?.label,
-            let required = message.data.richControl?.uiMetadata?.required else {
-                return nil
-        }
-        
-        let direction = message.direction
-        
-        let dateTimeViewModel = DateTimePickerControlViewModel(id: message.messageId, label: title, required: required)
-        let snowViewModel = ChatMessageModel(model: dateTimeViewModel, bubbleLocation: BubbleLocation(direction: direction))
-        return snowViewModel
     }
 }

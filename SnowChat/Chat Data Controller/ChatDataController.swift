@@ -168,8 +168,8 @@ class ChatDataController {
         }
     }
     
-    fileprivate func presentAuxiliaryDataIfNeeded(forMessageModel model: ChatMessageModel) {
-        guard let auxiliaryModel = model.auxiliaryMessageModel else { return }
+    fileprivate func presentAuxiliaryDataIfNeeded(forMessage message: ControlData) {
+        guard let auxiliaryModel = ChatMessageModel.auxiliaryModel(withMessage: message) else { return }
         bufferControlMessage(auxiliaryModel)
     }
     
@@ -378,7 +378,7 @@ extension ChatDataController: ChatDataListener {
             bufferControlMessage(messageModel)
             
             // Only some controls have auxiliary data. They might appear as part of the conversation table view or on the bottom.
-            presentAuxiliaryDataIfNeeded(forMessageModel: messageModel)
+            presentAuxiliaryDataIfNeeded(forMessage: message)
             
         } else {
             dataConversionError(controlId: message.uniqueId, controlType: message.controlType)
@@ -469,15 +469,14 @@ extension ChatDataController: ChatDataListener {
     }
     
     private func didCompleteDateTimeExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        
-        // Behavior for this control is a little bit different since it is "auxiliary model".
-        // Which means we only have to replace last shown model (question is already displayed)
-        if let response = messageExchange.response as? DateTimePickerControlMessage,
-            let value: Date = response.data.richControl?.value ?? Date() {
+        if let viewModels = controlsForDateTimePicker(from: messageExchange) {
             
-            let dateFormatter = DateFormatter.formatterForChatterboxControlType(response.controlType)
-            let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: dateFormatter.string(from: value))
-            replaceLastControl(with: ChatMessageModel(model: answerModel, bubbleLocation: .right))
+            // TODO: We need to come up with some solution here...right now we will replace question text with the same exact text.
+            // That is because of the fact that when original control comes in we seperate it into TextControl and DateTime control.
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, bubbleLocation: .left))
+            if let response = viewModels.response {
+                presentControlData(ChatMessageModel(model: response, bubbleLocation: .right))
+            }
         }
     }
     
@@ -671,7 +670,7 @@ extension ChatDataController: ChatDataListener {
         return (message: questionModel, response: answerModel)
     }
     
-    func controlsForDateTimePicker(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel)? {
+    func controlsForDateTimePicker(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel?)? {
         guard messageExchange.isComplete,
             let response = messageExchange.response as? DateTimePickerControlMessage,
             let message = messageExchange.message as? DateTimePickerControlMessage,

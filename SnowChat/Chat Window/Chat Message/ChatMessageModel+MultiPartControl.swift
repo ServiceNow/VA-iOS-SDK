@@ -45,8 +45,6 @@ extension ChatMessageModel {
             chatMessageModel = nil
         }
         
-        // Show the "More" button after each nested control
-        chatMessageModel?.auxiliaryMessageModel = ChatMessageModel.buttonModel(withMessage: message)
         return chatMessageModel
     }
     
@@ -59,6 +57,7 @@ extension ChatMessageModel {
         let buttonModel = ButtonControlViewModel(id: message.messageId, label: title, value: index)
         let direction = message.data.direction
         let buttonChatModel = ChatMessageModel(model: buttonModel, bubbleLocation: BubbleLocation(direction: direction))
+        buttonChatModel.isAuxiliary = true
         return buttonChatModel
     }
 }

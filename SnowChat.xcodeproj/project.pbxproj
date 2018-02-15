@@ -73,6 +73,7 @@
 		5778CF9C1FE06F08004F77D8 /* SingleSelectControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5778CF9B1FE06F08004F77D8 /* SingleSelectControl.swift */; };
 		5778CF9E1FE07023004F77D8 /* SingleSelectControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5778CF9D1FE07023004F77D8 /* SingleSelectControlViewModel.swift */; };
 		5778CFA01FE07764004F77D8 /* SingleSelectControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5778CF9F1FE07764004F77D8 /* SingleSelectControlTests.swift */; };
+		578291D32035F1B600F22489 /* ChatMessageModel+Auxiliary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578291D22035F1B600F22489 /* ChatMessageModel+Auxiliary.swift */; };
 		578632161FBB9E0300FA0282 /* ControlProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578632151FBB9E0300FA0282 /* ControlProtocol.swift */; };
 		5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5788B2A61FBB38FD00846F33 /* ControlViewModel.swift */; };
 		578EAF5E201786940082264B /* Array+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578EAF5D201786940082264B /* Array+Additions.swift */; };
@@ -233,6 +234,7 @@
 		5778CF9B1FE06F08004F77D8 /* SingleSelectControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleSelectControl.swift; sourceTree = "<group>"; };
 		5778CF9D1FE07023004F77D8 /* SingleSelectControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleSelectControlViewModel.swift; sourceTree = "<group>"; };
 		5778CF9F1FE07764004F77D8 /* SingleSelectControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleSelectControlTests.swift; sourceTree = "<group>"; };
+		578291D22035F1B600F22489 /* ChatMessageModel+Auxiliary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatMessageModel+Auxiliary.swift"; sourceTree = "<group>"; };
 		578632151FBB9E0300FA0282 /* ControlProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlProtocol.swift; sourceTree = "<group>"; };
 		5788B2A61FBB38FD00846F33 /* ControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlViewModel.swift; sourceTree = "<group>"; };
 		578EAF5D201786940082264B /* Array+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Additions.swift"; sourceTree = "<group>"; };
@@ -413,6 +415,7 @@
 			children = (
 				572C6BC0200C33BC00F142E2 /* ControlCache.swift */,
 				57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */,
+				578291D22035F1B600F22489 /* ChatMessageModel+Auxiliary.swift */,
 				57947937203284F500C4C5C5 /* ChatMessageModel+MultiPartControl.swift */,
 				5706C5801FE49F78008D70D1 /* ChatMessageViewController.swift */,
 				57D997AA1FE5B00000394A6D /* ChatMessageViewController.xib */,
@@ -1099,6 +1102,7 @@
 				C432A038201A9C5900F328B7 /* ContextMenuItem.swift in Sources */,
 				C40565FA1FC4F71D004BD28C /* ControlMessage.swift in Sources */,
 				C41EF5DC1FDB4CA400707F45 /* OutputTextControlMessage.swift in Sources */,
+				578291D32035F1B600F22489 /* ChatMessageModel+Auxiliary.swift in Sources */,
 				57CBFE021FE8D921006396E8 /* UILayoutPriority+Additions.swift in Sources */,
 				57B741FF2024DC7800E638E0 /* APIManager+Controls.swift in Sources */,
 				57947938203284F500C4C5C5 /* ChatMessageModel+MultiPartControl.swift in Sources */,
