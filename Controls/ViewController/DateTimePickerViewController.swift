@@ -23,7 +23,7 @@ class DateTimePickerViewController: UIViewController {
     
     var model: DateTimePickerControlViewModel? {
         didSet {
-            guard let model = model else { return }
+            guard let model = model, isViewLoaded == true else { return }
             switch model.type {
             case .dateTime:
                 displayMode = .dateTime
@@ -34,6 +34,8 @@ class DateTimePickerViewController: UIViewController {
             default:
                 fatalError("Wrong model assigned")
             }
+            
+            updateSelectedDateLabelWithDate(datePicker.date)
         }
     }
     
