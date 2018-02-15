@@ -25,7 +25,7 @@ class DateTimePickerControlViewModel: ControlViewModel, ValueRepresentable {
     }
     
     var dateFormatter: DateFormatter {
-        return DateFormatter.chatDateTimeFormatter()
+        return DateFormatter.dateTimeFormatter
     }
     
     var displayValue: String? {
@@ -47,7 +47,7 @@ class DatePickerControlViewModel: DateTimePickerControlViewModel {
     }
     
     override var dateFormatter: DateFormatter {
-        return DateFormatter.chatDateOnlyDateFormatter()
+        return DateFormatter.dateOnlyFormatter
     }
 }
 
@@ -57,6 +57,6 @@ class TimePickerControlViewModel: DateTimePickerControlViewModel {
     }
     
     override var dateFormatter: DateFormatter {
-        return DateFormatter.chatTimeOnlyDateFormatter()
+        return DateFormatter.timeOnlyFormatter
     }
 }

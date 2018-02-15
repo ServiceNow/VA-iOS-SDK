@@ -7,6 +7,10 @@
 //
 
 extension DateFormatter {
+    static let dateOnlyFormatter = chatDateOnlyDateFormatter()
+    static let timeOnlyFormatter = chatTimeOnlyDateFormatter()
+    static let dateTimeFormatter = chatDateTimeFormatter()
+    
     static func chatDateTimeFormatter() -> DateFormatter {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
@@ -21,6 +25,7 @@ extension DateFormatter {
         return formatter
     }
     
+
     static func chatDateOnlyDateFormatter() -> DateFormatter {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
@@ -31,11 +36,11 @@ extension DateFormatter {
     static func formatterForChatterboxControlType(_ type: ChatterboxControlType) -> DateFormatter {
         switch type {
         case .dateTime:
-            return DateFormatter.chatDateTimeFormatter()
+            return DateFormatter.dateTimeFormatter
         case .date:
-            return DateFormatter.chatDateOnlyDateFormatter()
+            return DateFormatter.dateOnlyFormatter
         case .time:
-            return DateFormatter.chatTimeOnlyDateFormatter()
+            return DateFormatter.timeOnlyFormatter
         default:
             fatalError("This control type should not be using dateFormatter: \(type))")
         }
