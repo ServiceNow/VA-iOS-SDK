@@ -145,13 +145,13 @@ class ChatDataController {
     fileprivate func addHistoryToCollection(_ viewModels: (message: ControlViewModel, response: ControlViewModel?)) {
         // add response, then message, to the tail-end of the control data
         if let response = viewModels.response {
-            controlData.append(ChatMessageModel(model: response, bubbleLocation: BubbleLocation.right))
+            controlData.append(ChatMessageModel(model: response, messageId: response.id, bubbleLocation: BubbleLocation.right))
         }
-        controlData.append(ChatMessageModel(model: viewModels.message, bubbleLocation: BubbleLocation.left))
+        controlData.append(ChatMessageModel(model: viewModels.message, messageId: viewModels.message.id, bubbleLocation: BubbleLocation.left))
     }
     
     fileprivate func addHistoryToCollection(_ viewModel: ControlViewModel, location: BubbleLocation = .left) {
-        addHistoryToCollection(ChatMessageModel(model: viewModel, bubbleLocation: location))
+        addHistoryToCollection(ChatMessageModel(model: viewModel, messageId: viewModel.id, bubbleLocation: location))
     }
 
     fileprivate func addHistoryToCollection(_ chatModel: ChatMessageModel) {
@@ -436,24 +436,24 @@ extension ChatDataController: ChatDataListener {
     
     private func didCompleteBooleanExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForBoolean(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, bubbleLocation: .left))
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: viewModels.message.id, bubbleLocation: .left))
             if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, bubbleLocation: .right))
+                presentControlData(ChatMessageModel(model: response, messageId: response.id, bubbleLocation: .right))
             }
         }
    }
     
     private func didCompleteInputExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForInput(from: messageExchange), let response = viewModels.response {
-            presentControlData(ChatMessageModel(model: response, bubbleLocation: .right))
+            presentControlData(ChatMessageModel(model: response, messageId: response.id, bubbleLocation: .right))
         }
     }
     
     private func didCompletePickerExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForPicker(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, bubbleLocation: .left))
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: viewModels.message.id, bubbleLocation: .left))
             if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, bubbleLocation: .right))
+                presentControlData(ChatMessageModel(model: response, messageId: response.id, bubbleLocation: .right))
             }
         }
     }
@@ -461,9 +461,9 @@ extension ChatDataController: ChatDataListener {
     private func didCompleteMultiSelectExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         // replace the picker with the picker's label, and add the response
         if let viewModels = controlsForMultiSelect(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, bubbleLocation: .left))
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: viewModels.message.id, bubbleLocation: .left))
             if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, bubbleLocation: .right))
+                presentControlData(ChatMessageModel(model: response, messageId: response.id, bubbleLocation: .right))
             }
         }
     }
@@ -473,9 +473,14 @@ extension ChatDataController: ChatDataListener {
             
             // TODO: We need to come up with some solution here...right now we will replace question text with the same exact text.
             // That is because of the fact that when original control comes in we seperate it into TextControl and DateTime control.
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, bubbleLocation: .left))
+            let lastMessage = controlData[0]
+            let questionViewModel = ChatMessageModel(model: viewModels.message, messageId: viewModels.message.id, bubbleLocation: .left)
+            if lastMessage.messageId != questionViewModel.messageId {
+                replaceLastControl(with: questionViewModel)
+            }
+
             if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, bubbleLocation: .right))
+                presentControlData(ChatMessageModel(model: response, messageId: response.id, bubbleLocation: .right))
             }
         }
     }

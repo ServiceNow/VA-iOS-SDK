@@ -29,16 +29,18 @@ class ChatMessageModel {
     let type: ChatMessageType
     let controlModel: ControlViewModel?
     let requiresInput: Bool
+    var messageId: String?
     
     var avatarURL: URL?
     var isAuxiliary: Bool = false
     var bubbleLocation: BubbleLocation?
     
-    init(model: ControlViewModel, bubbleLocation: BubbleLocation, requiresInput: Bool = false) {
+    init(model: ControlViewModel, messageId: String? = nil, bubbleLocation: BubbleLocation, requiresInput: Bool = false) {
         self.type = .control
         self.controlModel = model
         self.bubbleLocation = bubbleLocation
         self.requiresInput = requiresInput
+        self.messageId = messageId
     }
     
     init(type: ChatMessageType) {
@@ -106,7 +108,7 @@ extension ChatMessageModel {
         
         let booleanModel = BooleanControlViewModel(id: message.messageId, label: title, required: required)
         let direction = message.direction
-        let snowViewModel = ChatMessageModel(model: booleanModel, bubbleLocation: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: booleanModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
@@ -121,7 +123,7 @@ extension ChatMessageModel {
         let options = message.data.richControl?.uiMetadata?.options ?? []
         let items = options.map { PickerItem(label: $0.label, value: $0.value) }
         let pickerModel = SingleSelectControlViewModel(id: message.messageId, label: title, required: required, items: items)
-        let snowViewModel = ChatMessageModel(model: pickerModel, bubbleLocation: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: pickerModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
@@ -136,7 +138,7 @@ extension ChatMessageModel {
         let options = message.data.richControl?.uiMetadata?.options ?? []
         let items = options.map { PickerItem(label: $0.label, value: $0.value) }
         let multiSelectModel = MultiSelectControlViewModel(id: message.messageId, label: title, required: required, items: items)
-        let snowViewModel = ChatMessageModel(model: multiSelectModel, bubbleLocation: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: multiSelectModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
@@ -148,7 +150,7 @@ extension ChatMessageModel {
         let direction = message.direction
         
         let textViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: title)
-        let snowViewModel = ChatMessageModel(model: textViewModel, bubbleLocation: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: textViewModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
@@ -159,7 +161,7 @@ extension ChatMessageModel {
         
         let direction = message.data.direction
         let textModel = TextControlViewModel(id: message.messageId, value: value)
-        let snowViewModel = ChatMessageModel(model: textModel, bubbleLocation: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
@@ -171,7 +173,7 @@ extension ChatMessageModel {
         let direction = message.direction
         
         let textModel = TextControlViewModel(id: message.messageId, value: value)
-        let snowViewModel = ChatMessageModel(model: textModel, bubbleLocation: BubbleLocation(direction: direction), requiresInput: true)
+        let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), requiresInput: true)
         return snowViewModel
     }
     
@@ -187,7 +189,7 @@ extension ChatMessageModel {
         }
         
         let outputImageModel = OutputImageViewModel(id: message.messageId, value: url)
-        let snowViewModel = ChatMessageModel(model: outputImageModel, bubbleLocation: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: outputImageModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
@@ -199,7 +201,7 @@ extension ChatMessageModel {
         let direction = message.data.direction
         
         let outputLinkModel = OutputLinkControlViewModel(id: message.messageId, value: URL(fileURLWithPath: value))
-        let snowViewModel = ChatMessageModel(model: outputLinkModel, bubbleLocation: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: outputLinkModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
@@ -211,7 +213,7 @@ extension ChatMessageModel {
         let direction = message.data.direction
         
         let outputHtmlModel = OutputHtmlControlViewModel(id: message.messageId, value: value)
-        let snowViewModel = ChatMessageModel(model: outputHtmlModel, bubbleLocation: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: outputHtmlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
@@ -224,7 +226,7 @@ extension ChatMessageModel {
         let direction = message.direction
         
         let outputTextModel = TextControlViewModel(id: message.messageId, value: "\(value)\n\(instruction)")
-        let textChatModel = ChatMessageModel(model: outputTextModel, bubbleLocation: BubbleLocation(direction: direction), requiresInput: false)
+        let textChatModel = ChatMessageModel(model: outputTextModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), requiresInput: false)
         
         return textChatModel
     }
@@ -233,7 +235,7 @@ extension ChatMessageModel {
         let value = message.label ?? ""
         let direction = message.direction
         let outputTextModel = TextControlViewModel(id: message.messageId, value: "Unsupported control: \(value)")
-        let textChatModel = ChatMessageModel(model: outputTextModel, bubbleLocation: BubbleLocation(direction: direction), requiresInput: false)
+        let textChatModel = ChatMessageModel(model: outputTextModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), requiresInput: false)
         
         return textChatModel
     }

@@ -28,7 +28,7 @@ extension ChatMessageModel {
         let direction = message.direction
         
         let dateTimeViewModel = DateTimePickerControlViewModel(id: message.messageId, label: title, required: required)
-        let snowViewModel = ChatMessageModel(model: dateTimeViewModel, bubbleLocation: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: dateTimeViewModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         snowViewModel.isAuxiliary = true
         return snowViewModel
     }

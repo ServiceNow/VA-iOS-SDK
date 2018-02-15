@@ -22,24 +22,24 @@ extension ChatMessageModel {
         switch nestedControlType {
         case .text:
             let controlModel = TextControlViewModel(id: message.messageId, value: nestedControlValue)
-            chatMessageModel = ChatMessageModel(model: controlModel, bubbleLocation: BubbleLocation(direction: direction))
+            chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         case .outputHtml:
             let controlModel = OutputHtmlControlViewModel(id: message.messageId, value: nestedControlValue)
-            chatMessageModel = ChatMessageModel(model: controlModel, bubbleLocation: BubbleLocation(direction: direction))
+            chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         case .outputImage:
             if let url = URL(string: nestedControlValue) {
                 let controlModel = OutputImageViewModel(id: message.messageId, value: url)
-                chatMessageModel = ChatMessageModel(model: controlModel, bubbleLocation: BubbleLocation(direction: direction))
+                chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
             }
         case .outputLink:
             if let url = URL(string: nestedControlValue) {
                 let controlModel = OutputLinkControlViewModel(id: message.messageId, value: url)
-                chatMessageModel = ChatMessageModel(model: controlModel, bubbleLocation: BubbleLocation(direction: direction))
+                chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
             }
         case .unknown:
             if let nestedControlTypeString = message.nestedControlTypeString {
                 let outputTextModel = TextControlViewModel(id: message.messageId, value: "Unsupported control: \(nestedControlTypeString)")
-                chatMessageModel = ChatMessageModel(model: outputTextModel, bubbleLocation: BubbleLocation(direction: direction), requiresInput: false)
+                chatMessageModel = ChatMessageModel(model: outputTextModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), requiresInput: false)
             }
         default:
             chatMessageModel = nil
@@ -56,7 +56,7 @@ extension ChatMessageModel {
         
         let buttonModel = ButtonControlViewModel(id: message.messageId, label: title, value: index)
         let direction = message.data.direction
-        let buttonChatModel = ChatMessageModel(model: buttonModel, bubbleLocation: BubbleLocation(direction: direction))
+        let buttonChatModel = ChatMessageModel(model: buttonModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         buttonChatModel.isAuxiliary = true
         return buttonChatModel
     }
