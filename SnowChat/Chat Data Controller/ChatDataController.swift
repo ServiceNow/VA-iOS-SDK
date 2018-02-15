@@ -416,6 +416,16 @@ extension ChatDataController: ChatDataListener {
         case .multiPart:
             guard messageExchange.message is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
             self.didCompleteMultiPartExchange(messageExchange, forChat: chatId)
+        case .text:
+            guard let message = messageExchange.message as? OutputTextControlMessage else { fatalError("Could not view message as OutputTextControlMessage in ChatDataListener") }
+            guard let chatControl = ChatMessageModel.model(withMessage: message) else { return }
+            self.bufferControlMessage(chatControl)
+        case .unknown:
+            guard let message = messageExchange.message as? ControlDataUnknown else { fatalError("Could not view message as ControlDataUnknown in ChatDataListener") }
+            guard let chatControl = ChatMessageModel.model(withMessage: message) else { return }
+            self.bufferControlMessage(chatControl)
+            logger.logDebug("Unknown control type in ChatDataListener didCompleteMessageExchange: \(messageExchange.message.controlType)")
+            return  // skip any post-processing, we canot proceed with unknown control
         default:
             logger.logError("Unhandled control type in ChatDataListener didCompleteMessageExchange: \(messageExchange.message.controlType)")
         }
@@ -576,12 +586,16 @@ extension ChatDataController: ChatDataListener {
                let controlModel = messageModel.controlModel {
                 addHistoryToCollection(controlModel)
             }
+        
+        case .unknown:
+            if let viewModel = ChatMessageModel.model(withMessage: historyExchange.message) {
+                addHistoryToCollection(viewModel)
+            }
             
         // MARK: - unrendered
         case .topicPicker,
              .startTopicMessage,
-             .contextualAction,
-             .unknown:
+             .contextualAction:
             break
         }
     }
@@ -747,7 +761,7 @@ extension ChatDataController: ContextItemProvider {
             // TODO: send email
         }
         
-        let agent = UIAlertAction(title: NSLocalizedString("Chat with and Agent", comment: "Support Menu item"), style: .default) { (action) in
+        let agent = UIAlertAction(title: NSLocalizedString("Chat with an Agent", comment: "Support Menu item"), style: .default) { (action) in
             // TODO: transfer to live agent chat
         }
         
