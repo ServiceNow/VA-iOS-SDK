@@ -86,7 +86,7 @@ class DateTimePickerViewController: UIViewController {
     }
     
     private func updateSelectedDateLabelWithDate(_ date: Date) {
-        let dateFormatter = DateFormatter.chatDateFormatter()
+        let dateFormatter = DateFormatter.chatDateTimeFormatter()
         let dateString = dateFormatter.string(from: date)
         selectedDateLabel.text = dateString
         model?.value = date

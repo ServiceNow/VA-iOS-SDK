@@ -25,7 +25,7 @@ class DateTimePickerControlViewModel: ControlViewModel, ValueRepresentable {
     }
     
     var dateFormatter: DateFormatter {
-        return DateFormatter.chatDateFormatter()
+        return DateFormatter.chatDateTimeFormatter()
     }
     
     var displayValue: String? {

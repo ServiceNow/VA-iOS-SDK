@@ -465,7 +465,7 @@ extension ChatDataController: ChatDataListener {
         if let response = messageExchange.response as? DateTimePickerControlMessage,
             let value: Date = response.data.richControl?.value ?? Date() {
             
-            let dateFormatter = DateFormatter.chatDateFormatter()
+            let dateFormatter = DateFormatter.formatterForChatterboxControlType(response.controlType)
             let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: dateFormatter.string(from: value))
             replaceLastControl(with: ChatMessageModel(model: answerModel, bubbleLocation: .right))
         }
@@ -667,7 +667,7 @@ extension ChatDataController: ChatDataListener {
                 return nil
         }
         
-        let dateFormatter = DateFormatter.chatDateFormatter()
+        let dateFormatter = DateFormatter.formatterForChatterboxControlType(response.controlType)
         let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
         let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: dateFormatter.string(from: value))
         
