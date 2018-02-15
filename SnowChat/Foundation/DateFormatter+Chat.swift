@@ -13,4 +13,18 @@ extension DateFormatter {
         formatter.timeStyle = .short
         return formatter
     }
+    
+    static func chatTimeOnlyDateFormatter() -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .short
+        return formatter
+    }
+    
+    static func chatDateOnlyDateFormatter() -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter
+    }
 }
