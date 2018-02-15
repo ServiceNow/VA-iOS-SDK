@@ -436,24 +436,24 @@ extension ChatDataController: ChatDataListener {
     
     private func didCompleteBooleanExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForBoolean(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: viewModels.message.id, bubbleLocation: .left))
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
             if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, messageId: response.id, bubbleLocation: .right))
+                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
             }
         }
    }
     
     private func didCompleteInputExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForInput(from: messageExchange), let response = viewModels.response {
-            presentControlData(ChatMessageModel(model: response, messageId: response.id, bubbleLocation: .right))
+            presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
         }
     }
     
     private func didCompletePickerExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForPicker(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: viewModels.message.id, bubbleLocation: .left))
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
             if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, messageId: response.id, bubbleLocation: .right))
+                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
             }
         }
     }
@@ -461,9 +461,9 @@ extension ChatDataController: ChatDataListener {
     private func didCompleteMultiSelectExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         // replace the picker with the picker's label, and add the response
         if let viewModels = controlsForMultiSelect(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: viewModels.message.id, bubbleLocation: .left))
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
             if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, messageId: response.id, bubbleLocation: .right))
+                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
             }
         }
     }
@@ -471,16 +471,27 @@ extension ChatDataController: ChatDataListener {
     private func didCompleteDateTimeExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForDateTimePicker(from: messageExchange) {
             
-            // TODO: We need to come up with some solution here...right now we will replace question text with the same exact text.
-            // That is because of the fact that when original control comes in we seperate it into TextControl and DateTime control.
+            // We need to check the last displayed control. In case of regular topic flow we will have TextControl and DateTimeControl as a seperate controls but they will represent one message coming from the server.
             let lastMessage = controlData[0]
-            let questionViewModel = ChatMessageModel(model: viewModels.message, messageId: viewModels.message.id, bubbleLocation: .left)
-            if lastMessage.messageId != questionViewModel.messageId {
-                replaceLastControl(with: questionViewModel)
+            
+            var shouldReplaceLastControlWithResponse = true
+            
+            // By comparing ids we can distinguish between loading messages from the history and actual topic flow scenarios.
+            // In case when user selected a date during topic flow - we are presenting already question and dateTime picker in the chat (2 controls from one message). Hence we don't want to show question again. And that's what below `if` statement does.
+            // THIS is different from other didComplete methods, where we show just one control per message. In those cases we want to replace control with question and insert an answer.
+            // `shouldReplaceResponse` flag is set to `true` to indicate that we want to only replace last message (dateTimePicker in this case)
+            if lastMessage.messageId != messageExchange.message.messageId {
+                replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
+                shouldReplaceLastControlWithResponse = false
             }
 
-            if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, messageId: response.id, bubbleLocation: .right))
+            guard let response = viewModels.response else { return }
+            
+            let answer = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right)
+            if shouldReplaceLastControlWithResponse {
+                replaceLastControl(with: answer)
+            } else {
+                presentControlData(answer)
             }
         }
     }
