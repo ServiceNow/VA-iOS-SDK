@@ -52,4 +52,3 @@ struct InputImageControlMessage: ControlData {
         data.richControl?.value = value
     }
 }
-

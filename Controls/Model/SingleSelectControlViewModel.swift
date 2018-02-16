@@ -18,7 +18,9 @@ class SingleSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     var items = [PickerItem]()
     
-    let type: ControlType = .singleSelect
+    var type: ControlType {
+        return .singleSelect
+    }
     
     init(id: String, label: String? = nil, required: Bool, items: [PickerItem], resultValue: String? = nil) {
         self.id = id

@@ -14,6 +14,8 @@ enum ControlType {
     
     case outputImage
     
+    case inputImage
+    
     case outputLink
     
     case outputHtml
@@ -34,6 +36,8 @@ enum ControlType {
             return "Text"
         case .outputImage:
             return "Image Output"
+        case .inputImage:
+            return "Image Input"
         case .outputLink:
             return "Link Output"
         case .outputHtml:

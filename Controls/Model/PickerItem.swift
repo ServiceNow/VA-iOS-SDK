@@ -13,6 +13,8 @@ class PickerItem {
         case yes
         case no
         case skip
+        case takePhoto
+        case photoLibrary
         case custom
     }
     
@@ -47,6 +49,16 @@ extension PickerItem {
     
     static func noItem() -> PickerItem {
         let item = PickerItem(type: .no, label: "No", value: "No")
+        return item
+    }
+    
+    static func takePhotoItem() -> PickerItem {
+        let item = PickerItem(type: .takePhoto, label: "Take Photo", value: "Take Photo")
+        return item
+    }
+    
+    static func photoLibraryItem() -> PickerItem {
+        let item = PickerItem(type: .photoLibrary, label: "Photo Library", value: "Photo Library")
         return item
     }
 }

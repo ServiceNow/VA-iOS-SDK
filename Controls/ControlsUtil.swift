@@ -19,6 +19,8 @@ class ControlsUtil {
             let outputImageControl = OutputImageControl(model: model)
             outputImageControl.imageDownloader = provider?.imageProvider
             return outputImageControl
+        case .inputImage:
+            return InputImageControl(model: model)
         case .outputLink:
             return OutputLinkControl(model: model)
         case .outputHtml:
