@@ -6,7 +6,9 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-class InputImageControl: PickerControlProtocol {
+import MobileCoreServices
+
+class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     var visibleItemCount: Int = 2
     
@@ -38,17 +40,44 @@ class InputImageControl: PickerControlProtocol {
     
     func pickerViewController(_ viewController: PickerViewController, didFinishWithModel model: PickerControlViewModel) {
         guard let item = model.selectedItem else { return }
+        
+        let imagePickerControllerSourceType: UIImagePickerControllerSourceType
         switch item.type {
         case .takePhoto:
-            print("Take a photo VC")
+            imagePickerControllerSourceType = .camera
         case .photoLibrary:
-            print("Choose from the library")
+            guard UIImagePickerController.isCameraDeviceAvailable(.rear) else {
+                // TODO: FatalError? Alert?
+                return
+            }
+            imagePickerControllerSourceType = .photoLibrary
         default:
             fatalError("Not supported type")
         }
+        
+        presentImagePickerControllerWithSourceType(imagePickerControllerSourceType)
     }
     
     func pickerViewController(_ viewController: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
         
+    }
+    
+    // MARK: - UIImagePickerController
+    
+    private func presentImagePickerControllerWithSourceType(_ type: UIImagePickerControllerSourceType) {
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.modalPresentationStyle = .fullScreen
+        imagePickerController.cameraDevice = .rear
+        imagePickerController.delegate = self
+        imagePickerController.mediaTypes = [kUTTypeImage as String]
+        self.viewController.present(imagePickerController, animated: true, completion: nil)
+    }
+    
+    // MARK: - UIImagePickerControllerDelegate
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        viewController.presentingViewController?.dismiss(animated: true, completion: nil)
+        let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+        let imageData = UIImageJPEGRepresentation(image, 0.8)
     }
 }
