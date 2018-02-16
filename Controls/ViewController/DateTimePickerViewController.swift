@@ -91,6 +91,35 @@ class DateTimePickerViewController: UIViewController {
         let dateFormatter = DateFormatter.dateTimeFormatter
         let dateString = dateFormatter.string(from: date)
         selectedDateLabel.text = dateString
-        model?.value = date
+        model?.value = adjustedDateToPickerMode(date)
+    }
+    
+    private func adjustedDateToPickerMode(_ date: Date) -> Date {
+        let calendar: Calendar = datePicker.calendar
+        switch displayMode {
+        case .date:
+            guard let adjustedDate = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: date) else {
+                fatalError("Error during date adjustment")
+            }
+            
+            return adjustedDate
+        case .dateTime:
+            return date
+        case .time:
+            var adjustedComponents = DateComponents()
+            let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: date)
+            adjustedComponents.setValue(timeComponents.hour, for: .hour)
+            adjustedComponents.setValue(timeComponents.minute, for: .minute)
+            adjustedComponents.setValue(timeComponents.second, for: .second)
+            
+            adjustedComponents.setValue(1, for: .day)
+            adjustedComponents.setValue(1, for: .month)
+            adjustedComponents.setValue(1970, for: .year)
+            guard let adjustedDate = calendar.date(from: adjustedComponents) else {
+                fatalError("Error during date adjustment")
+            }
+            
+            return adjustedDate
+        }
     }
 }
