@@ -88,37 +88,33 @@ class Chatterbox {
         chatEventListener = eventListener
     }
     
-    func initializeSession(forUser: ChatUser, vendor: ChatVendor,
-                           success: @escaping (ContextualActionMessage) -> Void,
-                           failure: @escaping (Error?) -> Void ) {
-        self.user = forUser
-        self.vendor = vendor
-        
-        logIn { error in
-            if error == nil {
-                self.createChatSession { error in
+    // TODO: We should clean this up. Less nesting, less force unwrapping, weak self :)
+    func establishUserSession(vendor: ChatVendor, token: OAuthToken, completion: @escaping (Result<ContextualActionMessage>) -> Void) {
+        apiManager.prepareUserSession(token: token) { (result) in
+            if result.error == nil {
+                self.createChatSession(vendor: vendor) { error in
                     if error == nil {
                         self.performChatHandshake { actionMessage in
                             guard let actionMessage = actionMessage else {
-                                failure(ChatterboxError.unknown(details: "Chat Handshake failed for an unknown reason"))
+                                completion(.failure(ChatterboxError.unknown(details: "Chat Handshake failed for an unknown reason")))
                                 return
                             }
                             self.contextualActions = actionMessage
                             
                             self.chatEventListener?.chatterbox(self, didEstablishUserSession: self.session?.id ?? "UNKNOWN_SESSION_ID", forChat: self.chatId)
                             
-                            success(actionMessage)
-                            return
+                            completion(.success(actionMessage))
                         }
                     } else {
-                        failure(error)
+                        // swiftlint:disable:next force_unwrapping
+                        completion(.failure(error!))
                     }
                 }
             } else {
-                failure(error)
+                // swiftlint:disable:next force_unwrapping
+                completion(.failure(result.error!))
             }
         }
-        logger.logDebug("initializeAMB returning")
     }
     
     func startTopic(withName: String) throws {
@@ -192,48 +188,17 @@ class Chatterbox {
     
     // MARK: - Session Methods
     
-    private func logIn(_ completion: @escaping (Error?) -> Void) {
-        guard  let user = user, vendor != nil else {
-            let error = ChatterboxError.invalidParameter(details: "User and Vendor must be initialized first")
-            logger.logError(error.localizedDescription)
-            completion(error)
-            return
-        }
+    private func createChatSession(vendor: ChatVendor, completion: @escaping (Error?) -> Void) {
+        let sessionContext = ChatSessionContext(vendor: vendor)
         
-        apiManager.logIn(username: user.username, password: user.password ?? "") { [weak self] error in
-            guard let strongSelf = self else { return }
-            
-            if let error = error {
-                strongSelf.logger.logInfo("AMB Login failed: \(error)")
-                strongSelf.loginFailure()
-            } else {
-                strongSelf.logger.logInfo("Login succeeded")
-            }
-            completion(error)
-        }
-    }
-    
-    private func loginFailure() {
-        // bubble up to Chat Service
-        
-    }
-    
-    private func createChatSession(_ completion: @escaping (Error?) -> Void) {
-        guard let user = user, let vendor = vendor else {
-            logger.logError("User and Vendor must be initialized to create a chat session")
-            return
-        }
-
-        let sessionInfo = ChatSession(id: UUID().uuidString, user: user, vendor: vendor)
-        
-        apiManager.startChatSession(with: sessionInfo, chatId: chatId) { [weak self] result in
+        apiManager.startChatSession(with: sessionContext, chatId: chatId) { [weak self] result in
             guard let strongSelf = self else { return }
             
             switch result {
-            case .success(let resultSession):
-                strongSelf.session = resultSession
+            case .success(let session):
+                strongSelf.session = session
                 
-                strongSelf.logger.logDebug("--> Chat Session established: sessionId: \(strongSelf.session?.id ?? "NIL") \n consumerAccountId=\(resultSession.user.consumerAccountId)")
+                strongSelf.logger.logDebug("--> Chat Session established: sessionId: \(strongSelf.session?.id ?? "NIL") \n consumerAccountId=\(session.user.consumerAccountId)")
             case .failure:
                 strongSelf.logger.logError("getSession failed!")
             }
@@ -817,7 +782,7 @@ extension Chatterbox: TransportStatusListener {
     
     // MARK: - handle transport notifications
     
-    func transportDidBecomeUnavailable() {
+    func apiManagerTransportDidBecomeUnavailable(_ apiManager: APIManager) {
         logger.logInfo("Network unavailable....")
 
         chatEventListener?.chatterbox(self, didReceiveTransportStatus: .unreachable, forChat: chatId)
@@ -825,7 +790,7 @@ extension Chatterbox: TransportStatusListener {
     
     private static var alreadySynchronizing = false
     
-    func transportDidBecomeAvailable() {
+    func apiManagerTransportDidBecomeAvailable(_ apiManager: APIManager) {
         chatEventListener?.chatterbox(self, didReceiveTransportStatus: .reachable, forChat: chatId)
 
         guard !Chatterbox.alreadySynchronizing, conversationContext.conversationId != nil else { return }
@@ -837,8 +802,9 @@ extension Chatterbox: TransportStatusListener {
         }
     }
     
-    func authorizationFailure() {
+    func apiManagerAuthenticationDidBecomeInvalid(_ apiManager: APIManager) {
         logger.logInfo("Authorization failed!")
-        chatAuthListener?.authorizationFailed()
+        
+        chatAuthListener?.chatterboxAuthenticationDidBecomeInvalid(self)
     }
 }

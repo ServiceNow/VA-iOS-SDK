@@ -11,7 +11,17 @@ import Alamofire
 import AlamofireImage
 import AMBClient
 
+enum APIManagerError: Error {
+    case loginError(message: String)
+    case invalidToken(message: String)
+}
+
 class APIManager: NSObject {
+    
+    private enum AuthStatus {
+        case loggedIn(User)
+        case loggedOut(User?)
+    }
     
     internal let instance: ServerInstance
     
@@ -31,9 +41,14 @@ class APIManager: NSObject {
     
     internal let ambClient: AMBClient
     
+    private var authStatus: AuthStatus
+    
+    // MARK: - Initialization
+    
     init(instance: ServerInstance, transportListener: TransportStatusListener? = nil) {
         self.instance = instance
         self.transportListener = transportListener
+        self.authStatus = .loggedOut(nil)
         
         ambClient = AMBClient(sessionManager: sessionManager, baseURL: instance.instanceURL)
 
@@ -42,17 +57,18 @@ class APIManager: NSObject {
         subscribeToAppStateChanges()
         listenForReachabilityChanges()
         listenForAMBConnectionChanges()
+        setupSessionTaskAuthListener()
     }
     
-    enum APIManagerError: Error {
-        case loginError(message: String)
-    }
+    // MARK: - Log In
     
-    // FIXME: Support actual log in methods
-    
-    func logIn(username: String, password: String, completionHandler: @escaping (Error?) -> Void) {
-        sessionManager.adapter = AuthHeadersAdapter(username: username, password: password)
+    func prepareUserSession(token: OAuthToken, completion: @escaping (Result<User>) -> Void) {
+        // TODO: Should we only clear some session cookies instead of all?
+        clearAllCookies()
         
+        sessionManager.adapter = AuthHeadersAdapter(instanceURL: instance.instanceURL, accessToken: token)
+        
+        // FIXME: Don't use mobile app APIs. Need to move to this API when it's ready: ui/user/current_user
         sessionManager.request(apiURLWithPath("mobile/app_bootstrap/post_auth"),
                                method: .get,
                                parameters: nil,
@@ -62,17 +78,69 @@ class APIManager: NSObject {
             .responseJSON { [weak self] response in
                 guard let strongSelf = self else { return }
                 
-                var loginError: APIManagerError?
-                
-                switch response.result {
-                case .success:
-                    strongSelf.ambClient.connect()
-                case .failure(let error):
-                    loginError = APIManagerError.loginError(message: "Login failed: \(error.localizedDescription)")
+                if let error = response.error {
+                    let loginError: APIManagerError
+                    if let response = response.response, response.statusCode == 401 {
+                        loginError = APIManagerError.invalidToken(message: "Login failed: \(error.localizedDescription)")
+                    } else {
+                        loginError = APIManagerError.loginError(message: "Login failed: \(error.localizedDescription)")
+                    }
+                    completion(.failure(loginError))
+                    return
                 }
-                completionHandler(loginError)
+                
+                // TODO: Need a better solution for response parsing. Custom mappings?
+                let dictionary = response.result.value as? [String : Any] ?? [:]
+                let result = dictionary["result"] as? [String : Any] ?? [:]
+                let resources = result["resources"] as? [String : Any] ?? [:]
+                let userDictionary = resources["current_user"] as? [String : Any] ?? [:]
+                
+                guard let user = User(dictionary: userDictionary) else {
+                    completion(.failure(APIManagerError.loginError(message: "Invalid User")))
+                    return
+                }
+                
+                strongSelf.authStatus = .loggedIn(user)
+                strongSelf.ambClient.connect()
+                
+                completion(.success(user))
         }
     }
+    
+    private func clearAllCookies() {
+        guard let cookieStorage = sessionManager.session.configuration.httpCookieStorage else { return }
+        cookieStorage.cookies?.forEach { (cookie) in
+            cookieStorage.deleteCookie(cookie)
+        }
+    }
+    
+    // MARK: - Auth Listener
+    
+    private func setupSessionTaskAuthListener() {
+        sessionManager.delegate.taskDidComplete = { session, task, error in
+            
+            guard let response = task.response as? HTTPURLResponse, response.statusCode == 401 else {
+                return
+            }
+            
+            DispatchQueue.main.async { [weak self] in
+                guard let strongSelf = self else { return }
+                
+                strongSelf.invalidateAuthentication()
+            }
+            
+        }
+    }
+    
+    private func invalidateAuthentication() {
+        guard case let .loggedIn(user) = authStatus else { return }
+        
+        authStatus = .loggedOut(user)
+        
+        transportListener?.apiManagerAuthenticationDidBecomeInvalid(self)
+    }
+    
+    // MARK: - Transport Listener
     
     private func listenForReachabilityChanges() {
         guard let reachabilityManager = reachabilityManager else { return }
@@ -85,12 +153,12 @@ class APIManager: NSObject {
                 strongSelf.ambClient.networkReachable()
                 
                 // FIXME: should only send this from AMB notification, but it is not working quite right
-                strongSelf.transportListener?.transportDidBecomeAvailable()
+                strongSelf.transportListener?.apiManagerTransportDidBecomeAvailable(strongSelf)
             } else {
                 strongSelf.ambClient.networkUnreachable()
                 
                 // FIXME: should only send this from AMB notification, but it is not working quite right
-                strongSelf.transportListener?.transportDidBecomeUnavailable()
+                strongSelf.transportListener?.apiManagerTransportDidBecomeUnavailable(strongSelf)
             }
         }
     }
@@ -120,9 +188,9 @@ class APIManager: NSObject {
             
             switch status {
             case .connected:
-                transportListener.transportDidBecomeAvailable()
+                transportListener.apiManagerTransportDidBecomeAvailable(self)
             case .disconnected:
-                transportListener.transportDidBecomeUnavailable()
+                transportListener.apiManagerTransportDidBecomeUnavailable(self)
             default:
                 Logger.default.logInfo("AMB connection notification: \(status)")
             }
