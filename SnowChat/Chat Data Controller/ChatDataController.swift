@@ -530,6 +530,10 @@ extension ChatDataController: ChatDataListener {
             if let viewModels = controlsForInput(from: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
+        case .inputImage:
+            if let viewModels = controlsForInput(from: historyExchange) {
+//                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+            }
         case .text:
             if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message),
                let controlModel = messageModel.controlModel {
