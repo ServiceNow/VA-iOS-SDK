@@ -15,11 +15,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let window = UIWindow()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        let rootViewController = RootViewController()
         
-        let debugController = DebugViewController.fromStoryboard()
-        let navController = UINavigationController(rootViewController: debugController)
-        
-        window.rootViewController = navController
+        window.rootViewController = rootViewController
         window.makeKeyAndVisible()
         
         return true

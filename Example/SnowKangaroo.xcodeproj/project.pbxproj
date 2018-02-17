@@ -7,12 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B5CF99C2034AC9C0020DF53 /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5CF99B2034AC9C0020DF53 /* Notifications.swift */; };
+		8B72FC25202A66B300C1AFC9 /* LogInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B72FC23202A66B300C1AFC9 /* LogInViewController.swift */; };
+		8B72FC26202A66B300C1AFC9 /* LogInViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B72FC24202A66B300C1AFC9 /* LogInViewController.xib */; };
+		8B72FC2C202AA58500C1AFC9 /* ServerInstanceURLTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B72FC2B202AA58500C1AFC9 /* ServerInstanceURLTests.swift */; };
+		8B72FC2F202AA5E700C1AFC9 /* URL+ServerInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B72FC2E202AA5E700C1AFC9 /* URL+ServerInstance.swift */; };
+		8B72FC32202B61FD00C1AFC9 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B72FC31202B61FD00C1AFC9 /* RootViewController.swift */; };
+		8B72FC35202B625A00C1AFC9 /* InstanceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B72FC34202B625A00C1AFC9 /* InstanceSettings.swift */; };
+		8B72FC37202B696A00C1AFC9 /* OAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B72FC36202B696A00C1AFC9 /* OAuthCredential.swift */; };
+		8B72FC39202B699F00C1AFC9 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B72FC38202B699F00C1AFC9 /* AuthManager.swift */; };
+		8BBAAA922032547700D50F66 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAAA902032547700D50F66 /* HomeViewController.swift */; };
+		8BBAAA932032547700D50F66 /* HomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8BBAAA912032547700D50F66 /* HomeViewController.xib */; };
 		BE3BCB8B1FBA00270019A21A /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E22C1FB934FF00948FBC /* SnowChat.framework */; };
 		BE3BCB8C1FBA00270019A21A /* SnowChat.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E22C1FB934FF00948FBC /* SnowChat.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BE50E1ED1FB92EB800948FBC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E1EC1FB92EB800948FBC /* AppDelegate.swift */; };
 		BE50E1F41FB92EB800948FBC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE50E1F31FB92EB800948FBC /* Assets.xcassets */; };
 		BE50E1F71FB92EB800948FBC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE50E1F51FB92EB800948FBC /* LaunchScreen.storyboard */; };
-		BE50E2021FB92EB800948FBC /* SnowKangarooTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E2011FB92EB800948FBC /* SnowKangarooTests.swift */; };
 		BE50E20D1FB92EB800948FBC /* SnowKangarooUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE50E20C1FB92EB800948FBC /* SnowKangarooUITests.swift */; };
 /* End PBXBuildFile section */
 
@@ -48,13 +58,23 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		8B5CF99B2034AC9C0020DF53 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
+		8B72FC23202A66B300C1AFC9 /* LogInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInViewController.swift; sourceTree = "<group>"; };
+		8B72FC24202A66B300C1AFC9 /* LogInViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LogInViewController.xib; sourceTree = "<group>"; };
+		8B72FC2B202AA58500C1AFC9 /* ServerInstanceURLTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerInstanceURLTests.swift; sourceTree = "<group>"; };
+		8B72FC2E202AA5E700C1AFC9 /* URL+ServerInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+ServerInstance.swift"; sourceTree = "<group>"; };
+		8B72FC31202B61FD00C1AFC9 /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
+		8B72FC34202B625A00C1AFC9 /* InstanceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceSettings.swift; sourceTree = "<group>"; };
+		8B72FC36202B696A00C1AFC9 /* OAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthCredential.swift; sourceTree = "<group>"; };
+		8B72FC38202B699F00C1AFC9 /* AuthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
+		8BBAAA902032547700D50F66 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		8BBAAA912032547700D50F66 /* HomeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HomeViewController.xib; sourceTree = "<group>"; };
 		BE50E1E91FB92EB800948FBC /* SnowKangaroo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnowKangaroo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE50E1EC1FB92EB800948FBC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BE50E1F31FB92EB800948FBC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BE50E1F61FB92EB800948FBC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BE50E1F81FB92EB800948FBC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BE50E1FD1FB92EB800948FBC /* SnowKangarooTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnowKangarooTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		BE50E2011FB92EB800948FBC /* SnowKangarooTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowKangarooTests.swift; sourceTree = "<group>"; };
 		BE50E2031FB92EB800948FBC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BE50E2081FB92EB800948FBC /* SnowKangarooUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnowKangarooUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE50E20C1FB92EB800948FBC /* SnowKangarooUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowKangarooUITests.swift; sourceTree = "<group>"; };
@@ -88,6 +108,44 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8B72FC22202A66A400C1AFC9 /* Log In */ = {
+			isa = PBXGroup;
+			children = (
+				8B72FC23202A66B300C1AFC9 /* LogInViewController.swift */,
+				8B72FC24202A66B300C1AFC9 /* LogInViewController.xib */,
+			);
+			path = "Log In";
+			sourceTree = "<group>";
+		};
+		8B72FC28202A722500C1AFC9 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				8B72FC38202B699F00C1AFC9 /* AuthManager.swift */,
+				8B72FC34202B625A00C1AFC9 /* InstanceSettings.swift */,
+				8B72FC36202B696A00C1AFC9 /* OAuthCredential.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		8B72FC2D202AA5BD00C1AFC9 /* Foundation */ = {
+			isa = PBXGroup;
+			children = (
+				8B72FC2E202AA5E700C1AFC9 /* URL+ServerInstance.swift */,
+				8B5CF99B2034AC9C0020DF53 /* Notifications.swift */,
+			);
+			path = Foundation;
+			sourceTree = "<group>";
+		};
+		8B72FC30202B618C00C1AFC9 /* Root UI */ = {
+			isa = PBXGroup;
+			children = (
+				8B72FC31202B61FD00C1AFC9 /* RootViewController.swift */,
+				8BBAAA902032547700D50F66 /* HomeViewController.swift */,
+				8BBAAA912032547700D50F66 /* HomeViewController.xib */,
+			);
+			path = "Root UI";
+			sourceTree = "<group>";
+		};
 		BE50E1E01FB92EB800948FBC = {
 			isa = PBXGroup;
 			children = (
@@ -112,6 +170,10 @@
 		BE50E1EB1FB92EB800948FBC /* SnowKangaroo */ = {
 			isa = PBXGroup;
 			children = (
+				8B72FC30202B618C00C1AFC9 /* Root UI */,
+				8B72FC2D202AA5BD00C1AFC9 /* Foundation */,
+				8B72FC28202A722500C1AFC9 /* Auth */,
+				8B72FC22202A66A400C1AFC9 /* Log In */,
 				BE50E1EC1FB92EB800948FBC /* AppDelegate.swift */,
 				BE50E1F31FB92EB800948FBC /* Assets.xcassets */,
 				BE5974C61FC3B19700959406 /* Supporting Files */,
@@ -122,8 +184,8 @@
 		BE50E2001FB92EB800948FBC /* SnowKangarooTests */ = {
 			isa = PBXGroup;
 			children = (
-				BE50E2011FB92EB800948FBC /* SnowKangarooTests.swift */,
 				BE50E2031FB92EB800948FBC /* Info.plist */,
+				8B72FC2B202AA58500C1AFC9 /* ServerInstanceURLTests.swift */,
 			);
 			path = SnowKangarooTests;
 			sourceTree = "<group>";
@@ -264,8 +326,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B72FC26202A66B300C1AFC9 /* LogInViewController.xib in Resources */,
 				BE50E1F71FB92EB800948FBC /* LaunchScreen.storyboard in Resources */,
 				BE50E1F41FB92EB800948FBC /* Assets.xcassets in Resources */,
+				8BBAAA932032547700D50F66 /* HomeViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -329,7 +393,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B72FC37202B696A00C1AFC9 /* OAuthCredential.swift in Sources */,
+				8B72FC39202B699F00C1AFC9 /* AuthManager.swift in Sources */,
+				8B72FC32202B61FD00C1AFC9 /* RootViewController.swift in Sources */,
+				8B5CF99C2034AC9C0020DF53 /* Notifications.swift in Sources */,
+				8BBAAA922032547700D50F66 /* HomeViewController.swift in Sources */,
+				8B72FC35202B625A00C1AFC9 /* InstanceSettings.swift in Sources */,
 				BE50E1ED1FB92EB800948FBC /* AppDelegate.swift in Sources */,
+				8B72FC2F202AA5E700C1AFC9 /* URL+ServerInstance.swift in Sources */,
+				8B72FC25202A66B300C1AFC9 /* LogInViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -337,7 +409,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE50E2021FB92EB800948FBC /* SnowKangarooTests.swift in Sources */,
+				8B72FC2C202AA58500C1AFC9 /* ServerInstanceURLTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

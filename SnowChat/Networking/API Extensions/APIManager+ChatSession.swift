@@ -15,12 +15,10 @@ extension APIManager {
     
     // MARK: - Session
     
-    func startChatSession(with sessionInfo: ChatSession, chatId: String, completion: @escaping (Result<ChatSession>) -> Void) {
-        var resultSession = sessionInfo
-        
-        let parameters: Parameters = [ "deviceId": sessionInfo.deviceId,
+    func startChatSession(with sessionContext: ChatSessionContext, chatId: String, completion: @escaping (Result<ChatSession>) -> Void) {
+        let parameters: Parameters = [ "deviceId": sessionContext.deviceId,
                                        "channelId": "/cs/messages/" + chatId,
-                                       "vendorId": sessionInfo.vendor.vendorId]
+                                       "vendorId": sessionContext.vendor.vendorId]
         
         sessionManager.request(apiURLWithPath("cs/session"),
             method: .post,
@@ -35,15 +33,18 @@ extension APIManager {
                 
                 if let value = response.result.value,
                     let data = value as? NSDictionary,
-                    let sessionData = data.object(forKey: "session") as? NSDictionary {
+                    let sessionData = data.object(forKey: "session") as? NSDictionary,
+                    let consumerId = sessionData.object(forKey: "consumerId") as? String,
+                    let consumerAccountId = sessionData.object(forKey: "consumerAccountId") as? String,
+                    let sessionId = sessionData.object(forKey: "sessionId") as? String {
                     
-                    resultSession.welcomeMessage = data.object(forKey: "welcomeMessage") as? String
-                    resultSession.id = sessionData.object(forKey: "sessionId") as! String
-                    resultSession.user.consumerId = sessionData.object(forKey: "consumerId") as! String
-                    resultSession.user.consumerAccountId = sessionData.object(forKey: "consumerAccountId") as! String
-                    resultSession.sessionState = .opened
+                    let user = ChatUser(consumerId: consumerId, consumerAccountId: consumerAccountId)
+                    var chatSession = ChatSession(id: sessionId, user: user)
                     
-                    completion(.success(resultSession))
+                    chatSession.welcomeMessage = data.object(forKey: "welcomeMessage") as? String
+                    chatSession.sessionState = .opened
+                    
+                    completion(.success(chatSession))
                 } else {
                     Logger.default.logError("Error getting response data from session request: malformed server response")
                     completion(.failure(ChatterboxError.unknown(details: "malformed server response")))
@@ -158,11 +159,7 @@ extension APIManager {
                 let messageData = try JSONSerialization.data(withJSONObject: wrapper, options: JSONSerialization.WritingOptions.prettyPrinted)
                 if let messageString = String(data: messageData, encoding: .utf8) {
                     let control = ChatDataFactory.controlFromJSON(messageString)
-                    if control.controlType != .unknown {
-                        return control
-                    } else {
-                        Logger.default.logError("message in result is not a control - skipping: \(messageString)")
-                    }
+                    return control
                 }
             } catch let err {
                 Logger.default.logError("Error \(err) decoding message: \(message)")

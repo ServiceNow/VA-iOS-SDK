@@ -20,6 +20,9 @@ struct StartAgentChatMessage: Codable, ActionData {
         var topicId: String
         var chatStage: String
         var ready: Bool?
+        
+        var agent: Bool?
+        var isAgent: Bool?
     }
     
     // define the properties that we decode / encode

@@ -42,7 +42,9 @@ enum ChatterboxError: Error {
 class Chatterbox {
     let id = ChatUtil.uuidString()
     
-    var user: ChatUser?
+    var user: ChatUser? {
+        return session?.user
+    }
     var vendor: ChatVendor?
     
     weak var chatDataListener: ChatDataListener?
@@ -74,6 +76,14 @@ class Chatterbox {
     private(set) internal lazy var apiManager: APIManager = {
         return APIManager(instance: instance, transportListener: self)
     }()
+
+    private enum ChatStatus {
+        case uninitialized
+        case topicSelection
+        case userConversation
+        case agentConversation
+    }
+    private var state = ChatStatus.uninitialized
     
     private var messageHandler: ((String) -> Void)?
     private var handshakeCompletedHandler: ((ContextualActionMessage?) -> Void)?
@@ -88,37 +98,37 @@ class Chatterbox {
         chatEventListener = eventListener
     }
     
-    func initializeSession(forUser: ChatUser, vendor: ChatVendor,
-                           success: @escaping (ContextualActionMessage) -> Void,
-                           failure: @escaping (Error?) -> Void ) {
-        self.user = forUser
+    // TODO: We should clean this up. Less nesting, less force unwrapping, weak self :)
+    func establishUserSession(vendor: ChatVendor, token: OAuthToken, completion: @escaping (Result<ContextualActionMessage>) -> Void) {
         self.vendor = vendor
         
-        logIn { error in
-            if error == nil {
-                self.createChatSession { error in
+        apiManager.prepareUserSession(token: token) { (result) in
+            if result.error == nil {
+                self.createChatSession(vendor: vendor) { error in
                     if error == nil {
                         self.performChatHandshake { actionMessage in
                             guard let actionMessage = actionMessage else {
-                                failure(ChatterboxError.unknown(details: "Chat Handshake failed for an unknown reason"))
+                                completion(.failure(ChatterboxError.unknown(details: "Chat Handshake failed for an unknown reason")))
                                 return
                             }
+                            
                             self.contextualActions = actionMessage
+                            self.state = .topicSelection
                             
                             self.chatEventListener?.chatterbox(self, didEstablishUserSession: self.session?.id ?? "UNKNOWN_SESSION_ID", forChat: self.chatId)
                             
-                            success(actionMessage)
-                            return
+                            completion(.success(actionMessage))
                         }
                     } else {
-                        failure(error)
+                        // swiftlint:disable:next force_unwrapping
+                        completion(.failure(error!))
                     }
                 }
             } else {
-                failure(error)
+                // swiftlint:disable:next force_unwrapping
+                completion(.failure(result.error!))
             }
         }
-        logger.logDebug("initializeAMB returning")
     }
     
     func startTopic(withName: String) throws {
@@ -138,6 +148,7 @@ class Chatterbox {
     
     func transferToLiveAgent() {
         if let sessionId = session?.id, let conversationId = conversationContext.systemConversationId {
+            state = .agentConversation
             messageHandler = startLiveAgentHandshakeHandler
             
             var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
@@ -146,7 +157,6 @@ class Chatterbox {
             startTopic.data.richControl?.uiMetadata = contextualActions?.data.richControl?.uiMetadata
             
             publishMessage(startTopic)
-            
         } else {
             logger.logError("Session must be initialized before startTopic is called")
         }
@@ -210,48 +220,17 @@ class Chatterbox {
     
     // MARK: - Session Methods
     
-    private func logIn(_ completion: @escaping (Error?) -> Void) {
-        guard  let user = user, vendor != nil else {
-            let error = ChatterboxError.invalidParameter(details: "User and Vendor must be initialized first")
-            logger.logError(error.localizedDescription)
-            completion(error)
-            return
-        }
+    private func createChatSession(vendor: ChatVendor, completion: @escaping (Error?) -> Void) {
+        let sessionContext = ChatSessionContext(vendor: vendor)
         
-        apiManager.logIn(username: user.username, password: user.password ?? "") { [weak self] error in
-            guard let strongSelf = self else { return }
-            
-            if let error = error {
-                strongSelf.logger.logInfo("AMB Login failed: \(error)")
-                strongSelf.loginFailure()
-            } else {
-                strongSelf.logger.logInfo("Login succeeded")
-            }
-            completion(error)
-        }
-    }
-    
-    private func loginFailure() {
-        // bubble up to Chat Service
-        
-    }
-    
-    private func createChatSession(_ completion: @escaping (Error?) -> Void) {
-        guard let user = user, let vendor = vendor else {
-            logger.logError("User and Vendor must be initialized to create a chat session")
-            return
-        }
-
-        let sessionInfo = ChatSession(id: UUID().uuidString, user: user, vendor: vendor)
-        
-        apiManager.startChatSession(with: sessionInfo, chatId: chatId) { [weak self] result in
+        apiManager.startChatSession(with: sessionContext, chatId: chatId) { [weak self] result in
             guard let strongSelf = self else { return }
             
             switch result {
-            case .success(let resultSession):
-                strongSelf.session = resultSession
+            case .success(let session):
+                strongSelf.session = session
                 
-                strongSelf.logger.logDebug("--> Chat Session established: sessionId: \(strongSelf.session?.id ?? "NIL") \n consumerAccountId=\(resultSession.user.consumerAccountId)")
+                strongSelf.logger.logDebug("--> Chat Session established: sessionId: \(strongSelf.session?.id ?? "NIL") \n consumerAccountId=\(session.user.consumerAccountId)")
             case .failure:
                 strongSelf.logger.logError("getSession failed!")
             }
@@ -274,8 +253,8 @@ class Chatterbox {
             // but FIRST we check for a general system events (system error, updated ContextualAction, etc)
             let systemError = ChatDataFactory.controlFromJSON(message)
             guard systemError.controlType != .systemError else {
-                strongSelf.logger.logError("System Error received: transferring to Live Agent...")
-                strongSelf.transferToLiveAgent()
+                strongSelf.logger.logError("System Error received")
+                strongSelf.handleSystemError(message)
                 return
             }
             
@@ -295,6 +274,11 @@ class Chatterbox {
         }
     }
     
+    fileprivate func installTopicSelectionMessageHandler() {
+        state = .topicSelection
+        self.messageHandler = self.topicSelectionHandler
+    }
+    
     private func handshakeHandler(_ message: String) {
         let event = ChatDataFactory.actionFromJSON(message)
         guard event.eventType == .channelInit,
@@ -312,7 +296,7 @@ class Chatterbox {
             conversationContext.systemConversationId = initEvent.data.conversationId
             conversationContext.sessionId = initEvent.data.sessionId
             
-            self.messageHandler = self.topicSelectionHandler
+            installTopicSelectionMessageHandler()
         default:
             break
         }
@@ -343,9 +327,11 @@ class Chatterbox {
         initUserEvent.data.sendTime = Date()
         initUserEvent.data.actionMessage.loginStage = .loginUserSession
         initUserEvent.data.actionMessage.contextHandshake.vendorId = vendor?.vendorId
+        initUserEvent.data.actionMessage.userId = user?.consumerId
         initUserEvent.data.actionMessage.contextHandshake.deviceId = deviceIdentifier()
         initUserEvent.data.actionMessage.consumerAcctId = session?.user.consumerAccountId
-
+        initUserEvent.data.actionMessage.extId = (initUserEvent.data.actionMessage.contextHandshake.deviceId ?? "") + (session?.user.consumerAccountId ?? "")
+        
         if let request = initUserEvent.data.actionMessage.contextHandshake.serverContextRequest {
             initUserEvent.data.actionMessage.contextHandshake.serverContextResponse = serverContextResponse(fromRequest: request)
         }
@@ -433,19 +419,23 @@ class Chatterbox {
         
         if actionMessage.eventType == .startAgentChat,
             let startAgentChatMessage = actionMessage as? StartAgentChatMessage,
-            startAgentChatMessage.data.direction == .fromServer,
             startAgentChatMessage.data.actionMessage.chatStage == "ConnectToAgent" {
 
-            logger.logDebug("*** ConnectToAgent Message in LiveAgentHandler, sending ready=true")
+            if startAgentChatMessage.data.direction == .fromServer {
+                logger.logDebug("*** ConnectToAgent Message from server: sending ready=true")
 
-            // send reponse message that we are ready
-            let startAgentChatReadyMessage = createStartAgentChatReadyMessage(fromMessage: startAgentChatMessage)
-            publishMessage(startAgentChatReadyMessage)
-        
-            // begin the agent topic
-            let conversationId = startAgentChatMessage.data.actionMessage.topicId
-            let topicInfo = TopicInfo(topicId: "brb", conversationId: conversationId)
-            startAgentTopic(topicInfo: topicInfo)
+                // send reponse message that we are ready
+                let startAgentChatReadyMessage = createStartAgentChatReadyMessage(fromMessage: startAgentChatMessage)
+                publishMessage(startAgentChatReadyMessage)
+            } else {
+                logger.logDebug("*** ConnectToAgent Message from client: Agent Topic Started!")
+
+                // we got back out own start topic response, so begin the agent topic
+                let conversationId = startAgentChatMessage.data.actionMessage.topicId
+                let topicId = startAgentChatMessage.data.actionMessage.topicId
+                let topicInfo = TopicInfo(topicId: topicId, conversationId: conversationId)
+                startAgentTopic(topicInfo: topicInfo)
+            }
         }
     }
     
@@ -468,7 +458,7 @@ class Chatterbox {
 
     private func setupForConversation(topicInfo: TopicInfo) {
         conversationContext.conversationId = topicInfo.conversationId
-        logger.logDebug("*** Setting topic mesdsage handler")
+        logger.logDebug("*** Setting topic message handler")
         installTopicMessageHandler()
     }
     
@@ -487,6 +477,9 @@ class Chatterbox {
         startChatReady.data.sendTime = Date()
         startChatReady.data.direction = .fromClient
         startChatReady.data.actionMessage.ready = true
+        startChatReady.data.actionMessage.agent = false
+        startChatReady.data.actionMessage.isAgent = false
+        
         return startChatReady
     }
     
@@ -495,6 +488,7 @@ class Chatterbox {
     private func installTopicMessageHandler() {
         clearMessageHandlers()
         
+        state = .userConversation
         messageHandler = userTopicMessageHandler
     }
     
@@ -513,6 +507,15 @@ class Chatterbox {
     }
     
     // MARK: - Incoming messages (Controls from service)
+    
+    fileprivate func handleSystemError(_ message: String) {
+        if state == .userConversation {
+            transferToLiveAgent()
+        } else {
+            logger.logError("System Error encountered outside of User Conversation!")
+            // TODO: how to signal a system error??
+        }
+    }
     
     fileprivate func handleEventMessage(_ message: String) -> Bool {
         let action = ChatDataFactory.actionFromJSON(message)
@@ -541,10 +544,6 @@ class Chatterbox {
     }
     
     fileprivate func handleControlMessage(_ control: ControlData) {
-        guard control.controlType != .unknown else {
-            return
-        }
-        
         if let conversationId = control.conversationId {
             switch control.direction {
             case .fromClient:
@@ -653,6 +652,8 @@ class Chatterbox {
     private func clearMessageHandlers() {
         messageHandler = nil
         handshakeCompletedHandler = nil
+        
+        state = .topicSelection
     }
 }
 
@@ -898,7 +899,7 @@ extension Chatterbox: TransportStatusListener {
     
     // MARK: - handle transport notifications
     
-    func transportDidBecomeUnavailable() {
+    func apiManagerTransportDidBecomeUnavailable(_ apiManager: APIManager) {
         logger.logInfo("Network unavailable....")
 
         chatEventListener?.chatterbox(self, didReceiveTransportStatus: .unreachable, forChat: chatId)
@@ -906,7 +907,7 @@ extension Chatterbox: TransportStatusListener {
     
     private static var alreadySynchronizing = false
     
-    func transportDidBecomeAvailable() {
+    func apiManagerTransportDidBecomeAvailable(_ apiManager: APIManager) {
         chatEventListener?.chatterbox(self, didReceiveTransportStatus: .reachable, forChat: chatId)
 
         guard !Chatterbox.alreadySynchronizing, conversationContext.conversationId != nil else { return }
@@ -918,8 +919,9 @@ extension Chatterbox: TransportStatusListener {
         }
     }
     
-    func authorizationFailure() {
+    func apiManagerAuthenticationDidBecomeInvalid(_ apiManager: APIManager) {
         logger.logInfo("Authorization failed!")
-        chatAuthListener?.authorizationFailed()
+        
+        chatAuthListener?.chatterboxAuthenticationDidBecomeInvalid(self)
     }
 }

@@ -9,39 +9,32 @@
 import Foundation
 
 struct ChatUser: Codable {
-    var id: String
-    var token: String
-    var username: String
     var consumerId: String
     var consumerAccountId: String
-    
-    var password: String?   // NOTE: will not be used once token is correctly allowed by service
 }
 
 struct ChatVendor: Codable {
     var name: String
     var vendorId: String
-    var consumerId: String
-    var consumerAccountId: String
+}
+
+struct ChatSessionContext {
+    var deviceId: String { return "1234" } //{ return deviceIdentifier() }
+    var vendor: ChatVendor
 }
 
 struct ChatSession: Codable {
     var id: String
     var user: ChatUser
-    var vendor: ChatVendor
     var sessionState: SessionState = .closed
     var welcomeMessage: String?
-    var deviceId: String { return deviceIdentifier() }
-
-    var extId: String { return "\(deviceId)\(vendor.consumerAccountId)" }
 
     var contextId: String { return "context" }
         // NOTE: unknown what this should be - reference impl had it hard-coded and commented as 'what?'
 
-    init(id: String, user: ChatUser, vendor: ChatVendor) {
+    init(id: String, user: ChatUser) {
         self.id = id
         self.user = user
-        self.vendor = vendor
         self.sessionState = .closed
     }
     
@@ -49,7 +42,6 @@ struct ChatSession: Codable {
     private enum CodingKeys: String, CodingKey {
         case id
         case user
-        case vendor
         case welcomeMessage
     }
     

@@ -70,7 +70,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     internal func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
         guard uiControl?.model.id != control.model.id,
             uiControl?.model.type != control.model.type else {
-            Logger.default.logDebug("Seems like you try to readd the same model!")
+            Logger.default.logDebug("Seems like you try to read the same model!")
             return
         }
         
