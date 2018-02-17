@@ -35,6 +35,11 @@ public enum SNOWAMBResult<Value> {
 // SNOWAMBGlideStatus
 //
 
+public enum AMBGlideSessionStatus: String {
+    case loggedIn = "session.logged.in"
+    case loggedOut = "session.logged.out"
+}
+
 public struct SNOWAMBGlideStatus {
     let ambActive: Bool
     let sessionStatus: String?
@@ -94,21 +99,16 @@ enum AMBChannel: String {
 //
 
 public class SNOWAMBClient {
-    let BayeuxSupportedConnections = ["long-polling"]
-    let BayeuxProtocol = "1.0"
-    let BayeuxMinimumSupportedProtocol = "1.0"
+    let bayeuxSupportedConnections = ["long-polling"]
+    let bayeuxProtocolVersion = "1.0"
+    let bayeuxMinimumSupportedProtocolVersion = "1.0beta"
     
-    enum ReconnectAdviceField {
+    enum ReconnectAdviceField: String {
         case handshake
         case retry
         
-        var name : String {
-            switch self {
-            case .handshake:
-                return "handshake"
-            case .retry:
-                return "retry"
-            }
+        var name: String {
+            return rawValue
         }
     }
     
@@ -122,22 +122,25 @@ public class SNOWAMBClient {
     private var subscriptionsByChannel = [String : [SNOWAMBSubscriptionWeakWrapper]]()
     private var subscribedChannels = Set<String>()
     private var queuedSubscriptionChannels = Set<String>()
-    private var longPollingInterval : TimeInterval = 0.0
-    private var longPollingTimeout : TimeInterval = 0.0
+    private var longPollingInterval: TimeInterval = 0.0
+    private var longPollingTimeout: TimeInterval = 0.0
     private let retryInterval = 1.0
     private var retryAttempt = 0
     private var reopenChannelsAfterSuccessfulConnectMessages = true
     private var dataTasks = [URLSessionDataTask]()
     
     private var scheduledConnectTask: DispatchWorkItem?
+    // TODO: will probably don't need to keep reference to http data task.
+    // it's used for debugging for now (alex a, 02-15-18)
     private weak var connectDataTask: URLSessionDataTask?
+    // sequential message id
     private var messageId = 0
     
-    public var clientStatus: SNOWAMBClientStatus = .disconnected {
-        willSet(newClientStatus) {
-            if newClientStatus != self.clientStatus {
-                delegate?.didClientStatusChange(client: self, status: newClientStatus)
-                switch newClientStatus {
+    public var clientStatus = SNOWAMBClientStatus.disconnected {
+        didSet {
+            if oldValue != self.clientStatus {
+                delegate?.didClientStatusChange(client: self, status: self.clientStatus)
+                switch self.clientStatus {
                 case .retrying, .handshake:
                     retryAttempt = 0
                 case .connected:
@@ -152,9 +155,9 @@ public class SNOWAMBClient {
     }
     
     public var glideStatus: SNOWAMBGlideStatus = SNOWAMBGlideStatus(ambActive: false, sessionStatus: nil) {
-        willSet(newGlideStatus) {
-            if newGlideStatus != self.glideStatus {
-                delegate?.didGlideStatusChange(client: self, status: newGlideStatus)
+        didSet {
+            if oldValue != self.glideStatus {
+                delegate?.didGlideStatusChange(client: self, status: self.glideStatus)
             }
         }
     }
@@ -163,7 +166,7 @@ public class SNOWAMBClient {
         didSet {
             if paused != oldValue {
                 if paused {
-                    // nothing to do here
+                    cancelAllDataTasks()
                 } else {
                     self.clientStatus = .retrying
                     startConnectRequest()
@@ -204,13 +207,14 @@ public class SNOWAMBClient {
         let newWrapper = SNOWAMBSubscriptionWeakWrapper(subscription)
         if subscriptionsByChannel[channel] == nil {
             subscriptionsByChannel[channel] = [newWrapper]
+            if self.clientStatus == .connected {
+                sendBayeuxSubscribeMessage(channel: channel)
+            } else {
+                queuedSubscriptionChannels.insert(channel)
+            }
         } else {
+            newWrapper.subscription?.subscribed = subscribedChannels.contains(channel)
             subscriptionsByChannel[channel]?.append(newWrapper)
-        }
-        if self.clientStatus == .connected {
-            sendBayeuxSubscribeMessage(channel: channel)
-        } else {
-            queuedSubscriptionChannels.insert(channel)
         }
         
         return subscription
@@ -273,12 +277,6 @@ private extension SNOWAMBClient {
             return
         }
         
-        if let scheduledConnectTask = self.scheduledConnectTask {
-            if !scheduledConnectTask.isCancelled {
-               return
-            }
-        }
-        
         self.scheduledConnectTask = DispatchWorkItem { [weak self] in
             self?.sendBayeuxConnectMessage()
         }
@@ -286,18 +284,6 @@ private extension SNOWAMBClient {
         if let scheduledConnectTask = self.scheduledConnectTask {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + interval,
                                           execute: scheduledConnectTask)
-        }
-    }
-    
-    func cancelConnectRequest() {
-        guard scheduledConnectTask != nil else {
-            return
-        }
-        
-        cancelAllDataTasks()
-        
-        if scheduledConnectTask != nil {
-            scheduledConnectTask?.cancel()
         }
     }
     
@@ -365,6 +351,11 @@ private extension SNOWAMBClient {
     }
     
     func parseChannelMessage(_ ambMessage: SNOWAMBMessage, channel: String) {
+        if self.paused {
+            log("AMB Client: incoming message when client is paused. Skipping.)
+            return
+        }
+        
         if subscribedChannels.contains(channel) {
             guard ambMessage.data != nil else {
                 return
@@ -523,12 +514,12 @@ private extension SNOWAMBClient {
     // MARK: Bayeux messages
     
     func sendBayeuxHandshakeMessage() {
-        let message =
-           ["channel" : AMBChannel.handshake.name,
-            "version" : BayeuxProtocol,
-            "minimumVersion" : BayeuxMinimumSupportedProtocol,
-            "supportedConnections" : BayeuxSupportedConnections
-            ] as [String : Any]
+        let message = [
+            "channel" : AMBChannel.handshake.name,
+            "version" : bayeuxProtocolVersion,
+            "minimumVersion" : bayeuxMinimumSupportedProtocolVersion,
+            "supportedConnections" : bayeuxSupportedConnections
+        ] as [String : Any]
     
         self.clientStatus = .handshake
         postBayeuxMessage(message)
@@ -540,11 +531,11 @@ private extension SNOWAMBClient {
             return
         }
         
-        let message =
-            ["channel" : AMBChannel.connect.name,
-             "clientId" : clientId,
-             "supportedConnections" : BayeuxSupportedConnections
-            ] as [String : Any]
+        let message = [
+            "channel" : AMBChannel.connect.name,
+            "clientId" : clientId,
+            "supportedConnections" : bayeuxSupportedConnections
+        ] as [String : Any]
         
         var timeout : TimeInterval = self.longPollingInterval
         if self.clientStatus == .retrying {
