@@ -7,6 +7,7 @@
 //
 
 import MobileCoreServices
+import Photos
 
 class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -40,6 +41,18 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
     
     func pickerViewController(_ viewController: PickerViewController, didFinishWithModel model: PickerControlViewModel) {
         guard let item = model.selectedItem else { return }
+        
+        // Check if Info.plist has a value for NSPhotoLibraryUsageDescription key. Otherwise the app will crash
+        guard let _ = Bundle.main.infoDictionary?["NSPhotoLibraryUsageDescription"] else {
+            fatalError("Please provide value for the NSPhotoLibraryUsageDescription key in Info.plist")
+        }
+        
+        // TODO: Bubble up an error if user declined access?
+        let autorizationStatus = PHPhotoLibrary.authorizationStatus()
+        guard autorizationStatus == .authorized else {
+            Logger.default.logError("User didn't autorize access to Photo Library!")
+            return
+        }
         
         let imagePickerControllerSourceType: UIImagePickerControllerSourceType
         switch item.type {
