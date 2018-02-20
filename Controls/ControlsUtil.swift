@@ -25,6 +25,8 @@ class ControlsUtil {
             return OutputLinkControl(model: model)
         case .outputHtml:
             return OutputHtmlControl(model: model)
+        case .dateTime, .time, .date:
+            return DateTimePickerControl(model: model)
         case .boolean:
             return BooleanControl(model: model)
         case .singleSelect:

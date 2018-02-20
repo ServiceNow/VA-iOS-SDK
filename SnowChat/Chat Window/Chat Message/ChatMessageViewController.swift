@@ -27,6 +27,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         didSet {
             guard let chatModel = model,
                 let controlModel = chatModel.controlModel,
+                let bubbleLocation = chatModel.bubbleLocation,
                 let control = controlCache?.control(forModel: controlModel, forResourceProvider: resourceProvider) else {
                     return
             }
@@ -36,7 +37,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
                 oldControl.removeFromParent()
             }
             
-            addUIControl(control, at: chatModel.location)
+            addUIControl(control, at: bubbleLocation)
             
             // if previous uiControl had a delegate we will pass it over to a new control
             control.delegate = uiControl?.delegate
@@ -134,8 +135,6 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
             bubbleTrailingConstraint.priority = .veryHigh
             agentImageView.isHidden = true
             agentImageTopConstraint.priority = .lowest
-        case .unspecified:
-            fatalError("Invalid BubbleLocation!")
         }
         
         view.setNeedsUpdateConstraints()
