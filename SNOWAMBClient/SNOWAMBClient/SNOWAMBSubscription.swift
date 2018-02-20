@@ -1,4 +1,4 @@
-public class SNOWAMBSubscription : Equatable {
+public class SNOWAMBSubscription {
     
     let uuid : String
     var valid = false
@@ -15,11 +15,6 @@ public class SNOWAMBSubscription : Equatable {
         self.uuid = UUID().uuidString
         self.valid = true
     }
-    
-    static public func == (lhs: SNOWAMBSubscription, rhs: SNOWAMBSubscription) -> Bool {
-        return lhs === rhs
-    }
-    
     public func tearDown() {
         guard valid else {
             return

@@ -3,6 +3,7 @@ import Foundation
 public typealias SNOWAMBMessageDictionary = [String : Any]
 public typealias SNOWAMBMessageDataExtention = [String : Any]
 public typealias SNOWAMBMessageHandler = (SNOWAMBResult<SNOWAMBMessage>, SNOWAMBSubscription) -> Void
+public typealias SNOWAMBPublishMessageHandler = (SNOWAMBResult<[SNOWAMBMessage]>) -> Void
 
 //
 // SNOWAMBResult
@@ -198,8 +199,9 @@ public class SNOWAMBClient {
     
     public func publishMessage(_ message: SNOWAMBMessageDictionary,
                                toChannel channel: String,
-                               withExtension ext: SNOWAMBMessageDataExtention) {
-        sendBayeuxPublishMessage(message, toChannel: channel, withExtension: ext)
+                               withExtension ext: SNOWAMBMessageDataExtention,
+                               completion handler: @escaping SNOWAMBPublishMessageHandler) {
+        sendBayeuxPublishMessage(message, toChannel: channel, withExtension: ext, completion: handler)
     }
     
     public func subscribe(channel: String, messageHandler: @escaping SNOWAMBMessageHandler) -> SNOWAMBSubscription {
@@ -300,28 +302,36 @@ private extension SNOWAMBClient {
     
     // MARK: AMB/Bayeux message handlers
     
-    private func parseResponseObject(_ responseObject: Any?) {
+    private func parseResponseObject(_ responseObject: Any?) -> SNOWAMBResult<[SNOWAMBMessage]> {
+        var parsedMessages = [SNOWAMBMessage]()
+        
         // TODO: For debugging purposes (remove!)
         log("<<<<<<<<<<<<  \(String(describing: responseObject))")
         
         guard responseObject as? [SNOWAMBMessageDictionary] != nil else {
-            delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.messageParserError, "AMB Messages structure is not Array"))
-            return
+            let error = SNOWAMBError(SNOWAMBErrorType.messageParserError, "AMB Messages structure is not Array")
+            delegate?.didFail(client: self, withError: error)
+            return SNOWAMBResult.failure(error)
         }
         
         for rawMessage in (responseObject as! [AnyObject]) {
             guard rawMessage as? SNOWAMBMessageDictionary != nil else {
-                delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.messageParserError, "AMB Message is not Dictionary"))
-                return
+                let error = SNOWAMBError(SNOWAMBErrorType.messageParserError, "AMB Message is not Dictionary")
+                delegate?.didFail(client: self, withError: error)
+                return SNOWAMBResult.failure(error)
             }
             do {
                 if let ambMessage = try SNOWAMBMessage(rawMessage: rawMessage) {
-                    parseAMBMessage(ambMessage)
+                   parseAMBMessage(ambMessage)
+                   parsedMessages.append(ambMessage)
                 }
             } catch {
-                delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.messageParserError, "AMB Message is not well formatted"))
+                let error = SNOWAMBError(SNOWAMBErrorType.messageParserError, "AMB Message is not well formatted")
+                delegate?.didFail(client: self, withError: error)
+                return SNOWAMBResult.failure(error)
             }
         }
+        return SNOWAMBResult.success(parsedMessages)
     }
     
     private func parseAMBMessage(_ ambMessage: SNOWAMBMessage) {
@@ -352,7 +362,7 @@ private extension SNOWAMBClient {
     
     func parseChannelMessage(_ ambMessage: SNOWAMBMessage, channel: String) {
         if self.paused {
-            log("AMB Client: incoming message when client is paused. Skipping.)
+            log("AMB Client: incoming message when client is paused. Skipping.")
             return
         }
         
@@ -575,7 +585,10 @@ private extension SNOWAMBClient {
         postBayeuxMessage(message)
     }
     
-    func sendBayeuxPublishMessage(_ message: SNOWAMBMessageDictionary, toChannel channel: String, withExtension ext: SNOWAMBMessageDataExtention?) {
+    func sendBayeuxPublishMessage(_ message: SNOWAMBMessageDictionary,
+                                  toChannel channel: String,
+                                  withExtension ext: SNOWAMBMessageDataExtention?,
+                                  completion handler: SNOWAMBPublishMessageHandler? = nil) {
         
         guard clientStatus == .connected else {
             delegate?.didFail(client: self,
@@ -606,7 +619,9 @@ private extension SNOWAMBClient {
         postBayeuxMessage(bayeuxMessage)
     }
     
-    @discardableResult func postBayeuxMessage(_ message: [String : Any], timeout : TimeInterval = 0.0) -> URLSessionDataTask? {
+    @discardableResult func postBayeuxMessage(_ message: [String : Any],
+                                              timeout: TimeInterval = 0.0,
+                                              completion handler: SNOWAMBPublishMessageHandler? = nil) -> URLSessionDataTask? {
         
         func channelNameToPath(_ channel : String) -> String {
             var path = ""
@@ -644,7 +659,10 @@ private extension SNOWAMBClient {
         
         let task = httpClient.post(fullPath, jsonParameters: myMessage as Any, timeout: timeout,
             success: { (responseObject: Any?) -> Void in
-                self.parseResponseObject(responseObject)
+                let result = self.parseResponseObject(responseObject)
+                if let handler = handler {
+                    handler(result)
+                }
             },
             failure: { (error: Any?) -> Void in
                 self.handleHTTPResponseError(message: myMessage, error: error as! Error)

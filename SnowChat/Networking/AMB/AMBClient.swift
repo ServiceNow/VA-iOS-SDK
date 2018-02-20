@@ -85,8 +85,18 @@ internal class AMBClient: NSObject {
         fayeClient.unsubscribe(subscription: subscription)
     }
     
-    func sendMessage(_ message: [String: Any], toChannel channel: String ) {
-        fayeClient.publishMessage(message, toChannel: channel, withExtension:[:])
+    func sendMessage(_ message: [String: Any], toChannel channel: String) {
+        fayeClient.publishMessage(message, toChannel: channel, withExtension:[:],
+                                  completion: { (result) in
+                                    switch result {
+                                    case .success:
+                                        logger.logInfo("published message successfully")
+                                        //TODO: Implement handler here
+                                    case .failure:
+                                        logger.logInfo("failed to publish message")
+                                        //TODO: same
+                                    }
+        })
     }
     
     func sendMessage<T>(_ message: T, toChannel channel: String, encoder: JSONEncoder) where T: Encodable {
