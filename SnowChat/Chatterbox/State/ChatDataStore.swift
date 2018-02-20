@@ -189,6 +189,7 @@ struct Conversation: Storable, Codable {
     
     enum ConversationState: String, Codable {
         case inProgress = "IN-PROGRESS"
+        case chatProgress = "CHAT-PROGRESS"
         case completed = "COMPLETED"
         case unknown = "UKNONWN"
     }

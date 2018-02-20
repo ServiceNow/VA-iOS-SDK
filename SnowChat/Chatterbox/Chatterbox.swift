@@ -456,6 +456,12 @@ class Chatterbox {
         chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: chatId)
     }
 
+    private func resumeLiveAgentTopic(conversationId: String) {
+        let topicInfo = TopicInfo(topicId: "brb", conversationId: conversationId)
+        // TODO: for now just do the same as a chat topic
+        resumeUserTopic(topicInfo: topicInfo)
+    }
+    
     private func setupForConversation(topicInfo: TopicInfo) {
         conversationContext.conversationId = topicInfo.conversationId
         logger.logDebug("*** Setting topic message handler")
@@ -669,6 +675,10 @@ extension Chatterbox {
             logger.logInfo("Conversation \(conversationId) is in progress")
             let topicInfo = TopicInfo(topicId: "TOPIC_ID", conversationId: conversationId)
             resumeUserTopic(topicInfo: topicInfo)
+        case .chatProgress:
+            logger.logInfo("Live Agent session \(conversationId) is in progress")
+            resumeLiveAgentTopic(conversationId: conversationId)
+            // TODO: how to resume a live agent chat session??
         case .completed:
             logger.logInfo("Conversation is no longer in progress - ending current conversations")
             finishTopic(conversationId)
@@ -827,8 +837,10 @@ extension Chatterbox {
                     var conversation = conversation
                     
                     let conversationId = conversation.conversationId
-                    let isInProgress = conversation.conversationId == lastConversation?.conversationId && conversation.state == .inProgress
-                    conversation.state = isInProgress ? .inProgress : .completed
+                    let isInProgress = conversation.conversationId == lastConversation?.conversationId && conversation.state != .completed
+                    if !isInProgress {
+                        conversation.state = .completed
+                    }
                     
                     self.logger.logDebug("--> Conversation \(conversationId) refreshed: \(conversation)")
                     
@@ -866,7 +878,7 @@ extension Chatterbox {
         chatStore.storeConversation(conversation)
         
         conversation.messageExchanges().forEach { (exchange) in
-            if conversation.state == .inProgress && !exchange.isComplete {
+            if conversation.state != .completed && !exchange.isComplete {
                 notifyMessage(exchange.message)
             } else {
                 notifyMessageExchange(exchange)

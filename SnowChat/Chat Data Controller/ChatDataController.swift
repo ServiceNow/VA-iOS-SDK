@@ -478,7 +478,7 @@ extension ChatDataController: ChatDataListener {
         logger.logInfo("Conversation \(conversationId) did load")
 
         if let conversation = chatterbox.conversation(forId: conversationId) {
-            if conversation.state == .inProgress {
+            if conversation.state == .inProgress || conversation.state == .chatProgress {
                 // do not push the start-topic divider if this is the active conversation
                 return
             }

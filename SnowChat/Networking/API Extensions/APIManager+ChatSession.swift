@@ -127,8 +127,8 @@ extension APIManager {
                 let status = conversationDictionary["status"] as? String ?? "UNKNOWN"
                 let topicTypeName = conversationDictionary["topicTypeName"] as? String ?? "UNKNOWN"
                 let messages = APIManager.messagesFromResult(messagesDictionary, assumeMessagesReversed: assumeMessagesReversed)
-
-                var conversation = Conversation(withConversationId: conversationId, withTopic: topicTypeName, withState: status == "COMPLETED" ? .completed : .inProgress)
+                let conversationState = Conversation.ConversationState(rawValue: status) ?? .unknown
+                var conversation = Conversation(withConversationId: conversationId, withTopic: topicTypeName, withState: conversationState)
                 
                 messages.forEach({ (message) in
                     if let lastPending = conversation.lastPendingMessage() as? ControlData,
