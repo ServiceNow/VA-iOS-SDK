@@ -48,6 +48,7 @@ class RoundedView: UIView, Roundable {
     @IBInspectable var borderLineWidth: CGFloat = 0 {
         didSet {
             borderLayer.lineWidth = borderLineWidth
+            setNeedsLayout()
         }
     }
     
@@ -57,9 +58,10 @@ class RoundedView: UIView, Roundable {
         }
     }
 
-    var borderColor: UIColor = UIColor.clear {
+    @IBInspectable var borderColor: UIColor = UIColor.clear {
         didSet {
             borderLayer.strokeColor = borderColor.cgColor
+            setNeedsLayout()
         }
     }
     
@@ -81,7 +83,8 @@ class RoundedView: UIView, Roundable {
     }
     
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
+        addRoundedMaskLayer()
     }
     
     override func layoutSubviews() {

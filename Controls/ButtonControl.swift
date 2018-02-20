@@ -67,9 +67,10 @@ class ButtonControl: ControlProtocol {
         button.titleLabel?.adjustsFontSizeToFitWidth = true
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
-        
+        button.setContentHuggingPriority(.veryHigh, for: .horizontal)
         viewController.view.addSubview(button)
-        NSLayoutConstraint.activate([button.centerXAnchor.constraint(equalTo: viewController.view.centerXAnchor),
+        NSLayoutConstraint.activate([button.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
+                                     button.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
                                      button.topAnchor.constraint(equalTo: viewController.view.topAnchor),
                                      button.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor)])
     }

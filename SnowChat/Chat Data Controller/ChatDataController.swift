@@ -145,13 +145,13 @@ class ChatDataController {
     fileprivate func addHistoryToCollection(_ viewModels: (message: ControlViewModel, response: ControlViewModel?)) {
         // add response, then message, to the tail-end of the control data
         if let response = viewModels.response {
-            controlData.append(ChatMessageModel(model: response, location: BubbleLocation.right))
+            controlData.append(ChatMessageModel(model: response, messageId: response.id, bubbleLocation: BubbleLocation.right))
         }
-        controlData.append(ChatMessageModel(model: viewModels.message, location: BubbleLocation.left))
+        controlData.append(ChatMessageModel(model: viewModels.message, messageId: viewModels.message.id, bubbleLocation: BubbleLocation.left))
     }
     
     fileprivate func addHistoryToCollection(_ viewModel: ControlViewModel, location: BubbleLocation = .left) {
-        addHistoryToCollection(ChatMessageModel(model: viewModel, location: location))
+        addHistoryToCollection(ChatMessageModel(model: viewModel, messageId: viewModel.id, bubbleLocation: location))
     }
 
     fileprivate func addHistoryToCollection(_ chatModel: ChatMessageModel) {
@@ -168,12 +168,17 @@ class ChatDataController {
         }
     }
     
+    fileprivate func presentAuxiliaryDataIfNeeded(forMessage message: ControlData) {
+        guard let auxiliaryModel = ChatMessageModel.auxiliaryModel(withMessage: message) else { return }
+        bufferControlMessage(auxiliaryModel)
+    }
+    
     fileprivate func pushTypingIndicator() {
         if isShowingTypingIndicator() {
             return
         }
         
-        let model = ChatMessageModel(model: typingIndicator, location: BubbleLocation.left)
+        let model = ChatMessageModel(model: typingIndicator, bubbleLocation: BubbleLocation.left)
         addControlToCollection(model)
         
         addChange(.insert(index: 0, model: model))
@@ -212,6 +217,8 @@ class ChatDataController {
                 updatePickerData(data, lastPendingMessage)
             case .multiSelect:
                 updateMultiSelectData(data, lastPendingMessage)
+            case .dateTime, .date, .time:
+                updateDateTimeData(data, lastPendingMessage)
             case .multiPart:
                 updateMultiPartData(data, lastPendingMessage)
             default:
@@ -261,6 +268,16 @@ class ChatDataController {
         }
     }
     
+    fileprivate func updateDateTimeData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
+        if let dateTimeViewModel = data as? DateTimePickerControlViewModel,
+            var dateTimeMessage = lastPendingMessage as? DateTimePickerControlMessage {
+            
+            dateTimeMessage.id = dateTimeViewModel.id
+            dateTimeMessage.data.richControl?.value = dateTimeViewModel.resultValue
+            chatterbox.update(control: dateTimeMessage)
+        }
+    }
+    
     fileprivate func updateMultiPartData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         if let buttonViewModel = data as? ButtonControlViewModel,
             var multiPartMessage = lastPendingMessage as? MultiPartControlMessage {
@@ -295,7 +312,7 @@ class ChatDataController {
     func presentCompletionMessage() {
         let message = NSLocalizedString("Thanks for visiting. If you need anything else, just ask!", comment: "Default end of topic message to show to user")
         let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
-        bufferControlMessage(ChatMessageModel(model: completionTextControl, location: .left))
+        bufferControlMessage(ChatMessageModel(model: completionTextControl, bubbleLocation: .left))
     }
 
     func presentWelcomeMessage() {
@@ -303,7 +320,7 @@ class ChatDataController {
         let welcomeTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         
         // NOTE: we do not buffer the welcome message currently - this is intentional
-        presentControlData(ChatMessageModel(model: welcomeTextControl, location: .left))
+        presentControlData(ChatMessageModel(model: welcomeTextControl, bubbleLocation: .left))
     }
     
     func pushTopicStartDivider(_ topicInfo: TopicInfo) {
@@ -373,10 +390,8 @@ extension ChatDataController: ChatDataListener {
         if let messageModel = ChatMessageModel.model(withMessage: message) {
             bufferControlMessage(messageModel)
             
-            // show Button control after nested control of multipart is presented
-            if message.controlType == .multiPart, let buttonModel = ChatMessageModel.buttonModel(withMessage: message as! MultiPartControlMessage) {
-                bufferControlMessage(buttonModel)
-            }
+            // Only some controls have auxiliary data. They might appear as part of the conversation table view or on the bottom.
+            presentAuxiliaryDataIfNeeded(forMessage: message)
             
         } else {
             dataConversionError(controlId: message.uniqueId, controlType: message.controlType)
@@ -408,6 +423,9 @@ extension ChatDataController: ChatDataListener {
         case .multiSelect:
             guard messageExchange.message is MultiSelectControlMessage else { fatalError("Could not view message as MultiSelectControlMessage in ChatDataListener") }
             self.didCompleteMultiSelectExchange(messageExchange, forChat: chatId)
+        case .dateTime, .date, .time:
+            guard messageExchange.message is DateTimePickerControlMessage else { fatalError("Could not view message as DateTimePickerControlMessage in ChatDataListener") }
+            self.didCompleteDateTimeExchange(messageExchange, forChat: chatId)
         case .multiPart:
             guard messageExchange.message is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
             self.didCompleteMultiPartExchange(messageExchange, forChat: chatId)
@@ -431,24 +449,24 @@ extension ChatDataController: ChatDataListener {
     
     private func didCompleteBooleanExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForBoolean(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, location: .left))
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
             if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, location: .right))
+                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
             }
         }
    }
     
     private func didCompleteInputExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForInput(from: messageExchange), let response = viewModels.response {
-            presentControlData(ChatMessageModel(model: response, location: .right))
+            presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
         }
     }
     
     private func didCompletePickerExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForPicker(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, location: .left))
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
             if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, location: .right))
+                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
             }
         }
     }
@@ -456,15 +474,43 @@ extension ChatDataController: ChatDataListener {
     private func didCompleteMultiSelectExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         // replace the picker with the picker's label, and add the response
         if let viewModels = controlsForMultiSelect(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, location: .left))
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
             if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, location: .right))
+                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
+            }
+        }
+    }
+    
+    private func didCompleteDateTimeExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
+        if let viewModels = controlsForDateTimePicker(from: messageExchange) {
+            
+            // We need to check the last displayed control. In case of regular topic flow we will have TextControl and DateTimeControl as a seperate controls but they will represent one message coming from the server.
+            let lastMessage = controlData[0]
+            
+            var shouldReplaceLastControlWithResponse = true
+            
+            // By comparing ids we can distinguish between loading messages from the history and actual topic flow scenarios.
+            // In case when user selected a date during topic flow - we are presenting already question and dateTime picker in the chat (2 controls from one message). Hence we don't want to show question again. And that's what below `if` statement does.
+            // THIS is different from other didComplete methods, where we show just one control per message. In those cases we want to replace control with question and insert an answer.
+            // `shouldReplaceResponse` flag is set to `true` to indicate that we want to only replace last message (dateTimePicker in this case)
+            if lastMessage.messageId != messageExchange.message.messageId {
+                replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
+                shouldReplaceLastControlWithResponse = false
+            }
+
+            guard let response = viewModels.response else { return }
+            
+            let answer = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right)
+            if shouldReplaceLastControlWithResponse {
+                replaceLastControl(with: answer)
+            } else {
+                presentControlData(answer)
             }
         }
     }
     
     private func didCompleteMultiPartExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        let typingIndicatorModel = ChatMessageModel(model: typingIndicator, location: BubbleLocation.left)
+        let typingIndicatorModel = ChatMessageModel(model: typingIndicator, bubbleLocation: BubbleLocation.left)
         replaceLastControl(with: typingIndicatorModel)        
     }
     
@@ -537,6 +583,10 @@ extension ChatDataController: ChatDataListener {
             }
         case .multiSelect:
             if let viewModels = controlsForMultiSelect(from: historyExchange) {
+                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+            }
+        case .dateTime, .date, .time:
+            if let viewModels = controlsForDateTimePicker(from: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
         case .input:
@@ -645,6 +695,23 @@ extension ChatDataController: ChatDataListener {
         } else {
             answerModel = nil
         }
+        
+        return (message: questionModel, response: answerModel)
+    }
+    
+    func controlsForDateTimePicker(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel?)? {
+        guard messageExchange.isComplete,
+            let response = messageExchange.response as? DateTimePickerControlMessage,
+            let message = messageExchange.message as? DateTimePickerControlMessage,
+            let label = message.data.richControl?.uiMetadata?.label,
+            let value: Date = response.data.richControl?.value ?? Date() else {
+                logger.logError("MessageExchange is not valid in dateTimePickerControlsFromMessageExchange method - skipping!")
+                return nil
+        }
+        
+        let dateFormatter = DateFormatter.formatterForChatterboxControlType(response.controlType)
+        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: dateFormatter.string(from: value))
         
         return (message: questionModel, response: answerModel)
     }

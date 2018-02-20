@@ -110,7 +110,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.estimatedRowHeight = 200
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
-        tableView.register(ButtonControlViewCell.self, forCellReuseIdentifier: ButtonControlViewCell.cellIdentifier)
+        tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
         tableView.register(StartTopicDividerCell.self, forCellReuseIdentifier: StartTopicDividerCell.cellIdentifier)
     }
 
@@ -177,10 +177,10 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 case .update(let index, let oldModel, let model):
-                    guard let controlModel = model.controlModel,
-                          let oldModel = oldModel.controlModel else { fatalError("Only control-types allowed in didChangeModel udpates!") }
+                    guard model.controlModel != nil,
+                          oldModel.controlModel != nil else { fatalError("Only control-types allowed in didChangeModel udpates!") }
                     
-                    if controlModel.type == .button || oldModel.type == .button {
+                    if model.type != oldModel.type || model.isAuxiliary != oldModel.isAuxiliary {
                         self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                     } else {
                         updateModel(model, atIndex: index)
@@ -359,10 +359,10 @@ extension ConversationViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if tableView == autoCompletionView, let handler = autocompleteHandler {
-            return handler.cellForRowAt(indexPath)
+        if tableView == autoCompletionView {
+            return autocompleteHandler?.cellForRowAt(indexPath) ?? UITableViewCell()
         }
-            
+        
         guard let chatMessageModel = dataController.controlForIndex(indexPath.row) else {
             return UITableViewCell()
         }
@@ -373,11 +373,11 @@ extension ConversationViewController {
             
         case .control:
             guard let controlModel = chatMessageModel.controlModel else { return UITableViewCell() }
-            if controlModel.type == .button {
-                let multiPartCell = tableView.dequeueReusableCell(withIdentifier: ButtonControlViewCell.cellIdentifier, for: indexPath) as! ButtonControlViewCell
-                multiPartCell.configure(with: chatMessageModel.controlModel as! ButtonControlViewModel)
-                multiPartCell.control?.delegate = self
-                cell = multiPartCell
+            if chatMessageModel.isAuxiliary {
+                let controlCell = tableView.dequeueReusableCell(withIdentifier: ControlViewCell.cellIdentifier, for: indexPath) as! ControlViewCell
+                controlCell.configure(with: controlModel)
+                controlCell.control?.delegate = self
+                cell = controlCell
             } else {
                 let conversationCell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
                 configureConversationCell(conversationCell, messageModel: chatMessageModel, at: indexPath)
