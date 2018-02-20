@@ -42,17 +42,19 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         let chatService = ChatService(instance: instance, delegate: self)
         self.chatService = chatService
         
-        chatService.establishUserSession(token: credential.accessToken) { [weak self] (error) in
+        let token = credential.idToken ?? credential.accessToken
+        
+        chatService.establishUserSession(token: token) { [weak self] (error) in
             if let error = error {
                 if case ChatServiceError.invalidCredentials = error {
                     self?.postLogOutNotification()
                 } else {
                     self?.presentError(error)
                 }
-            } else {
-                self?.navigationController?.pushViewController(chatService.chatViewController(), animated: true)
             }
         }
+        
+        navigationController?.pushViewController(chatService.chatViewController(), animated: true)
     }
     
     // MARK: - Actions
@@ -73,10 +75,16 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     // MARK: - Error Handling
     
     private func presentError(_ error: Error) {
-        let alert = UIAlertController()
-        alert.message = error.localizedDescription
-        alert.title = NSLocalizedString("Error", comment: "")
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        let alertTitle = NSLocalizedString("Error", comment: "")
+        let alert = UIAlertController(title: alertTitle, message: error.localizedDescription, preferredStyle: .alert)
+        
+        let dismissTitle = NSLocalizedString("Dismiss", comment: "")
+        let dismissAction = UIAlertAction(title: dismissTitle, style: .default) { [weak self] _ in
+            self?.navigationController?.popToRootViewController(animated: true)
+        }
+        
+        alert.addAction(dismissAction)
+        
         present(alert, animated: true)
     }
     
