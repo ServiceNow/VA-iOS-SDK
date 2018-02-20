@@ -616,7 +616,7 @@ private extension SNOWAMBClient {
             bayeuxMessage["ext"] = ext
         }
         
-        postBayeuxMessage(bayeuxMessage)
+        postBayeuxMessage(bayeuxMessage, completion: handler)
     }
     
     @discardableResult func postBayeuxMessage(_ message: [String : Any],
