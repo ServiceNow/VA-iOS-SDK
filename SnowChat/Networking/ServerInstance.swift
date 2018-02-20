@@ -8,11 +8,11 @@
 
 import Foundation
 
-class ServerInstance: NSObject {
+public class ServerInstance: NSObject {
     
     let instanceURL: URL
     
-    init(instanceURL: URL) {
+    public init(instanceURL: URL) {
         self.instanceURL = instanceURL
     }
     

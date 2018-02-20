@@ -46,6 +46,6 @@ class StartTopicDividerCell: UITableViewCell {
                                      lineView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10.0),
                                      lineView.heightAnchor.constraint(equalToConstant: 2.0),
                                      contentView.bottomAnchor.constraint(equalTo: lineView.bottomAnchor, constant: 10.0)])
-        layoutIfNeeded()
+//        layoutIfNeeded()
     }
 }

@@ -1,20 +1,18 @@
 //
-//  ServerInstance+URL.swift
-//  SnowChat
+//  URL+ServerInstance.swift
+//  SnowKangaroo
 //
-//  Created by Will Lisac on 1/4/18.
+//  Created by Will Lisac on 2/6/18.
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
 import Foundation
 
 // Some basic instance URL parsing from user input
-// See legacy NOWServerInstance for more "advanced" sanitization options
-// https://gitlab-deo.devsnc.com/mobile/servicenow-ios/blob/development/NOWAPIKit/NOWAPIKit/Network/NOWServerInstance.m
+// See legacy `NOWServerInstance` for more "advanced" sanitization options
 
-extension ServerInstance {
-    
-    internal static func instanceURL(fromUserInput input: String) -> URL? {
+extension URL {
+    init?(serverInstanceString input: String) {
         guard !input.isEmpty else { return nil }
         
         var urlString: String
@@ -35,7 +33,6 @@ extension ServerInstance {
             }
         }
         
-        return URL(string: urlString)
+        self.init(string: urlString)
     }
-    
 }

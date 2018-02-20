@@ -18,6 +18,12 @@ enum ControlType {
     
     case outputHtml
     
+    case dateTime
+    
+    case time
+    
+    case date
+    
     case boolean
     
     case singleSelect
@@ -38,6 +44,12 @@ enum ControlType {
             return "Link Output"
         case .outputHtml:
             return "Output HTML"
+        case .dateTime:
+            return "Date Time Picker"
+        case .time:
+            return "Time Picker"
+        case .date:
+            return "Date Picker"
         case .boolean:
             return "Boolean"
         case .singleSelect:

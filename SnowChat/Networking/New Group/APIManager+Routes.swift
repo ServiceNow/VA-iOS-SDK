@@ -12,8 +12,8 @@ import Foundation
 
 extension APIManager {
     
-    func apiURLWithPath(_ path: String) -> URL {
-        return instance.instanceURL.appendingPathComponent("/api/now/v1").appendingPathComponent(path)
+    func apiURLWithPath(_ path: String, version: Int = 1) -> URL {
+        return instance.instanceURL.appendingPathComponent("/api/now/v\(version)").appendingPathComponent(path)
     }
     
 }
