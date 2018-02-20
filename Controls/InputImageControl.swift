@@ -46,7 +46,9 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
         switch item.type {
         case .takePhoto:
             authorizeCamera({ [weak self] status in
-                self?.presentImagePickerControllerWithSourceType(.camera)
+                if status == .authorized {
+                    self?.presentImagePickerControllerWithSourceType(.camera)
+                }
             })
         case .photoLibrary:
             authorizePhoto({ [weak self] status in
@@ -62,6 +64,35 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
     func pickerViewController(_ viewController: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
         
     }
+    
+    // MARK: - UIImagePickerController
+    
+    private func presentImagePickerControllerWithSourceType(_ type: UIImagePickerControllerSourceType) {
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.sourceType = type
+        if type == .camera {
+            imagePickerController.cameraDevice = .rear
+        }
+        
+        imagePickerController.modalPresentationStyle = .overFullScreen
+        imagePickerController.delegate = self
+        imagePickerController.mediaTypes = [kUTTypeImage as String]
+        viewController.present(imagePickerController, animated: true, completion: nil)
+    }
+    
+    // MARK: - UIImagePickerControllerDelegate
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        viewController.presentedViewController?.dismiss(animated: true, completion: nil)
+        let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+        let imageData = UIImageJPEGRepresentation(image, 0.8)
+    }
+    
+    // MARK: - Authorization
     
     private func authorizeCamera(_ handler: @escaping (AVAuthorizationStatus) -> Swift.Void) {
         guard nil != Bundle.main.infoDictionary?["NSCameraUsageDescription"] else {
@@ -105,24 +136,5 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
                 handler(authorizationStatus)
             }
         }
-    }
-    
-    // MARK: - UIImagePickerController
-    
-    private func presentImagePickerControllerWithSourceType(_ type: UIImagePickerControllerSourceType) {
-        let imagePickerController = UIImagePickerController()
-        imagePickerController.modalPresentationStyle = .fullScreen
-        imagePickerController.cameraDevice = .rear
-        imagePickerController.delegate = self
-        imagePickerController.mediaTypes = [kUTTypeImage as String]
-        self.viewController.present(imagePickerController, animated: true, completion: nil)
-    }
-    
-    // MARK: - UIImagePickerControllerDelegate
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        viewController.presentingViewController?.dismiss(animated: true, completion: nil)
-        let image = info[UIImagePickerControllerOriginalImage] as! UIImage
-        let imageData = UIImageJPEGRepresentation(image, 0.8)
     }
 }
