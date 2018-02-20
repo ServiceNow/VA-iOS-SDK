@@ -10,6 +10,7 @@ import Foundation
 
 class ChatDataFactory {
     
+    // swiftlint:disable function_body_length
     //swiftlint:disable:next cyclomatic_complexity
     static func controlFromJSON(_ json: String) -> ControlData {
         

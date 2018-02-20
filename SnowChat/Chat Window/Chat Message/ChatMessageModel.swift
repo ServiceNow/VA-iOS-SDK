@@ -52,6 +52,8 @@ class ChatMessageModel {
 }
 
 extension ChatMessageModel {
+    
+    // swiftlint:disable function_body_length
     //swiftlint:disable:next cyclomatic_complexity
     static func model(withMessage message: ControlData) -> ChatMessageModel? {
         switch message.controlType {
@@ -123,7 +125,7 @@ extension ChatMessageModel {
         
         let inputImage = InputImageViewModel(id: message.messageId, label: title, required: required)
         let direction = message.direction
-        let snowViewModel = ChatMessageModel(model: inputImage, location: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: inputImage, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
