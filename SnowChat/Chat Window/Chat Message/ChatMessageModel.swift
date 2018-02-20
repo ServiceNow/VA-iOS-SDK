@@ -9,7 +9,6 @@
 enum BubbleLocation {
     case left
     case right
-    case unspecified
     
     init(direction: MessageDirection) {
         switch direction {
@@ -28,26 +27,28 @@ enum ChatMessageType {
 
 class ChatMessageModel {
     let type: ChatMessageType
-    var avatarURL: URL?
     let controlModel: ControlViewModel?
-    let location: BubbleLocation
     let requiresInput: Bool
+    var messageId: String?
     
-    init(model: ControlViewModel, location: BubbleLocation, requiresInput: Bool = false) {
+    var avatarURL: URL?
+    var isAuxiliary: Bool = false
+    var bubbleLocation: BubbleLocation?
+    
+    init(model: ControlViewModel, messageId: String? = nil, bubbleLocation: BubbleLocation, requiresInput: Bool = false) {
         self.type = .control
         self.controlModel = model
-        self.location = location
+        self.bubbleLocation = bubbleLocation
         self.requiresInput = requiresInput
+        self.messageId = messageId
     }
     
     init(type: ChatMessageType) {
         guard type == .topicDivider else { fatalError("initializer only supports non-control types") }
         self.type = type
         self.controlModel = nil
-        self.location = .unspecified
         self.requiresInput = false
     }
-
 }
 
 extension ChatMessageModel {
@@ -71,6 +72,9 @@ extension ChatMessageModel {
             return model(withMessage: controlMessage)
         case .multiPart:
             guard let controlMessage = message as? MultiPartControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
+        case .dateTime, .date, .time:
+            guard let controlMessage = message as? DateTimePickerControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage)
         case .outputImage:
             guard let controlMessage = message as? OutputImageControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
@@ -104,7 +108,7 @@ extension ChatMessageModel {
         
         let booleanModel = BooleanControlViewModel(id: message.messageId, label: title, required: required)
         let direction = message.direction
-        let snowViewModel = ChatMessageModel(model: booleanModel, location: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: booleanModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
@@ -119,7 +123,7 @@ extension ChatMessageModel {
         let options = message.data.richControl?.uiMetadata?.options ?? []
         let items = options.map { PickerItem(label: $0.label, value: $0.value) }
         let pickerModel = SingleSelectControlViewModel(id: message.messageId, label: title, required: required, items: items)
-        let snowViewModel = ChatMessageModel(model: pickerModel, location: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: pickerModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
@@ -134,7 +138,19 @@ extension ChatMessageModel {
         let options = message.data.richControl?.uiMetadata?.options ?? []
         let items = options.map { PickerItem(label: $0.label, value: $0.value) }
         let multiSelectModel = MultiSelectControlViewModel(id: message.messageId, label: title, required: required, items: items)
-        let snowViewModel = ChatMessageModel(model: multiSelectModel, location: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: multiSelectModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
+        return snowViewModel
+    }
+    
+    static func model(withMessage message: DateTimePickerControlMessage) -> ChatMessageModel? {
+        guard let title = message.data.richControl?.uiMetadata?.label else {
+                return nil
+        }
+        
+        let direction = message.direction
+        
+        let textViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: title)
+        let snowViewModel = ChatMessageModel(model: textViewModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
@@ -145,7 +161,7 @@ extension ChatMessageModel {
         
         let direction = message.data.direction
         let textModel = TextControlViewModel(id: message.messageId, value: value)
-        let snowViewModel = ChatMessageModel(model: textModel, location: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
@@ -157,58 +173,8 @@ extension ChatMessageModel {
         let direction = message.direction
         
         let textModel = TextControlViewModel(id: message.messageId, value: value)
-        let snowViewModel = ChatMessageModel(model: textModel, location: BubbleLocation(direction: direction), requiresInput: true)
+        let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), requiresInput: true)
         return snowViewModel
-    }
-    
-    static func model(withMessage message: MultiPartControlMessage) -> ChatMessageModel? {
-        guard let nestedControlValue = message.data.richControl?.content?.value,
-            let nestedControlType = message.nestedControlType else {
-                return nil
-        }
-        
-        let direction = message.direction
-        
-        var chatMessageModel: ChatMessageModel?
-        switch nestedControlType {
-        case .text:
-            let controlModel = TextControlViewModel(id: message.messageId, value: nestedControlValue)
-            chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
-        case .outputHtml:
-            let controlModel = OutputHtmlControlViewModel(id: message.messageId, value: nestedControlValue)
-            chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
-        case .outputImage:
-            if let url = URL(string: nestedControlValue) {
-                let controlModel = OutputImageViewModel(id: message.messageId, value: url)
-                chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
-            }
-        case .outputLink:
-            if let url = URL(string: nestedControlValue) {
-                let controlModel = OutputLinkControlViewModel(id: message.messageId, value: url)
-                chatMessageModel = ChatMessageModel(model: controlModel, location: BubbleLocation(direction: direction))
-            }
-        case .unknown:
-            if let nestedControlTypeString = message.nestedControlTypeString {
-                let outputTextModel = TextControlViewModel(id: message.messageId, value: "Unsupported control: \(nestedControlTypeString)")
-                chatMessageModel = ChatMessageModel(model: outputTextModel, location: BubbleLocation(direction: direction), requiresInput: false)
-            }
-        default:
-            chatMessageModel = nil
-        }
-        
-        return chatMessageModel
-    }
-    
-    static func buttonModel(withMessage message: MultiPartControlMessage) -> ChatMessageModel? {
-        guard let title = message.data.richControl?.uiMetadata?.navigationBtnLabel,
-            let index = message.data.richControl?.uiMetadata?.index else {
-                return nil
-        }
-        
-        let buttonModel = ButtonControlViewModel(id: message.messageId, label: title, value: index)
-        let direction = message.data.direction
-        let buttonChatModel = ChatMessageModel(model: buttonModel, location: BubbleLocation(direction: direction))
-        return buttonChatModel
     }
     
     static func model(withMessage message: OutputImageControlMessage) -> ChatMessageModel? {
@@ -223,7 +189,7 @@ extension ChatMessageModel {
         }
         
         let outputImageModel = OutputImageViewModel(id: message.messageId, value: url)
-        let snowViewModel = ChatMessageModel(model: outputImageModel, location: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: outputImageModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
@@ -235,7 +201,7 @@ extension ChatMessageModel {
         let direction = message.data.direction
         
         let outputLinkModel = OutputLinkControlViewModel(id: message.messageId, value: URL(fileURLWithPath: value))
-        let snowViewModel = ChatMessageModel(model: outputLinkModel, location: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: outputLinkModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
@@ -247,7 +213,7 @@ extension ChatMessageModel {
         let direction = message.data.direction
         
         let outputHtmlModel = OutputHtmlControlViewModel(id: message.messageId, value: value)
-        let snowViewModel = ChatMessageModel(model: outputHtmlModel, location: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: outputHtmlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
@@ -260,7 +226,7 @@ extension ChatMessageModel {
         let direction = message.direction
         
         let outputTextModel = TextControlViewModel(id: message.messageId, value: "\(value)\n\(instruction)")
-        let textChatModel = ChatMessageModel(model: outputTextModel, location: BubbleLocation(direction: direction), requiresInput: false)
+        let textChatModel = ChatMessageModel(model: outputTextModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         
         return textChatModel
     }
@@ -268,8 +234,8 @@ extension ChatMessageModel {
     static func model(withMessage message: ControlDataUnknown) -> ChatMessageModel? {
         let value = message.label ?? ""
         let direction = message.direction
-        let outputTextModel = TextControlViewModel(id: message.messageId, value: "Unsupported control: \(value)")
-        let textChatModel = ChatMessageModel(model: outputTextModel, location: BubbleLocation(direction: direction), requiresInput: false)
+        let outputTextModel = TextControlViewModel(id: ChatUtil.uuidString(), value: "Unsupported control: \(value)")
+        let textChatModel = ChatMessageModel(model: outputTextModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         
         return textChatModel
     }

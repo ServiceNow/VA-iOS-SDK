@@ -94,6 +94,9 @@ enum ChatterboxControlType: String, Codable {
     case boolean = "Boolean"
     case input = "InputText"
     case picker = "Picker"
+    case time = "Time"
+    case date = "Date"
+    case dateTime = "DateTime"
     case multiSelect = "Multiselect"
     case text = "OutputText"
     case multiPart = "MultiPartOutput"
@@ -128,10 +131,6 @@ extension ControlData {
 
 struct ControlDataUnknown: ControlData {
     
-    init(label: String? = nil) {
-        self.label = label
-    }
-    
     let id: String = "UNKNOWN"
     let controlType: ChatterboxControlType = .unknown
     let messageId: String = "UNKNOWN_MESSAGE_ID"
@@ -146,6 +145,10 @@ struct ControlDataUnknown: ControlData {
     
     var isOutputOnly: Bool {
         return true
+    }
+    
+    init(label: String? = nil) {
+        self.label = label
     }
 }
 
