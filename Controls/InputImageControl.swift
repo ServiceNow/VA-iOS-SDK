@@ -20,6 +20,10 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
         }
     }
     
+    private var inputImageModel: InputImageViewModel {
+        return model as! InputImageViewModel
+    }
+    
     var style: PickerControlStyle
     
     public lazy var viewController: UIViewController = {
@@ -33,7 +37,7 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
         guard let inputImageModel = model as? InputImageViewModel else {
             fatalError("Wrong model class")
         }
-        
+
         self.model = inputImageModel
         self.style = .inline
     }
@@ -90,6 +94,9 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
         viewController.presentedViewController?.dismiss(animated: true, completion: nil)
         let image = info[UIImagePickerControllerOriginalImage] as! UIImage
         let imageData = UIImageJPEGRepresentation(image, 0.8)
+        inputImageModel.selectedImageData = imageData
+        
+        delegate?.control(self, didFinishWithModel: model)
     }
     
     // MARK: - Authorization

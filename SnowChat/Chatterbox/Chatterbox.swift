@@ -468,6 +468,8 @@ class Chatterbox {
             updateMultiPartControl(control)
         case .dateTime, .date, .time:
             updateDateTimeControl(control)
+        case .inputImage:
+            updateInputImageControl(control)
         default:
             logger.logError("Unrecognized control type - skipping: \(type)")
             return
@@ -524,6 +526,13 @@ class Chatterbox {
         if var dateTimeControl = control as? DateTimePickerControlMessage, let conversationId = dateTimeControl.data.conversationId {
             dateTimeControl.data = updateRichControlData(dateTimeControl.data)
             publishControlUpdate(dateTimeControl, forConversation: conversationId)
+        }
+    }
+    
+    fileprivate func updateInputImageControl(_ control: ControlData) {
+        if var inputImageControl = control as? InputImageControlMessage, let conversationId = inputImageControl.data.conversationId {
+            inputImageControl.data = updateRichControlData(inputImageControl.data)
+            publishControlUpdate(inputImageControl, forConversation: conversationId)
         }
     }
     

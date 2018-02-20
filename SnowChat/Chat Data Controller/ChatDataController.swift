@@ -212,6 +212,8 @@ class ChatDataController {
                 updateDateTimeData(data, lastPendingMessage)
             case .multiPart:
                 updateMultiPartData(data, lastPendingMessage)
+            case .inputImage:
+                updateInputImageData(data, lastPendingMessage)
             default:
                 logger.logDebug("Unhandled control type: \(lastPendingMessage.controlType)")
                 return
@@ -276,6 +278,20 @@ class ChatDataController {
             multiPartMessage.id = buttonViewModel.id
             multiPartMessage.data.richControl?.uiMetadata?.index = buttonViewModel.value + 1
             chatterbox.update(control: multiPartMessage)
+        }
+    }
+    
+    fileprivate func updateInputImageData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
+        if let inputImageViewModel = data as? InputImageViewModel,
+            var inputImageMessage = lastPendingMessage as? InputImageControlMessage {
+            
+            guard let imageData = inputImageViewModel.selectedImageData,
+                let taskId = inputImageMessage.data.taskId else { return }
+            
+            chatterbox.apiManager.uploadImage(data: imageData, withTaskId: taskId, completion: { [weak self] result in
+                inputImageMessage.data.richControl?.value = result
+                self?.chatterbox.update(control: inputImageMessage)
+            })
         }
     }
 

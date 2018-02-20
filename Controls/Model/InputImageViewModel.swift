@@ -8,6 +8,8 @@
 
 class InputImageViewModel: SingleSelectControlViewModel {
     
+    var selectedImageData: Data?
+    
     override var type: ControlType {
         return .inputImage
     }
