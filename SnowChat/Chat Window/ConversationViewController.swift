@@ -15,6 +15,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         case inSystemTopicSelection     // user can select topic, talk to tagent, or quit
         case inTopicSelection           // user is searching topics
         case inConversation             // user is in an active conversation
+        case inAgentConversation        // in a conversation with an agent
     }
     
     private let bottomInset: CGFloat = 60
@@ -120,7 +121,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             setupForTopicSelection()
         case .inSystemTopicSelection:
             setupForSystemTopicSelection()
-        case .inConversation:
+        case .inConversation, .inAgentConversation:
             setupForConversation()
         }
     }
@@ -441,6 +442,21 @@ extension ConversationViewController {
 }
 
 extension ConversationViewController: ChatEventListener {
+    func chatterbox(_ chatterbox: Chatterbox, willStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        guard self.chatterbox.id == chatterbox.id else {
+            return
+        }
+        
+        dataController.agentTopicWillStart()
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        guard self.chatterbox.id == chatterbox.id else {
+            return
+        }
+        
+        dataController.agentTopicDidStart(agentInfo: agentInfo)
+    }
     
     // MARK: - ChatEventListener
     

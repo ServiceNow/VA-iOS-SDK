@@ -294,6 +294,10 @@ class ChatDataController {
         conversationId = topicInfo.conversationId
     
         pushTopicStartDivider(topicInfo)
+        if topicInfo.topicName != nil {
+            pushTopicTitle(topicInfo: topicInfo)
+        }
+        
         pushTypingIndicator()
     }
 
@@ -309,6 +313,16 @@ class ChatDataController {
         presentCompletionMessage()
     }
 
+    func agentTopicWillStart() {
+        // TODO: set timer waiting?
+    }
+    
+    func agentTopicDidStart(agentInfo: AgentInfo) {
+        let message = NSLocalizedString("An agent is now taking your case.", comment: "Default agent responded message to show to user")
+        let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
+        bufferControlMessage(ChatMessageModel(model: completionTextControl, bubbleLocation: .left))
+    }
+    
     func presentCompletionMessage() {
         let message = NSLocalizedString("Thanks for visiting. If you need anything else, just ask!", comment: "Default end of topic message to show to user")
         let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
@@ -329,6 +343,21 @@ class ChatDataController {
         
         // NOTE: we do not buffer the divider currently - this is intentional
         presentControlData(ChatMessageModel(type: .topicDivider))
+    }
+    
+    func pushTopicTitle(topicInfo: TopicInfo) {
+        guard let message = topicInfo.topicName else { return }
+        let titleTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
+        
+        // NOTE: we do not buffer the welcome message currently - this is intentional
+        presentControlData(ChatMessageModel(model: titleTextControl, bubbleLocation: .right))
+    }
+    
+    func appendTopicTitle(_ topicInfo: TopicInfo) {
+        guard let message = topicInfo.topicName else { return }
+        let titleTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
+        
+        addHistoryToCollection(ChatMessageModel(model: titleTextControl, bubbleLocation: .right))
     }
     
     func appendTopicStartDivider(_ topicInfo: TopicInfo) {
@@ -523,23 +552,34 @@ extension ChatDataController: ChatDataListener {
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
         logger.logInfo("Conversation \(conversationId) did load")
 
+        var topicName: String?
+        
         if let conversation = chatterbox.conversation(forId: conversationId) {
+            topicName = conversation.topicTypeName
+            
             if conversation.state == .inProgress || conversation.state == .chatProgress {
                 // do not push the start-topic divider if this is the active conversation
                 return
             }
         }
         let topicId = conversationId
-        pushTopicStartDivider(TopicInfo(topicId: topicId, conversationId: conversationId))
+        let topicInfo = TopicInfo(topicId: topicId, topicName: topicName, conversationId: conversationId)
+        pushTopicStartDivider(topicInfo)
+        pushTopicTitle(topicInfo: topicInfo)
     }
 
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversationHistory conversationId: String, forChat chatId: String) {
         logger.logInfo("Conversation \(conversationId) will load from history")
-        let topicId = conversationId
         
-        // NOTE: until the service delivers entire conversations this will cause the occasional extra-divider to appear...
-        //       do not fix this as the service is suppossed to fix it
-        appendTopicStartDivider(TopicInfo(topicId: topicId, conversationId: conversationId))
+        if let conversation = chatterbox.conversation(forId: conversationId) {
+            let topicId = conversationId
+            let topicInfo = TopicInfo(topicId: topicId, topicName: conversation.topicTypeName, conversationId: conversationId)
+            
+            // NOTE: until the service delivers entire conversations this will cause the occasional extra-divider to appear...
+            //       do not fix this as the service is suppossed to fix it
+            appendTopicTitle(topicInfo)
+            appendTopicStartDivider(topicInfo)
+        }
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversationHistory conversationId: String, forChat chatId: String) {

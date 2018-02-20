@@ -52,7 +52,7 @@ class ChatMessageModel {
 }
 
 extension ChatMessageModel {
-    //swiftlint:disable:next cyclomatic_complexity
+    //swiftlint:disable:next cyclomatic_complexity function_body_length
     static func model(withMessage message: ControlData) -> ChatMessageModel? {
         switch message.controlType {
         case .boolean:

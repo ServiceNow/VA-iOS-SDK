@@ -130,6 +130,14 @@ extension ChatViewController: ChatEventListener {
         conversationViewController?.chatterbox(chatterbox, didFinishTopic: topicInfo, forChat: chatId)
     }
 
+    func chatterbox(_ chatterbox: Chatterbox, willStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        conversationViewController?.chatterbox(chatterbox, willStartAgentChat: agentInfo, forChat: chatId)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        conversationViewController?.chatterbox(chatterbox, willStartAgentChat: agentInfo, forChat: chatId)
+    }
+
     func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
         conversationViewController?.chatterbox(chatterbox, didEstablishUserSession: sessionId, forChat: chatId)
     }

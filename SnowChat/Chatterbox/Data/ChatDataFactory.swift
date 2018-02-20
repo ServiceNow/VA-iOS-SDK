@@ -10,7 +10,7 @@ import Foundation
 
 class ChatDataFactory {
     
-    //swiftlint:disable:next cyclomatic_complexity
+    //swiftlint:disable:next cyclomatic_complexity function_body_length
     static func controlFromJSON(_ json: String) -> ControlData {
         
         if let jsonData = json.data(using: .utf8) {

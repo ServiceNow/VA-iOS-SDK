@@ -399,7 +399,7 @@ class Chatterbox {
         
                 logger.logInfo("User Topic Started: \(actionMessage.topicName) - \(actionMessage.topicId) - \(actionMessage.ready ? "Ready" : "Not Ready")")
                 
-                startUserTopic(topicInfo: TopicInfo(topicId: actionMessage.topicId, conversationId: actionMessage.vendorTopicId))
+                startUserTopic(topicInfo: TopicInfo(topicId: actionMessage.topicId, topicName: actionMessage.topicName, conversationId: actionMessage.vendorTopicId))
             }
         }
     }
@@ -424,16 +424,22 @@ class Chatterbox {
             if startAgentChatMessage.data.direction == .fromServer {
                 logger.logDebug("*** ConnectToAgent Message from server: sending ready=true")
 
+                let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
+                chatEventListener?.chatterbox(self, willStartAgentChat: agentInfo, forChat: chatId)
+                
                 // send reponse message that we are ready
                 let startAgentChatReadyMessage = createStartAgentChatReadyMessage(fromMessage: startAgentChatMessage)
                 publishMessage(startAgentChatReadyMessage)
             } else {
                 logger.logDebug("*** ConnectToAgent Message from client: Agent Topic Started!")
 
+                let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
+                chatEventListener?.chatterbox(self, didStartAgentChat: agentInfo, forChat: chatId)
+
                 // we got back out own start topic response, so begin the agent topic
                 let conversationId = startAgentChatMessage.data.actionMessage.topicId
                 let topicId = startAgentChatMessage.data.actionMessage.topicId
-                let topicInfo = TopicInfo(topicId: topicId, conversationId: conversationId)
+                let topicInfo = TopicInfo(topicId: topicId, topicName: nil, conversationId: conversationId)
                 startAgentTopic(topicInfo: topicInfo)
             }
         }
@@ -457,7 +463,7 @@ class Chatterbox {
     }
 
     private func resumeLiveAgentTopic(conversationId: String) {
-        let topicInfo = TopicInfo(topicId: "brb", conversationId: conversationId)
+        let topicInfo = TopicInfo(topicId: "brb", topicName: nil, conversationId: conversationId)
         // TODO: for now just do the same as a chat topic
         resumeUserTopic(topicInfo: topicInfo)
     }
@@ -508,7 +514,7 @@ class Chatterbox {
     }
     
     internal func finishTopic(_ conversationId: String) {
-        let topicInfo = TopicInfo(topicId: "TOPIC_ID", conversationId: conversationId)
+        let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, conversationId: conversationId)
         self.chatEventListener?.chatterbox(self, didFinishTopic: topicInfo, forChat: self.chatId)
     }
     
@@ -566,7 +572,7 @@ class Chatterbox {
             
             saveDataToPersistence()
             
-            let topicInfo = TopicInfo(topicId: "TOPIC_ID", conversationId: topicFinishedMessage.data.conversationId ?? "CONVERSATION_ID")
+            let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, conversationId: topicFinishedMessage.data.conversationId ?? "CONVERSATION_ID")
             chatEventListener?.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
         }
     }
@@ -682,7 +688,7 @@ extension Chatterbox {
         switch conversation.state {
         case .inProgress:
             logger.logInfo("Conversation \(conversationId) is in progress")
-            let topicInfo = TopicInfo(topicId: "TOPIC_ID", conversationId: conversationId)
+            let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, conversationId: conversationId)
             resumeUserTopic(topicInfo: topicInfo)
         case .chatProgress:
             logger.logInfo("Live Agent session \(conversationId) is in progress")

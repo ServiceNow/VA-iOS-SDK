@@ -32,6 +32,7 @@ enum ControlType {
     
     case button
         
+    //swiftlint:disable:next cyclomatic_complexity
     func description() -> String {
         switch self {
         case .multiSelect:
