@@ -27,20 +27,33 @@ class OAuthManager: NSObject {
     
     // MARK: - Log In
     
-    func logIn(username: String, password: String, completion: @escaping (Result<OAuthCredential>) -> Void) {
+    func authenticate(username: String, password: String, completion: @escaping (Result<OAuthCredential>) -> Void) {
+        let parameters = ["grant_type" : "password",
+                          "username" : username,
+                          "password" : password]
+        
+        authenticate(parameters: parameters, completion: completion)
+    }
+    
+    func authenticate(refreshToken: String, completion: @escaping (Result<OAuthCredential>) -> Void) {
+        let parameters = ["grant_type" : "refresh_token",
+                          "refresh_token" : refreshToken]
+        
+        authenticate(parameters: parameters, completion: completion)
+    }
+    
+    private func authenticate(parameters: Parameters, completion: @escaping (Result<OAuthCredential>) -> Void) {
         let tokenURL = configuration.tokenURL
         
-        var params = ["grant_type" : "password",
-                      "username" : username,
-                      "password" : password,
-                      "client_id" : configuration.clientId,
-                      "client_secret" : configuration.clientSecret]
+        var parameters = parameters
+        parameters["client_id"] = configuration.clientId
+        parameters["client_secret"] = configuration.clientSecret
         
         if let scope = configuration.defaultScope {
-            params["scope"] = scope
+            parameters["scope"] = scope
         }
         
-        sessionManager.request(tokenURL, method: .post, parameters: params, encoding: URLEncoding.default)
+        sessionManager.request(tokenURL, method: .post, parameters: parameters, encoding: URLEncoding.default)
             .validate()
             .responseJSON { response in
                 if let error = response.error {
@@ -57,6 +70,7 @@ class OAuthManager: NSObject {
                 
                 completion(.success(credential))
         }
+        
     }
     
 }
