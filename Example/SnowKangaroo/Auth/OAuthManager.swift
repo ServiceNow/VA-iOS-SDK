@@ -1,42 +1,46 @@
 //
-//  AuthManager.swift
+//  OAuthManager.swift
 //  SnowKangaroo
 //
-//  Created by Will Lisac on 2/6/18.
+//  Created by Will Lisac on 2/16/18.
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
 import Foundation
 import Alamofire
 
-enum AuthError: LocalizedError {
+enum OAuthError: LocalizedError {
     case noCredential
 }
 
-class AuthManager: NSObject {
+class OAuthManager: NSObject {
     
     private let sessionManager = SessionManager(configuration: .ephemeral)
     
-    private let instanceURL: URL
+    private let configuration: OAuthManagerConfiguration
     
-    init(instanceURL: URL) {
-        self.instanceURL = instanceURL
+    // MARK: - Initialization
+    
+    init(configuration: OAuthManagerConfiguration) {
+        self.configuration = configuration
     }
     
+    // MARK: - Log In
+    
     func logIn(username: String, password: String, completion: @escaping (Result<OAuthCredential>) -> Void) {
-        let oAuthAPI = instanceURL.appendingPathComponent("oauth_token.do")
+        let tokenURL = configuration.tokenURL
         
-        // ServiceNow Virtual Agent Example App OAuth Entity
-        let clientId = "2c403f19ac901300b303eef6c8b842d3"
-        let clientSecret = "H&g(T!4<6Y"
-        
-        let params = ["grant_type" : "password",
+        var params = ["grant_type" : "password",
                       "username" : username,
                       "password" : password,
-                      "client_id" : clientId,
-                      "client_secret" : clientSecret]
+                      "client_id" : configuration.clientId,
+                      "client_secret" : configuration.clientSecret]
         
-        sessionManager.request(oAuthAPI, method: .post, parameters: params, encoding: URLEncoding.default)
+        if let scope = configuration.defaultScope {
+            params["scope"] = scope
+        }
+        
+        sessionManager.request(tokenURL, method: .post, parameters: params, encoding: URLEncoding.default)
             .validate()
             .responseJSON { response in
                 if let error = response.error {
@@ -45,8 +49,9 @@ class AuthManager: NSObject {
                 }
                 
                 let dictionary = response.result.value as? [String : Any] ?? [:]
+                
                 guard let credential = OAuthCredential(dictionary: dictionary) else {
-                    completion(.failure(AuthError.noCredential))
+                    completion(.failure(OAuthError.noCredential))
                     return
                 }
                 

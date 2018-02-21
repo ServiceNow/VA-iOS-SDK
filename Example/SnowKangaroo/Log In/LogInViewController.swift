@@ -14,7 +14,7 @@ protocol LogInViewControllerDelegate: class {
 
 class LogInViewController: UIViewController {
     
-    private var authManager: AuthManager?
+    private var authManager: OAuthManager?
     private var initialInstanceURL: URL?
     
     weak var delegate: LogInViewControllerDelegate?
@@ -23,13 +23,13 @@ class LogInViewController: UIViewController {
     @IBOutlet private weak var usernameTextField: UITextField!
     @IBOutlet private weak var passwordTextField: UITextField!
     @IBOutlet private weak var activityIndicatorView: UIActivityIndicatorView!
+    @IBOutlet private weak var openIDButton: UIButton!
+    @IBOutlet private weak var logInButton: UIButton!
     
-    private lazy var logInButton: UIBarButtonItem = {
-        return UIBarButtonItem(title: NSLocalizedString("Log In", comment: ""),
-                               style: .done,
-                               target: self,
-                               action: #selector(logInButtonTapped(_:)))
-    }()
+    private var instanceURL: URL? {
+        guard let instanceText = instanceTextField.text else { return nil }
+        return URL(serverInstanceString: instanceText)
+    }
     
     // MARK: - Initialization
     
@@ -44,7 +44,6 @@ class LogInViewController: UIViewController {
         super.viewDidLoad()
         
         title = NSLocalizedString("Log In", comment: "")
-        navigationItem.rightBarButtonItem = logInButton
         
         instanceTextField.text = initialInstanceURL?.absoluteString
     }
@@ -53,6 +52,7 @@ class LogInViewController: UIViewController {
     
     private func updateUI(isLoading: Bool) {
         logInButton.isEnabled = !isLoading
+        openIDButton.isEnabled = !isLoading
         usernameTextField.isEnabled = !isLoading
         passwordTextField.isEnabled = !isLoading
         instanceTextField.isEnabled = !isLoading
@@ -61,27 +61,30 @@ class LogInViewController: UIViewController {
     
     // MARK: - Actions
     
-    @objc private func logInButtonTapped(_ sender: Any) {
-        view.endEditing(true)
-
-        logIn()
+    @IBAction private func logInButtonTapped(_ sender: Any) {
+        guard let instanceURL = instanceURL else { return }
+        logIn(configuration: .serviceNowVirtualAgentExample(instanceURL: instanceURL))
+    }
+    
+    @IBAction private func useOpenIDButtonTapped(_ sender: Any) {
+        logIn(configuration: .oktaExample)
     }
     
     // MARK: - Log In
     
-    private func logIn() {
+    private func logIn(configuration: OAuthManagerConfiguration) {
+        view.endEditing(true)
+        
         guard let username = usernameTextField.text,
             let password = passwordTextField.text,
-            let instanceText = instanceTextField.text,
-            let instanceURL = URL(serverInstanceString: instanceText) else {
+            let instanceURL = instanceURL else {
                 updateUI(isLoading: false)
                 return
         }
         
         updateUI(isLoading: true)
         
-        let authManager = AuthManager(instanceURL: instanceURL)
-        
+        let authManager = OAuthManager(configuration: configuration)
         self.authManager = authManager
         
         authManager.logIn(username: username, password: password) { [weak self] result in
