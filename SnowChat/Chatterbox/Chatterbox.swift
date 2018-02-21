@@ -146,22 +146,6 @@ class Chatterbox {
         }
     }
     
-    func transferToLiveAgent() {
-        if let sessionId = session?.id, let conversationId = conversationContext.systemConversationId {
-            state = .agentConversation
-            messageHandler = startLiveAgentHandshakeHandler
-            
-            var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
-            startTopic.data.richControl?.value = "brb"
-            startTopic.data.direction = .fromClient
-            startTopic.data.richControl?.uiMetadata = contextualActions?.data.richControl?.uiMetadata
-            
-            publishMessage(startTopic)
-        } else {
-            logger.logError("Session must be initialized before startTopic is called")
-        }
-    }
-    
     func lastPendingControlMessage(forConversation conversationId: String) -> ControlData? {
         return chatStore.lastPendingMessage(forConversation: conversationId) as? ControlData
     }
@@ -405,6 +389,24 @@ class Chatterbox {
         }
     }
     
+    func transferToLiveAgent() {
+        if let sessionId = session?.id, let conversationId = conversationContext.systemConversationId {
+            state = .agentConversation
+            messageHandler = startLiveAgentHandshakeHandler
+            
+            var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
+            startTopic.data.richControl?.value = "brb"
+            startTopic.data.direction = .fromClient
+            startTopic.data.richControl?.uiMetadata = contextualActions?.data.richControl?.uiMetadata
+            
+            logger.logDebug("*** Sending StartTopic message from client: conversationId=\(startTopic.data.conversationId!)")
+            
+            publishMessage(startTopic)
+        } else {
+            logger.logError("Session must be initialized before startTopic is called")
+        }
+    }
+    
     private func startLiveAgentHandshakeHandler(_ message: String) {
         logger.logDebug("**** startLiveAgentHandshakeHandler received: \(message)")
         
@@ -423,13 +425,16 @@ class Chatterbox {
             startAgentChatMessage.data.actionMessage.chatStage == "ConnectToAgent" {
 
             if startAgentChatMessage.data.direction == .fromServer {
-                logger.logDebug("*** ConnectToAgent Message from server: sending ready=true")
+                logger.logDebug("*** ConnectToAgent Message from server: conversationId=\(startAgentChatMessage.data.conversationId!) topicId=\(startAgentChatMessage.data.actionMessage.topicId) taskId=\(startAgentChatMessage.data.taskId!)")
 
                 let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
                 chatEventListener?.chatterbox(self, willStartAgentChat: agentInfo, forChat: chatId)
                 
                 // send reponse message that we are ready
                 let startAgentChatReadyMessage = createStartAgentChatReadyMessage(fromMessage: startAgentChatMessage)
+                
+                logger.logDebug("*** ConnectToAgent Message response client: conversationId=\(startAgentChatReadyMessage.data.conversationId!) topicId=\(startAgentChatMessage.data.actionMessage.topicId) taskId=\(startAgentChatReadyMessage.data.taskId!)")
+
                 publishMessage(startAgentChatReadyMessage)
             } else {
                 logger.logDebug("*** ConnectToAgent Message from client: Agent Topic Started!")
@@ -486,6 +491,8 @@ class Chatterbox {
     
     private func createStartAgentChatReadyMessage(fromMessage message: StartAgentChatMessage) -> StartAgentChatMessage {
         var startChatReady = message
+        
+        //startChatReady.data.conversationId = message.data.actionMessage.topicId
         startChatReady.data.messageId = ChatUtil.uuidString()
         startChatReady.data.sendTime = Date()
         startChatReady.data.direction = .fromClient
