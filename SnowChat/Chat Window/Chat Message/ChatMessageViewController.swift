@@ -51,9 +51,9 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         self.model = model
         uiControl?.delegate = delegate
         
-        if let avatarURL = model.avatarURL {
-            agentImageView.af_setImage(withURL: avatarURL)
-        }
+        agentImageView.af_imageDownloader = provider.imageProvider
+        agentImageView.af_setImage(withURL: provider.avatarURL)
+        agentImageView.addCircleMaskIfNeeded()
     }
     
     func prepareForReuse() {

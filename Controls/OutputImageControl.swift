@@ -47,7 +47,6 @@ class OutputImageControl: ControlProtocol {
             }
             
             // FIXME: Handle error / no image case
-            
             self?.imageViewController.image = response.value
             
             guard let strongSelf = self else { return }
