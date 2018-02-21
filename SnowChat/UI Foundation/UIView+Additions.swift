@@ -19,4 +19,20 @@ extension UIView {
         
         return loadedView
     }
+    
+    // Adds circular mask to UIView of the size of view's frame size
+    // TODO: It is quick, easy solution to add mask to any view. I need to do more generic solution.
+    // There's multiple different ways we could achieve that effect - like applying mask to UIImage itself.
+    // For now that should be good enough though.
+    func addCircleMaskIfNeeded() {
+        guard nil == layer.mask else {
+            layer.mask?.frame = bounds
+            return
+        }
+        
+        let circlePath = UIBezierPath(ovalIn: CGRect(origin: CGPoint.zero, size: bounds.size)).cgPath
+        let maskLayer = CAShapeLayer()
+        maskLayer.path = circlePath
+        layer.mask = maskLayer
+    }
 }

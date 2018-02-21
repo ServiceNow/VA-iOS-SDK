@@ -31,7 +31,6 @@ class ChatMessageModel {
     let requiresInput: Bool
     var messageId: String?
     
-    var avatarURL: URL?
     var isAuxiliary: Bool = false
     var bubbleLocation: BubbleLocation?
     

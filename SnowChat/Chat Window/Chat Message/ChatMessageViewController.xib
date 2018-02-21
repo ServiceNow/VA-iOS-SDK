@@ -31,8 +31,9 @@
                     <rect key="frame" x="65" y="3" width="682" height="163"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalCompressionResistancePriority="751" image="vagent-icon.png" translatesAutoresizingMaskIntoConstraints="NO" id="TbH-h7-fly">
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="TbH-h7-fly">
                     <rect key="frame" x="10" y="119" width="50" height="50"/>
+                    <color key="backgroundColor" red="0.91372549020000005" green="0.92941176469999998" blue="0.94117647059999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstAttribute="width" secondItem="TbH-h7-fly" secondAttribute="height" multiplier="1:1" id="Iq1-ys-0MQ"/>
                         <constraint firstAttribute="width" constant="50" id="OFa-5p-um4"/>
@@ -55,7 +56,4 @@
             <point key="canvasLocation" x="42.5" y="139.5"/>
         </view>
     </objects>
-    <resources>
-        <image name="vagent-icon.png" width="156" height="142"/>
-    </resources>
 </document>

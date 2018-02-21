@@ -10,11 +10,18 @@ import AlamofireImage
 
 protocol ControlResourceProvider {
     var imageProvider: ImageDownloader { get }
+    
+    var avatarURL: URL { get }
 }
 
 extension APIManager: ControlResourceProvider {
     var imageProvider: ImageDownloader {
         return imageDownloader
+    }
+    
+    var avatarURL: URL {
+        // TODO: temporary for demo purposes and until we have actual enpoint to fetch the image from.
+        return instance.instanceURL.appendingPathComponent("/images/default_virtual_agent_avatar.png")
     }
     
     func uploadImage(data: Data, withName name: String, taskId: String, completion: @escaping (_ result: String?) -> Void) {
@@ -34,6 +41,5 @@ extension APIManager: ControlResourceProvider {
                 print("Error: \(error)")
             }
         })
-        
     }
 }
