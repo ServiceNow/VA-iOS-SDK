@@ -21,7 +21,7 @@ extension APIManager: ControlResourceProvider {
         let url = apiURLWithPath("cs/media/\(taskId)")
         
         sessionManager.upload(multipartFormData: { multipartData in
-            multipartData.append(data, withName: name)
+            multipartData.append(data, withName: name, fileName: name, mimeType: "image/jpeg")
         }, to: url, encodingCompletion: { encodingResult in
             switch encodingResult {
             case .success(request: let upload, streamingFromDisk: _, streamFileURL: _):
