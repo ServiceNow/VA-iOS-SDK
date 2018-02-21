@@ -38,27 +38,32 @@ class PickerItem {
 extension PickerItem {
     
     static func skipItem() -> PickerItem {
-        let item = PickerItem(type: .skip, label: "Skip", value: "Skip")
+        let localizedLabel = NSLocalizedString("Skip", comment: "Skip item")
+        let item = PickerItem(type: .skip, label: localizedLabel, value: "Skip")
         return item
     }
     
     static func yesItem() -> PickerItem {
-        let item = PickerItem(type: .yes, label: "Yes", value: "Yes")
+        let localizedLabel = NSLocalizedString("Yes", comment: "Yes item")
+        let item = PickerItem(type: .yes, label: localizedLabel, value: "Yes")
         return item
     }
     
     static func noItem() -> PickerItem {
-        let item = PickerItem(type: .no, label: "No", value: "No")
+        let localizedLabel = NSLocalizedString("No", comment: "No item")
+        let item = PickerItem(type: .no, label: localizedLabel, value: "No")
         return item
     }
     
     static func takePhotoItem() -> PickerItem {
-        let item = PickerItem(type: .takePhoto, label: "Take Photo", value: "Take Photo")
+        let localizedLabel = NSLocalizedString("Take Photo", comment: "Take Photo item")
+        let item = PickerItem(type: .takePhoto, label: localizedLabel, value: "Take Photo")
         return item
     }
     
     static func photoLibraryItem() -> PickerItem {
-        let item = PickerItem(type: .photoLibrary, label: "Photo Library", value: "Photo Library")
+        let localizedLabel = NSLocalizedString("Photo Library", comment: "Photo Library item")
+        let item = PickerItem(type: .photoLibrary, label: localizedLabel, value: "Photo Library")
         return item
     }
 }

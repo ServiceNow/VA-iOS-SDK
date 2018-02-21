@@ -33,7 +33,6 @@ extension APIManager: ControlResourceProvider {
             case .failure(let error):
                 print("Error: \(error)")
             }
-            
         })
         
     }
