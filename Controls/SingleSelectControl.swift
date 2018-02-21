@@ -33,6 +33,6 @@ class SingleSelectControl: PickerControlProtocol {
     }
     
     func pickerViewController(_ viewController: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
-        // FIXME: Something add here
+
     }
 }

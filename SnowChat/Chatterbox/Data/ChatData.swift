@@ -103,6 +103,7 @@ enum ChatterboxControlType: String, Codable {
     case outputImage = "OutputImage"
     case outputLink = "OutputLink"
     case outputHtml = "OutputHtml"
+    case inputImage = "Picture"
     
     case contextualAction = "ContextualAction"
     case systemError = "SystemError"

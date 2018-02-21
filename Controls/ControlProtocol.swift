@@ -14,6 +14,8 @@ enum ControlType {
     
     case outputImage
     
+    case inputImage
+    
     case outputLink
     
     case outputHtml
@@ -31,7 +33,8 @@ enum ControlType {
     case typingIndicator
     
     case button
-        
+    
+    //swiftlint:disable:next cyclomatic_complexity
     func description() -> String {
         switch self {
         case .multiSelect:
@@ -40,6 +43,8 @@ enum ControlType {
             return "Text"
         case .outputImage:
             return "Image Output"
+        case .inputImage:
+            return "Image Input"
         case .outputLink:
             return "Link Output"
         case .outputHtml:

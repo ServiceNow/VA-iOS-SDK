@@ -14,7 +14,11 @@ protocol OutputImageControlDelegate: ControlDelegate {
 
 class OutputImageControl: ControlProtocol {
     
-    var model: ControlViewModel
+    var model: ControlViewModel {
+        didSet {
+            refreshDownload()
+        }
+    }
     
     var viewController: UIViewController
     
@@ -28,28 +32,32 @@ class OutputImageControl: ControlProtocol {
         return delegate as? OutputImageControlDelegate
     }
     
+    private func refreshDownload() {
+        guard let imageModel = model as? OutputImageViewModel else {
+            Logger.default.logError("wrong model type")
+            return
+        }
+        
+        let urlRequest = URLRequest(url: imageModel.value)
+        
+        imageDownloader?.download(urlRequest) { [weak self] (response) in
+            guard let currentModel = self?.model as? OutputImageViewModel,
+                imageModel.value == currentModel.value else {
+                    return
+            }
+            
+            // FIXME: Handle error / no image case
+            
+            self?.imageViewController.image = response.value
+            
+            guard let strongSelf = self else { return }
+            self?.outputImageDelegate?.controlDidFinishImageDownload(strongSelf)
+        }
+    }
+    
     var imageDownloader: ImageDownloader? {
         didSet {
-            guard let imageModel = model as? OutputImageViewModel else {
-                Logger.default.logError("wrong model type")
-                return
-            }
-            
-            let urlRequest = URLRequest(url: imageModel.value)
-            
-            imageDownloader?.download(urlRequest) { [weak self] (response) in
-                guard let currentModel = self?.model as? OutputImageViewModel,
-                    imageModel.value == currentModel.value else {
-                        return
-                }
-                
-                // FIXME: Handle error / no image case
-                
-                self?.imageViewController.image = response.value
-                
-                guard let strongSelf = self else { return }
-                self?.outputImageDelegate?.controlDidFinishImageDownload(strongSelf)
-            }
+            refreshDownload()
         }
     }
 

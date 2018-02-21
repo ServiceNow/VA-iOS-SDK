@@ -52,6 +52,8 @@ class ChatMessageModel {
 }
 
 extension ChatMessageModel {
+    
+    // swiftlint:disable function_body_length
     //swiftlint:disable:next cyclomatic_complexity
     static func model(withMessage message: ControlData) -> ChatMessageModel? {
         switch message.controlType {
@@ -85,6 +87,9 @@ extension ChatMessageModel {
         case .outputHtml:
             guard let controlMessage = message as? OutputHtmlControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage)
+        case .inputImage:
+            guard let controlMessage = message as? InputImageControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
         case .systemError:
             guard let systemErrorMessage = message as? SystemErrorControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: systemErrorMessage)
@@ -109,6 +114,18 @@ extension ChatMessageModel {
         let booleanModel = BooleanControlViewModel(id: message.messageId, label: title, required: required)
         let direction = message.direction
         let snowViewModel = ChatMessageModel(model: booleanModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
+        return snowViewModel
+    }
+    
+    static func model(withMessage message: InputImageControlMessage) -> ChatMessageModel? {
+        guard let title = message.data.richControl?.uiMetadata?.label,
+            let required = message.data.richControl?.uiMetadata?.required else {
+                return nil
+        }
+        
+        let inputImage = InputImageViewModel(id: message.messageId, label: title, required: required)
+        let direction = message.direction
+        let snowViewModel = ChatMessageModel(model: inputImage, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     

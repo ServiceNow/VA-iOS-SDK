@@ -54,7 +54,8 @@ class OutputImageViewController: UIViewController {
         view.addSubview(activityIndicatorView)
         NSLayoutConstraint.activate([activityIndicatorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                                      activityIndicatorView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     activityIndicatorView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+                                     activityIndicatorView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
+                                     activityIndicatorView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
                                      activityIndicatorView.widthAnchor.constraint(equalToConstant: 100)])
         self.activityIndicatorView = activityIndicatorView
         activityIndicatorView.startAnimating()
