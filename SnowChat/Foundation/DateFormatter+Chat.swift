@@ -44,4 +44,17 @@ extension DateFormatter {
             fatalError("This control type should not be using dateFormatter: \(type))")
         }
     }
+    
+    static func formatterForDateTimeControlType(_ type: ControlType) -> DateFormatter {
+        switch type {
+        case .dateTime:
+            return DateFormatter.dateTimeFormatter
+        case .date:
+            return DateFormatter.dateOnlyFormatter
+        case .time:
+            return DateFormatter.timeOnlyFormatter
+        default:
+            fatalError("This control type should not be using dateFormatter: \(type))")
+        }
+    }
 }
