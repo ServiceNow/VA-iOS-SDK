@@ -9,7 +9,6 @@
 import Foundation
 import Alamofire
 import AlamofireImage
-import AMBClient
 
 enum APIManagerError: Error {
     case loginError(message: String)
@@ -176,24 +175,26 @@ class APIManager: NSObject {
         ambClient.applicationDidBecomeActiveNotification()
     }
     
+    // FIXME: Update to new AMB client notifications
+    
     private func listenForAMBConnectionChanges() {
-        NotificationCenter.default.addObserver(self, selector: #selector(ambConnectionStatusChange(_:)), name: NSNotification.Name.NOWFayeClientConnectionStatusDidChange, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(ambConnectionStatusChange(_:)), name: NSNotification.Name.NOWFayeClientConnectionStatusDidChange, object: nil)
     }
     
     @objc func ambConnectionStatusChange(_ notification: Notification) {
-        if let transportListener = transportListener,
-           let info = notification.userInfo,
-           let statusValue = info[NOWFayeClientConnectionStatusDidChangeNotificationStatusKey] as? UInt,
-           let status = NOWFayeClientStatus(rawValue: statusValue) {
-            
-            switch status {
-            case .connected:
-                transportListener.apiManagerTransportDidBecomeAvailable(self)
-            case .disconnected:
-                transportListener.apiManagerTransportDidBecomeUnavailable(self)
-            default:
-                Logger.default.logInfo("AMB connection notification: \(status)")
-            }
-        }
+//        if let transportListener = transportListener,
+//           let info = notification.userInfo,
+//           let statusValue = info[NOWFayeClientConnectionStatusDidChangeNotificationStatusKey] as? UInt,
+//           let status = NOWFayeClientStatus(rawValue: statusValue) {
+//
+//            switch status {
+//            case .connected:
+//                transportListener.apiManagerTransportDidBecomeAvailable(self)
+//            case .disconnected:
+//                transportListener.apiManagerTransportDidBecomeUnavailable(self)
+//            default:
+//                Logger.default.logInfo("AMB connection notification: \(status)")
+//            }
+//        }
     }
 }
