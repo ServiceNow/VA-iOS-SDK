@@ -480,9 +480,19 @@ extension ChatDataController: ChatDataListener {
         }
     }
     
+    private func replaceOrPresentControlData(_ model: ControlViewModel, messageId: String) {
+        let messageModel = ChatMessageModel(model: model, messageId: messageId, bubbleLocation: .left)
+        
+        // if buffering, we replace the last control with the new one, otherwise we just present the control
+        if isBufferingEnabled {
+            replaceLastControl(with: messageModel)
+        } else {
+            presentControlData(messageModel)
+        }
+    }
     private func didCompleteBooleanExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForBoolean(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
+            replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
             if let response = viewModels.response {
                 presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
             }
@@ -499,7 +509,7 @@ extension ChatDataController: ChatDataListener {
     
     private func didCompletePickerExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForPicker(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
+            replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
             if let response = viewModels.response {
                 presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
             }
@@ -509,7 +519,7 @@ extension ChatDataController: ChatDataListener {
     private func didCompleteMultiSelectExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         // replace the picker with the picker's label, and add the response
         if let viewModels = controlsForMultiSelect(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
+            replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
             if let response = viewModels.response {
                 presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
             }
@@ -552,14 +562,11 @@ extension ChatDataController: ChatDataListener {
     // MARK: - ChatDataListener (bulk uopdates / history)
     
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversation conversationId: String, forChat chatId: String) {
-        logger.logInfo("Conversation \(conversationId) will load")
+        guard let conversation = chatterbox.conversation(forId: conversationId) else { fatalError("Conversation cannot be found for id \(conversationId)") }
         
-        var topicName: String?
+        logger.logInfo("Conversation will load: topicName=\(conversation.topicTypeName) conversationId=\(conversationId) state=\(conversation.state)")
         
-        if let conversation = chatterbox.conversation(forId: conversationId) {
-            topicName = conversation.topicTypeName
-        }
-        
+        let topicName = conversation.topicTypeName
         let topicId = conversationId
         let topicInfo = TopicInfo(topicId: topicId, topicName: topicName, conversationId: conversationId)
         pushTopicStartDivider(topicInfo)

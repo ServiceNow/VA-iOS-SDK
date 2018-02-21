@@ -150,52 +150,6 @@ class Chatterbox {
         return chatStore.lastPendingMessage(forConversation: conversationId) as? ControlData
     }
     
-    func fetchOlderMessages(_ completion: @escaping (Int) -> Void) {
-        // request another page of messages prior to the first message we have
-        guard let oldestMessage = chatStore.oldestMessage(),
-              let consumerAccountId = session?.user.consumerAccountId  else {
-                logger.logError("No oldest message or consumerAccountId in fetchOlderMessages")
-                completion(0)
-                return
-        }
-
-        apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { [weak self] conversationsFromService in
-            var count = 0
-            guard let strongSelf = self else {
-                completion(0)
-                return
-            }
-            
-            strongSelf.chatDataListener?.chatterbox(strongSelf, willLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
-
-            // TODO: remove this filter when the service stops returning system messages
-            let conversations = strongSelf.filterSystemTopics(conversationsFromService)
-            
-            conversations.forEach({ [weak self] conversation in
-                guard let strongSelf = self else { return }
-                
-                let conversationId = conversation.conversationId
-                let conversationName = conversation.topicTypeName
-                _ = strongSelf.chatStore.findOrCreateConversation(conversationId, withName: conversationName, withState: conversation.state)
-                
-                strongSelf.chatDataListener?.chatterbox(strongSelf, willLoadConversationHistory: conversationId, forChat: strongSelf.chatId)
-
-                conversation.messageExchanges().reversed().forEach({ [weak self] exchange in
-                    guard let strongSelf = self else { return }
-
-                    strongSelf.storeHistoryAndPublish(exchange, forConversation: conversationId)
-                    count += (exchange.response != nil ? 2 : 1)
-                })
-
-                strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationHistory: conversationId, forChat: strongSelf.chatId)
-            })
-            
-            strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
-            
-            completion(count)
-        })
-    }
-    
     func endConversation() {
         let sessionId = conversationContext.sessionId ?? "UNKNOWN_SESSION_ID"
         let conversationId = conversationContext.conversationId ?? "UNKNOWN_CONVERSATION_ID"
@@ -822,6 +776,65 @@ extension Chatterbox {
 
 extension Chatterbox {
     
+    // MARK: Fetch older messages as user needs them
+    
+    func fetchOlderMessages(_ completion: @escaping (Int) -> Void) {
+        // request another page of messages prior to the first message we have
+        guard let oldestMessage = chatStore.oldestMessage(),
+            let consumerAccountId = session?.user.consumerAccountId  else {
+                logger.logError("No oldest message or consumerAccountId in fetchOlderMessages")
+                completion(0)
+                return
+        }
+        
+        apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { [weak self] conversationsFromService in
+            guard let strongSelf = self else {
+                completion(0)
+                return
+            }
+            
+            var count = 0
+            
+            strongSelf.chatDataListener?.chatterbox(strongSelf, willLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
+            
+            // TODO: remove this filter when the service stops returning system messages
+            let conversations = strongSelf.filterSystemTopics(conversationsFromService)
+            
+            conversations.forEach({ [weak self] conversation in
+                guard let strongSelf = self else { return }
+                
+                let conversationId = conversation.conversationId
+                let conversationName = conversation.topicTypeName
+                _ = strongSelf.chatStore.findOrCreateConversation(conversationId, withName: conversationName, withState: conversation.state)
+                
+                count += strongSelf.loadConversationHistory(conversation)
+            })
+            
+            strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
+            
+            completion(count)
+        })
+    }
+    
+    func loadConversationHistory(_ conversation: Conversation) -> Int {
+        var count = 0
+        let conversationId = conversation.conversationId
+        
+        chatDataListener?.chatterbox(self, willLoadConversationHistory: conversationId, forChat: chatId)
+        
+        conversation.messageExchanges().reversed().forEach({ exchange in
+            self.storeHistoryAndPublish(exchange, forConversation: conversationId)
+            count += (exchange.response != nil ? 2 : 1)
+        })
+        
+        chatDataListener?.chatterbox(self, didLoadConversationHistory: conversationId, forChat: chatId)
+        
+        return count
+    }
+}
+
+extension Chatterbox {
+    
     // MARK: - Persistence Methods
     
     internal func saveDataToPersistence() {
@@ -870,13 +883,10 @@ extension Chatterbox {
                 conversations.forEach { conversation in
                     var conversation = conversation
                     
-                    let conversationId = conversation.conversationId
                     let isInProgress = conversation.conversationId == lastConversation?.conversationId && conversation.state != .completed
                     if !isInProgress {
                         conversation.state = .completed
                     }
-                    
-                    self.logger.logDebug("--> Conversation \(conversationId) refreshed: \(conversation)")
                     
                     self.storeConversationAndPublish(conversation)
                     
