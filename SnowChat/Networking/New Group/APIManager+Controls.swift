@@ -17,11 +17,11 @@ extension APIManager: ControlResourceProvider {
         return imageDownloader
     }
     
-    func uploadImage(data: Data, withTaskId taskId: String, completion: @escaping (_ result: String?) -> Void) {
+    func uploadImage(data: Data, withName name: String, taskId: String, completion: @escaping (_ result: String?) -> Void) {
         let url = apiURLWithPath("cs/media/\(taskId)")
         
         sessionManager.upload(multipartFormData: { multipartData in
-            multipartData.append(data, withName: "image", fileName: "dupa.png", mimeType: "image/png")
+            multipartData.append(data, withName: name)
         }, to: url, encodingCompletion: { encodingResult in
             switch encodingResult {
             case .success(request: let upload, streamingFromDisk: _, streamFileURL: _):

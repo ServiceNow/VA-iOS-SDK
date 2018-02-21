@@ -8,7 +8,9 @@
 
 class InputImageViewModel: SingleSelectControlViewModel {
     
+    // TODO: Introduce struct for it? or use tuple?
     var selectedImageData: Data?
+    var imageName: String?
     
     override var type: ControlType {
         return .inputImage

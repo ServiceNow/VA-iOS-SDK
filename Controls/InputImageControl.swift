@@ -93,6 +93,14 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         viewController.presentedViewController?.dismiss(animated: true, completion: nil)
         let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+        if #available(iOS 11.0, *) {
+            let imageURL = info[UIImagePickerControllerImageURL] as! URL
+            inputImageModel.imageName = imageURL.deletingPathExtension().lastPathComponent
+        } else {
+            let imageURL = info[UIImagePickerControllerReferenceURL] as! URL
+            inputImageModel.imageName = imageURL.deletingPathExtension().lastPathComponent
+        }
+        
         let imageData = UIImageJPEGRepresentation(image, 0.8)
         inputImageModel.selectedImageData = imageData
         
@@ -100,7 +108,7 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
     }
     
     // MARK: - Authorization
-    
+    // TODO: Below two methods could be extracted to a separate class and become class methods
     private func authorizeCamera(_ handler: @escaping (AVAuthorizationStatus) -> Swift.Void) {
         guard nil != Bundle.main.infoDictionary?["NSCameraUsageDescription"] else {
             fatalError("Please provide value for the NSCameraUsageDescription key in Info.plist of your application")
