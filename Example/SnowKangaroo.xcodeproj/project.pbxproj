@@ -18,6 +18,8 @@
 		8B72FC32202B61FD00C1AFC9 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B72FC31202B61FD00C1AFC9 /* RootViewController.swift */; };
 		8B72FC35202B625A00C1AFC9 /* InstanceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B72FC34202B625A00C1AFC9 /* InstanceSettings.swift */; };
 		8B72FC37202B696A00C1AFC9 /* OAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B72FC36202B696A00C1AFC9 /* OAuthCredential.swift */; };
+		8B9842FC203E3B2B00FE7DAD /* SNOWAMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B9842FD203E3B2B00FE7DAD /* SNOWAMBClient.framework */; };
+		8B9842FE203E3B3100FE7DAD /* SNOWAMBClient.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B9842FD203E3B2B00FE7DAD /* SNOWAMBClient.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8BBAAA922032547700D50F66 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAAA902032547700D50F66 /* HomeViewController.swift */; };
 		8BBAAA932032547700D50F66 /* HomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8BBAAA912032547700D50F66 /* HomeViewController.xib */; };
 		BE3BCB8B1FBA00270019A21A /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E22C1FB934FF00948FBC /* SnowChat.framework */; };
@@ -53,6 +55,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				BE3BCB8C1FBA00270019A21A /* SnowChat.framework in Embed Frameworks */,
+				8B9842FE203E3B3100FE7DAD /* SNOWAMBClient.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -71,6 +74,7 @@
 		8B72FC31202B61FD00C1AFC9 /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		8B72FC34202B625A00C1AFC9 /* InstanceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceSettings.swift; sourceTree = "<group>"; };
 		8B72FC36202B696A00C1AFC9 /* OAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthCredential.swift; sourceTree = "<group>"; };
+		8B9842FD203E3B2B00FE7DAD /* SNOWAMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SNOWAMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BBAAA902032547700D50F66 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		8BBAAA912032547700D50F66 /* HomeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HomeViewController.xib; sourceTree = "<group>"; };
 		BE50E1E91FB92EB800948FBC /* SnowKangaroo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnowKangaroo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -91,6 +95,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B9842FC203E3B2B00FE7DAD /* SNOWAMBClient.framework in Frameworks */,
 				BE3BCB8B1FBA00270019A21A /* SnowChat.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -208,6 +213,7 @@
 		BE50E22A1FB934FF00948FBC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8B9842FD203E3B2B00FE7DAD /* SNOWAMBClient.framework */,
 				BE50E22C1FB934FF00948FBC /* SnowChat.framework */,
 			);
 			name = Frameworks;
@@ -363,14 +369,12 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/../Carthage/Build/iOS/Alamofire.framework",
-				"$(SRCROOT)/../Carthage/Build/iOS/AMBClient.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/SlackTextViewController.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/AlamofireImage.framework",
 			);
 			name = "Copy Carthage Frameworks";
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/../$(FRAMEWORKS_FOLDER_PATH)/Alamofire.framework",
-				"$(BUILT_PRODUCTS_DIR)/../$(FRAMEWORKS_FOLDER_PATH)/AMBClient.framework",
 				"$(BUILT_PRODUCTS_DIR)/../$(FRAMEWORKS_FOLDER_PATH)/SlackTextViewController.framework",
 				"$(BUILT_PRODUCTS_DIR)/../$(FRAMEWORKS_FOLDER_PATH)/AlamofireImage.framework",
 			);

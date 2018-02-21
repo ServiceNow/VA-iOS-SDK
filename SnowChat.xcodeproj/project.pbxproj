@@ -119,6 +119,7 @@
 		57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */; };
 		57EE77DF1FFEC2B1001F689A /* ChatMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */; };
 		57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F7B2531FE17823006D917C /* TextControlViewModel.swift */; };
+		8B8573DD203DE7410031A1F1 /* SNOWAMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B8573DE203DE7410031A1F1 /* SNOWAMBClient.framework */; };
 		8BA70BB120250CCB0067EBF3 /* BaseAuthTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */; };
 		8BA70BB520250D2F0067EBF3 /* InstanceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB420250D2F0067EBF3 /* InstanceConfiguration.swift */; };
 		8BA70BB920250E660067EBF3 /* SessionTimeoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB820250E660067EBF3 /* SessionTimeoutTests.swift */; };
@@ -145,7 +146,6 @@
 		BE876FDD1FDF4F75008EEF04 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE876FDC1FDF4F75008EEF04 /* ChatService.swift */; };
 		BE876FDF1FDF5177008EEF04 /* ConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */; };
 		BE8C51062017B4EF0032BD05 /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEB6C8571FB92CD700B1D497 /* SnowChat.framework */; };
-		BE9E8B631FBF5AEC00499960 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9E8B621FBF5AEC00499960 /* AMBClient.framework */; };
 		BE9E8BA11FBF7F3600499960 /* AMBClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8B9E1FBF7F3500499960 /* AMBClient.swift */; };
 		BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */; };
 		BE9E8BA91FBF826300499960 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8BA81FBF826300499960 /* APIManager.swift */; };
@@ -167,7 +167,6 @@
 		C420ED7D1FC5F473002476C0 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C420ED7C1FC5F473002476C0 /* Logger.swift */; };
 		C420ED7F1FC5F488002476C0 /* LoggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C420ED7E1FC5F488002476C0 /* LoggerTests.swift */; };
 		C420ED821FC6031C002476C0 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
-		C420ED831FC6031C002476C0 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9E8B621FBF5AEC00499960 /* AMBClient.framework */; };
 		C432A038201A9C5900F328B7 /* ContextMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C432A037201A9C5900F328B7 /* ContextMenuItem.swift */; };
 		C43479EC1FE460700091806D /* TopicSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43479EB1FE460700091806D /* TopicSelection.swift */; };
 		C43479EE1FE850D20091806D /* AutoCompleteHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */; };
@@ -292,6 +291,7 @@
 		57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Utils.swift"; sourceTree = "<group>"; };
 		57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageModel.swift; sourceTree = "<group>"; };
 		57F7B2531FE17823006D917C /* TextControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControlViewModel.swift; sourceTree = "<group>"; };
+		8B8573DE203DE7410031A1F1 /* SNOWAMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SNOWAMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseAuthTestCase.swift; sourceTree = "<group>"; };
 		8BA70BB420250D2F0067EBF3 /* InstanceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceConfiguration.swift; sourceTree = "<group>"; };
 		8BA70BB820250E660067EBF3 /* SessionTimeoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTimeoutTests.swift; sourceTree = "<group>"; };
@@ -389,7 +389,6 @@
 				46BC5778202EE97000FDDB43 /* SNOWAMBClient.framework in Frameworks */,
 				BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */,
 				BECBB6D8200D0F4C002EF5EC /* AlamofireImage.framework in Frameworks */,
-				BE9E8B631FBF5AEC00499960 /* AMBClient.framework in Frameworks */,
 				BE29E0C91FDEF74C0029D1F0 /* SlackTextViewController.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -398,9 +397,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B8573DD203DE7410031A1F1 /* SNOWAMBClient.framework in Frameworks */,
 				BEB6C8611FB92CD700B1D497 /* SnowChat.framework in Frameworks */,
 				C420ED821FC6031C002476C0 /* Alamofire.framework in Frameworks */,
-				C420ED831FC6031C002476C0 /* AMBClient.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -588,6 +587,7 @@
 		BE50E2251FB9337D00948FBC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8B8573DE203DE7410031A1F1 /* SNOWAMBClient.framework */,
 				46BC5779202EE97000FDDB43 /* SNOWAMBClient.framework */,
 				BECBB6D7200D0F4C002EF5EC /* AlamofireImage.framework */,
 				BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */,
@@ -1050,14 +1050,12 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/AMBClient.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SlackTextViewController.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/AlamofireImage.framework",
 			);
 			name = "Copy Carthage Frameworks";
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Alamofire.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/AMBClient.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SlackTextViewController.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/AlamofireImage.framework",
 			);
