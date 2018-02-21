@@ -31,7 +31,7 @@
 //
 
 import Foundation
-import AMBClient
+import SNOWAMBClient
 
 enum ChatterboxError: Error {
     case invalidParameter(details: String)
@@ -69,7 +69,7 @@ class Chatterbox {
     }
     
     internal let chatId = ChatUtil.uuidString()
-    private var chatSubscription: NOWAMBSubscription?
+    private var chatSubscription: SNOWAMBSubscription?
     
     internal let instance: ServerInstance
     
@@ -222,29 +222,40 @@ class Chatterbox {
             completion(result.error)
         }
     }
-    
+
     private func setupChatSubscription() {
-        chatSubscription = apiManager.ambClient.subscribe(chatChannel) { [weak self] (subscription, message) in
+        chatSubscription = apiManager.ambClient.subscribe(chatChannel) { [weak self] (result, subscription) in
             guard let strongSelf = self else { return }
             guard let messageHandler = strongSelf.messageHandler else {
                 strongSelf.logger.logError("No handler set in Chatterbox setupChatSubscription!")
                 return
             }
             
-            strongSelf.logger.logDebug("Received from AMB: \(message)")
-            
-            // when AMB gives us a message we dispatch to the current handler
-            
-            // but FIRST we check for a general system events (system error, updated ContextualAction, etc)
-            let systemError = ChatDataFactory.controlFromJSON(message)
-            guard systemError.controlType != .systemError else {
-                strongSelf.logger.logError("System Error received")
-                strongSelf.handleSystemError(message)
-                return
+            switch result {
+            case .success:
+                if let message = result.value {
+                    let messageString = message.jsonDataString
+                    
+                    strongSelf.logger.logDebug("Received from AMB: \(messageString)")
+                    
+                    // FIRST we check for a general system events (system error, updated ContextualAction, etc)
+                    let systemError = ChatDataFactory.controlFromJSON(messageString)
+                    guard systemError.controlType != .systemError else {
+                        strongSelf.logger.logError("System Error received")
+                        strongSelf.handleSystemError(messageString)
+                        return
+                    }
+                    
+                    messageHandler(messageString)
+                } else {
+                    fatalError("AMB Success with no result value!")
+                }
+            case .failure:
+                if let error = result.error {
+                    strongSelf.logger.logError("AMB error: \(error)")
+                }
+                // TODO: how to handle AMB errors here?
             }
-            
-            // forward to current message handler
-            messageHandler(message)
         }
     }
     
