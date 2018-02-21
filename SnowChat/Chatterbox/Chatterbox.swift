@@ -191,11 +191,12 @@ class Chatterbox {
                 guard let strongSelf = self else { return }
                 
                 let conversationId = conversation.conversationId
-                _ = strongSelf.chatStore.findOrCreateConversation(conversationId)
+                let conversationName = conversation.topicTypeName
+                _ = strongSelf.chatStore.findOrCreateConversation(conversationId, withName: conversationName, withState: conversation.state)
                 
                 strongSelf.chatDataListener?.chatterbox(strongSelf, willLoadConversationHistory: conversationId, forChat: strongSelf.chatId)
 
-                conversation.messageExchanges().forEach({ [weak self] exchange in
+                conversation.messageExchanges().reversed().forEach({ [weak self] exchange in
                     guard let strongSelf = self else { return }
 
                     strongSelf.storeHistoryAndPublish(exchange, forConversation: conversationId)
@@ -859,9 +860,7 @@ extension Chatterbox {
                     
                     self.logger.logDebug("--> Conversation \(conversationId) refreshed: \(conversation)")
                     
-                    self.chatDataListener?.chatterbox(self, willLoadConversation: conversationId, forChat: self.chatId)
                     self.storeConversationAndPublish(conversation)
-                    self.chatDataListener?.chatterbox(self, didLoadConversation: conversationId, forChat: self.chatId)
                     
                     if conversation.conversationId == lastConversation?.conversationId {
                         self.syncConversationState(conversation)
@@ -892,13 +891,17 @@ extension Chatterbox {
     internal func storeConversationAndPublish(_ conversation: Conversation) {
         chatStore.storeConversation(conversation)
         
-        conversation.messageExchanges().forEach { (exchange) in
+        self.chatDataListener?.chatterbox(self, willLoadConversation: conversation.conversationId, forChat: self.chatId)
+
+        conversation.messageExchanges().forEach { exchange in
             if conversation.state != .completed && !exchange.isComplete {
                 notifyMessage(exchange.message)
             } else {
                 notifyMessageExchange(exchange)
             }
         }
+        
+        self.chatDataListener?.chatterbox(self, didLoadConversation: conversation.conversationId, forChat: self.chatId)
     }
     
     internal func notifyMessage(_ message: ControlData) {

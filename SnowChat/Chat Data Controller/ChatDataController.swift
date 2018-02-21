@@ -346,7 +346,9 @@ class ChatDataController {
     }
     
     func pushTopicTitle(topicInfo: TopicInfo) {
-        guard let message = topicInfo.topicName else { return }
+        guard let message = topicInfo.topicName else {
+            return
+        }
         let titleTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         
         // NOTE: we do not buffer the welcome message currently - this is intentional
@@ -473,7 +475,9 @@ extension ChatDataController: ChatDataListener {
         }
         
         // we updated the controls for the response, so push a typing indicator while we wait for a new control to come in
-        pushTypingIndicator()
+        if isBufferingEnabled {
+            pushTypingIndicator()
+        }
     }
     
     private func didCompleteBooleanExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
@@ -487,6 +491,8 @@ extension ChatDataController: ChatDataListener {
     
     private func didCompleteInputExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForInput(from: messageExchange), let response = viewModels.response {
+            let message = viewModels.message 
+            presentControlData(ChatMessageModel(model: message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
             presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
         }
     }
@@ -547,25 +553,21 @@ extension ChatDataController: ChatDataListener {
     
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversation conversationId: String, forChat chatId: String) {
         logger.logInfo("Conversation \(conversationId) will load")
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
-        logger.logInfo("Conversation \(conversationId) did load")
-
+        
         var topicName: String?
         
         if let conversation = chatterbox.conversation(forId: conversationId) {
             topicName = conversation.topicTypeName
-            
-            if conversation.state == .inProgress || conversation.state == .chatProgress {
-                // do not push the start-topic divider if this is the active conversation
-                return
-            }
         }
+        
         let topicId = conversationId
         let topicInfo = TopicInfo(topicId: topicId, topicName: topicName, conversationId: conversationId)
         pushTopicStartDivider(topicInfo)
         pushTopicTitle(topicInfo: topicInfo)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
+        logger.logInfo("Conversation \(conversationId) did load")
     }
 
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversationHistory conversationId: String, forChat chatId: String) {
