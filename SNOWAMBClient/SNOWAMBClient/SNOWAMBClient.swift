@@ -60,7 +60,7 @@ public struct SNOWAMBGlideStatus {
 // SNOWAMBClientDelegate
 //
 
-public protocol SNOWAMBClientDelegate: class {
+public protocol SNOWAMBClientDelegate: AnyObject {
     func didConnect(client: SNOWAMBClient)
     func didDisconnect(client: SNOWAMBClient)
     func didFail(client: SNOWAMBClient, withError: SNOWAMBError)
@@ -125,7 +125,7 @@ public class SNOWAMBClient {
     private var queuedSubscriptionChannels = Set<String>()
     private var longPollingInterval: TimeInterval = 0.0
     private var longPollingTimeout: TimeInterval = 0.0
-    private let retryInterval = 1.0
+    private let retryInterval: TimeInterval = 1.0
     private var retryAttempt = 0
     private var reopenChannelsAfterSuccessfulConnectMessages = true
     private var dataTasks = [URLSessionDataTask]()
@@ -140,7 +140,7 @@ public class SNOWAMBClient {
     public var clientStatus = SNOWAMBClientStatus.disconnected {
         didSet {
             if oldValue != self.clientStatus {
-                delegate?.didClientStatusChange(client: self, status: self.clientStatus)
+                delegate?.didClientStatusChange(client: self, status: clientStatus)
                 switch self.clientStatus {
                 case .retrying, .handshake:
                     retryAttempt = 0
@@ -157,16 +157,16 @@ public class SNOWAMBClient {
     
     public var glideStatus: SNOWAMBGlideStatus = SNOWAMBGlideStatus(ambActive: false, sessionStatus: nil) {
         didSet {
-            if oldValue != self.glideStatus {
-                delegate?.didGlideStatusChange(client: self, status: self.glideStatus)
+            if oldValue != glideStatus {
+                delegate?.didGlideStatusChange(client: self, status: glideStatus)
             }
         }
     }
     
-    public var paused: Bool = false {
+    public var isPaused: Bool = false {
         didSet {
-            if paused != oldValue {
-                if paused {
+            if isPaused != oldValue {
+                if isPaused {
                     cancelAllDataTasks()
                 } else {
                     self.clientStatus = .retrying
@@ -199,7 +199,7 @@ public class SNOWAMBClient {
     
     public func publishMessage(_ message: SNOWAMBMessageDictionary,
                                toChannel channel: String,
-                               withExtension ext: SNOWAMBMessageDataExtention,
+                               withExtension ext: SNOWAMBMessageDataExtention? = nil,
                                completion handler: @escaping SNOWAMBPublishMessageHandler) {
         sendBayeuxPublishMessage(message, toChannel: channel, withExtension: ext, completion: handler)
     }
@@ -222,13 +222,11 @@ public class SNOWAMBClient {
         return subscription
     }
     
-    // TODO: Probably move to SMOWAMBSubscription
-    public func resubscribe(subscription: SNOWAMBSubscription) {
-        if subscribedChannels.contains(subscription.channel) {
-            subscription.subscribed = true
+    public func resubscribe(channel: String) {
+        if subscribedChannels.contains(channel) {
             return
         }
-        sendBayeuxSubscribeMessage(channel: subscription.channel)
+        sendBayeuxSubscribeMessage(channel: channel)
     }
     
     public func unsubscribe(subscription: SNOWAMBSubscription) {
@@ -269,7 +267,7 @@ private extension SNOWAMBClient {
     
     func startConnectRequest(after interval: TimeInterval = 0.0) {
         
-        guard !paused else {
+        guard !isPaused else {
             log("Client is paused. Connect request is skipped")
             return
         }
@@ -302,11 +300,8 @@ private extension SNOWAMBClient {
     
     // MARK: AMB/Bayeux message handlers
     
-    private func parseResponseObject(_ responseObject: Any?) -> SNOWAMBResult<[SNOWAMBMessage]> {
+    func parseResponseObject(_ responseObject: Any?) -> SNOWAMBResult<[SNOWAMBMessage]> {
         var parsedMessages = [SNOWAMBMessage]()
-        
-        // TODO: For debugging purposes (remove!)
-        log("<<<<<<<<<<<<  \(String(describing: responseObject))")
         
         guard responseObject as? [SNOWAMBMessageDictionary] != nil else {
             let error = SNOWAMBError(SNOWAMBErrorType.messageParserError, "AMB Messages structure is not Array")
@@ -361,7 +356,7 @@ private extension SNOWAMBClient {
     }
     
     func parseChannelMessage(_ ambMessage: SNOWAMBMessage, channel: String) {
-        if self.paused {
+        if self.isPaused {
             log("AMB Client: incoming message when client is paused. Skipping.")
             return
         }
@@ -410,13 +405,7 @@ private extension SNOWAMBClient {
         queuedSubscriptionChannels.removeAll()
         
         oldSubscribedChannels.forEach({ (channel) in
-            if let subscriptions = subscriptionsByChannel[channel] {
-                subscriptions.forEach({ (subscriptionWrapper) in
-                    if let subscription = subscriptionWrapper.subscription {
-                        resubscribe(subscription: subscription)
-                    }
-                })
-            }
+            resubscribe(channel: channel)
         })
     }
     
@@ -587,7 +576,7 @@ private extension SNOWAMBClient {
     
     func sendBayeuxPublishMessage(_ message: SNOWAMBMessageDictionary,
                                   toChannel channel: String,
-                                  withExtension ext: SNOWAMBMessageDataExtention?,
+                                  withExtension ext: SNOWAMBMessageDataExtention? = nil,
                                   completion handler: SNOWAMBPublishMessageHandler? = nil) {
         
         guard clientStatus == .connected else {
@@ -654,9 +643,6 @@ private extension SNOWAMBClient {
         let path = channelNameToPath(channel)
         let fullPath = String(format:"/amb/%@", path)
         
-        // TODO: Remove it. For debugging purposes!
-        log(">>>>>>>>>>>>>> AMB HTTP Post: \(myMessage)")
-        
         let task = httpClient.post(fullPath, jsonParameters: myMessage as Any, timeout: timeout,
             success: { (responseObject: Any?) -> Void in
                 let result = self.parseResponseObject(responseObject)
@@ -665,7 +651,11 @@ private extension SNOWAMBClient {
                 }
             },
             failure: { (error: Any?) -> Void in
-                self.handleHTTPResponseError(message: myMessage, error: error as! Error)
+                let httpError = error as! Error
+                if let handler = handler {
+                    handler(SNOWAMBResult.failure(SNOWAMBError(SNOWAMBErrorType.httpRequestFailed, httpError.localizedDescription)))
+                }
+                self.handleHTTPResponseError(message: myMessage, error: httpError)
         })
 
         if let task = task {
@@ -679,7 +669,7 @@ private extension SNOWAMBClient {
         return task
     }
     
-    private func handleHTTPResponseError(message: SNOWAMBMessageDictionary, error: Error) {
+    func handleHTTPResponseError(message: SNOWAMBMessageDictionary, error: Error) {
         cleanupCompletedDataTasks()
 
         delegate?.didFail(client: self,

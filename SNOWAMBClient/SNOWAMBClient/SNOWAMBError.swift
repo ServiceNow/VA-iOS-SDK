@@ -10,13 +10,18 @@ public enum SNOWAMBErrorType {
     case unhandledMessageReceived
 }
 
-public class SNOWAMBError : LocalizedError {
+public class SNOWAMBError : Error {
     
     let description: String
-    let error: SNOWAMBErrorType
+    let errorType: SNOWAMBErrorType
+    
+    init(_ error: Error) {
+        self.errorType = .httpRequestFailed
+        self.description = error.localizedDescription
+    }
     
     init(_ error: SNOWAMBErrorType, _ description : String) {
         self.description = description
-        self.error = error
+        self.errorType = error
     }
 }

@@ -39,11 +39,11 @@ internal class AMBClient: NSObject {
     // MARK: - Notification Handling
     
     internal func applicationWillResignActiveNotification() {
-        fayeClient.paused = true
+        fayeClient.isPaused = true
     }
     
     internal func applicationDidBecomeActiveNotification() {
-        fayeClient.paused = false
+        fayeClient.isPaused = false
     }
     
     // MARK: - Faye Method Proxies

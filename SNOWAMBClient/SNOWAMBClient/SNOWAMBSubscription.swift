@@ -1,14 +1,14 @@
 public class SNOWAMBSubscription {
     
-    let uuid : String
+    let uuid: String
     var valid = false
     var pending = true
     var subscribed = false
-    let client : SNOWAMBClient
-    let channel : String
-    let messageHandler : SNOWAMBMessageHandler
+    let client: SNOWAMBClient
+    let channel: String
+    let messageHandler: SNOWAMBMessageHandler
     
-    init(channel : String, client : SNOWAMBClient, messageHandler : @escaping SNOWAMBMessageHandler) {
+    init(channel: String, client: SNOWAMBClient, messageHandler: @escaping SNOWAMBMessageHandler) {
         self.channel = channel
         self.client = client
         self.messageHandler = messageHandler
@@ -30,13 +30,13 @@ public class SNOWAMBSubscription {
     deinit {
         client.unsubscribe(subscription: self)
     }
-    
+
 }
 
 public struct SNOWAMBSubscriptionWeakWrapper {
-    public weak var subscription : SNOWAMBSubscription?
+    public weak var subscription: SNOWAMBSubscription?
     
-    init(_ subscription : SNOWAMBSubscription) {
+    init(_ subscription: SNOWAMBSubscription) {
         self.subscription = subscription
     }
 }
