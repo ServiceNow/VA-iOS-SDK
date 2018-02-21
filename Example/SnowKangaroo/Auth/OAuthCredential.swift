@@ -10,6 +10,7 @@ import Foundation
 
 struct OAuthCredential: Codable {
     let accessToken: String
+    let idToken: String?
     let refreshToken: String?
     let tokenType: String
     let expiration: Date?
@@ -23,10 +24,11 @@ extension OAuthCredential {
         }
         
         let refreshToken = dictionary["refresh_token"] as? String
+        let idToken = dictionary["id_token"] as? String
         
         let expiresIn = dictionary["expires_in"] as? TimeInterval
         let expiration = expiresIn.flatMap { Date(timeIntervalSinceNow: $0) }
         
-        self.init(accessToken: accessToken, refreshToken: refreshToken, tokenType: tokenType, expiration: expiration)
+        self.init(accessToken: accessToken, idToken: idToken, refreshToken: refreshToken, tokenType: tokenType, expiration: expiration)
     }
 }

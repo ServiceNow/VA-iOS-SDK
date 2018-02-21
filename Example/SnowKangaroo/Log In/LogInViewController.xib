@@ -14,6 +14,8 @@
             <connections>
                 <outlet property="activityIndicatorView" destination="ldP-SQ-2ie" id="qgB-Uq-M6b"/>
                 <outlet property="instanceTextField" destination="wTo-IM-aep" id="jG0-AD-ZOA"/>
+                <outlet property="logInButton" destination="Ky7-cH-5M9" id="sZP-UF-ygL"/>
+                <outlet property="openIDButton" destination="5YN-YN-Bdq" id="JSE-hG-ya7"/>
                 <outlet property="passwordTextField" destination="Fzm-bv-LEP" id="KQi-DB-h5W"/>
                 <outlet property="usernameTextField" destination="5Lb-Tf-caR" id="VPc-wz-Of6"/>
                 <outlet property="view" destination="3Ia-JJ-RNv" id="DUE-1g-FTu"/>
@@ -61,13 +63,32 @@
                     <rect key="frame" x="169" y="325" width="37" height="37"/>
                     <color key="color" cocoaTouchSystemColor="darkTextColor"/>
                 </activityIndicatorView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ky7-cH-5M9">
+                    <rect key="frame" x="163" y="265" width="48" height="33"/>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
+                    <state key="normal" title="Log In"/>
+                    <connections>
+                        <action selector="logInButtonTapped:" destination="-1" eventType="touchUpInside" id="jfs-VI-6lv"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5YN-YN-Bdq">
+                    <rect key="frame" x="118.5" y="317" width="137" height="29"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <state key="normal" title="Use OpenID Connect"/>
+                    <connections>
+                        <action selector="useOpenIDButtonTapped:" destination="-1" eventType="touchUpInside" id="xnM-8x-DPK"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
             <constraints>
+                <constraint firstItem="5YN-YN-Bdq" firstAttribute="top" secondItem="Ky7-cH-5M9" secondAttribute="bottom" constant="19" id="5ir-sY-NFM"/>
                 <constraint firstItem="5Lb-Tf-caR" firstAttribute="leading" secondItem="Jht-vd-svl" secondAttribute="leading" constant="16" id="5jh-Dc-Kly"/>
+                <constraint firstItem="5YN-YN-Bdq" firstAttribute="centerX" secondItem="Jht-vd-svl" secondAttribute="centerX" id="BH5-i2-URC"/>
                 <constraint firstItem="Fzm-bv-LEP" firstAttribute="top" secondItem="5Lb-Tf-caR" secondAttribute="bottom" constant="8" id="G4y-Rg-lZs"/>
                 <constraint firstItem="Fzm-bv-LEP" firstAttribute="leading" secondItem="Jht-vd-svl" secondAttribute="leading" constant="16" id="Gxu-pe-NLi"/>
                 <constraint firstItem="wTo-IM-aep" firstAttribute="leading" secondItem="Jht-vd-svl" secondAttribute="leading" constant="16" id="N6B-55-VWk"/>
+                <constraint firstItem="Ky7-cH-5M9" firstAttribute="centerX" secondItem="Jht-vd-svl" secondAttribute="centerX" id="Rbt-SU-sd0"/>
                 <constraint firstItem="Jht-vd-svl" firstAttribute="trailing" secondItem="5Lb-Tf-caR" secondAttribute="trailing" constant="16" id="TZx-g3-Cc9"/>
                 <constraint firstItem="WAY-8w-91y" firstAttribute="centerX" secondItem="Jht-vd-svl" secondAttribute="centerX" id="XPO-wd-XLf"/>
                 <constraint firstItem="Jht-vd-svl" firstAttribute="trailing" secondItem="wTo-IM-aep" secondAttribute="trailing" constant="16" id="YEg-fk-qOV"/>
@@ -77,6 +98,7 @@
                 <constraint firstItem="5Lb-Tf-caR" firstAttribute="top" secondItem="wTo-IM-aep" secondAttribute="bottom" constant="8" id="smz-ed-sQc"/>
                 <constraint firstItem="WAY-8w-91y" firstAttribute="top" secondItem="Jht-vd-svl" secondAttribute="top" constant="20" id="w3k-hS-YV1"/>
                 <constraint firstItem="Jht-vd-svl" firstAttribute="trailing" secondItem="Fzm-bv-LEP" secondAttribute="trailing" constant="16" id="x6R-1X-Jqm"/>
+                <constraint firstItem="Ky7-cH-5M9" firstAttribute="top" secondItem="Fzm-bv-LEP" secondAttribute="bottom" constant="21" id="xcR-lj-emg"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="Jht-vd-svl"/>
             <point key="canvasLocation" x="-50.5" y="34.5"/>
