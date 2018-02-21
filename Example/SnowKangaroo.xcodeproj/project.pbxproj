@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5733582A203E32F100793731 /* SNOWAMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57335829203E32F100793731 /* SNOWAMBClient.framework */; };
-		5733582B203E32F100793731 /* SNOWAMBClient.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 57335829203E32F100793731 /* SNOWAMBClient.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8B5CF99C2034AC9C0020DF53 /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5CF99B2034AC9C0020DF53 /* Notifications.swift */; };
 		8B67BEF72037B72B008AAB18 /* OAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B67BEF62037B72B008AAB18 /* OAuthManager.swift */; };
 		8B67BEF92037B75C008AAB18 /* OAuthManagerConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B67BEF82037B75C008AAB18 /* OAuthManagerConfiguration.swift */; };
@@ -55,7 +53,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				BE3BCB8C1FBA00270019A21A /* SnowChat.framework in Embed Frameworks */,
-				5733582B203E32F100793731 /* SNOWAMBClient.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -63,7 +60,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		57335829203E32F100793731 /* SNOWAMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SNOWAMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B5CF99B2034AC9C0020DF53 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		8B67BEF62037B72B008AAB18 /* OAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthManager.swift; sourceTree = "<group>"; };
 		8B67BEF82037B75C008AAB18 /* OAuthManagerConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthManagerConfiguration.swift; sourceTree = "<group>"; };
@@ -96,7 +92,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE3BCB8B1FBA00270019A21A /* SnowChat.framework in Frameworks */,
-				5733582A203E32F100793731 /* SNOWAMBClient.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -160,7 +155,6 @@
 		BE50E1E01FB92EB800948FBC = {
 			isa = PBXGroup;
 			children = (
-				57335829203E32F100793731 /* SNOWAMBClient.framework */,
 				BE50E1EB1FB92EB800948FBC /* SnowKangaroo */,
 				BE50E2001FB92EB800948FBC /* SnowKangarooTests */,
 				BE50E20B1FB92EB800948FBC /* SnowKangarooUITests */,
