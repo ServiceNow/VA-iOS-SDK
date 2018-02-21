@@ -43,6 +43,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		46BC5778202EE97000FDDB43 /* SNOWAMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46BC5779202EE97000FDDB43 /* SNOWAMBClient.framework */; };
 		5704EA321FEAAD46001020E6 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5704EA311FEAAD46001020E6 /* TypingIndicatorView.swift */; };
 		5704EA341FEAAE4B001020E6 /* TypingIndicatorControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5704EA331FEAAE4B001020E6 /* TypingIndicatorControl.swift */; };
 		57067C8D1FE62EE900812266 /* FakeChatViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57067C8C1FE62EE900812266 /* FakeChatViewCell.swift */; };
@@ -214,6 +215,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		46BC5779202EE97000FDDB43 /* SNOWAMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SNOWAMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5704EA311FEAAD46001020E6 /* TypingIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorView.swift; sourceTree = "<group>"; };
 		5704EA331FEAAE4B001020E6 /* TypingIndicatorControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorControl.swift; sourceTree = "<group>"; };
 		57067C8C1FE62EE900812266 /* FakeChatViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeChatViewCell.swift; sourceTree = "<group>"; };
@@ -382,6 +384,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46BC5778202EE97000FDDB43 /* SNOWAMBClient.framework in Frameworks */,
 				BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */,
 				BECBB6D8200D0F4C002EF5EC /* AlamofireImage.framework in Frameworks */,
 				BE9E8B631FBF5AEC00499960 /* AMBClient.framework in Frameworks */,
@@ -581,6 +584,7 @@
 		BE50E2251FB9337D00948FBC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				46BC5779202EE97000FDDB43 /* SNOWAMBClient.framework */,
 				BECBB6D7200D0F4C002EF5EC /* AlamofireImage.framework */,
 				BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */,
 				BE9E8B621FBF5AEC00499960 /* AMBClient.framework */,
