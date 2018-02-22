@@ -19,6 +19,7 @@ class InstanceSettings {
     
     private static let instanceURLKey = "InstanceSettingsInstanceURL"
     private static let credentialKey = "InstanceSettingsCredential"
+    private static let authProviderKey = "InstanceSettingsAuthProviderStringMapped"
     
     private let defaults = UserDefaults.standard
     
@@ -43,6 +44,37 @@ class InstanceSettings {
         set {
             let data = try? PropertyListEncoder().encode(newValue)
             defaults.set(data, forKey: InstanceSettings.credentialKey)
+            defaults.synchronize()
+        }
+    }
+    
+    var authProvider: AuthProvider? {
+        // FIXME: Enums and codable conformance are a bit involved
+        // Using simple string persistence solution to get started
+        get {
+            guard let stringValue = defaults.string(forKey: InstanceSettings.authProviderKey) else {
+                return nil
+            }
+            switch stringValue {
+            case "openID":
+                return .openID
+            case "local":
+                return .local
+            default:
+                return nil
+            }
+        }
+        set {
+            let newStringValue: String? = newValue.flatMap { authProvider in
+                switch authProvider {
+                case .openID:
+                    return "openID"
+                case .local:
+                    return "local"
+                }
+            }
+            
+            defaults.set(newStringValue, forKey: InstanceSettings.authProviderKey)
             defaults.synchronize()
         }
     }

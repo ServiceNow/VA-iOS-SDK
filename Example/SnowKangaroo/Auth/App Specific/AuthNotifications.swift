@@ -1,5 +1,5 @@
 //
-//  Notifications.swift
+//  AuthNotifications.swift
 //  SnowKangaroo
 //
 //  Created by Will Lisac on 2/14/18.
@@ -10,4 +10,6 @@ import Foundation
 
 extension Notification.Name {
     static let SNAuthenticationDidBecomeInvalid = Notification.Name("com.servicenow.snowKangaroo.notification.name.authenticationDidBecomeInvalid")
+    static let SNAuthenticationDidBecomeValid = Notification.Name("com.servicenow.snowKangaroo.notification.name.authenticationDidBecomeValid")
+    static let LogOut = Notification.Name("com.servicenow.snowKangaroo.notification.name.logOut")
 }
