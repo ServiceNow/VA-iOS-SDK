@@ -16,8 +16,16 @@ class OutputImageControl: ControlProtocol {
     
     var model: ControlViewModel {
         didSet {
+            // Reset activityIndicator
+            imageViewController.showActivityIndicator(true)
             refreshDownload()
         }
+    }
+    
+    func prepareForReuse() {
+        imageViewController.image = nil
+        imageViewController.showActivityIndicator(false)
+        imageViewController.outputImageView.af_cancelImageRequest()
     }
     
     var viewController: UIViewController
@@ -38,24 +46,19 @@ class OutputImageControl: ControlProtocol {
             return
         }
         
-        let urlRequest = URLRequest(url: imageModel.value)
-        
-        imageDownloader?.download(urlRequest) { [weak self] (response) in
-            guard let currentModel = self?.model as? OutputImageViewModel,
-                imageModel.value == currentModel.value else {
-                    return
-            }
-            
-            // FIXME: Handle error / no image case
-            self?.imageViewController.image = response.value
+        imageViewController.outputImageView.af_setImage(withURL: imageModel.value) { [weak self] (response) in
             
             guard let strongSelf = self else { return }
-            self?.outputImageDelegate?.controlDidFinishImageDownload(strongSelf)
+            strongSelf.imageViewController.showActivityIndicator(false)
+            
+            // FIXME: Handle error / no image case
+            strongSelf.outputImageDelegate?.controlDidFinishImageDownload(strongSelf)
         }
     }
     
     var imageDownloader: ImageDownloader? {
         didSet {
+            imageViewController.outputImageView.af_imageDownloader = imageDownloader
             refreshDownload()
         }
     }

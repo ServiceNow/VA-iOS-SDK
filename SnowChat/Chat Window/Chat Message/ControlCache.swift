@@ -38,6 +38,7 @@ class ControlCache {
             return
         }
 
+        control.prepareForReuse()
         if var controlsList = controlsToReuse[model.type] {
             controlsList.append(control)
             controlsToReuse[model.type] = controlsList
