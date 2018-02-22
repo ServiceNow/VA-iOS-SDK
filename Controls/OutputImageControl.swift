@@ -14,6 +14,24 @@ protocol OutputImageControlDelegate: ControlDelegate {
 
 class OutputImageControl: ControlProtocol {
     
+    weak var delegate: ControlDelegate?
+    
+    var viewController: UIViewController
+    
+    private var imageViewController: OutputImageViewController {
+        return viewController as! OutputImageViewController
+    }
+    
+    private var outputImageDelegate: OutputImageControlDelegate? {
+        return delegate as? OutputImageControlDelegate
+    }
+    
+    private var imageModel: OutputImageViewModel {
+        return model as! OutputImageViewModel
+    }
+    
+    private var requestReceipt: RequestReceipt?
+    
     var model: ControlViewModel {
         didSet {
             // Reset activityIndicator
@@ -23,35 +41,33 @@ class OutputImageControl: ControlProtocol {
     }
     
     func prepareForReuse() {
+        if let receipt = requestReceipt {
+            imageDownloader?.cancelRequest(with: receipt)
+            requestReceipt = nil
+        }
+        
         imageViewController.image = nil
         imageViewController.showActivityIndicator(false)
-        imageViewController.outputImageView.af_cancelImageRequest()
-    }
-    
-    var viewController: UIViewController
-    
-    private var imageViewController: OutputImageViewController {
-        return viewController as! OutputImageViewController
-    }
-    
-    weak var delegate: ControlDelegate?
-    
-    private var outputImageDelegate: OutputImageControlDelegate? {
-        return delegate as? OutputImageControlDelegate
     }
     
     private func refreshDownload() {
-        guard let imageModel = model as? OutputImageViewModel else {
-            Logger.default.logError("wrong model type")
-            return
-        }
-        
-        imageViewController.outputImageView.af_setImage(withURL: imageModel.value) { [weak self] (response) in
+        let urlRequest = URLRequest(url: imageModel.value)
+        requestReceipt = imageDownloader?.download(urlRequest) { [weak self] (response) in
+            
+            // Very likely could remove that guard since we are cancelling request on reuse
+            guard let currentModel = self?.model as? OutputImageViewModel,
+                self?.imageModel.value == currentModel.value else {
+                    return
+            }
+            
+            // FIXME: Handle error / no image case
+            if response.error != nil {
+                return
+            }
             
             guard let strongSelf = self else { return }
             strongSelf.imageViewController.showActivityIndicator(false)
-            
-            // FIXME: Handle error / no image case
+            strongSelf.imageViewController.image = response.value
             strongSelf.outputImageDelegate?.controlDidFinishImageDownload(strongSelf)
         }
     }

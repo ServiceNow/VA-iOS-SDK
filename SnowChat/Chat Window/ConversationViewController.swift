@@ -498,8 +498,8 @@ extension ConversationViewController: ControlDelegate, OutputImageControlDelegat
     }
     
     func controlDidFinishImageDownload(_ control: OutputImageControl) {
-        tableView.beginUpdates()
-        tableView.endUpdates()
+//        tableView.beginUpdates()
+//        tableView.endUpdates()
     }
 }
 

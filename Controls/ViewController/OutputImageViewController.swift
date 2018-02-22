@@ -61,7 +61,7 @@ class OutputImageViewController: UIViewController {
         self.activityIndicatorView = activityIndicatorView
         
         activityIndicatorConstraints.append(contentsOf: [activityIndicatorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                                         activityIndicatorView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                                                         activityIndicatorView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
                                                          activityIndicatorView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
                                                          activityIndicatorView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
                                                          activityIndicatorView.widthAnchor.constraint(equalToConstant: 100)])
