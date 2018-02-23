@@ -152,7 +152,7 @@ class Chatterbox {
         return chatStore.lastPendingMessage(forConversation: conversationId) as? ControlData
     }
     
-    func endConversation() {
+    func endUserConversation() {
         let sessionId = conversationContext.sessionId ?? "UNKNOWN_SESSION_ID"
         let conversationId = conversationContext.conversationId ?? "UNKNOWN_CONVERSATION_ID"
         
@@ -442,11 +442,24 @@ class Chatterbox {
         chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: chatId)
     }
 
-    private func resumeLiveAgentTopic(conversationId: String) {
-        let topicInfo = TopicInfo(topicId: "brb", topicName: nil, taskId: nil, conversationId: conversationId)
+    private func resumeLiveAgentTopic(conversation: Conversation) {
+        // have to reset the taskId to the last live agent message's taskId
+        if let taskId = conversation.messageExchanges().last?.message.taskId {
+            let topicInfo = TopicInfo(topicId: "brb", topicName: nil, taskId: taskId, conversationId: conversation.conversationId)
+            conversationContext.taskId = taskId
+            startAgentTopic(topicInfo: topicInfo)
+        } else {
+            // cannot resume the live-agent chat without a taskId, so end it
+            endAgentTopic()
+        }
+    }
+    
+    private func endAgentTopic() {
+        conversationContext.conversationId = nil
+        conversationContext.taskId = nil
         
-        // TODO: for now just do the same as a chat topic
-        resumeUserTopic(topicInfo: topicInfo)
+        let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
+        chatEventListener?.chatterbox(self, didFinishAgentChat:agentInfo, forChat: chatId)
     }
     
     private func setupForConversation(topicInfo: TopicInfo) {
@@ -544,11 +557,14 @@ class Chatterbox {
     fileprivate func handleControlMessage(_ control: ControlData) {
         if let conversationId = control.conversationId {
             switch control.direction {
+            
             case .fromClient:
                 handleResponseControlMessage(control, forConversation: conversationId)
+            
             case .fromServer:
-                if let taskId = control.taskId {
+                if let taskId = control.taskId, let conversationId = control.conversationId {
                     conversationContext.taskId = taskId
+                    conversationContext.conversationId = conversationId
                 }
                 handleIncomingControlMessage(control, forConversation: conversationId)
             }
@@ -587,6 +603,8 @@ class Chatterbox {
         case .agentText:
             // NOTE: only used for live agent mode
             updateTextControl(control)
+        case .inputImage:
+            updateInputImageControl(control)
         default:
             logger.logError("Unrecognized control type - skipping: \(type)")
             return
@@ -652,6 +670,13 @@ class Chatterbox {
         }
     }
     
+    fileprivate func updateInputImageControl(_ control: ControlData) {
+        if var inputImageControl = control as? InputImageControlMessage, let conversationId = inputImageControl.data.conversationId {
+            inputImageControl.data = updateRichControlData(inputImageControl.data)
+            publishControlUpdate(inputImageControl, forConversation: conversationId)
+        }
+    }
+    
     func currentConversationHasControlData(forId messageId: String) -> Bool {
         guard let conversationId = conversationContext.conversationId else { return false }
         
@@ -690,7 +715,7 @@ extension Chatterbox {
             resumeUserTopic(topicInfo: topicInfo)
         case .chatProgress:
             logger.logInfo("Live Agent session \(conversationId) is in progress")
-            resumeLiveAgentTopic(conversationId: conversationId)
+            resumeLiveAgentTopic(conversation: conversation)
             // TODO: how to resume a live agent chat session??
         case .completed:
             logger.logInfo("Conversation is no longer in progress - ending current conversations")

@@ -10,7 +10,7 @@ extension ChatMessageModel {
     
     static func auxiliaryModel(withMessage message: ControlData) -> ChatMessageModel? {
         switch message.controlType {
-        case .dateTime:
+        case .dateTime, .date, .time:
             return ChatMessageModel.auxiliaryModel(withMessage: message as! DateTimePickerControlMessage)
         case .multiPart:
             return ChatMessageModel.buttonModel(withMessage: message as! MultiPartControlMessage)
@@ -27,7 +27,18 @@ extension ChatMessageModel {
         
         let direction = message.direction
         
-        let dateTimeViewModel = DateTimePickerControlViewModel(id: message.messageId, label: title, required: required)
+        let dateTimeViewModel: DateTimePickerControlViewModel
+        switch message.controlType {
+        case .dateTime:
+            dateTimeViewModel = DateTimePickerControlViewModel(id: message.messageId, label: title, required: required)
+        case .date:
+            dateTimeViewModel = DatePickerControlViewModel(id: message.messageId, label: title, required: required)
+        case .time:
+            dateTimeViewModel = TimePickerControlViewModel(id: message.messageId, label: title, required: required)
+        default:
+            fatalError("Wrong type")
+        }
+        
         let snowViewModel = ChatMessageModel(model: dateTimeViewModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         snowViewModel.isAuxiliary = true
         return snowViewModel

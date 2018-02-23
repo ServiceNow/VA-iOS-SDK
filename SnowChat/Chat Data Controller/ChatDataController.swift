@@ -240,6 +240,8 @@ class ChatDataController {
                 updateDateTimeData(data, lastPendingMessage)
             case .multiPart:
                 updateMultiPartData(data, lastPendingMessage)
+            case .inputImage:
+                updateInputImageData(data, lastPendingMessage)
             default:
                 logger.logDebug("Unhandled control type: \(lastPendingMessage.controlType)")
                 return
@@ -306,6 +308,21 @@ class ChatDataController {
             chatterbox.update(control: multiPartMessage)
         }
     }
+    
+    fileprivate func updateInputImageData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
+        if let inputImageViewModel = data as? InputImageViewModel,
+            var inputImageMessage = lastPendingMessage as? InputImageControlMessage {
+            
+            guard let imageData = inputImageViewModel.selectedImageData,
+                let imageName = inputImageViewModel.imageName,
+                let taskId = inputImageMessage.data.taskId else { return }
+            
+            chatterbox.apiManager.uploadImage(data: imageData, withName:imageName, taskId: taskId, completion: { [weak self] result in
+                inputImageMessage.data.richControl?.value = result
+                self?.chatterbox.update(control: inputImageMessage)
+            })
+        }
+    }
 
     // MARK: - Topic Notifications
     
@@ -340,6 +357,10 @@ class ChatDataController {
         let message = NSLocalizedString("An agent is now taking your case.", comment: "Default agent responded message to show to user")
         let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         bufferControlMessage(ChatMessageModel(model: completionTextControl, bubbleLocation: .left))
+    }
+    
+    func agentTopicDidFinish() {
+        presentCompletionMessage()
     }
     
     func presentCompletionMessage() {
@@ -454,7 +475,7 @@ extension ChatDataController: ChatDataListener {
     
     // MARK: - ChatDataListener (from client)
     
-    //swiftlint:disable:next cyclomatic_complexity
+    //swiftlint:disable:next cyclomatic_complexity function_body_length
     func chatterbox(_ chatterbox: Chatterbox, didCompleteMessageExchange messageExchange: MessageExchange, forChat chatId: String) {
         guard chatterbox.id == self.chatterbox.id else {
             return
@@ -479,6 +500,9 @@ extension ChatDataController: ChatDataListener {
         case .multiPart:
             guard messageExchange.message is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
             self.didCompleteMultiPartExchange(messageExchange, forChat: chatId)
+        case .inputImage:
+            guard messageExchange.message is InputImageControlMessage else { fatalError("Could not view message as InputImageControlMessage in ChatDataListener") }
+            self.didCompleteInputImageExchange(messageExchange, forChat: chatId)
         case .text:
             guard let message = messageExchange.message as? OutputTextControlMessage else { fatalError("Could not view message as OutputTextControlMessage in ChatDataListener") }
             guard let chatControl = ChatMessageModel.model(withMessage: message) else { return }
@@ -582,6 +606,15 @@ extension ChatDataController: ChatDataListener {
         replaceLastControl(with: typingIndicatorModel)        
     }
     
+    private func didCompleteInputImageExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
+        if let viewModels = controlsForInputImage(from: messageExchange) {
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
+            if let response = viewModels.response {
+                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
+            }
+        }
+    }
+    
     // MARK: - ChatDataListener (bulk uopdates / history)
     
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversation conversationId: String, forChat chatId: String) {
@@ -663,6 +696,10 @@ extension ChatDataController: ChatDataListener {
             }
         case .input:
             if let viewModels = controlsForInput(from: historyExchange) {
+                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+            }
+        case .inputImage:
+            if let viewModels = controlsForInputImage(from: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
         case .text:
@@ -774,6 +811,26 @@ extension ChatDataController: ChatDataListener {
         return (message: questionModel, response: answerModel)
     }
     
+    func controlsForInputImage(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: OutputImageViewModel?)? {
+        guard let message = messageExchange.message as? InputImageControlMessage,
+            let label = message.data.richControl?.uiMetadata?.label else {
+                logger.logError("MessageExchange is not valid in inputImageControlsFromMessageExchange method - skipping!")
+                return nil
+        }
+        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        
+        let answerModel: OutputImageViewModel?
+        if let response = messageExchange.response as? InputImageControlMessage,
+            let value = response.data.richControl?.value ?? "",
+            let url = URL(string: value) {
+            answerModel = OutputImageViewModel(id: ChatUtil.uuidString(), value: url)
+        } else {
+            answerModel = nil
+        }
+        
+        return (message: questionModel, response: answerModel)
+    }
+    
     func controlsForDateTimePicker(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel?)? {
         guard messageExchange.isComplete,
             let response = messageExchange.response as? DateTimePickerControlMessage,
@@ -853,7 +910,7 @@ extension ChatDataController: ContextItemProvider {
     }
     
     fileprivate func newConversation() {
-        chatterbox.endConversation()
+        chatterbox.endUserConversation()
     }
     
     fileprivate func presentSupportOptions(_ presentingController: UIViewController, _ sender: UIBarButtonItem) {

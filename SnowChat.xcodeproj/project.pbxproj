@@ -65,6 +65,9 @@
 		57532BAD1FD777FA001D674C /* TextControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57532BAC1FD777FA001D674C /* TextControl.swift */; };
 		575566A7200F963C000953F7 /* ControlCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575566A6200F963C000953F7 /* ControlCacheTests.swift */; };
 		575566A9200FAF1D000953F7 /* PickerHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575566A8200FAF1D000953F7 /* PickerHeaderFooterView.swift */; };
+		575EBFB220378465009CBD05 /* InputImageControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575EBFB120378465009CBD05 /* InputImageControlMessage.swift */; };
+		575EBFB4203785CA009CBD05 /* InputImageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575EBFB3203785CA009CBD05 /* InputImageControl.swift */; };
+		575EBFB6203785EF009CBD05 /* InputImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575EBFB5203785EF009CBD05 /* InputImageViewModel.swift */; };
 		5760B91F1FD5C8C100591C06 /* UIImageUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760B91E1FD5C8C100591C06 /* UIImageUtils.swift */; };
 		5760C8CE1FBF4C920055B73D /* PickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5760C8CD1FBF4C920055B73D /* PickerViewController.swift */; };
 		5763F3C81FE20FF90035764A /* PickerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5763F3C71FE20FF90035764A /* PickerItem.swift */; };
@@ -94,12 +97,10 @@
 		57B7E2CD1FBA3C8400196BA9 /* UIView+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2CB1FBA3C8400196BA9 /* UIView+Additions.swift */; };
 		57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2CF1FBA6DA500196BA9 /* BooleanControlViewModel.swift */; };
 		57B7E2D21FBA75B100196BA9 /* PickerControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */; };
-		57CBFE001FE849D0006396E8 /* vagent-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 57CBFDFF1FE849D0006396E8 /* vagent-icon.png */; };
 		57CBFE021FE8D921006396E8 /* UILayoutPriority+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57CBFE011FE8D921006396E8 /* UILayoutPriority+Additions.swift */; };
 		57D1DB6B1FEAC94A00082F78 /* ConversationViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB6A1FEAC94A00082F78 /* ConversationViewCell.swift */; };
 		57D1DB6D1FEB592D00082F78 /* OutputImageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB6C1FEB592D00082F78 /* OutputImageControl.swift */; };
 		57D1DB6F1FEC74E200082F78 /* OutputImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB6E1FEC74E200082F78 /* OutputImageViewModel.swift */; };
-		57D1DB731FEC83D000082F78 /* mark.png in Resources */ = {isa = PBXBuildFile; fileRef = 57D1DB721FEC83D000082F78 /* mark.png */; };
 		57D1DB791FEC88D200082F78 /* OutputImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB781FEC88D200082F78 /* OutputImageViewController.swift */; };
 		57D997AB1FE5B00000394A6D /* ChatMessageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57D997AA1FE5B00000394A6D /* ChatMessageViewController.xib */; };
 		57DF7C34202C1066008D013A /* ControlWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DF7C33202C1066008D013A /* ControlWebViewController.swift */; };
@@ -118,6 +119,7 @@
 		57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */; };
 		57EE77DF1FFEC2B1001F689A /* ChatMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */; };
 		57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F7B2531FE17823006D917C /* TextControlViewModel.swift */; };
+		8B8573DD203DE7410031A1F1 /* SNOWAMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B8573DE203DE7410031A1F1 /* SNOWAMBClient.framework */; };
 		8BA70BB120250CCB0067EBF3 /* BaseAuthTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */; };
 		8BA70BB520250D2F0067EBF3 /* InstanceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB420250D2F0067EBF3 /* InstanceConfiguration.swift */; };
 		8BA70BB920250E660067EBF3 /* SessionTimeoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB820250E660067EBF3 /* SessionTimeoutTests.swift */; };
@@ -126,6 +128,9 @@
 		8BB9FAF42019960D009CBD48 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
 		8BBAAA892031FD5100D50F66 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAAA882031FD5100D50F66 /* User.swift */; };
 		8BBAAA8F20324C0C00D50F66 /* OAuthToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAAA8E20324C0C00D50F66 /* OAuthToken.swift */; };
+		8BD222252037F65F0040B657 /* AuthInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD222242037F65F0040B657 /* AuthInterceptor.swift */; };
+		8BD222292037FC550040B657 /* HTTPURLResponse+Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD222282037FC550040B657 /* HTTPURLResponse+Auth.swift */; };
+		8BD2222B2037FCD20040B657 /* HTTPHeaders+Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD2222A2037FCD20040B657 /* HTTPHeaders+Auth.swift */; };
 		BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = BE2925A01FC3391D005E55CA /* .swiftlint.yml */; };
 		BE29E0C91FDEF74C0029D1F0 /* SlackTextViewController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */; };
 		BE29E0CC1FDEFA5B0029D1F0 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */; };
@@ -144,9 +149,7 @@
 		BE876FDD1FDF4F75008EEF04 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE876FDC1FDF4F75008EEF04 /* ChatService.swift */; };
 		BE876FDF1FDF5177008EEF04 /* ConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */; };
 		BE8C51062017B4EF0032BD05 /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEB6C8571FB92CD700B1D497 /* SnowChat.framework */; };
-		BE9E8B631FBF5AEC00499960 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9E8B621FBF5AEC00499960 /* AMBClient.framework */; };
 		BE9E8BA11FBF7F3600499960 /* AMBClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8B9E1FBF7F3500499960 /* AMBClient.swift */; };
-		BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */; };
 		BE9E8BA91FBF826300499960 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8BA81FBF826300499960 /* APIManager.swift */; };
 		BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8BAA1FBF828E00499960 /* ServerInstance.swift */; };
 		BEB6C8611FB92CD700B1D497 /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEB6C8571FB92CD700B1D497 /* SnowChat.framework */; };
@@ -166,7 +169,6 @@
 		C420ED7D1FC5F473002476C0 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C420ED7C1FC5F473002476C0 /* Logger.swift */; };
 		C420ED7F1FC5F488002476C0 /* LoggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C420ED7E1FC5F488002476C0 /* LoggerTests.swift */; };
 		C420ED821FC6031C002476C0 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E2261FB9337D00948FBC /* Alamofire.framework */; };
-		C420ED831FC6031C002476C0 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9E8B621FBF5AEC00499960 /* AMBClient.framework */; };
 		C432A038201A9C5900F328B7 /* ContextMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C432A037201A9C5900F328B7 /* ContextMenuItem.swift */; };
 		C43479EC1FE460700091806D /* TopicSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43479EB1FE460700091806D /* TopicSelection.swift */; };
 		C43479EE1FE850D20091806D /* AutoCompleteHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */; };
@@ -239,6 +241,9 @@
 		57532BAC1FD777FA001D674C /* TextControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControl.swift; sourceTree = "<group>"; };
 		575566A6200F963C000953F7 /* ControlCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlCacheTests.swift; sourceTree = "<group>"; };
 		575566A8200FAF1D000953F7 /* PickerHeaderFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerHeaderFooterView.swift; sourceTree = "<group>"; };
+		575EBFB120378465009CBD05 /* InputImageControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputImageControlMessage.swift; sourceTree = "<group>"; };
+		575EBFB3203785CA009CBD05 /* InputImageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputImageControl.swift; sourceTree = "<group>"; };
+		575EBFB5203785EF009CBD05 /* InputImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputImageViewModel.swift; sourceTree = "<group>"; };
 		5760B91E1FD5C8C100591C06 /* UIImageUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageUtils.swift; sourceTree = "<group>"; };
 		5760C8CD1FBF4C920055B73D /* PickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerViewController.swift; sourceTree = "<group>"; };
 		5763F3C71FE20FF90035764A /* PickerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerItem.swift; sourceTree = "<group>"; };
@@ -268,12 +273,10 @@
 		57B7E2CB1FBA3C8400196BA9 /* UIView+Additions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Additions.swift"; sourceTree = "<group>"; };
 		57B7E2CF1FBA6DA500196BA9 /* BooleanControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooleanControlViewModel.swift; sourceTree = "<group>"; };
 		57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControlViewModel.swift; sourceTree = "<group>"; };
-		57CBFDFF1FE849D0006396E8 /* vagent-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vagent-icon.png"; sourceTree = "<group>"; };
 		57CBFE011FE8D921006396E8 /* UILayoutPriority+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILayoutPriority+Additions.swift"; sourceTree = "<group>"; };
 		57D1DB6A1FEAC94A00082F78 /* ConversationViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewCell.swift; sourceTree = "<group>"; };
 		57D1DB6C1FEB592D00082F78 /* OutputImageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputImageControl.swift; sourceTree = "<group>"; };
 		57D1DB6E1FEC74E200082F78 /* OutputImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputImageViewModel.swift; sourceTree = "<group>"; };
-		57D1DB721FEC83D000082F78 /* mark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mark.png; sourceTree = "<group>"; };
 		57D1DB781FEC88D200082F78 /* OutputImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputImageViewController.swift; sourceTree = "<group>"; };
 		57D997AA1FE5B00000394A6D /* ChatMessageViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatMessageViewController.xib; sourceTree = "<group>"; };
 		57DF7C33202C1066008D013A /* ControlWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlWebViewController.swift; sourceTree = "<group>"; };
@@ -292,6 +295,7 @@
 		57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Utils.swift"; sourceTree = "<group>"; };
 		57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageModel.swift; sourceTree = "<group>"; };
 		57F7B2531FE17823006D917C /* TextControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControlViewModel.swift; sourceTree = "<group>"; };
+		8B8573DE203DE7410031A1F1 /* SNOWAMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SNOWAMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseAuthTestCase.swift; sourceTree = "<group>"; };
 		8BA70BB420250D2F0067EBF3 /* InstanceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceConfiguration.swift; sourceTree = "<group>"; };
 		8BA70BB820250E660067EBF3 /* SessionTimeoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTimeoutTests.swift; sourceTree = "<group>"; };
@@ -299,6 +303,9 @@
 		8BA70BBC20250F380067EBF3 /* AMBSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBSessionTests.swift; sourceTree = "<group>"; };
 		8BBAAA882031FD5100D50F66 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		8BBAAA8E20324C0C00D50F66 /* OAuthToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthToken.swift; sourceTree = "<group>"; };
+		8BD222242037F65F0040B657 /* AuthInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthInterceptor.swift; sourceTree = "<group>"; };
+		8BD222282037FC550040B657 /* HTTPURLResponse+Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HTTPURLResponse+Auth.swift"; sourceTree = "<group>"; };
+		8BD2222A2037FCD20040B657 /* HTTPHeaders+Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HTTPHeaders+Auth.swift"; sourceTree = "<group>"; };
 		BE2925A01FC3391D005E55CA /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .swiftlint.yml; sourceTree = SOURCE_ROOT; };
 		BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SlackTextViewController.framework; path = Carthage/Build/iOS/SlackTextViewController.framework; sourceTree = "<group>"; };
 		BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
@@ -320,7 +327,6 @@
 		BE8C51052017B4EF0032BD05 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BE9E8B621FBF5AEC00499960 /* AMBClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AMBClient.framework; path = Carthage/Build/iOS/AMBClient.framework; sourceTree = "<group>"; };
 		BE9E8B9E1FBF7F3500499960 /* AMBClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AMBClient.swift; sourceTree = "<group>"; };
-		BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthHeadersAdapter.swift; sourceTree = "<group>"; };
 		BE9E8BA81FBF826300499960 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		BE9E8BAA1FBF828E00499960 /* ServerInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerInstance.swift; sourceTree = "<group>"; };
 		BEB6C8571FB92CD700B1D497 /* SnowChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SnowChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -391,7 +397,6 @@
 				46BC5778202EE97000FDDB43 /* SNOWAMBClient.framework in Frameworks */,
 				BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */,
 				BECBB6D8200D0F4C002EF5EC /* AlamofireImage.framework in Frameworks */,
-				BE9E8B631FBF5AEC00499960 /* AMBClient.framework in Frameworks */,
 				BE29E0C91FDEF74C0029D1F0 /* SlackTextViewController.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -400,9 +405,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B8573DD203DE7410031A1F1 /* SNOWAMBClient.framework in Frameworks */,
 				BEB6C8611FB92CD700B1D497 /* SnowChat.framework in Frameworks */,
 				C420ED821FC6031C002476C0 /* Alamofire.framework in Frameworks */,
-				C420ED831FC6031C002476C0 /* AMBClient.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -463,6 +468,7 @@
 				57DF7C37202CC1D6008D013A /* DateTimePickerControl.swift */,
 				57D1DB6C1FEB592D00082F78 /* OutputImageControl.swift */,
 				57DF7C3C202CD97C008D013A /* OutputHtmlControl.swift */,
+				575EBFB3203785CA009CBD05 /* InputImageControl.swift */,
 				57532BAA1FD777AC001D674C /* PickerControl.swift */,
 				57B7E2BB1FBA25A200196BA9 /* BooleanControl.swift */,
 				5778CF9B1FE06F08004F77D8 /* SingleSelectControl.swift */,
@@ -510,6 +516,7 @@
 				57E65F50202BA5240087E5DE /* OutputLinkControlViewModel.swift */,
 				57DF7C3E202CD991008D013A /* OutputHtmlControlViewModel.swift */,
 				57D1DB6E1FEC74E200082F78 /* OutputImageViewModel.swift */,
+				575EBFB5203785EF009CBD05 /* InputImageViewModel.swift */,
 				57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */,
 				57DF7C39202CC416008D013A /* DateTimePickerControlViewModel.swift */,
 				5763F3C71FE20FF90035764A /* PickerItem.swift */,
@@ -542,6 +549,16 @@
 				8BBAAA8E20324C0C00D50F66 /* OAuthToken.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		8BD222272037FC020040B657 /* Auth Interceptor */ = {
+			isa = PBXGroup;
+			children = (
+				8BD222242037F65F0040B657 /* AuthInterceptor.swift */,
+				8BD222282037FC550040B657 /* HTTPURLResponse+Auth.swift */,
+				8BD2222A2037FCD20040B657 /* HTTPHeaders+Auth.swift */,
+			);
+			path = "Auth Interceptor";
 			sourceTree = "<group>";
 		};
 		BE29259F1FC33889005E55CA /* Supporting Files */ = {
@@ -588,6 +605,7 @@
 		BE50E2251FB9337D00948FBC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8B8573DE203DE7410031A1F1 /* SNOWAMBClient.framework */,
 				46BC5779202EE97000FDDB43 /* SNOWAMBClient.framework */,
 				BECBB6D7200D0F4C002EF5EC /* AlamofireImage.framework */,
 				BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */,
@@ -600,8 +618,6 @@
 		BE5974C01FC392A300959406 /* Controls Menu */ = {
 			isa = PBXGroup;
 			children = (
-				57D1DB721FEC83D000082F78 /* mark.png */,
-				57CBFDFF1FE849D0006396E8 /* vagent-icon.png */,
 				BE5974C31FC392FB00959406 /* ControlsViewController.swift */,
 				57E1EA371FC3C5B2009FC76D /* ControlsViewController.xib */,
 				5706C57A1FE499A0008D70D1 /* FakeChatViewController.swift */,
@@ -675,12 +691,12 @@
 		BE9E8B9B1FBF7F1700499960 /* Networking */ = {
 			isa = PBXGroup;
 			children = (
+				8BD222272037FC020040B657 /* Auth Interceptor */,
 				8BBAAA852031F9E100D50F66 /* Models */,
 				BE6FBE411FBFBAD10062A0EB /* AMB */,
 				BE9E8BA81FBF826300499960 /* APIManager.swift */,
 				C4B8D3282021090900871B36 /* TransportStatusListener.swift */,
 				BE782DB61FEB204200F848F5 /* API Extensions */,
-				BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */,
 				BE9E8BAA1FBF828E00499960 /* ServerInstance.swift */,
 			);
 			path = Networking;
@@ -768,6 +784,7 @@
 				5740F430202269E90060B349 /* MultiPartControlMessage.swift */,
 				C41EF5D51FDB327800707F45 /* PickerControlMessage.swift */,
 				579479312031E44900C4C5C5 /* DateTimePickerControlMessage.swift */,
+				575EBFB120378465009CBD05 /* InputImageControlMessage.swift */,
 				C41EF5DB1FDB4CA400707F45 /* OutputTextControlMessage.swift */,
 				5771D2EC2011174000FF2483 /* MultiSelectControlMessage.swift */,
 				C48441C7202CB6C600D67757 /* SystemErrorControlMessage.swift */,
@@ -995,13 +1012,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				57CBFE001FE849D0006396E8 /* vagent-icon.png in Resources */,
 				BE2925A11FC3391D005E55CA /* .swiftlint.yml in Resources */,
 				572A4E401FCF06320081318D /* PickerTableViewCell.xib in Resources */,
 				57E1EA381FC3C5B2009FC76D /* ControlsViewController.xib in Resources */,
 				BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */,
 				579479362031F60900C4C5C5 /* DateTimePickerViewController.xib in Resources */,
-				57D1DB731FEC83D000082F78 /* mark.png in Resources */,
 				57B7E2C91FBA25A200196BA9 /* SelectableView.xib in Resources */,
 				BE50E2241FB9305C00948FBC /* Cartfile in Resources */,
 				57D997AB1FE5B00000394A6D /* ChatMessageViewController.xib in Resources */,
@@ -1055,14 +1070,12 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/AMBClient.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SlackTextViewController.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/AlamofireImage.framework",
 			);
 			name = "Copy Carthage Frameworks";
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Alamofire.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/AMBClient.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SlackTextViewController.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/AlamofireImage.framework",
 			);
@@ -1147,6 +1160,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE6932861FFEDB0000DD5A2A /* APIManager+Routes.swift in Sources */,
+				8BD2222B2037FCD20040B657 /* HTTPHeaders+Auth.swift in Sources */,
 				5704EA341FEAAE4B001020E6 /* TypingIndicatorControl.swift in Sources */,
 				5763F3C81FE20FF90035764A /* PickerItem.swift in Sources */,
 				572A4E421FCF07150081318D /* PickerTableViewCell.swift in Sources */,
@@ -1155,6 +1169,7 @@
 				579479342031F44F00C4C5C5 /* DateTimePickerViewController.swift in Sources */,
 				BE9E8BA91FBF826300499960 /* APIManager.swift in Sources */,
 				C43479EC1FE460700091806D /* TopicSelection.swift in Sources */,
+				8BD222292037FC550040B657 /* HTTPURLResponse+Auth.swift in Sources */,
 				C48441C8202CB6C600D67757 /* SystemErrorControlMessage.swift in Sources */,
 				C4694A54203E3C18006A3C23 /* AgentTextControlMessage.swift in Sources */,
 				57532BAD1FD777FA001D674C /* TextControl.swift in Sources */,
@@ -1174,7 +1189,6 @@
 				578EAF5E201786940082264B /* Array+Additions.swift in Sources */,
 				8BBAAA8F20324C0C00D50F66 /* OAuthToken.swift in Sources */,
 				573F78F7202275000008391D /* ButtonControl.swift in Sources */,
-				BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */,
 				BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */,
 				57D1DB6B1FEAC94A00082F78 /* ConversationViewCell.swift in Sources */,
 				BE29E0CF1FDF06C20029D1F0 /* ChatDataController.swift in Sources */,
@@ -1189,6 +1203,7 @@
 				C420ED7D1FC5F473002476C0 /* Logger.swift in Sources */,
 				C4FFCD4A2006D6A000B835C6 /* ChatDataStore+Persistence.swift in Sources */,
 				C41EF5D41FDB284600707F45 /* InputControlMessage.swift in Sources */,
+				575EBFB6203785EF009CBD05 /* InputImageViewModel.swift in Sources */,
 				579A48F220125039007CF338 /* PickerMetadata.swift in Sources */,
 				57E65F51202BA5240087E5DE /* OutputLinkControlViewModel.swift in Sources */,
 				579652A72022D32500B61665 /* ControlPresentable.swift in Sources */,
@@ -1229,9 +1244,11 @@
 				5740F431202269E90060B349 /* MultiPartControlMessage.swift in Sources */,
 				C41EF5D61FDB327800707F45 /* PickerControlMessage.swift in Sources */,
 				C40565F81FC4F4D3004BD28C /* BooleanControlMessage.swift in Sources */,
+				575EBFB4203785CA009CBD05 /* InputImageControl.swift in Sources */,
 				C40565CD1FBE292B004BD28C /* ChatDataStore.swift in Sources */,
 				C48441D020321FFA00D67757 /* StartAgentChatMessage.swift in Sources */,
 				C48441CA202D165900D67757 /* StartTopicDividerCell.swift in Sources */,
+				8BD222252037F65F0040B657 /* AuthInterceptor.swift in Sources */,
 				C46A7D8A1FD0BD8900DC12AC /* ContextualActionMessage.swift in Sources */,
 				57D1DB791FEC88D200082F78 /* OutputImageViewController.swift in Sources */,
 				C4CAFEA81FBD0912007007F5 /* ChatDataFactory.swift in Sources */,
@@ -1256,6 +1273,7 @@
 				57DF7C3D202CD97C008D013A /* OutputHtmlControl.swift in Sources */,
 				57DF7C3F202CD991008D013A /* OutputHtmlControlViewModel.swift in Sources */,
 				57DF7C38202CC1D6008D013A /* DateTimePickerControl.swift in Sources */,
+				575EBFB220378465009CBD05 /* InputImageControlMessage.swift in Sources */,
 				57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */,
 				5778CF9E1FE07023004F77D8 /* SingleSelectControlViewModel.swift in Sources */,
 				57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */,

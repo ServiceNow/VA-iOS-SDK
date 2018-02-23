@@ -88,12 +88,21 @@ public class ChatService {
 
 // TODO: Chatterbox should support multiple event listeners instead of proxying
 extension ChatService: ChatEventListener {
+    
     func chatterbox(_ chatterbox: Chatterbox, willStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
         viewController?.chatterbox(chatterbox, willStartAgentChat: agentInfo, forChat: chatId)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
         viewController?.chatterbox(chatterbox, didStartAgentChat: agentInfo, forChat: chatId)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didResumeAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        viewController?.chatterbox(chatterbox, didResumeAgentChat: agentInfo, forChat: chatId)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didFinishAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        viewController?.chatterbox(chatterbox, didFinishAgentChat: agentInfo, forChat: chatId)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {

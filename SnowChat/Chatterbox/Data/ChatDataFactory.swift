@@ -21,6 +21,7 @@ class ChatDataFactory {
             var controlType: ChatterboxControlType = .unknown
 
             // see if it is an agentText message first
+            // NOTE: (agent message do not conform to normal rich-control format /sad)
             if controlMessage.data.text != nil {
                 controlType = .agentText
             } else {
@@ -59,6 +60,8 @@ class ChatDataFactory {
                 return try ChatUtil.jsonDecoder.decode(OutputLinkControlMessage.self, from: jsonData)
             case .outputHtml:
                 return try ChatUtil.jsonDecoder.decode(OutputHtmlControlMessage.self, from: jsonData)
+            case .inputImage:
+                return try ChatUtil.jsonDecoder.decode(InputImageControlMessage.self, from: jsonData)
             case .agentText:
                 return try ChatUtil.jsonDecoder.decode(AgentTextControlMessage.self, from: jsonData)
             case .startTopicMessage:
@@ -135,6 +138,8 @@ class ChatDataFactory {
             data = try ChatUtil.jsonEncoder.encode(message as? OutputHtmlControlMessage)
         case .agentText:
             data = try ChatUtil.jsonEncoder.encode(message as? AgentTextControlMessage)
+        case .inputImage:
+            data = try ChatUtil.jsonEncoder.encode(message as? InputImageControlMessage)
             
         // seldom used control messages
         case .contextualAction:

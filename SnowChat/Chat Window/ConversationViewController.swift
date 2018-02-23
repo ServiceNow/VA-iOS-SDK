@@ -343,6 +343,7 @@ extension ConversationViewController {
         case .inAgentConversation:
             let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
             dataController.sendControlData(model)
+            textView.text = ""
         default:
             break
         }
@@ -462,6 +463,7 @@ extension ConversationViewController {
 }
 
 extension ConversationViewController: ChatEventListener {
+    
     func chatterbox(_ chatterbox: Chatterbox, willStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
         guard self.chatterbox.id == chatterbox.id else {
             return
@@ -478,6 +480,26 @@ extension ConversationViewController: ChatEventListener {
         }
         
         dataController.agentTopicDidStart(agentInfo: agentInfo)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didResumeAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        guard self.chatterbox.id == chatterbox.id else {
+            return
+        }
+        
+        inputState = .inAgentConversation
+        setupInputForState()
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didFinishAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        guard self.chatterbox.id == chatterbox.id else {
+            return
+        }
+        
+        inputState = .inTopicSelection
+        setupInputForState()
+        
+        dataController.agentTopicDidFinish()
     }
     
     // MARK: - ChatEventListener

@@ -23,18 +23,8 @@ class DateTimePickerViewController: UIViewController {
     
     var model: DateTimePickerControlViewModel? {
         didSet {
-            guard let model = model, isViewLoaded == true else { return }
-            switch model.type {
-            case .dateTime:
-                displayMode = .dateTime
-            case .time:
-                displayMode = .time
-            case .date:
-                displayMode = .date
-            default:
-                fatalError("Wrong model assigned")
-            }
-            
+            guard isViewLoaded == true else { return }
+            updateDisplayMode()
             updateSelectedDateLabelWithDate(datePicker.date)
         }
     }
@@ -52,6 +42,23 @@ class DateTimePickerViewController: UIViewController {
         datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
         updateSelectedDateLabelWithDate(datePicker.date)
         updateDateTitleLabel()
+        updateDisplayMode()
+    }
+    
+    private func updateDisplayMode() {
+        guard let model = model else { return }
+        
+        switch model.type {
+        case .dateTime:
+            displayMode = .dateTime
+        case .time:
+            displayMode = .time
+        case .date:
+            displayMode = .date
+        default:
+            fatalError("Wrong model assigned")
+        }
+        
         updatePickerMode()
     }
     
@@ -88,10 +95,11 @@ class DateTimePickerViewController: UIViewController {
     }
     
     private func updateSelectedDateLabelWithDate(_ date: Date) {
-        let dateFormatter = DateFormatter.dateTimeFormatter
+        guard let model = model else { return }
+        let dateFormatter = DateFormatter.formatterForDateTimeControlType(model.type)
         let dateString = dateFormatter.string(from: date)
         selectedDateLabel.text = dateString
-        model?.value = adjustedDateToPickerMode(date)
+        model.value = adjustedDateToPickerMode(date)
     }
     
     private func adjustedDateToPickerMode(_ date: Date) -> Date {

@@ -9,6 +9,8 @@
 import AlamofireImage
 
 class ControlsUtil {
+    
+    //swiftlint:disable:next cyclomatic_complexity
     static func controlForViewModel(_ model: ControlViewModel, resourceProvider provider: ControlResourceProvider? = nil) -> ControlProtocol {
         switch model.type {
         case .multiSelect:
@@ -19,6 +21,8 @@ class ControlsUtil {
             let outputImageControl = OutputImageControl(model: model)
             outputImageControl.imageDownloader = provider?.imageProvider
             return outputImageControl
+        case .inputImage:
+            return InputImageControl(model: model)
         case .outputLink:
             return OutputLinkControl(model: model)
         case .outputHtml:
