@@ -11,6 +11,8 @@ import Alamofire
 
 enum OAuthError: LocalizedError {
     case noCredential
+    case noIdToken
+    case cancelled
 }
 
 class OAuthManager: NSObject {
@@ -55,7 +57,12 @@ class OAuthManager: NSObject {
         
         sessionManager.request(tokenURL, method: .post, parameters: parameters, encoding: URLEncoding.default)
             .validate()
-            .responseJSON { response in
+            .responseJSON { [weak self] response in
+                guard let strongSelf = self else {
+                    completion(.failure(OAuthError.cancelled))
+                    return
+                }
+                
                 if let error = response.error {
                     completion(.failure(error))
                     return
@@ -66,6 +73,13 @@ class OAuthManager: NSObject {
                 guard let credential = OAuthCredential(dictionary: dictionary) else {
                     completion(.failure(OAuthError.noCredential))
                     return
+                }
+                
+                if strongSelf.configuration.requireIdToken {
+                    guard let idToken = credential.idToken, !idToken.isEmpty else {
+                        completion(.failure(OAuthError.noIdToken))
+                        return
+                    }
                 }
                 
                 completion(.success(credential))
