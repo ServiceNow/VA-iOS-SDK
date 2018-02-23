@@ -124,7 +124,7 @@ class Chatterbox {
             messageHandler = startTopicHandler
             
             let startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
-            apiManager.ambClient.sendMessage(startTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+            apiManager.sendMessage(startTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
             
             // TODO: how do we signal an error?
         } else {
@@ -207,7 +207,7 @@ class Chatterbox {
     }
 
     private func setupChatSubscription() {
-        chatSubscription = apiManager.ambClient.subscribe(chatChannel) { [weak self] (result, subscription) in
+        chatSubscription = apiManager.subscribe(chatChannel) { [weak self] (result, subscription) in
             guard let strongSelf = self else { return }
             
             switch result {
@@ -233,7 +233,7 @@ class Chatterbox {
         setupChatSubscription()
 
         if let sessionId = session?.id {
-            apiManager.ambClient.sendMessage(SystemTopicPickerMessage(forSession: sessionId), toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+            apiManager.sendMessage(SystemTopicPickerMessage(forSession: sessionId), toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
         }
     }
     
@@ -274,7 +274,7 @@ class Chatterbox {
     
     private func startUserSession(withInitEvent initEvent: InitMessage) {
         let initUserEvent = userSessionInitMessage(fromInitEvent: initEvent)
-        apiManager.ambClient.sendMessage(initUserEvent, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+        apiManager.sendMessage(initUserEvent, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
     }
     
     private func userSessionInitMessage(fromInitEvent initEvent: InitMessage) -> InitMessage {
@@ -321,7 +321,7 @@ class Chatterbox {
                     outgoingMessage.data.richControl?.value = conversationContext.topicName
                     
                     messageHandler = startUserTopicHandshakeHandler
-                    apiManager.ambClient.sendMessage(outgoingMessage, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+                    apiManager.sendMessage(outgoingMessage, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
                 }
             }
         }
@@ -338,7 +338,7 @@ class Chatterbox {
                 // client and server messages are the same, so only look at server responses!
                 if startUserTopic.data.direction == .fromServer {
                     let startUserTopicReadyMessage = createStartTopicReadyMessage(startUserTopic: startUserTopic)
-                    apiManager.ambClient.sendMessage(startUserTopicReadyMessage, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+                    apiManager.sendMessage(startUserTopicReadyMessage, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
                 }
             }
         } else if actionMessage.eventType == .startedUserTopic {
@@ -489,7 +489,7 @@ class Chatterbox {
     }
     
     fileprivate func publishControlUpdate<T: ControlData>(_ message: T, forConversation conversationId: String) {
-        apiManager.ambClient.sendMessage(message, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+        apiManager.sendMessage(message, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
     }
     
     fileprivate func updateBooleanControl(_ control: ControlData) {

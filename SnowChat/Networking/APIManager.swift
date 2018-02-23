@@ -9,6 +9,7 @@
 import Foundation
 import Alamofire
 import AlamofireImage
+import SNOWAMBClient
 
 enum APIManagerError: Error {
     case loginError(message: String)
@@ -38,8 +39,8 @@ class APIManager: NSObject {
         return ImageDownloader()
     }()
     
-    internal let ambClient: AMBClient
-    
+    internal let ambClient: SNOWAMBClient
+
     private var authStatus: AuthStatus
     
     // MARK: - Initialization
@@ -49,13 +50,14 @@ class APIManager: NSObject {
         self.transportListener = transportListener
         self.authStatus = .loggedOut(nil)
         
-        ambClient = AMBClient(sessionManager: sessionManager, baseURL: instance.instanceURL)
+        ambClient = SNOWAMBClient(httpClient: AMBHTTPClient(sessionManager: sessionManager, baseURL: instance.instanceURL))
 
         super.init()
+        
+        ambClient.delegate = self
 
         subscribeToAppStateChanges()
         listenForReachabilityChanges()
-        listenForAMBConnectionChanges()
         setupSessionTaskAuthListener()
     }
     
@@ -149,12 +151,12 @@ class APIManager: NSObject {
         reachabilityManager.listener = { [weak self] status in
             guard let strongSelf = self else { return }
             if reachabilityManager.isReachable {
-                strongSelf.ambClient.networkReachable()
+                strongSelf.ambClient.isPaused = false
                 
                 // FIXME: should only send this from AMB notification, but it is not working quite right
                 strongSelf.transportListener?.apiManagerTransportDidBecomeAvailable(strongSelf)
             } else {
-                strongSelf.ambClient.networkUnreachable()
+                strongSelf.ambClient.isPaused = true
                 
                 // FIXME: should only send this from AMB notification, but it is not working quite right
                 strongSelf.transportListener?.apiManagerTransportDidBecomeUnavailable(strongSelf)
@@ -168,33 +170,92 @@ class APIManager: NSObject {
     }
     
     @objc internal func applicationWillResignActiveNotification(_ notification: Notification) {
-        ambClient.applicationWillResignActiveNotification()
+        ambClient.isPaused = true
     }
     
     @objc internal func applicationDidBecomeActiveNotification(_ notification: Notification) {
-        ambClient.applicationDidBecomeActiveNotification()
+        ambClient.isPaused = false
     }
     
-    // FIXME: Update to new AMB client notifications
+}
+
+// MARK: - AMB Transport
+
+extension APIManager {
     
-    private func listenForAMBConnectionChanges() {
-//        NotificationCenter.default.addObserver(self, selector: #selector(ambConnectionStatusChange(_:)), name: NSNotification.Name.NOWFayeClientConnectionStatusDidChange, object: nil)
+    func sendMessage(_ message: [String: Any], toChannel channel: String) {
+        ambClient.publishMessage(message, toChannel: channel, withExtension:[:],
+                                  completion: { (result) in
+                                    switch result {
+                                    case .success:
+                                        Logger.default.logInfo("published message successfully")
+                                    //TODO: Implement handler here
+                                    case .failure:
+                                        Logger.default.logInfo("failed to publish message")
+                                    //TODO: same
+                                    }
+        })
     }
     
-    @objc func ambConnectionStatusChange(_ notification: Notification) {
-//        if let transportListener = transportListener,
-//           let info = notification.userInfo,
-//           let statusValue = info[NOWFayeClientConnectionStatusDidChangeNotificationStatusKey] as? UInt,
-//           let status = NOWFayeClientStatus(rawValue: statusValue) {
-//
-//            switch status {
-//            case .connected:
-//                transportListener.apiManagerTransportDidBecomeAvailable(self)
-//            case .disconnected:
-//                transportListener.apiManagerTransportDidBecomeUnavailable(self)
-//            default:
-//                Logger.default.logInfo("AMB connection notification: \(status)")
-//            }
-//        }
+    func sendMessage<T>(_ message: T, toChannel channel: String, encoder: JSONEncoder) where T: Encodable {
+        do {
+            let jsonData = try encoder.encode(message)
+            if let dict = try JSONSerialization.jsonObject(with: jsonData, options: .allowFragments) as? [String: Any] {
+                
+                if Logger.default.enabled, let jsonString = String(data: jsonData, encoding: .utf8) {
+                    Logger.default.logInfo("Publishing to AMB Channel: \(channel): \(jsonString)")
+                }
+                
+                sendMessage(dict, toChannel: channel)
+            }
+        } catch let err {
+            Logger.default.logError("Error publishing: \(err)")
+        }
     }
+    
+    func subscribe(_ channelName: String, messages messageHandler: @escaping SNOWAMBMessageHandler) -> SNOWAMBSubscription {
+        let subscription: SNOWAMBSubscription = ambClient.subscribe(channel: channelName, messageHandler: { (result, subscription) in
+            switch result {
+            case .success:
+                if let message = result.value {
+                    Logger.default.logInfo("Incoming AMB Message: \(message.jsonDataString)")
+                    messageHandler(result, subscription)
+                }
+            case .failure:
+                messageHandler(result, subscription)
+            }
+        })
+        return subscription
+    }
+
+}
+
+// MARK: - AMB Delegate
+
+extension APIManager: SNOWAMBClientDelegate {
+    
+    func didConnect(client: SNOWAMBClient) {}
+    func didDisconnect(client: SNOWAMBClient) {}
+    func didSubscribe(client: SNOWAMBClient, toChannel: String) {}
+    func didUnsubscribe(client: SNOWAMBClient, fromchannel: String) {}
+    func didReceive(client: SNOWAMBClient, message: SNOWAMBMessage, fromChannel channel: String) {}
+    func didGlideStatusChange(client: SNOWAMBClient, status: SNOWAMBGlideStatus) {}
+    
+    func didFail(client: SNOWAMBClient, withError error: SNOWAMBError) {
+        Logger.default.logInfo("AMB client error: \(error.localizedDescription)")
+    }
+
+    func didClientStatusChange(client: SNOWAMBClient, status: SNOWAMBClientStatus) {
+        if let transportListener = transportListener {
+            switch status {
+            case .connected:
+                transportListener.apiManagerTransportDidBecomeAvailable(self)
+            case .disconnected:
+                transportListener.apiManagerTransportDidBecomeUnavailable(self)
+            default:
+                Logger.default.logInfo("AMB connection notification: \(status)")
+            }
+        }
+    }
+    
 }
