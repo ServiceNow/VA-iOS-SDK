@@ -20,7 +20,7 @@ class RootViewController: UIViewController, LogInViewControllerDelegate {
         super.viewDidLoad()
         view.backgroundColor = UIColor.white
         setupAuthNotificationObserving()
-        setupRootController()
+        setupHomeViewController()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -32,11 +32,18 @@ class RootViewController: UIViewController, LogInViewControllerDelegate {
         }
     }
     
-    // MARK: - Setup
+    // MARK: - Home View Controller
     
-    private func setupRootController() {
-        let debugController = HomeViewController()
-        let controller = UINavigationController(rootViewController: debugController)
+    private func setupHomeViewController() {
+        // Remove old home VC if needed
+        childViewControllers.forEach { viewController in
+            viewController.willMove(toParentViewController: nil)
+            viewController.view.removeFromSuperview()
+            viewController.removeFromParentViewController()
+        }
+        
+        let homeViewController = HomeViewController()
+        let controller = UINavigationController(rootViewController: homeViewController)
         
         controller.willMove(toParentViewController: self)
         addChildViewController(controller)
@@ -125,8 +132,8 @@ class RootViewController: UIViewController, LogInViewControllerDelegate {
         InstanceSettings.shared.credential = credential
         InstanceSettings.shared.authProvider = authProvider
         
-        // Reset root VC after log in
-        setupRootController()
+        // Reset home VC after log in
+        setupHomeViewController()
         
         NotificationCenter.default.post(name: .SNAuthenticationDidBecomeValid, object: nil)
         
