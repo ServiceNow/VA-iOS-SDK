@@ -57,7 +57,6 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
             if let error = error {
                 if case ChatServiceError.invalidCredentials = error {
                     if logOutOnAuthFailure {
-                        self?.navigationController?.popToRootViewController(animated: true)
                         self?.postLogOutNotification()
                     } else {
                         self?.postAuthenticationDidBecomeInvalidNotification()
