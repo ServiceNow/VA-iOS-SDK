@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum AuthProvider {
+enum AuthProvider: String, Codable {
     case local
     case openID
 }

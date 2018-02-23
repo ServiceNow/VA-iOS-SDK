@@ -35,46 +35,20 @@ class InstanceSettings {
     
     var credential: OAuthCredential? {
         get {
-            if let data = defaults.data(forKey: InstanceSettings.credentialKey),
-                let credential = try? PropertyListDecoder().decode(OAuthCredential.self, from: data) {
-                return credential
-            }
-            return nil
+            return defaults.decodable(forKey: InstanceSettings.credentialKey, type: OAuthCredential.self)
         }
         set {
-            let data = try? PropertyListEncoder().encode(newValue)
-            defaults.set(data, forKey: InstanceSettings.credentialKey)
+            defaults.setCodable(newValue, forKey: InstanceSettings.credentialKey)
             defaults.synchronize()
         }
     }
     
     var authProvider: AuthProvider? {
-        // FIXME: Enums and codable conformance are a bit involved
-        // Using simple string persistence solution to get started
         get {
-            guard let stringValue = defaults.string(forKey: InstanceSettings.authProviderKey) else {
-                return nil
-            }
-            switch stringValue {
-            case "openID":
-                return .openID
-            case "local":
-                return .local
-            default:
-                return nil
-            }
+            return defaults.decodable(forKey: InstanceSettings.authProviderKey, type: AuthProvider.self)
         }
         set {
-            let newStringValue: String? = newValue.flatMap { authProvider in
-                switch authProvider {
-                case .openID:
-                    return "openID"
-                case .local:
-                    return "local"
-                }
-            }
-            
-            defaults.set(newStringValue, forKey: InstanceSettings.authProviderKey)
+            defaults.setCodable(newValue, forKey: InstanceSettings.authProviderKey)
             defaults.synchronize()
         }
     }

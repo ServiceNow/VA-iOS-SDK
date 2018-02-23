@@ -22,6 +22,7 @@
 		8B9842FE203E3B3100FE7DAD /* SNOWAMBClient.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B9842FD203E3B2B00FE7DAD /* SNOWAMBClient.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8B984306203F81DE00FE7DAD /* AuthProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B984305203F81DE00FE7DAD /* AuthProvider.swift */; };
 		8B984308203F831D00FE7DAD /* OAuthManager+AuthProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B984307203F831D00FE7DAD /* OAuthManager+AuthProvider.swift */; };
+		8B98430D203FC84900FE7DAD /* UserDefaults+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B98430C203FC84900FE7DAD /* UserDefaults+Codable.swift */; };
 		8BBAAA922032547700D50F66 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAAA902032547700D50F66 /* HomeViewController.swift */; };
 		8BBAAA932032547700D50F66 /* HomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8BBAAA912032547700D50F66 /* HomeViewController.xib */; };
 		BE3BCB8B1FBA00270019A21A /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E22C1FB934FF00948FBC /* SnowChat.framework */; };
@@ -79,6 +80,7 @@
 		8B9842FD203E3B2B00FE7DAD /* SNOWAMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SNOWAMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B984305203F81DE00FE7DAD /* AuthProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthProvider.swift; sourceTree = "<group>"; };
 		8B984307203F831D00FE7DAD /* OAuthManager+AuthProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OAuthManager+AuthProvider.swift"; sourceTree = "<group>"; };
+		8B98430C203FC84900FE7DAD /* UserDefaults+Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Codable.swift"; sourceTree = "<group>"; };
 		8BBAAA902032547700D50F66 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		8BBAAA912032547700D50F66 /* HomeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HomeViewController.xib; sourceTree = "<group>"; };
 		BE50E1E91FB92EB800948FBC /* SnowKangaroo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnowKangaroo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -134,6 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				8B72FC2E202AA5E700C1AFC9 /* URL+ServerInstance.swift */,
+				8B98430C203FC84900FE7DAD /* UserDefaults+Codable.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -434,6 +437,7 @@
 				8B984306203F81DE00FE7DAD /* AuthProvider.swift in Sources */,
 				8BBAAA922032547700D50F66 /* HomeViewController.swift in Sources */,
 				8B72FC35202B625A00C1AFC9 /* InstanceSettings.swift in Sources */,
+				8B98430D203FC84900FE7DAD /* UserDefaults+Codable.swift in Sources */,
 				BE50E1ED1FB92EB800948FBC /* AppDelegate.swift in Sources */,
 				8B72FC2F202AA5E700C1AFC9 /* URL+ServerInstance.swift in Sources */,
 				8B72FC25202A66B300C1AFC9 /* LogInViewController.swift in Sources */,
