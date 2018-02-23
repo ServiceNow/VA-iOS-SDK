@@ -394,7 +394,7 @@ extension ConversationViewController {
             guard let controlModel = chatMessageModel.controlModel else { return UITableViewCell() }
             if chatMessageModel.isAuxiliary {
                 let controlCell = tableView.dequeueReusableCell(withIdentifier: ControlViewCell.cellIdentifier, for: indexPath) as! ControlViewCell
-                controlCell.configure(with: controlModel)
+                controlCell.configure(with: controlModel, resourceProvider: chatterbox.apiManager)
                 controlCell.control?.delegate = self
                 cell = controlCell
             } else {

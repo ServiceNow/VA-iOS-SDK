@@ -33,6 +33,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     private func updateWithModel(_ model: ChatMessageModel) {
         guard let controlModel = model.controlModel,
+            let resourceProvider = resourceProvider,
             let bubbleLocation = model.bubbleLocation,
             let control = controlCache?.control(forModel: controlModel, forResourceProvider: resourceProvider) else {
                 return
@@ -55,7 +56,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     private func loadAvatar() {
         if let provider = resourceProvider {
-            agentImageView.af_imageDownloader = provider.imageProvider
+            agentImageView.af_imageDownloader = provider.imageDownloader
             agentImageView.af_setImage(withURL: provider.avatarURL)
             agentImageView.addCircleMaskIfNeeded()
         }

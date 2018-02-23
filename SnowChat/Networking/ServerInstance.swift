@@ -8,12 +8,19 @@
 
 import Foundation
 
-public class ServerInstance: NSObject {
+internal class ServerInstance: NSObject {
     
     let instanceURL: URL
     
     public init(instanceURL: URL) {
         self.instanceURL = instanceURL
+    }
+    
+    func isValidInstanceURL(_ url: URL) -> Bool {
+        guard let host = url.host, let instanceHost = instanceURL.host else {
+            return false
+        }
+        return host.lowercased() == instanceHost.lowercased()
     }
     
 }

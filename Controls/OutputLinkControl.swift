@@ -12,6 +12,17 @@ class OutputLinkControl: NSObject, ControlProtocol {
         
         private(set) var textView = UITextView()
         
+        let resourceProvider: ControlWebResourceProvider
+        
+        init(resourceProvider: ControlWebResourceProvider) {
+            self.resourceProvider = resourceProvider
+            super.init(nibName: nil, bundle: nil)
+        }
+        
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+        
         override func viewDidLoad() {
             super.viewDidLoad()
             setupTextView()
@@ -34,7 +45,7 @@ class OutputLinkControl: NSObject, ControlProtocol {
         
         // MARK: UITextViewDelegate
         func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-            let webViewController = ControlWebViewController(request: URLRequest(url: URL))
+            let webViewController = ControlWebViewController(url: URL, resourceProvider: resourceProvider)
             let localizedDoneString = NSLocalizedString("Done", comment: "Done button")
             let doneButton = UIBarButtonItem(title: localizedDoneString, style: .done, target: webViewController, action: #selector(finishModalPresentation(_:)))
             webViewController.navigationItem.leftBarButtonItem = doneButton
@@ -54,13 +65,13 @@ class OutputLinkControl: NSObject, ControlProtocol {
         return model as! OutputLinkControlViewModel
     }
     
-    required init(model: ControlViewModel) {
+    init(model: ControlViewModel, resourceProvider: ControlWebResourceProvider) {
         guard let outputLinkModel = model as? OutputLinkControlViewModel else {
             fatalError("Wrong model class")
         }
         
         self.model = outputLinkModel
-        let outputLinkVC = OutputLinkViewController()
+        let outputLinkVC = OutputLinkViewController(resourceProvider: resourceProvider)
         self.viewController = outputLinkVC
         outputLinkVC.loadViewIfNeeded()
         outputLinkVC.textView.text = outputLinkModel.value.absoluteString

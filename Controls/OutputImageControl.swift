@@ -18,6 +18,8 @@ class OutputImageControl: ControlProtocol {
     
     var viewController: UIViewController
     
+    let imageDownloader: ImageDownloader
+    
     private var imageViewController: OutputImageViewController {
         return viewController as! OutputImageViewController
     }
@@ -40,14 +42,13 @@ class OutputImageControl: ControlProtocol {
         }
     }
     
-    var imageDownloader: ImageDownloader?
-    
-    required init(model: ControlViewModel) {
+    required init(model: ControlViewModel, imageDownloader: ImageDownloader) {
         guard let imageModel = model as? OutputImageViewModel else {
             fatalError("Wrong model class")
         }
         
         self.model = imageModel
+        self.imageDownloader = imageDownloader
         self.viewController = OutputImageViewController()
     }
     
@@ -58,7 +59,7 @@ class OutputImageControl: ControlProtocol {
     private func downloadImageIfNeeded() {
         let imageModel = self.imageModel
         let urlRequest = URLRequest(url: imageModel.value)
-        requestReceipt = imageDownloader?.download(urlRequest) { [weak self] (response) in
+        requestReceipt = imageDownloader.download(urlRequest) { [weak self] (response) in
             guard let currentModel = self?.model as? OutputImageViewModel,
                 imageModel.value == currentModel.value else {
                     return
@@ -86,7 +87,7 @@ class OutputImageControl: ControlProtocol {
     
     func prepareForReuse() {
         if let receipt = requestReceipt {
-            imageDownloader?.cancelRequest(with: receipt)
+            imageDownloader.cancelRequest(with: receipt)
             requestReceipt = nil
         }
         

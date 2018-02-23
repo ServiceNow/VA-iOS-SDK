@@ -14,8 +14,8 @@ class ControlViewCell: UITableViewCell, ControlPresentable {
     
     private(set) var control: ControlProtocol?
     
-    func configure(with model: ControlViewModel) {
-        let control = ControlsUtil.controlForViewModel(model)
+    func configure(with model: ControlViewModel, resourceProvider: ControlResourceProvider) {
+        let control = ControlsUtil.controlForViewModel(model, resourceProvider: resourceProvider)
         addUIControl(control, at: .left)
     }
     
