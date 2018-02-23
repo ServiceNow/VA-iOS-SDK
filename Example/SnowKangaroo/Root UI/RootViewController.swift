@@ -128,6 +128,8 @@ class RootViewController: UIViewController, LogInViewControllerDelegate {
         // Reset root VC after log in
         setupRootController()
         
+        NotificationCenter.default.post(name: .SNAuthenticationDidBecomeValid, object: nil)
+        
         dismiss(animated: true)
     }
 
