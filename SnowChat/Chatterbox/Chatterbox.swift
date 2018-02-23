@@ -85,7 +85,11 @@ class Chatterbox {
         case userConversation
         case agentConversation
     }
-    private var state = ChatStatus.uninitialized
+    private var state = ChatStatus.uninitialized {
+        didSet {
+            logger.logDebug("Chatterbox State set to: \(state) from \(oldValue)")
+        }
+    }
     
     private var messageHandler: ((String) -> Void)?
     private var handshakeCompletedHandler: ((ContextualActionMessage?) -> Void)?
@@ -437,6 +441,7 @@ class Chatterbox {
     
     private func resumeUserTopic(topicInfo: TopicInfo) {
         if conversationContext.conversationId != topicInfo.conversationId {
+            state = .userConversation
             setupForConversation(topicInfo: topicInfo)
         }
         chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: chatId)
@@ -555,14 +560,16 @@ class Chatterbox {
     }
     
     fileprivate func handleControlMessage(_ control: ControlData) {
-        if let conversationId = control.conversationId {
-            switch control.direction {
-            
-            case .fromClient:
+        switch control.direction {
+        
+        case .fromClient:
+            if let conversationId = conversationContext.conversationId {
                 handleResponseControlMessage(control, forConversation: conversationId)
-            
-            case .fromServer:
-                updateContextIfNeeded(control)
+            }
+        
+        case .fromServer:
+            updateContextIfNeeded(control)
+            if let conversationId = conversationContext.conversationId {
                 handleIncomingControlMessage(control, forConversation: conversationId)
             }
         }
@@ -580,8 +587,7 @@ class Chatterbox {
     }
 
     fileprivate func updateContextIfNeeded(_ control: ControlData) {
-        if control.controlType == .agentText,
-            let taskId = control.taskId,
+        if let taskId = control.taskId,
             let conversationId = control.conversationId {
             // keep our taskId and conversationId's updated with the latest from the server
             // NOTE: this MUST be done for agent messages, but should be fine for chatbot messages too
@@ -704,8 +710,6 @@ class Chatterbox {
     private func clearMessageHandlers() {
         messageHandler = nil
         handshakeCompletedHandler = nil
-        
-        state = .topicSelection
     }
 }
 
