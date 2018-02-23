@@ -13,4 +13,5 @@ struct OAuthManagerConfiguration {
     let clientId: String
     let clientSecret: String
     let defaultScope: String?
+    let requireIdToken: Bool
 }
