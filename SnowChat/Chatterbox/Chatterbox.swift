@@ -137,7 +137,7 @@ class Chatterbox {
         conversationContext.topicName = withName
         
         if let sessionId = session?.id, let conversationId = conversationContext.systemConversationId {
-            messageHandler = startTopicHandler
+            messageHandler = startTopicMessageHandler
             
             let startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
            publishMessage(startTopic)
@@ -217,7 +217,7 @@ class Chatterbox {
     
     private func performChatHandshake(_ completion: @escaping (ContextualActionMessage?) -> Void) {
         handshakeCompletedHandler = completion
-        messageHandler = handshakeHandler
+        messageHandler = handshakeMessageHandler
         
         setupChatSubscription()
 
@@ -228,10 +228,10 @@ class Chatterbox {
     
     fileprivate func installTopicSelectionMessageHandler() {
         state = .topicSelection
-        self.messageHandler = self.topicSelectionHandler
+        self.messageHandler = self.topicSelectionMessageHandler
     }
     
-    private func handshakeHandler(_ message: String) {
+    private func handshakeMessageHandler(_ message: String) {
         let event = ChatDataFactory.actionFromJSON(message)
         guard event.eventType == .channelInit,
               let initEvent = event as? InitMessage else {
@@ -254,7 +254,7 @@ class Chatterbox {
         }
     }
     
-    private func topicSelectionHandler(_ message: String) {
+    private func topicSelectionMessageHandler(_ message: String) {
         let choices: ControlData = ChatDataFactory.controlFromJSON(message)
         
         if choices.controlType == .contextualAction {
@@ -308,7 +308,7 @@ class Chatterbox {
     
     // MARK: - User Topic Methods
     
-    private func startTopicHandler(_ message: String) {
+    private func startTopicMessageHandler(_ message: String) {
         
         let controlMessage = ChatDataFactory.controlFromJSON(message)
         
@@ -562,10 +562,7 @@ class Chatterbox {
                 handleResponseControlMessage(control, forConversation: conversationId)
             
             case .fromServer:
-                if let taskId = control.taskId, let conversationId = control.conversationId {
-                    conversationContext.taskId = taskId
-                    conversationContext.conversationId = conversationId
-                }
+                updateContextIfNeeded(control)
                 handleIncomingControlMessage(control, forConversation: conversationId)
             }
         }
@@ -579,6 +576,17 @@ class Chatterbox {
             
             let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, taskId: nil, conversationId: topicFinishedMessage.data.conversationId ?? "CONVERSATION_ID")
             chatEventListener?.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
+        }
+    }
+
+    fileprivate func updateContextIfNeeded(_ control: ControlData) {
+        if control.controlType == .agentText,
+            let taskId = control.taskId,
+            let conversationId = control.conversationId {
+            // keep our taskId and conversationId's updated with the latest from the server
+            // NOTE: this MUST be done for agent messages, but should be fine for chatbot messages too
+            conversationContext.taskId = taskId
+            conversationContext.conversationId = conversationId
         }
     }
     

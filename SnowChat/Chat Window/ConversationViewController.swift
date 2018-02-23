@@ -327,20 +327,22 @@ extension ConversationViewController {
         switch inputState {
         case .inTopicSelection:
             autocompleteHandler?.didCommitEditing(inputText)
-        case .inConversation, .inAgentConversation:
-            processUserInput(inputText)
+        case .inConversation,
+             .inAgentConversation:
+            dispatchUserInput(inputText)
         default:
             Logger.default.logDebug("Right button or enter pressed: state=\(inputState)")
         }
     }
     
-    func processUserInput(_ inputText: String) {
+    func dispatchUserInput(_ inputText: String) {
         switch inputState {
         case .inConversation:
             // send the input as a control update
             let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
             dataController.updateControlData(model, isSkipped: false)
         case .inAgentConversation:
+            // send ther input as a straight-up data control (not an update)
             let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
             dataController.sendControlData(model)
             textView.text = ""
