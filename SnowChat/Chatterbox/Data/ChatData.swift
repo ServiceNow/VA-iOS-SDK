@@ -106,6 +106,8 @@ enum ChatterboxControlType: String, Codable {
     case outputLink = "OutputLink"
     case outputHtml = "OutputHtml"
     
+    case agentText = "AgentText"
+    
     case contextualAction = "ContextualAction"
     case systemError = "SystemError"
     
@@ -118,6 +120,7 @@ protocol ControlData: Storable, Codable {
     var controlType: ChatterboxControlType { get }
     var messageId: String { get }
     var conversationId: String? { get }
+    var taskId: String? { get }
     
     var direction: MessageDirection { get }
     var messageTime: Date { get }
@@ -129,6 +132,10 @@ extension ControlData {
     var isOutputOnly: Bool {
         return false
     }
+    
+    var taskId: String? {
+        return nil
+    }
 }
 
 struct ControlDataUnknown: ControlData {
@@ -137,6 +144,7 @@ struct ControlDataUnknown: ControlData {
     let controlType: ChatterboxControlType = .unknown
     let messageId: String = "UNKNOWN_MESSAGE_ID"
     let conversationId: String? = "UNKNOWN_CONVERSATION_ID"
+    let taskId: String? = nil
     let messageTime: Date = Date()
     let direction: MessageDirection = .fromServer
     var label: String?

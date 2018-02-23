@@ -17,6 +17,7 @@ extension APIManager {
     
     func startChatSession(with sessionContext: ChatSessionContext, chatId: String, completion: @escaping (Result<ChatSession>) -> Void) {
         let parameters: Parameters = [ "deviceId": sessionContext.deviceId,
+                                       "deviceType": "ios",
                                        "channelId": "/cs/messages/" + chatId,
                                        "vendorId": sessionContext.vendor.vendorId]
         

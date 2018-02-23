@@ -63,9 +63,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         super.viewDidLoad()
         
         setupActivityIndicator()
-        setupTableView()
-        
-        loadHistory()
+        setupTableView()        
     }
     
     internal func loadHistory() {
@@ -121,7 +119,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             setupForTopicSelection()
         case .inSystemTopicSelection:
             setupForSystemTopicSelection()
-        case .inConversation, .inAgentConversation:
+        case .inAgentConversation:
+            setupForAgentConversation()
+        case .inConversation:
             setupForConversation()
         }
     }
@@ -150,6 +150,19 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         textView.placeholder = ""
         
         setTextInputbarHidden(true, animated: true)
+    }
+    
+    private func setupForAgentConversation() {
+        registerPrefixes(forAutoCompletion: [])
+        self.autocompleteHandler = nil
+        
+        rightButton.isHidden = false
+        rightButton.setTitle(NSLocalizedString("Send", comment: "Right button label in Agent Chat mode"), for: UIControlState())
+        
+        textView.text = ""
+        textView.placeholder = ""
+        
+        setTextInputbarHidden(false, animated: true)
     }
     
     // MARK: - ViewDataChangeListener
@@ -235,12 +248,11 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
 
                 if lastControl.controlModel is TextControlViewModel && lastControl.requiresInput {
                     isTextInputbarHidden = false
-                    //textView.becomeFirstResponder()
                 } else {
                     isTextInputbarHidden = true
                 }
             }
-        case .inTopicSelection:
+        case .inTopicSelection, .inAgentConversation:
             isTextInputbarHidden = false
         default:
             Logger.default.logDebug("unhandled inputState in manageInputControl: \(inputState)")
@@ -315,7 +327,7 @@ extension ConversationViewController {
         switch inputState {
         case .inTopicSelection:
             autocompleteHandler?.didCommitEditing(inputText)
-        case .inConversation:
+        case .inConversation, .inAgentConversation:
             processUserInput(inputText)
         default:
             Logger.default.logDebug("Right button or enter pressed: state=\(inputState)")
@@ -323,9 +335,17 @@ extension ConversationViewController {
     }
     
     func processUserInput(_ inputText: String) {
-        // send the input as a control update
-        let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
-        dataController.updateControlData(model, isSkipped: false)
+        switch inputState {
+        case .inConversation:
+            // send the input as a control update
+            let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
+            dataController.updateControlData(model, isSkipped: false)
+        case .inAgentConversation:
+            let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
+            dataController.sendControlData(model)
+        default:
+            break
+        }
     }
     
     override func heightForAutoCompletionView() -> CGFloat {
@@ -446,6 +466,8 @@ extension ConversationViewController: ChatEventListener {
         guard self.chatterbox.id == chatterbox.id else {
             return
         }
+        inputState = .inAgentConversation
+        setupInputForState()
         
         dataController.agentTopicWillStart()
     }
@@ -473,6 +495,7 @@ extension ConversationViewController: ChatEventListener {
         dataController.topicDidStart(topicInfo)
         
         inputState = .inConversation
+        
         setupInputForState()
     }
     

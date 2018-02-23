@@ -13,52 +13,61 @@ class ChatDataFactory {
     //swiftlint:disable:next cyclomatic_complexity function_body_length
     static func controlFromJSON(_ json: String) -> ControlData {
         
-        if let jsonData = json.data(using: .utf8) {
-            do {
-                let controlMessage = try ChatUtil.jsonDecoder.decode(ControlMessageStub.self, from: jsonData)
-                
-                let uiType = controlMessage.data.richControl.uiType
-                guard let controlType = ChatterboxControlType(rawValue: uiType) else {
-                    return ControlDataUnknown(label: uiType)
+        guard let jsonData = json.data(using: .utf8) else { return ControlDataUnknown() }
+
+        do {
+            let controlMessage = try ChatUtil.jsonDecoder.decode(ControlMessageStub.self, from: jsonData)
+
+            var controlType: ChatterboxControlType = .unknown
+
+            // see if it is an agentText message first
+            if controlMessage.data.text != nil {
+                controlType = .agentText
+            } else {
+                // check for richControl message types
+                if let uiType = controlMessage.data.richControl?.uiType {
+                    controlType = ChatterboxControlType(rawValue: uiType) ?? .unknown
                 }
-                
-                switch controlType {
-                case .contextualAction:
-                    return try ChatUtil.jsonDecoder.decode(ContextualActionMessage.self, from: jsonData)
-                case.topicPicker:
-                    return try ChatUtil.jsonDecoder.decode(UserTopicPickerMessage.self, from: jsonData)
-                case .systemError:
-                    return try ChatUtil.jsonDecoder.decode(SystemErrorControlMessage.self, from: jsonData)
-                case .boolean:
-                    return try ChatUtil.jsonDecoder.decode(BooleanControlMessage.self, from: jsonData)
-                case .input:
-                    return try ChatUtil.jsonDecoder.decode(InputControlMessage.self, from: jsonData)
-                case .picker:
-                    return try ChatUtil.jsonDecoder.decode(PickerControlMessage.self, from: jsonData)
-                case .multiSelect:
-                    return try ChatUtil.jsonDecoder.decode(MultiSelectControlMessage.self, from: jsonData)
-                case .text:
-                    return try ChatUtil.jsonDecoder.decode(OutputTextControlMessage.self, from: jsonData)
-                case .multiPart:
-                    return try ChatUtil.jsonDecoder.decode(MultiPartControlMessage.self, from: jsonData)
-                case .dateTime, .time, .date:
-                    var dateTimeControl = try ChatUtil.jsonDecoder.decode(DateTimePickerControlMessage.self, from: jsonData)
-                    dateTimeControl.controlType = controlType
-                    return dateTimeControl
-                case .outputImage:
-                    return try ChatUtil.jsonDecoder.decode(OutputImageControlMessage.self, from: jsonData)
-                case .outputLink:
-                    return try ChatUtil.jsonDecoder.decode(OutputLinkControlMessage.self, from: jsonData)
-                case .outputHtml:
-                    return try ChatUtil.jsonDecoder.decode(OutputHtmlControlMessage.self, from: jsonData)
-                case .startTopicMessage:
-                    return try ChatUtil.jsonDecoder.decode(StartTopicMessage.self, from: jsonData)                    
-                case .unknown:
-                    break
-                }
-            } catch let parseError {
-                print(parseError)
             }
+            
+            switch controlType {
+            case .contextualAction:
+                return try ChatUtil.jsonDecoder.decode(ContextualActionMessage.self, from: jsonData)
+            case.topicPicker:
+                return try ChatUtil.jsonDecoder.decode(UserTopicPickerMessage.self, from: jsonData)
+            case .systemError:
+                return try ChatUtil.jsonDecoder.decode(SystemErrorControlMessage.self, from: jsonData)
+            case .boolean:
+                return try ChatUtil.jsonDecoder.decode(BooleanControlMessage.self, from: jsonData)
+            case .input:
+                return try ChatUtil.jsonDecoder.decode(InputControlMessage.self, from: jsonData)
+            case .picker:
+                return try ChatUtil.jsonDecoder.decode(PickerControlMessage.self, from: jsonData)
+            case .multiSelect:
+                return try ChatUtil.jsonDecoder.decode(MultiSelectControlMessage.self, from: jsonData)
+            case .text:
+                return try ChatUtil.jsonDecoder.decode(OutputTextControlMessage.self, from: jsonData)
+            case .multiPart:
+                return try ChatUtil.jsonDecoder.decode(MultiPartControlMessage.self, from: jsonData)
+            case .dateTime, .time, .date:
+                var dateTimeControl = try ChatUtil.jsonDecoder.decode(DateTimePickerControlMessage.self, from: jsonData)
+                dateTimeControl.controlType = controlType
+                return dateTimeControl
+            case .outputImage:
+                return try ChatUtil.jsonDecoder.decode(OutputImageControlMessage.self, from: jsonData)
+            case .outputLink:
+                return try ChatUtil.jsonDecoder.decode(OutputLinkControlMessage.self, from: jsonData)
+            case .outputHtml:
+                return try ChatUtil.jsonDecoder.decode(OutputHtmlControlMessage.self, from: jsonData)
+            case .agentText:
+                return try ChatUtil.jsonDecoder.decode(AgentTextControlMessage.self, from: jsonData)
+            case .startTopicMessage:
+                return try ChatUtil.jsonDecoder.decode(StartTopicMessage.self, from: jsonData)
+            case .unknown:
+                break
+            }
+        } catch let parseError {
+            print(parseError)
         }
         return ControlDataUnknown()
     }
@@ -124,6 +133,8 @@ class ChatDataFactory {
             data = try ChatUtil.jsonEncoder.encode(message as? OutputLinkControlMessage)
         case .outputHtml:
             data = try ChatUtil.jsonEncoder.encode(message as? OutputHtmlControlMessage)
+        case .agentText:
+            data = try ChatUtil.jsonEncoder.encode(message as? AgentTextControlMessage)
             
         // seldom used control messages
         case .contextualAction:
@@ -152,10 +163,11 @@ class ChatDataFactory {
 //
 private struct ControlMessageStub: Codable {
     let type: String
-    let data: RichControlStub
+    let data: ControlStub
     
-    struct RichControlStub: Codable {
-        let richControl: UIType
+    struct ControlStub: Codable {
+        let richControl: UIType?
+        let text: String?
     }
     
     struct UIType: Codable {

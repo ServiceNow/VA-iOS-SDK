@@ -265,4 +265,35 @@ class ExampleData {
         """
         return ChatDataFactory.controlFromJSON(jsonSystemErrorMessage) as! SystemErrorControlMessage
     }
+    
+    static func exampleAgentTextControlMessage() -> AgentTextControlMessage {
+        let jsonAgentTextMessage = """
+        {
+          "type" : "systemTextMessage",
+          "data" : {
+            "@class" : ".MessageDto",
+            "messageId" : "c012b7e3c31013009cbbdccdf3d3ae1e",
+            "sendTime" : 1519255021414,
+            "conversationId" : "2df137e3c31013009cbbdccdf3d3aea5",
+            "receiveTime" : 0,
+            "links" : [
+
+            ],
+            "agent" : true,
+            "sessionId" : "8ce1f3e3c31013009cbbdccdf3d3aec3",
+            "text" : "Duty Now For The Future!",
+            "taskId" : "e6f177e3c31013009cbbdccdf3d3ae1a",
+            "isAgent" : true,
+            "sender" : {
+              "sysId" : "46d44a23a9fe19810012d100cca80666",
+              "name" : "Beth Anglin",
+              "avatarPath" : "ee4eebf30a0004d963b5c5ac0d734dc4.iix?t=small"
+            },
+            "direction" : "outbound"
+          },
+          "source" : "server"
+        }
+        """
+        return ChatDataFactory.controlFromJSON(jsonAgentTextMessage) as! AgentTextControlMessage
+    }
 }

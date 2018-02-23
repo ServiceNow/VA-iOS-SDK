@@ -83,6 +83,14 @@ class ChatDataController {
         updateChatterbox(data)
     }
     
+    public func sendControlData(_ data: ControlViewModel) {
+        guard data.type == .text else {
+            logger.logError("Only expecting text controls in sendControlData")
+            return
+        }
+        sendLiveAgentResponse(data)
+    }
+    
     private func currentConversationHasControlData(forId messageId: String) -> Bool {
         return chatterbox.currentConversationHasControlData(forId: messageId)
     }
@@ -199,6 +207,17 @@ class ChatDataController {
         controlData.remove(at: 0)
         addChange(ModelChangeType.delete(index: 0))
         applyChanges()
+    }
+    
+    fileprivate func sendLiveAgentResponse(_ data: ControlViewModel) {
+        if let textViewModel = data as? TextControlViewModel,
+           let sessionId = chatterbox.conversationContext.sessionId,
+           let conversationId = chatterbox.conversationContext.conversationId,
+           let taskId = chatterbox.conversationContext.taskId {
+            
+            let textMessage = AgentTextControlMessage(withValue: textViewModel.value, sessionId: sessionId, conversationId: conversationId, taskId: taskId)
+            chatterbox.update(control: textMessage)
+        }
     }
     
     fileprivate func updateChatterbox(_ data: ControlViewModel) {
@@ -414,7 +433,7 @@ extension ChatDataController: ChatDataListener {
     // MARK: - ChatDataListener (from service)
 
     func chatterbox(_ chatterbox: Chatterbox, didReceiveControlMessage message: ControlData, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id, message.direction == .fromServer else {
+        guard chatterbox.id == self.chatterbox.id else {
             return
         }
         
@@ -462,6 +481,10 @@ extension ChatDataController: ChatDataListener {
             self.didCompleteMultiPartExchange(messageExchange, forChat: chatId)
         case .text:
             guard let message = messageExchange.message as? OutputTextControlMessage else { fatalError("Could not view message as OutputTextControlMessage in ChatDataListener") }
+            guard let chatControl = ChatMessageModel.model(withMessage: message) else { return }
+            self.bufferControlMessage(chatControl)
+        case .agentText:
+            guard let message = messageExchange.message as? AgentTextControlMessage else { fatalError("Could not view message as AgentTextControlMessage in ChatDataListener") }
             guard let chatControl = ChatMessageModel.model(withMessage: message) else { return }
             self.bufferControlMessage(chatControl)
         case .unknown:
@@ -568,7 +591,7 @@ extension ChatDataController: ChatDataListener {
         
         let topicName = conversation.topicTypeName
         let topicId = conversationId
-        let topicInfo = TopicInfo(topicId: topicId, topicName: topicName, conversationId: conversationId)
+        let topicInfo = TopicInfo(topicId: topicId, topicName: topicName, taskId: nil, conversationId: conversationId)
         pushTopicStartDivider(topicInfo)
         pushTopicTitle(topicInfo: topicInfo)
     }
@@ -582,7 +605,7 @@ extension ChatDataController: ChatDataListener {
         
         if let conversation = chatterbox.conversation(forId: conversationId) {
             let topicId = conversationId
-            let topicInfo = TopicInfo(topicId: topicId, topicName: conversation.topicTypeName, conversationId: conversationId)
+            let topicInfo = TopicInfo(topicId: topicId, topicName: conversation.topicTypeName, taskId: nil, conversationId: conversationId)
             
             // NOTE: until the service delivers entire conversations this will cause the occasional extra-divider to appear...
             //       do not fix this as the service is suppossed to fix it
@@ -618,7 +641,7 @@ extension ChatDataController: ChatDataListener {
         changeListener?.controllerDidLoadContent(self)
     }
     
-    //swiftlint:disable:next cyclomatic_complexity
+    //swiftlint:disable:next cyclomatic_complexity function_body_length
     func chatterbox(_ chatterbox: Chatterbox, didReceiveHistory historyExchange: MessageExchange, forChat chatId: String) {
         
         switch historyExchange.message.controlType {
@@ -654,7 +677,6 @@ extension ChatDataController: ChatDataListener {
                 addHistoryToCollection(viewModel)
             }
 
-        // MARK: - output-only
         case .outputImage,
              .multiPart,
              .outputHtml,
@@ -663,7 +685,11 @@ extension ChatDataController: ChatDataListener {
                let controlModel = messageModel.controlModel {
                 addHistoryToCollection(controlModel)
             }
-        
+        case .agentText:
+            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message),
+               let controlModel = messageModel.controlModel {
+                addHistoryToCollection(controlModel)
+            }
         case .unknown:
             if let viewModel = ChatMessageModel.model(withMessage: historyExchange.message) {
                 addHistoryToCollection(viewModel)

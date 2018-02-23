@@ -11,6 +11,7 @@ import Foundation
 struct TopicInfo {
     let topicId: String
     let topicName: String?
+    let taskId: String?
     let conversationId: String
 }
 

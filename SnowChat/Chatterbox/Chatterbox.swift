@@ -51,14 +51,16 @@ class Chatterbox {
     weak var chatEventListener: ChatEventListener?
     weak var chatAuthListener: ChatAuthListener?
     
-    private struct ConversationContext {
+    internal struct ConversationContext {
         var topicName: String?
         var sessionId: String?
 
+        var taskId: String?
+        
         var conversationId: String?
         var systemConversationId: String?
     }
-    private var conversationContext = ConversationContext()
+    internal var conversationContext = ConversationContext()
     internal var contextualActions: ContextualActionMessage?
     
     private let chatStore = ChatDataStore(storeId: "ChatterboxDataStore")
@@ -308,10 +310,11 @@ class Chatterbox {
     
     private func startTopicHandler(_ message: String) {
         
-        let picker: ControlData = ChatDataFactory.controlFromJSON(message)
+        let controlMessage = ChatDataFactory.controlFromJSON(message)
         
-        if picker.controlType == .topicPicker {
-            if let topicPicker = picker as? UserTopicPickerMessage {
+        switch controlMessage.controlType {
+        case .topicPicker:
+            if let topicPicker = controlMessage as? UserTopicPickerMessage {
                 if topicPicker.data.direction == .fromServer {
                     var outgoingMessage = topicPicker
                     outgoingMessage.type = "consumerTextMessage"
@@ -323,8 +326,8 @@ class Chatterbox {
                     publishMessage(outgoingMessage)
                 }
             }
-        } else {
-            logger.logError("Unexpected message in StartTopic flow: \(picker)")
+        default:
+            logger.logError("Unexpected message in StartTopic flow: \(controlMessage)")
         }
     }
     
@@ -349,7 +352,7 @@ class Chatterbox {
         
                 logger.logInfo("User Topic Started: \(actionMessage.topicName) - \(actionMessage.topicId) - \(actionMessage.ready ? "Ready" : "Not Ready")")
                 
-                startUserTopic(topicInfo: TopicInfo(topicId: actionMessage.topicId, topicName: actionMessage.topicName, conversationId: actionMessage.vendorTopicId))
+                startUserTopic(topicInfo: TopicInfo(topicId: actionMessage.topicId, topicName: actionMessage.topicName, taskId: actionMessage.taskId, conversationId: actionMessage.vendorTopicId))
             }
         }
     }
@@ -364,7 +367,7 @@ class Chatterbox {
             startTopic.data.direction = .fromClient
             startTopic.data.richControl?.uiMetadata = contextualActions?.data.richControl?.uiMetadata
             
-            logger.logDebug("*** Sending StartTopic message from client: conversationId=\(startTopic.data.conversationId!)")
+            logger.logDebug("*** Sending StartTopic message from client: conversationId=\(startTopic.data.conversationId ?? "NIL")")
             
             publishMessage(startTopic)
         } else {
@@ -390,40 +393,46 @@ class Chatterbox {
             startAgentChatMessage.data.actionMessage.chatStage == "ConnectToAgent" {
 
             if startAgentChatMessage.data.direction == .fromServer {
-                logger.logDebug("*** ConnectToAgent Message from server: conversationId=\(startAgentChatMessage.data.conversationId!) topicId=\(startAgentChatMessage.data.actionMessage.topicId) taskId=\(startAgentChatMessage.data.taskId!)")
+                logger.logDebug("*** ConnectToAgent Message from server: conversationId=\(startAgentChatMessage.data.conversationId ?? "NIL") topicId=\(startAgentChatMessage.data.actionMessage.topicId) taskId=\(startAgentChatMessage.data.taskId ?? "NIL")")
 
                 let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
                 chatEventListener?.chatterbox(self, willStartAgentChat: agentInfo, forChat: chatId)
                 
+                // store the taskId for this conversation
+                conversationContext.taskId = startAgentChatMessage.data.taskId
+                
                 // send reponse message that we are ready
                 let startAgentChatReadyMessage = createStartAgentChatReadyMessage(fromMessage: startAgentChatMessage)
                 
-                logger.logDebug("*** ConnectToAgent Message response client: conversationId=\(startAgentChatReadyMessage.data.conversationId!) topicId=\(startAgentChatMessage.data.actionMessage.topicId) taskId=\(startAgentChatReadyMessage.data.taskId!)")
+                logger.logDebug("*** ConnectToAgent Message response client: conversationId=\(startAgentChatReadyMessage.data.conversationId ?? "NIL") topicId=\(startAgentChatMessage.data.actionMessage.topicId) taskId=\(startAgentChatReadyMessage.data.taskId ?? "NIL")")
 
                 publishMessage(startAgentChatReadyMessage)
             } else {
                 logger.logDebug("*** ConnectToAgent Message from client: Agent Topic Started!")
 
-                let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
-                chatEventListener?.chatterbox(self, didStartAgentChat: agentInfo, forChat: chatId)
-
                 // we got back out own start topic response, so begin the agent topic
                 let conversationId = startAgentChatMessage.data.actionMessage.topicId
                 let topicId = startAgentChatMessage.data.actionMessage.topicId
-                let topicInfo = TopicInfo(topicId: topicId, topicName: nil, conversationId: conversationId)
+                let taskId = startAgentChatMessage.data.taskId
+                let topicInfo = TopicInfo(topicId: topicId, topicName: "agent", taskId: taskId, conversationId: conversationId)
                 startAgentTopic(topicInfo: topicInfo)
             }
         }
     }
     
     private func startUserTopic(topicInfo: TopicInfo) {
+        state = .userConversation
+        
         setupForConversation(topicInfo: topicInfo)
         chatEventListener?.chatterbox(self, didStartTopic: topicInfo, forChat: chatId)        
     }
     
     private func startAgentTopic(topicInfo: TopicInfo) {
+        state = .agentConversation
+
         setupForConversation(topicInfo: topicInfo)
-        chatEventListener?.chatterbox(self, didStartTopic: topicInfo, forChat: chatId)
+        let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
+        chatEventListener?.chatterbox(self, didStartAgentChat: agentInfo, forChat: chatId)
     }
     
     private func resumeUserTopic(topicInfo: TopicInfo) {
@@ -434,13 +443,16 @@ class Chatterbox {
     }
 
     private func resumeLiveAgentTopic(conversationId: String) {
-        let topicInfo = TopicInfo(topicId: "brb", topicName: nil, conversationId: conversationId)
+        let topicInfo = TopicInfo(topicId: "brb", topicName: nil, taskId: nil, conversationId: conversationId)
+        
         // TODO: for now just do the same as a chat topic
         resumeUserTopic(topicInfo: topicInfo)
     }
     
     private func setupForConversation(topicInfo: TopicInfo) {
         conversationContext.conversationId = topicInfo.conversationId
+        conversationContext.taskId = topicInfo.taskId
+        
         logger.logDebug("*** Setting topic message handler")
         installTopicMessageHandler()
     }
@@ -457,7 +469,6 @@ class Chatterbox {
     private func createStartAgentChatReadyMessage(fromMessage message: StartAgentChatMessage) -> StartAgentChatMessage {
         var startChatReady = message
         
-        //startChatReady.data.conversationId = message.data.actionMessage.topicId
         startChatReady.data.messageId = ChatUtil.uuidString()
         startChatReady.data.sendTime = Date()
         startChatReady.data.direction = .fromClient
@@ -472,8 +483,6 @@ class Chatterbox {
     
     private func installTopicMessageHandler() {
         clearMessageHandlers()
-        
-        state = .userConversation
         messageHandler = userTopicMessageHandler
     }
     
@@ -487,17 +496,18 @@ class Chatterbox {
     }
     
     internal func finishTopic(_ conversationId: String) {
-        let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, conversationId: conversationId)
+        let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, taskId: nil, conversationId: conversationId)
         self.chatEventListener?.chatterbox(self, didFinishTopic: topicInfo, forChat: self.chatId)
     }
     
     // MARK: - Incoming messages (Controls from service)
     
     fileprivate func handleSystemError(_ message: String) {
-        if state == .userConversation {
+        switch state {
+        case .userConversation:
             transferToLiveAgent()
-        } else {
-            logger.logError("System Error encountered outside of User Conversation!")
+        default:
+            logger.logFatal("*** System Error encountered outside of User Conversation! ***")
             // TODO: how to signal a system error??
         }
     }
@@ -525,6 +535,9 @@ class Chatterbox {
             if let updatedExchange = chatStore.storeResponseData(control, forConversation: conversationId) {
                 chatDataListener?.chatterbox(self, didCompleteMessageExchange: updatedExchange, forChat: conversationId)
             }
+        } else {
+            // our own reply message from an agent chat
+            handleIncomingControlMessage(control, forConversation: conversationId)
         }
     }
     
@@ -534,6 +547,9 @@ class Chatterbox {
             case .fromClient:
                 handleResponseControlMessage(control, forConversation: conversationId)
             case .fromServer:
+                if let taskId = control.taskId {
+                    conversationContext.taskId = taskId
+                }
                 handleIncomingControlMessage(control, forConversation: conversationId)
             }
         }
@@ -545,7 +561,7 @@ class Chatterbox {
             
             saveDataToPersistence()
             
-            let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, conversationId: topicFinishedMessage.data.conversationId ?? "CONVERSATION_ID")
+            let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, taskId: nil, conversationId: topicFinishedMessage.data.conversationId ?? "CONVERSATION_ID")
             chatEventListener?.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
         }
     }
@@ -568,6 +584,9 @@ class Chatterbox {
             updateMultiPartControl(control)
         case .dateTime, .date, .time:
             updateDateTimeControl(control)
+        case .agentText:
+            // NOTE: only used for live agent mode
+            updateTextControl(control)
         default:
             logger.logError("Unrecognized control type - skipping: \(type)")
             return
@@ -627,6 +646,12 @@ class Chatterbox {
         }
     }
     
+    fileprivate func updateTextControl(_ control: ControlData) {
+        if let textControl = control as? AgentTextControlMessage, let conversationId = textControl.conversationId {
+            publishControlUpdate(textControl, forConversation: conversationId)
+        }
+    }
+    
     func currentConversationHasControlData(forId messageId: String) -> Bool {
         guard let conversationId = conversationContext.conversationId else { return false }
         
@@ -661,7 +686,7 @@ extension Chatterbox {
         switch conversation.state {
         case .inProgress:
             logger.logInfo("Conversation \(conversationId) is in progress")
-            let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, conversationId: conversationId)
+            let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, taskId: nil, conversationId: conversationId)
             resumeUserTopic(topicInfo: topicInfo)
         case .chatProgress:
             logger.logInfo("Live Agent session \(conversationId) is in progress")

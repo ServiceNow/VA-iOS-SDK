@@ -46,8 +46,8 @@ struct ContextualActionMessage: Codable, ControlData {
         return []
     }
     
-    let type: String
-    let data: RichControlData<ContextualActionWrapper>
+    var type: String
+    var data: RichControlData<ContextualActionWrapper>
 
     typealias ContextualActionWrapper = ControlWrapper<String?, ContextualActionMetadata>
     

@@ -91,6 +91,9 @@ extension ChatMessageModel {
         case .startTopicMessage:
             guard let startTopicMessage = message as? StartTopicMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: startTopicMessage)
+        case .agentText:
+            guard let controlMessage = message as? AgentTextControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
         case .unknown:
             guard let controlMessage = message as? ControlDataUnknown else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage)
@@ -162,6 +165,17 @@ extension ChatMessageModel {
         let direction = message.data.direction
         let textModel = TextControlViewModel(id: message.messageId, value: value)
         let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
+        return snowViewModel
+    }
+    
+    static func model(withMessage message: AgentTextControlMessage) -> ChatMessageModel? {
+        let value = message.data.text
+        let direction = message.data.direction
+        let textModel = TextControlViewModel(id: message.messageId, value: value)
+        let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
+        if let agentPath = message.data.sender?.avatarPath {
+            snowViewModel.avatarURL = URL(string: agentPath)
+        }
         return snowViewModel
     }
     
