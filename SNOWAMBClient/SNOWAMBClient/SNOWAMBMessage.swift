@@ -2,6 +2,7 @@ public struct SNOWAMBMessage {
     
     public let id: String
     public let successful: Bool
+    // other fields are optional (set to nil or 0 for timestamp)
     public let authSuccessful: Bool?
     public let channel: String?
     public let clientId: String?
@@ -16,6 +17,7 @@ public struct SNOWAMBMessage {
     public let toChannel: String?
     public let ext: [String : Any]?
     public var data: [String : Any]?
+    // serialized version of the payload (data field)
     public var jsonDataString: String
     // TODO: Remove eventually. Using for debugging purposes (alex a, 01-18-17)
     public var jsonFullMessageString: String
@@ -36,10 +38,15 @@ public struct SNOWAMBMessage {
         }
         
         guard let messageDict = rawMessage as? [String : Any] else {
-            throw SNOWAMBError(SNOWAMBErrorType.messageParserError, "AMB Message is not [String:Any] dictionary")
+            throw SNOWAMBError(.messageParserError, "AMB Message is not [String:Any] dictionary")
         }
         
-        self.id = messageDict["id"] as? String ?? ""
+        if let id = messageDict["id"] as? String {
+            self.id = id
+        } else {
+            throw SNOWAMBError(.messageParserError, "AMB Message is missing id field")
+        }
+        
         self.successful = messageDict["successful"] as? Bool ?? true
         self.channel = messageDict["channel"] as? String
         self.clientId = messageDict["clientId"] as? String
