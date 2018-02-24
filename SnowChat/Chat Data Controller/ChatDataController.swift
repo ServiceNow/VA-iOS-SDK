@@ -492,10 +492,6 @@ extension ChatDataController: ChatDataListener {
         if let viewModels = controlsForDateTimePicker(from: messageExchange) {
             
             // We need to check the last displayed control. In case of regular topic flow we will have TextControl and DateTimeControl as a seperate controls but they will represent one message coming from the server.
-            // TODO: Remove!!!
-            if controlData.isEmpty {
-                return
-            }
             let lastMessage = controlData[0]
             
             var shouldReplaceLastControlWithResponse = true
