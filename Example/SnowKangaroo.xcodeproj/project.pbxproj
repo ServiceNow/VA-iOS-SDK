@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8B5CF99C2034AC9C0020DF53 /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5CF99B2034AC9C0020DF53 /* Notifications.swift */; };
+		8B5CF99C2034AC9C0020DF53 /* AuthNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5CF99B2034AC9C0020DF53 /* AuthNotifications.swift */; };
 		8B67BEF72037B72B008AAB18 /* OAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B67BEF62037B72B008AAB18 /* OAuthManager.swift */; };
 		8B67BEF92037B75C008AAB18 /* OAuthManagerConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B67BEF82037B75C008AAB18 /* OAuthManagerConfiguration.swift */; };
 		8B67BEFB2037BA92008AAB18 /* OAuthManagerConfiguration+Examples.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B67BEFA2037BA92008AAB18 /* OAuthManagerConfiguration+Examples.swift */; };
@@ -20,6 +20,9 @@
 		8B72FC37202B696A00C1AFC9 /* OAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B72FC36202B696A00C1AFC9 /* OAuthCredential.swift */; };
 		8B9842FC203E3B2B00FE7DAD /* SNOWAMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B9842FD203E3B2B00FE7DAD /* SNOWAMBClient.framework */; };
 		8B9842FE203E3B3100FE7DAD /* SNOWAMBClient.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B9842FD203E3B2B00FE7DAD /* SNOWAMBClient.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B984306203F81DE00FE7DAD /* AuthProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B984305203F81DE00FE7DAD /* AuthProvider.swift */; };
+		8B984308203F831D00FE7DAD /* OAuthManager+AuthProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B984307203F831D00FE7DAD /* OAuthManager+AuthProvider.swift */; };
+		8B98430D203FC84900FE7DAD /* UserDefaults+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B98430C203FC84900FE7DAD /* UserDefaults+Codable.swift */; };
 		8BBAAA922032547700D50F66 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBAAA902032547700D50F66 /* HomeViewController.swift */; };
 		8BBAAA932032547700D50F66 /* HomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8BBAAA912032547700D50F66 /* HomeViewController.xib */; };
 		BE3BCB8B1FBA00270019A21A /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE50E22C1FB934FF00948FBC /* SnowChat.framework */; };
@@ -63,7 +66,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		8B5CF99B2034AC9C0020DF53 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
+		8B5CF99B2034AC9C0020DF53 /* AuthNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthNotifications.swift; sourceTree = "<group>"; };
 		8B67BEF62037B72B008AAB18 /* OAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthManager.swift; sourceTree = "<group>"; };
 		8B67BEF82037B75C008AAB18 /* OAuthManagerConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthManagerConfiguration.swift; sourceTree = "<group>"; };
 		8B67BEFA2037BA92008AAB18 /* OAuthManagerConfiguration+Examples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OAuthManagerConfiguration+Examples.swift"; sourceTree = "<group>"; };
@@ -75,6 +78,9 @@
 		8B72FC34202B625A00C1AFC9 /* InstanceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceSettings.swift; sourceTree = "<group>"; };
 		8B72FC36202B696A00C1AFC9 /* OAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthCredential.swift; sourceTree = "<group>"; };
 		8B9842FD203E3B2B00FE7DAD /* SNOWAMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SNOWAMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B984305203F81DE00FE7DAD /* AuthProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthProvider.swift; sourceTree = "<group>"; };
+		8B984307203F831D00FE7DAD /* OAuthManager+AuthProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OAuthManager+AuthProvider.swift"; sourceTree = "<group>"; };
+		8B98430C203FC84900FE7DAD /* UserDefaults+Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Codable.swift"; sourceTree = "<group>"; };
 		8BBAAA902032547700D50F66 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		8BBAAA912032547700D50F66 /* HomeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HomeViewController.xib; sourceTree = "<group>"; };
 		BE50E1E91FB92EB800948FBC /* SnowKangaroo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SnowKangaroo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -117,32 +123,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8B72FC22202A66A400C1AFC9 /* Log In */ = {
+		8B72FC22202A66A400C1AFC9 /* Log In UI */ = {
 			isa = PBXGroup;
 			children = (
 				8B72FC23202A66B300C1AFC9 /* LogInViewController.swift */,
 				8B72FC24202A66B300C1AFC9 /* LogInViewController.xib */,
 			);
-			path = "Log In";
-			sourceTree = "<group>";
-		};
-		8B72FC28202A722500C1AFC9 /* Auth */ = {
-			isa = PBXGroup;
-			children = (
-				8B72FC34202B625A00C1AFC9 /* InstanceSettings.swift */,
-				8B72FC36202B696A00C1AFC9 /* OAuthCredential.swift */,
-				8B67BEF62037B72B008AAB18 /* OAuthManager.swift */,
-				8B67BEF82037B75C008AAB18 /* OAuthManagerConfiguration.swift */,
-				8B67BEFA2037BA92008AAB18 /* OAuthManagerConfiguration+Examples.swift */,
-			);
-			path = Auth;
+			path = "Log In UI";
 			sourceTree = "<group>";
 		};
 		8B72FC2D202AA5BD00C1AFC9 /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
 				8B72FC2E202AA5E700C1AFC9 /* URL+ServerInstance.swift */,
-				8B5CF99B2034AC9C0020DF53 /* Notifications.swift */,
+				8B98430C203FC84900FE7DAD /* UserDefaults+Codable.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -155,6 +149,38 @@
 				8BBAAA912032547700D50F66 /* HomeViewController.xib */,
 			);
 			path = "Root UI";
+			sourceTree = "<group>";
+		};
+		8B984309203F8DEB00FE7DAD /* App Specific */ = {
+			isa = PBXGroup;
+			children = (
+				8B5CF99B2034AC9C0020DF53 /* AuthNotifications.swift */,
+				8B984305203F81DE00FE7DAD /* AuthProvider.swift */,
+				8B72FC34202B625A00C1AFC9 /* InstanceSettings.swift */,
+				8B984307203F831D00FE7DAD /* OAuthManager+AuthProvider.swift */,
+				8B67BEFA2037BA92008AAB18 /* OAuthManagerConfiguration+Examples.swift */,
+			);
+			path = "App Specific";
+			sourceTree = "<group>";
+		};
+		8B98430A203F8E6300FE7DAD /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				8B984309203F8DEB00FE7DAD /* App Specific */,
+				8B98430B203F8E7800FE7DAD /* OAuth Core */,
+				8B72FC22202A66A400C1AFC9 /* Log In UI */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		8B98430B203F8E7800FE7DAD /* OAuth Core */ = {
+			isa = PBXGroup;
+			children = (
+				8B72FC36202B696A00C1AFC9 /* OAuthCredential.swift */,
+				8B67BEF62037B72B008AAB18 /* OAuthManager.swift */,
+				8B67BEF82037B75C008AAB18 /* OAuthManagerConfiguration.swift */,
+			);
+			path = "OAuth Core";
 			sourceTree = "<group>";
 		};
 		BE50E1E01FB92EB800948FBC = {
@@ -181,12 +207,11 @@
 		BE50E1EB1FB92EB800948FBC /* SnowKangaroo */ = {
 			isa = PBXGroup;
 			children = (
-				8B72FC30202B618C00C1AFC9 /* Root UI */,
-				8B72FC2D202AA5BD00C1AFC9 /* Foundation */,
-				8B72FC28202A722500C1AFC9 /* Auth */,
-				8B72FC22202A66A400C1AFC9 /* Log In */,
 				BE50E1EC1FB92EB800948FBC /* AppDelegate.swift */,
 				BE50E1F31FB92EB800948FBC /* Assets.xcassets */,
+				8B98430A203F8E6300FE7DAD /* Auth */,
+				8B72FC2D202AA5BD00C1AFC9 /* Foundation */,
+				8B72FC30202B618C00C1AFC9 /* Root UI */,
 				BE5974C61FC3B19700959406 /* Supporting Files */,
 			);
 			path = SnowKangaroo;
@@ -408,12 +433,15 @@
 				8B67BEF92037B75C008AAB18 /* OAuthManagerConfiguration.swift in Sources */,
 				8B72FC32202B61FD00C1AFC9 /* RootViewController.swift in Sources */,
 				8B67BEFB2037BA92008AAB18 /* OAuthManagerConfiguration+Examples.swift in Sources */,
-				8B5CF99C2034AC9C0020DF53 /* Notifications.swift in Sources */,
+				8B5CF99C2034AC9C0020DF53 /* AuthNotifications.swift in Sources */,
+				8B984306203F81DE00FE7DAD /* AuthProvider.swift in Sources */,
 				8BBAAA922032547700D50F66 /* HomeViewController.swift in Sources */,
 				8B72FC35202B625A00C1AFC9 /* InstanceSettings.swift in Sources */,
+				8B98430D203FC84900FE7DAD /* UserDefaults+Codable.swift in Sources */,
 				BE50E1ED1FB92EB800948FBC /* AppDelegate.swift in Sources */,
 				8B72FC2F202AA5E700C1AFC9 /* URL+ServerInstance.swift in Sources */,
 				8B72FC25202A66B300C1AFC9 /* LogInViewController.swift in Sources */,
+				8B984308203F831D00FE7DAD /* OAuthManager+AuthProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

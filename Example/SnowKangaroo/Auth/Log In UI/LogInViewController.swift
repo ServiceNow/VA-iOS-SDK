@@ -9,7 +9,7 @@
 import UIKit
 
 protocol LogInViewControllerDelegate: class {
-    func logInViewControllerDidAuthenticate(_ controller: LogInViewController, instanceURL: URL, credential: OAuthCredential)
+    func logInViewControllerDidAuthenticate(_ controller: LogInViewController, instanceURL: URL, credential: OAuthCredential, authProvider: AuthProvider)
 }
 
 class LogInViewController: UIViewController {
@@ -62,17 +62,16 @@ class LogInViewController: UIViewController {
     // MARK: - Actions
     
     @IBAction private func logInButtonTapped(_ sender: Any) {
-        guard let instanceURL = instanceURL else { return }
-        logIn(configuration: .serviceNowVirtualAgentExample(instanceURL: instanceURL))
+        logIn(authProvider: .local)
     }
     
     @IBAction private func useOpenIDButtonTapped(_ sender: Any) {
-        logIn(configuration: .oktaExample)
+        logIn(authProvider: .openID)
     }
     
     // MARK: - Log In
     
-    private func logIn(configuration: OAuthManagerConfiguration) {
+    private func logIn(authProvider: AuthProvider) {
         view.endEditing(true)
         
         guard let username = usernameTextField.text,
@@ -84,10 +83,10 @@ class LogInViewController: UIViewController {
         
         updateUI(isLoading: true)
         
-        let authManager = OAuthManager(configuration: configuration)
+        let authManager = OAuthManager(authProvider: authProvider, instanceURL: instanceURL)
         self.authManager = authManager
         
-        authManager.logIn(username: username, password: password) { [weak self] result in
+        authManager.authenticate(username: username, password: password) { [weak self] result in
             guard let strongSelf = self else {
                 return
             }
@@ -100,7 +99,7 @@ class LogInViewController: UIViewController {
                 return
             }
             
-            strongSelf.delegate?.logInViewControllerDidAuthenticate(strongSelf, instanceURL: instanceURL, credential: credential)
+            strongSelf.delegate?.logInViewControllerDidAuthenticate(strongSelf, instanceURL: instanceURL, credential: credential, authProvider: authProvider)
         }
     }
     

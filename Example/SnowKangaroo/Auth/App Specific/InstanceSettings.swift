@@ -19,6 +19,7 @@ class InstanceSettings {
     
     private static let instanceURLKey = "InstanceSettingsInstanceURL"
     private static let credentialKey = "InstanceSettingsCredential"
+    private static let authProviderKey = "InstanceSettingsAuthProviderStringMapped"
     
     private let defaults = UserDefaults.standard
     
@@ -34,15 +35,20 @@ class InstanceSettings {
     
     var credential: OAuthCredential? {
         get {
-            if let data = defaults.data(forKey: InstanceSettings.credentialKey),
-                let credential = try? PropertyListDecoder().decode(OAuthCredential.self, from: data) {
-                return credential
-            }
-            return nil
+            return defaults.decodable(forKey: InstanceSettings.credentialKey, type: OAuthCredential.self)
         }
         set {
-            let data = try? PropertyListEncoder().encode(newValue)
-            defaults.set(data, forKey: InstanceSettings.credentialKey)
+            defaults.setCodable(newValue, forKey: InstanceSettings.credentialKey)
+            defaults.synchronize()
+        }
+    }
+    
+    var authProvider: AuthProvider? {
+        get {
+            return defaults.decodable(forKey: InstanceSettings.authProviderKey, type: AuthProvider.self)
+        }
+        set {
+            defaults.setCodable(newValue, forKey: InstanceSettings.authProviderKey)
             defaults.synchronize()
         }
     }

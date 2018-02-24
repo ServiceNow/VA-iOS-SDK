@@ -67,7 +67,9 @@ class APIManager: NSObject {
         // TODO: Should we only clear some session cookies instead of all?
         clearAllCookies()
         
-        sessionManager.adapter = AuthHeadersAdapter(instanceURL: instance.instanceURL, accessToken: token)
+        let authInterceptor = AuthInterceptor(instanceURL: instance.instanceURL, token: token)
+        sessionManager.adapter = authInterceptor
+        sessionManager.retrier = authInterceptor
         
         // FIXME: Don't use mobile app APIs. Need to move to this API when it's ready: ui/user/current_user
         sessionManager.request(apiURLWithPath("mobile/app_bootstrap/post_auth"),
