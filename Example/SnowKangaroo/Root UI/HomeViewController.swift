@@ -21,6 +21,7 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         title = "SnowKangaroo"
         
         setupNavigationBarButtons()
+        setupAuthNotificationObserving()
     }
     
     // MARK: - UI Setup
@@ -42,22 +43,32 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         let chatService = ChatService(instance: instance, delegate: self)
         self.chatService = chatService
         
+        navigationController?.pushViewController(chatService.chatViewController(), animated: true)
+        
+        establishChatSession(credential: credential, logOutOnAuthFailure: false)
+    }
+    
+    private func establishChatSession(credential: OAuthCredential, logOutOnAuthFailure: Bool) {
+        guard let chatService = chatService else { return }
+        
         let token = credential.idToken ?? credential.accessToken
         
         chatService.establishUserSession(token: token) { [weak self] (error) in
             if let error = error {
                 if case ChatServiceError.invalidCredentials = error {
-                    self?.postLogOutNotification()
+                    if logOutOnAuthFailure {
+                        self?.postLogOutNotification()
+                    } else {
+                        self?.postAuthenticationDidBecomeInvalidNotification()
+                    }
                 } else {
                     self?.presentError(error)
                 }
             }
         }
-        
-        navigationController?.pushViewController(chatService.chatViewController(), animated: true)
     }
     
-    // MARK: - Actions
+    // MARK: - Button Actions
     
     @objc func chatButtonTapped(_ sender: Any) {
         startChat()
@@ -88,17 +99,36 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         present(alert, animated: true)
     }
     
-    // MARK: - Auth
+    // MARK: - Auth Notifications
+    
+    private func setupAuthNotificationObserving() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleSNAuthenticationDidBecomeValidNotification(_:)),
+                                               name: .SNAuthenticationDidBecomeValid,
+                                               object: nil)
+    }
+    
+    @objc private func handleSNAuthenticationDidBecomeValidNotification(_ notification: Notification) {
+        guard let credential = InstanceSettings.shared.credential else {
+            return
+        }
+        
+        // Repair existing chat service with new credential
+        establishChatSession(credential: credential, logOutOnAuthFailure: true)
+    }
     
     private func postLogOutNotification() {
+        NotificationCenter.default.post(name: .LogOut, object: nil)
+    }
+    
+    private func postAuthenticationDidBecomeInvalidNotification() {
         NotificationCenter.default.post(name: .SNAuthenticationDidBecomeInvalid, object: nil)
     }
     
     // MARK: - ChatServiceDelegate
     
     func chatServiceAuthenticationDidBecomeInvalid(_ chatService: ChatService) {
-        // FIXME: Try and refresh the access token and call establishUserSession again
-        postLogOutNotification()
+        postAuthenticationDidBecomeInvalidNotification()
     }
 
 }

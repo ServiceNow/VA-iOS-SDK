@@ -436,10 +436,6 @@ extension ChatDataController: ChatDataListener {
         case .inputImage:
             guard messageExchange.message is InputImageControlMessage else { fatalError("Could not view message as InputImageControlMessage in ChatDataListener") }
             self.didCompleteInputImageExchange(messageExchange, forChat: chatId)
-        case .text:
-            guard let message = messageExchange.message as? OutputTextControlMessage else { fatalError("Could not view message as OutputTextControlMessage in ChatDataListener") }
-            guard let chatControl = ChatMessageModel.model(withMessage: message) else { return }
-            self.bufferControlMessage(chatControl)
         case .unknown:
             guard let message = messageExchange.message as? ControlDataUnknown else { fatalError("Could not view message as ControlDataUnknown in ChatDataListener") }
             guard let chatControl = ChatMessageModel.model(withMessage: message) else { return }

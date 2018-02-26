@@ -17,7 +17,8 @@ extension OAuthManagerConfiguration {
         return OAuthManagerConfiguration(tokenURL: tokenURL,
                                          clientId: "0oae1yyznkjC5ZR4B0h7",
                                          clientSecret: "SqcRccsZeiLhd0VtJNDk9zryWbZXwQrdJfQ7Colz",
-                                         defaultScope: "openid offline_access profile")
+                                         defaultScope: "openid offline_access profile",
+                                         requireIdToken: true)
     }()
 
     static func serviceNowVirtualAgentExample(instanceURL: URL) -> OAuthManagerConfiguration {
@@ -26,7 +27,8 @@ extension OAuthManagerConfiguration {
         return OAuthManagerConfiguration(tokenURL: tokenURL,
                                          clientId: "2c403f19ac901300b303eef6c8b842d3",
                                          clientSecret: "H&g(T!4<6Y",
-                                         defaultScope: nil)
+                                         defaultScope: nil,
+                                         requireIdToken: false)
     }
     
 }
