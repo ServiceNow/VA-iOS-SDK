@@ -771,8 +771,11 @@ extension Chatterbox {
     internal func storeConversationAndPublish(_ conversation: Conversation) {
         chatStore.storeConversation(conversation)
         
-        conversation.messageExchanges().forEach { (exchange) in
-            if conversation.state == .inProgress && !exchange.isComplete {
+        conversation.messageExchanges().forEach { exchange in
+            let outputOnlyMessage = exchange.message.isOutputOnly
+            let inputPending = conversation.state == .inProgress && !exchange.isComplete
+            
+            if outputOnlyMessage || inputPending {
                 notifyMessage(exchange.message)
             } else {
                 notifyMessageExchange(exchange)
