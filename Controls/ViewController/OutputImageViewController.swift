@@ -79,15 +79,18 @@ class OutputImageViewController: UIViewController {
         }
         
         // if image is in landscape - we will limit it horizontally. otherwise vertically.
+        // set width/height proportion
+        let ratio: CGFloat
         if image.size.height > image.size.width {
             imageViewSideConstraint = outputImageView.heightAnchor.constraint(lessThanOrEqualToConstant: maxImageSize.height)
+            ratio = image.size.width / image.size.height
+            imageViewWidthToHeightConstraint = outputImageView.widthAnchor.constraint(equalTo: outputImageView.heightAnchor, multiplier: ratio)
         } else {
             imageViewSideConstraint = outputImageView.widthAnchor.constraint(lessThanOrEqualToConstant: maxImageSize.width)
+            ratio = image.size.height / image.size.width
+            imageViewWidthToHeightConstraint = outputImageView.heightAnchor.constraint(equalTo: outputImageView.widthAnchor, multiplier: ratio)
         }
-        
-        // set width/height proportion
-        let ratio = image.size.width / image.size.height
-        imageViewWidthToHeightConstraint = outputImageView.heightAnchor.constraint(equalTo: outputImageView.widthAnchor, multiplier: ratio)
+    
         imageViewWidthToHeightConstraint?.isActive = true
         imageViewSideConstraint?.isActive = true
     }
