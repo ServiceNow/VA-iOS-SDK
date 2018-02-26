@@ -40,20 +40,24 @@ class OutputImageControl: ControlProtocol {
         }
     }
     
-    func prepareForReuse() {
-        if let receipt = requestReceipt {
-            imageDownloader?.cancelRequest(with: receipt)
-            requestReceipt = nil
+    var imageDownloader: ImageDownloader? {
+        didSet {
+            refreshDownload()
+        }
+    }
+    
+    required init(model: ControlViewModel) {
+        guard let imageModel = model as? OutputImageViewModel else {
+            fatalError("Wrong model class")
         }
         
-        imageViewController.image = nil
-        imageViewController.showActivityIndicator(false)
+        self.model = imageModel
+        self.viewController = OutputImageViewController()
     }
     
     private func refreshDownload() {
         let urlRequest = URLRequest(url: imageModel.value)
         requestReceipt = imageDownloader?.download(urlRequest) { [weak self] (response) in
-            
             // Very likely could remove that guard since we are cancelling request on reuse
             guard let currentModel = self?.model as? OutputImageViewModel,
                 self?.imageModel.value == currentModel.value else {
@@ -65,27 +69,22 @@ class OutputImageControl: ControlProtocol {
                 return
             }
             
-            guard let strongSelf = self else { return }
+            let image = response.value
+            guard let strongSelf = self, strongSelf.imageViewController.image != image else { return }
             strongSelf.imageViewController.showActivityIndicator(false)
-            strongSelf.imageViewController.image = response.value
+            strongSelf.imageViewController.image = image
             strongSelf.outputImageDelegate?.controlDidFinishImageDownload(strongSelf)
         }
     }
     
-    var imageDownloader: ImageDownloader? {
-        didSet {
-            imageViewController.outputImageView.af_imageDownloader = imageDownloader
-            refreshDownload()
-        }
-    }
-
-    required init(model: ControlViewModel) {
-        guard let imageModel = model as? OutputImageViewModel else {
-            fatalError("Wrong model class")
+    func prepareForReuse() {
+        if let receipt = requestReceipt {
+            imageDownloader?.cancelRequest(with: receipt)
+            requestReceipt = nil
         }
         
-        self.model = imageModel
-        self.viewController = OutputImageViewController()
+        delegate = nil
+        imageViewController.image = nil
+        imageViewController.showActivityIndicator(false)
     }
-    
 }

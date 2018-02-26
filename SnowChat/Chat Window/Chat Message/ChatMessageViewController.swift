@@ -33,7 +33,6 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
             }
             
             if let oldControl = uiControl, isPresentingControl(oldControl) {
-                // TODO: cache it upon removing
                 oldControl.removeFromParent()
             }
             

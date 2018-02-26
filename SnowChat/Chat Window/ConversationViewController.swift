@@ -107,7 +107,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         // NOTE: making section header height very tiny as 0 make it default size in iOS11
         // see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
         tableView.sectionHeaderHeight = CGFloat(0.01)
-        tableView.estimatedRowHeight = 200
+        tableView.estimatedRowHeight = 250
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
         tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
@@ -438,6 +438,21 @@ extension ConversationViewController {
         messageViewControllerCache.cacheViewController(messageViewController)
         conversationCell.messageViewController = nil
     }
+    
+    // to provide proper height for self-sizing table view
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
+            if chatMessageModel.type == .topicDivider {
+                return 2
+            }
+
+            if let controlType = chatMessageModel.controlModel?.type, controlType == .outputImage {
+                return 250
+            }
+        }
+
+        return 200
+    }
 }
 
 extension ConversationViewController: ChatEventListener {
@@ -498,8 +513,8 @@ extension ConversationViewController: ControlDelegate, OutputImageControlDelegat
     }
     
     func controlDidFinishImageDownload(_ control: OutputImageControl) {
-//        tableView.beginUpdates()
-//        tableView.endUpdates()
+        tableView.beginUpdates()
+        tableView.endUpdates()
     }
 }
 

@@ -34,6 +34,7 @@ class OutputImageViewController: UIViewController {
     
     private func setupOutputImageView() {
         outputImageView.setContentHuggingPriority(.veryHigh, for: .horizontal)
+        outputImageView.contentMode = .scaleAspectFill
         outputImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(outputImageView)
         NSLayoutConstraint.activate([outputImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -46,9 +47,9 @@ class OutputImageViewController: UIViewController {
     func showActivityIndicator(_ show: Bool) {
         if show == false {
             activityIndicatorView?.stopAnimating()
-//            NSLayoutConstraint.deactivate(activityIndicatorConstraints)
+            NSLayoutConstraint.deactivate(activityIndicatorConstraints)
         } else {
-//            NSLayoutConstraint.activate(activityIndicatorConstraints)
+            NSLayoutConstraint.activate(activityIndicatorConstraints)
             activityIndicatorView?.isHidden = false
             activityIndicatorView?.startAnimating()
         }
@@ -61,7 +62,7 @@ class OutputImageViewController: UIViewController {
         self.activityIndicatorView = activityIndicatorView
         
         activityIndicatorConstraints.append(contentsOf: [activityIndicatorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                                         activityIndicatorView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+                                                         activityIndicatorView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                                                          activityIndicatorView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
                                                          activityIndicatorView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
                                                          activityIndicatorView.widthAnchor.constraint(equalToConstant: 100)])
