@@ -984,7 +984,10 @@ extension Chatterbox {
         self.chatDataListener?.chatterbox(self, willLoadConversation: conversation.conversationId, forChat: self.chatId)
 
         conversation.messageExchanges().forEach { exchange in
-            if conversation.state != .completed && !exchange.isComplete {
+            let outputOnlyMessage = exchange.message.isOutputOnly
+            let inputPending = conversation.state == .inProgress && !exchange.isComplete
+            
+            if outputOnlyMessage || inputPending {
                 notifyMessage(exchange.message)
             } else {
                 notifyMessageExchange(exchange)

@@ -475,10 +475,14 @@ extension ChatDataController: ChatDataListener {
     
     // MARK: - ChatDataListener (from client)
     
-    //swiftlint:disable:next cyclomatic_complexity function_body_length
+    //swiftlint:disable:next cyclomatic_complexity
     func chatterbox(_ chatterbox: Chatterbox, didCompleteMessageExchange messageExchange: MessageExchange, forChat chatId: String) {
         guard chatterbox.id == self.chatterbox.id else {
             return
+        }
+        
+        if messageExchange.message.isOutputOnly {
+            logger.logError("OutputOnly message is unexpected in didCompleteMessageExchange: caller should use didReceiveControlMessage instead")
         }
         
         switch messageExchange.message.controlType {
@@ -503,14 +507,6 @@ extension ChatDataController: ChatDataListener {
         case .inputImage:
             guard messageExchange.message is InputImageControlMessage else { fatalError("Could not view message as InputImageControlMessage in ChatDataListener") }
             self.didCompleteInputImageExchange(messageExchange, forChat: chatId)
-        case .text:
-            guard let message = messageExchange.message as? OutputTextControlMessage else { fatalError("Could not view message as OutputTextControlMessage in ChatDataListener") }
-            guard let chatControl = ChatMessageModel.model(withMessage: message) else { return }
-            self.bufferControlMessage(chatControl)
-        case .agentText:
-            guard let message = messageExchange.message as? AgentTextControlMessage else { fatalError("Could not view message as AgentTextControlMessage in ChatDataListener") }
-            guard let chatControl = ChatMessageModel.model(withMessage: message) else { return }
-            self.bufferControlMessage(chatControl)
         case .unknown:
             guard let message = messageExchange.message as? ControlDataUnknown else { fatalError("Could not view message as ControlDataUnknown in ChatDataListener") }
             guard let chatControl = ChatMessageModel.model(withMessage: message) else { return }
