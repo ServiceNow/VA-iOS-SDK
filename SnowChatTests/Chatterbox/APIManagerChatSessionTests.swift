@@ -316,22 +316,6 @@ class APIManagerChatSessionTest: XCTestCase {
                             "value": "INC0010051 has been created for you. Glad I could assist you."
                         },
                         "isAgent": false
-                    },
-                    {
-                        "@class": "com.glide.cs.qlue.actions.systemAction.ActionMessageDto",
-                        "messageId": "8",
-                        "conversationId": "139dd4f673234300d63a566a4cf6a7c6",
-                        "direction": "outbound",
-                        "sendTime": 1515776792000,
-                        "receiveTime": 0,
-                        "links": [
-
-                        ],
-                        "isAgent": false,
-                        "actionMessage": {
-                            "type": "TopicFinished",
-                            "systemActionName": "TopicFinished"
-                        }
                     }
                 ],
                 "consumerAcctId": "c29d18f673234300d63a566a4cf6a71a",
@@ -556,21 +540,6 @@ class APIManagerChatSessionTest: XCTestCase {
                 "value": "INC0010051 has been created for you. Glad I could assist you."
               },
               "isAgent": false
-            },
-            {
-              "@class": "com.glide.cs.qlue.actions.systemAction.ActionMessageDto",
-              "messageId": "8",
-              "conversationId": "139dd4f673234300d63a566a4cf6a7c6",
-              "consumerAccountId": "c29d18f673234300d63a566a4cf6a71a",
-              "direction": "outbound",
-              "sendTime": 1515776792000,
-              "receiveTime": 0,
-              "links": [],
-              "isAgent": false,
-              "actionMessage": {
-                "type": "TopicFinished",
-                "systemActionName": "TopicFinished"
-              }
             }
           ],
           "consumerAcctId": "c29d18f673234300d63a566a4cf6a71a",

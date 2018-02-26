@@ -114,7 +114,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         // test the control model has the same ID
         XCTAssertEqual(boolMessage.messageId, controller?.controlForIndex(0)?.controlModel?.id)
         // test the ChatMessageData has the correct direction
-        XCTAssertEqual(BubbleLocation(direction: MessageDirection.fromServer), controller?.controlForIndex(0)?.location)
+        XCTAssertEqual(BubbleLocation(direction: MessageDirection.fromServer), controller?.controlForIndex(0)?.bubbleLocation)
     }
     
     func testStartTopicDivider() {

@@ -21,7 +21,7 @@ struct StartTopicMessage: Codable, ControlData {
     }
     
     var id: String = UUID().uuidString
-    var controlType = ChatterboxControlType.startTopicMessage
+    var controlType = ChatterboxControlType.startTopic
     
     var messageId: String {
         return data.messageId
@@ -40,7 +40,7 @@ struct StartTopicMessage: Codable, ControlData {
     }
 
     let type: String
-    let data: RichControlData<StartTopicWrapper>
+    var data: RichControlData<StartTopicWrapper>
     
     typealias StartTopicWrapper = ControlWrapper<String?, ContextualActionMetadata>
     
@@ -51,7 +51,7 @@ struct StartTopicMessage: Codable, ControlData {
     init(withSessionId: String, withConversationId: String) {
         type = "consumerTextMessage"
         let controlData: StartTopicWrapper = ControlWrapper(model: ControlModel(type: "task", name: nil), uiType: "ContextualAction", uiMetadata: nil, value: "startTopic", content: nil)
-        data = RichControlData<StartTopicWrapper>(sessionId: withSessionId, conversationId: withConversationId, direction: .fromServer, controlData: controlData)
+        data = RichControlData<StartTopicWrapper>(sessionId: withSessionId, conversationId: withConversationId, direction: .fromClient, controlData: controlData)
     }
     
     private enum CodingKeys: String, CodingKey {

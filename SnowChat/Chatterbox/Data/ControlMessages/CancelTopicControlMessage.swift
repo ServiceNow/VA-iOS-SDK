@@ -10,6 +10,10 @@ import Foundation
 
 struct CancelTopicControlMessage: Codable, ControlData {
     
+    static var value: String {
+        return "cancelTopic"
+    }
+    
     var uniqueId: String {
         return id
     }
@@ -50,7 +54,7 @@ struct CancelTopicControlMessage: Codable, ControlData {
     
     init(withSessionId: String, withConversationId: String) {
         type = "consumerTextMessage"
-        let controlData: CancelTopicWrapper = ControlWrapper(model: ControlModel(type: "task", name: nil), uiType: "ContextualAction", uiMetadata: nil, value: "cancelTopic", content: nil)
+        let controlData: CancelTopicWrapper = ControlWrapper(model: ControlModel(type: "task", name: nil), uiType: "ContextualAction", uiMetadata: nil, value: CancelTopicControlMessage.value, content: nil)
         data = RichControlData<CancelTopicWrapper>(sessionId: withSessionId, conversationId: withConversationId, direction: .fromClient, controlData: controlData)
     }
     

@@ -126,6 +126,25 @@ class CBDataTests: XCTestCase {
         XCTAssertEqual(systemError.data.richControl?.uiMetadata?.error.handler.instruction, "This conversation has been transferred to the Live Agent queue, and someone will be with you momentarily.")
     }
     
+    func testCancelTopicMessageExample() {
+        let cancelTopic = ExampleData.exampleCancelTopicMessage()
+        
+        XCTAssertEqual(ChatterboxActionType.cancelUserTopic, cancelTopic.eventType)
+        XCTAssertEqual("actionMessage", cancelTopic.type)
+        XCTAssertEqual("CancelTopic", cancelTopic.data.actionMessage.type)
+        XCTAssertEqual("cancelVendorTopic", cancelTopic.data.actionMessage.systemActionName)
+        XCTAssertEqual(true, cancelTopic.data.actionMessage.ready)
+    }
+    
+    func testCancelTopicRequestExample() {
+        let cancelRequestMessage = ExampleData.exampleCancelTopicControlMessage()
+        
+        XCTAssertEqual(ChatterboxControlType.cancelTopic, cancelRequestMessage.controlType)
+        XCTAssertEqual("cancelTopic", (cancelRequestMessage.data.richControl?.value)!)
+        XCTAssertEqual("task", cancelRequestMessage.data.richControl?.model?.type)
+        XCTAssertEqual("ContextualAction", cancelRequestMessage.data.richControl?.uiType)
+    }
+    
     let jsonInitStart = """
         {
           "type" : "actionMessage",
