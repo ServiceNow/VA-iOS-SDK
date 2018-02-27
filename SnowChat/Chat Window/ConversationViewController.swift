@@ -139,7 +139,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         textView.placeholder = NSLocalizedString("Type your question here...", comment: "Placeholder text for input field when user is selecting a topic")
     }
     
-    private func setupForConversation() {
+    fileprivate func setupTextViewForConversation() {
         registerPrefixes(forAutoCompletion: [])
         self.autocompleteHandler = nil
         
@@ -148,20 +148,15 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         
         textView.text = ""
         textView.placeholder = ""
-        
+    }
+    
+    private func setupForConversation() {
+        setupTextViewForConversation()
         setTextInputbarHidden(true, animated: true)
     }
     
     private func setupForAgentConversation() {
-        registerPrefixes(forAutoCompletion: [])
-        self.autocompleteHandler = nil
-        
-        rightButton.isHidden = false
-        rightButton.setTitle(NSLocalizedString("Send", comment: "Right button label in Agent Chat mode"), for: UIControlState())
-        
-        textView.text = ""
-        textView.placeholder = ""
-        
+        setupTextViewForConversation()
         setTextInputbarHidden(false, animated: true)
     }
     

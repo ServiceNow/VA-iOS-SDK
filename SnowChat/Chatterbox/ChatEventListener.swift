@@ -16,8 +16,8 @@ struct TopicInfo {
 }
 
 struct AgentInfo {
-    var agentId: String
-    var agentAvatar: String?
+    let agentId: String
+    let agentAvatar: String?
 }
 
 enum TransportStatus {
