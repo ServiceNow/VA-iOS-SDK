@@ -144,7 +144,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         self.autocompleteHandler = nil
         
         rightButton.isHidden = false
-        rightButton.setTitle(NSLocalizedString("Send", comment: "Right button label in conversation mode"), for: UIControlState())
+        rightButton.setTitle(NSLocalizedString("Send", comment: "Right button label in conversation mode"), for: .normal)
         
         textView.text = ""
         textView.placeholder = ""
