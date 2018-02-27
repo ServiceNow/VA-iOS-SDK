@@ -188,6 +188,8 @@
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
 		C4CAFEA81FBD0912007007F5 /* ChatDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA71FBD0912007007F5 /* ChatDataFactory.swift */; };
 		C4CB0212202A606B003869F8 /* NotificationBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CB0211202A606B003869F8 /* NotificationBanner.swift */; };
+		C4CBF2BF204497F10038F120 /* CancelTopicControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CBF2BE204497F10038F120 /* CancelTopicControlMessage.swift */; };
+		C4CBF2C12044B5370038F120 /* CancelUserTopicMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CBF2C02044B5370038F120 /* CancelUserTopicMessage.swift */; };
 		C4CED93C1FD713AA008E3E25 /* StartUserTopicMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CED93B1FD713AA008E3E25 /* StartUserTopicMessage.swift */; };
 		C4CED93E1FD72544008E3E25 /* StartedUserTopicMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CED93D1FD72544008E3E25 /* StartedUserTopicMessage.swift */; };
 		C4F3AF2F1FD235D100B27B0D /* Chatterbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4F3AF2E1FD235D100B27B0D /* Chatterbox.swift */; };
@@ -365,6 +367,8 @@
 		C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataTests.swift; sourceTree = "<group>"; };
 		C4CAFEA71FBD0912007007F5 /* ChatDataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataFactory.swift; sourceTree = "<group>"; };
 		C4CB0211202A606B003869F8 /* NotificationBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationBanner.swift; sourceTree = "<group>"; };
+		C4CBF2BE204497F10038F120 /* CancelTopicControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelTopicControlMessage.swift; sourceTree = "<group>"; };
+		C4CBF2C02044B5370038F120 /* CancelUserTopicMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelUserTopicMessage.swift; sourceTree = "<group>"; };
 		C4CED93B1FD713AA008E3E25 /* StartUserTopicMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartUserTopicMessage.swift; sourceTree = "<group>"; };
 		C4CED93D1FD72544008E3E25 /* StartedUserTopicMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartedUserTopicMessage.swift; sourceTree = "<group>"; };
 		C4F3AF2E1FD235D100B27B0D /* Chatterbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chatterbox.swift; sourceTree = "<group>"; };
@@ -784,6 +788,7 @@
 				C41EF5DB1FDB4CA400707F45 /* OutputTextControlMessage.swift */,
 				5771D2EC2011174000FF2483 /* MultiSelectControlMessage.swift */,
 				C48441C7202CB6C600D67757 /* SystemErrorControlMessage.swift */,
+				C4CBF2BE204497F10038F120 /* CancelTopicControlMessage.swift */,
 			);
 			path = ControlMessages;
 			sourceTree = "<group>";
@@ -796,6 +801,7 @@
 				C4CED93B1FD713AA008E3E25 /* StartUserTopicMessage.swift */,
 				C4CED93D1FD72544008E3E25 /* StartedUserTopicMessage.swift */,
 				C41EF5D91FDB490F00707F45 /* TopicFinishedMessage.swift */,
+				C4CBF2C02044B5370038F120 /* CancelUserTopicMessage.swift */,
 			);
 			path = ActionMessages;
 			sourceTree = "<group>";
@@ -1154,6 +1160,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE6932861FFEDB0000DD5A2A /* APIManager+Routes.swift in Sources */,
+				C4CBF2BF204497F10038F120 /* CancelTopicControlMessage.swift in Sources */,
 				8BD2222B2037FCD20040B657 /* HTTPHeaders+Auth.swift in Sources */,
 				5704EA341FEAAE4B001020E6 /* TypingIndicatorControl.swift in Sources */,
 				5763F3C81FE20FF90035764A /* PickerItem.swift in Sources */,
@@ -1256,6 +1263,7 @@
 				57B7E2C31FBA25A200196BA9 /* BooleanControl.swift in Sources */,
 				BE876FDD1FDF4F75008EEF04 /* ChatService.swift in Sources */,
 				5760C8CE1FBF4C920055B73D /* PickerViewController.swift in Sources */,
+				C4CBF2C12044B5370038F120 /* CancelUserTopicMessage.swift in Sources */,
 				57DF7C41202CED4C008D013A /* OutputHtmlControlMessage.swift in Sources */,
 				57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */,
 				572A4E441FCF70070081318D /* BubbleView.swift in Sources */,

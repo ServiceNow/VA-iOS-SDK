@@ -581,7 +581,7 @@ extension ChatDataController: ChatDataListener {
         changeListener?.controllerDidLoadContent(self)
     }
     
-    //swiftlint:disable:next cyclomatic_complexity
+    //swiftlint:disable:next cyclomatic_complexity function_body_length
     func chatterbox(_ chatterbox: Chatterbox, didReceiveHistory historyExchange: MessageExchange, forChat chatId: String) {
         
         switch historyExchange.message.controlType {
@@ -638,7 +638,8 @@ extension ChatDataController: ChatDataListener {
             
         // MARK: - unrendered
         case .topicPicker,
-             .startTopicMessage,
+             .startTopic,
+             .cancelTopic,
              .contextualAction:
             break
         }
