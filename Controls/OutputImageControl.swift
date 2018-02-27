@@ -50,11 +50,12 @@ class OutputImageControl: ControlProtocol {
     }
     
     private func downloadImageIfNeeded() {
+        let imageModel = self.imageModel
         let urlRequest = URLRequest(url: imageModel.value)
         requestReceipt = imageDownloader?.download(urlRequest) { [weak self] (response) in
             // Very likely could remove that guard since we are cancelling request on reuse
             guard let currentModel = self?.model as? OutputImageViewModel,
-                self?.imageModel.value == currentModel.value else {
+                imageModel.value == currentModel.value else {
                     return
             }
             
@@ -62,10 +63,11 @@ class OutputImageControl: ControlProtocol {
             if response.error != nil {
                 return
             }
-            
+
             let image = response.value
-            guard let strongSelf = self, strongSelf.viewController.parent != nil else { return }
+            guard let strongSelf = self, strongSelf.imageViewController.image != image else { return }
             strongSelf.imageViewController.image = image
+            strongSelf.imageModel.imageHeight = strongSelf.imageViewController.imageHeight
             strongSelf.outputImageDelegate?.controlDidFinishImageDownload(strongSelf)
         }
     }

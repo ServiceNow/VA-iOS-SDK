@@ -14,6 +14,7 @@ class OutputImageViewController: UIViewController {
     let maxImageSize = CGSize(width: 250, height: 250)
     var imageViewWidthToHeightConstraint: NSLayoutConstraint?
     var imageViewSideConstraint: NSLayoutConstraint?
+    var imageHeight: CGFloat = 250
     
     let outputImageView = UIImageView()
     
@@ -52,12 +53,14 @@ class OutputImageViewController: UIViewController {
         // set width/height proportion
         let ratio: CGFloat
         if image.size.height > image.size.width {
+            imageHeight = maxImageSize.height
             imageViewSideConstraint = outputImageView.heightAnchor.constraint(lessThanOrEqualToConstant: maxImageSize.height)
             ratio = image.size.width / image.size.height
             imageViewWidthToHeightConstraint = outputImageView.widthAnchor.constraint(equalTo: outputImageView.heightAnchor, multiplier: ratio)
         } else {
             imageViewSideConstraint = outputImageView.widthAnchor.constraint(lessThanOrEqualToConstant: maxImageSize.width)
             ratio = image.size.height / image.size.width
+            imageHeight = image.size.height * ratio
             imageViewWidthToHeightConstraint = outputImageView.heightAnchor.constraint(equalTo: outputImageView.widthAnchor, multiplier: ratio)
         }
     

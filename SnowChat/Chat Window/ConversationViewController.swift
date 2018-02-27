@@ -258,7 +258,7 @@ extension ConversationViewController {
         
         let scrollOffsetToFetch: CGFloat = 100
         if scrollView.contentOffset.y + tableView.bounds.height > (tableView.contentSize.height + scrollOffsetToFetch) {
-//            fetchOlderMessagesIfPossible()
+            fetchOlderMessagesIfPossible()
         }
     }
     
@@ -500,6 +500,19 @@ extension ConversationViewController: ControlDelegate, OutputImageControlDelegat
     func controlDidFinishImageDownload(_ control: OutputImageControl) {
         tableView.beginUpdates()
         tableView.endUpdates()
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        if let chatModel = dataController.controlForIndex(indexPath.row) {
+            if chatModel.type == .topicDivider {
+                return 2
+            }
+            
+            if let imageViewModel = chatModel.controlModel as? OutputImageViewModel, let height = imageViewModel.imageHeight {
+                return height
+            }
+        }
+        return 200
     }
 }
 
