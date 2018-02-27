@@ -156,11 +156,38 @@ class Chatterbox {
         return chatStore.lastPendingMessage(forConversation: conversationId) as? ControlData
     }
     
-    func endUserConversation() {
-        let sessionId = conversationContext.sessionId ?? "UNKNOWN_SESSION_ID"
-        let conversationId = conversationContext.conversationId ?? "UNKNOWN_CONVERSATION_ID"
+    func endConversation() {
+        guard let sessionId = conversationContext.sessionId,
+            let conversationId = conversationContext.conversationId  else {
+                logger.logError("endConversation with no conversation current - skipping")
+                return
+        }
         
+        sendCancelTopic()
+    
         handleTopicFinishedAction(TopicFinishedMessage(withSessionId: sessionId, withConversationId: conversationId))
+    }
+    
+    private func sendCancelTopic() {
+        if let cancelTopic = cancelTopicMessageFromContextualActions() {
+            messageHandler = cancelTopicHandler
+            apiManager.ambClient.sendMessage(cancelTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+        }
+    }
+    
+    private func cancelTopicMessageFromContextualActions() -> ContextualActionMessage? {
+        guard var cancelTopic = contextualActions,
+            let sessionId = conversationContext.sessionId,
+            let conversationId = conversationContext.systemConversationId else { return nil }
+    
+        cancelTopic.type = "consumerTextMessage"
+        cancelTopic.data.sessionId = sessionId
+        cancelTopic.data.conversationId = conversationId
+        cancelTopic.data.richControl?.value = CancelTopicControlMessage.value
+        cancelTopic.data.direction = .fromClient
+        cancelTopic.data.sendTime = Date()
+        
+        return cancelTopic
     }
     
     // MARK: - Session Methods
@@ -332,6 +359,22 @@ class Chatterbox {
             }
         default:
             logger.logError("Unexpected message in StartTopic flow: \(controlMessage)")
+        }
+    }
+    
+    private func cancelTopicHandler(_ message: String) {
+        let control = ChatDataFactory.actionFromJSON(message)
+        
+        if var cancelTopic = control as? CancelUserTopicMessage {
+           if cancelTopic.data.direction == .fromServer {
+                cancelTopic.data.actionMessage.ready = true
+                cancelTopic.data.direction = .fromClient
+                cancelTopic.data.sendTime = Date()
+                apiManager.ambClient.sendMessage(cancelTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+
+                // switch back to userTopicMessageHandler for the final topic completion handling
+                messageHandler = userTopicMessageHandler
+            }
         }
     }
     
@@ -569,10 +612,21 @@ class Chatterbox {
         
         case .fromServer:
             updateContextIfNeeded(control)
+
+            if control.controlType == .contextualAction, let contextualActionControl = control as? ContextualActionMessage {
+                updateContextualActions(contextualActionControl)
+                return
+            }
+            
             if let conversationId = conversationContext.conversationId {
                 handleIncomingControlMessage(control, forConversation: conversationId)
             }
         }
+    }
+    
+    fileprivate func updateContextualActions(_ newContextualActions: ContextualActionMessage) {
+        logger.logInfo("Updating ContextualActions: \(newContextualActions.data.richControl?.uiMetadata?.inputControls ?? [])")
+        contextualActions = newContextualActions
     }
     
     fileprivate func handleTopicFinishedAction(_ action: ActionData) {
@@ -723,13 +777,15 @@ extension Chatterbox {
         switch conversation.state {
         case .inProgress:
             logger.logInfo("Conversation \(conversationId) is in progress")
-            let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, taskId: nil, conversationId: conversationId)
+            let topicInfo = TopicInfo(topicId: conversation.topicId, topicName: nil, taskId: nil, conversationId: conversationId)
             resumeUserTopic(topicInfo: topicInfo)
         case .chatProgress:
             logger.logInfo("Live Agent session \(conversationId) is in progress")
             resumeLiveAgentTopic(conversation: conversation)
             // TODO: how to resume a live agent chat session??
-        case .completed:
+        case .completed,
+             .canceled,
+             .error:
             logger.logInfo("Conversation is no longer in progress - ending current conversations")
             finishTopic(conversationId)
         case .unknown:
@@ -949,6 +1005,7 @@ extension Chatterbox {
                     if !isInProgress {
                         conversation.state = .completed
                     }
+                    self.logger.logDebug("--> Conversation \(conversation.conversationId) refreshed: \(conversation.topicTypeName) (\(conversation.state)")
                     
                     self.storeConversationAndPublish(conversation)
                     

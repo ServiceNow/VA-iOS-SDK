@@ -112,8 +112,8 @@ struct Conversation: Storable, Codable {
     
     private let id: String
     internal var state: ConversationState
-    private(set) var topicTypeName: String
-    private var topicId: String
+    internal(set) var topicTypeName: String
+    internal var topicId: String
     internal var conversationId: String {
         return topicId
     }
@@ -188,10 +188,12 @@ struct Conversation: Storable, Codable {
     }
     
     enum ConversationState: String, Codable {
-        case inProgress = "IN-PROGRESS"
+        case inProgress =   "IN-PROGRESS"
         case chatProgress = "CHAT-PROGRESS"
-        case completed = "COMPLETED"
-        case unknown = "UKNONWN"
+        case completed =    "COMPLETE"
+        case canceled =     "CANCELED"
+        case error =        "ERROR"
+        case unknown =      "UKNONWN"
     }
 }
 

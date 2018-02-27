@@ -730,7 +730,8 @@ extension ChatDataController: ChatDataListener {
             
         // MARK: - unrendered
         case .topicPicker,
-             .startTopicMessage,
+             .startTopic,
+             .cancelTopic,
              .contextualAction:
             break
         }
@@ -906,7 +907,7 @@ extension ChatDataController: ContextItemProvider {
     }
     
     fileprivate func newConversation() {
-        chatterbox.endUserConversation()
+        chatterbox.endConversation()
     }
     
     fileprivate func presentSupportOptions(_ presentingController: UIViewController, _ sender: UIBarButtonItem) {

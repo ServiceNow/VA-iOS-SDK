@@ -12,7 +12,6 @@ class ChatDataFactory {
     
     //swiftlint:disable:next cyclomatic_complexity function_body_length
     static func controlFromJSON(_ json: String) -> ControlData {
-        
         guard let jsonData = json.data(using: .utf8) else { return ControlDataUnknown() }
 
         do {
@@ -33,7 +32,13 @@ class ChatDataFactory {
             
             switch controlType {
             case .contextualAction:
-                return try ChatUtil.jsonDecoder.decode(ContextualActionMessage.self, from: jsonData)
+                let action = try ChatUtil.jsonDecoder.decode(ContextualActionMessage.self, from: jsonData)
+                // ContextualAction message may represent more specific message types - use value to determine
+                if let value = action.data.richControl?.value, value == CancelTopicControlMessage.value {
+                    return try ChatUtil.jsonDecoder.decode(CancelTopicControlMessage.self, from: jsonData)
+                } else {
+                    return action
+                }
             case.topicPicker:
                 return try ChatUtil.jsonDecoder.decode(UserTopicPickerMessage.self, from: jsonData)
             case .systemError:
@@ -64,8 +69,10 @@ class ChatDataFactory {
                 return try ChatUtil.jsonDecoder.decode(InputImageControlMessage.self, from: jsonData)
             case .agentText:
                 return try ChatUtil.jsonDecoder.decode(AgentTextControlMessage.self, from: jsonData)
-            case .startTopicMessage:
+            case .startTopic:
                 return try ChatUtil.jsonDecoder.decode(StartTopicMessage.self, from: jsonData)
+            case .cancelTopic:
+                return try ChatUtil.jsonDecoder.decode(CancelTopicControlMessage.self, from: jsonData)
             case .unknown:
                 break
             }
@@ -90,6 +97,8 @@ class ChatDataFactory {
                     return try ChatUtil.jsonDecoder.decode(InitMessage.self, from: jsonData)
                 case .startUserTopic:
                     return try ChatUtil.jsonDecoder.decode(StartUserTopicMessage.self, from: jsonData)
+                case .cancelUserTopic:
+                    return try ChatUtil.jsonDecoder.decode(CancelUserTopicMessage.self, from: jsonData)
                 case .startedUserTopic:
                     return try ChatUtil.jsonDecoder.decode(StartedUserTopicMessage.self, from: jsonData)
                 case .finishedUserTopic:
@@ -100,7 +109,7 @@ class ChatDataFactory {
                     return try ChatUtil.jsonDecoder.decode(StartAgentChatMessage.self, from: jsonData)
                 case .unknown:
                     return ActionDataUnknown()
-                }                
+                }
             } catch let decodeError {
                 print(decodeError)
             }
@@ -147,11 +156,7 @@ class ChatDataFactory {
         case .unknown:
             data = try ChatUtil.jsonEncoder.encode(message as? ControlDataUnknown)
             
-        case .systemError:
-            data = nil
-        case .topicPicker:
-            data = nil
-        case .startTopicMessage:
+        case .systemError, .topicPicker, .startTopic, .cancelTopic:
             data = nil
         }
         
