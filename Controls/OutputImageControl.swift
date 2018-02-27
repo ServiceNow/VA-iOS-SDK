@@ -22,7 +22,7 @@ class OutputImageControl: ControlProtocol {
         return viewController as! OutputImageViewController
     }
     
-    private var outputImageDelegate: OutputImageControlDelegate? {
+    private weak var outputImageDelegate: OutputImageControlDelegate? {
         return delegate as? OutputImageControlDelegate
     }
     
@@ -32,19 +32,9 @@ class OutputImageControl: ControlProtocol {
     
     private var requestReceipt: RequestReceipt?
     
-    var model: ControlViewModel {
-        didSet {
-            // Reset activityIndicator
-            imageViewController.showActivityIndicator(true)
-            refreshDownload()
-        }
-    }
+    var model: ControlViewModel
     
-    var imageDownloader: ImageDownloader? {
-        didSet {
-            refreshDownload()
-        }
-    }
+    var imageDownloader: ImageDownloader?
     
     required init(model: ControlViewModel) {
         guard let imageModel = model as? OutputImageViewModel else {
@@ -55,7 +45,11 @@ class OutputImageControl: ControlProtocol {
         self.viewController = OutputImageViewController()
     }
     
-    private func refreshDownload() {
+    func controlDidLoad() {
+        downloadImageIfNeeded()
+    }
+    
+    private func downloadImageIfNeeded() {
         let urlRequest = URLRequest(url: imageModel.value)
         requestReceipt = imageDownloader?.download(urlRequest) { [weak self] (response) in
             // Very likely could remove that guard since we are cancelling request on reuse
@@ -70,8 +64,7 @@ class OutputImageControl: ControlProtocol {
             }
             
             let image = response.value
-            guard let strongSelf = self, strongSelf.imageViewController.image != image else { return }
-            strongSelf.imageViewController.showActivityIndicator(false)
+            guard let strongSelf = self, strongSelf.viewController.parent != nil else { return }
             strongSelf.imageViewController.image = image
             strongSelf.outputImageDelegate?.controlDidFinishImageDownload(strongSelf)
         }
@@ -85,6 +78,5 @@ class OutputImageControl: ControlProtocol {
         
         delegate = nil
         imageViewController.image = nil
-        imageViewController.showActivityIndicator(false)
     }
 }

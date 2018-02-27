@@ -14,8 +14,6 @@ class OutputImageViewController: UIViewController {
     let maxImageSize = CGSize(width: 250, height: 250)
     var imageViewWidthToHeightConstraint: NSLayoutConstraint?
     var imageViewSideConstraint: NSLayoutConstraint?
-    var activityIndicatorView: UIActivityIndicatorView?
-    var activityIndicatorConstraints = [NSLayoutConstraint]()
     
     let outputImageView = UIImageView()
     
@@ -29,11 +27,9 @@ class OutputImageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupOutputImageView()
-        setupActivityIndicatorView()
     }
     
     private func setupOutputImageView() {
-        outputImageView.setContentHuggingPriority(.veryHigh, for: .horizontal)
         outputImageView.contentMode = .scaleAspectFill
         outputImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(outputImageView)
@@ -42,32 +38,6 @@ class OutputImageViewController: UIViewController {
                                      outputImageView.topAnchor.constraint(equalTo: view.topAnchor),
                                      outputImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
         updateImageConstraints()
-    }
-    
-    func showActivityIndicator(_ show: Bool) {
-        if show == false {
-            activityIndicatorView?.stopAnimating()
-            NSLayoutConstraint.deactivate(activityIndicatorConstraints)
-        } else {
-            NSLayoutConstraint.activate(activityIndicatorConstraints)
-            activityIndicatorView?.isHidden = false
-            activityIndicatorView?.startAnimating()
-        }
-    }
-    
-    private func setupActivityIndicatorView() {
-        let activityIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(activityIndicatorView)
-        self.activityIndicatorView = activityIndicatorView
-        
-        activityIndicatorConstraints.append(contentsOf: [activityIndicatorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                                         activityIndicatorView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                                         activityIndicatorView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
-                                                         activityIndicatorView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
-                                                         activityIndicatorView.widthAnchor.constraint(equalToConstant: 100)])
-        NSLayoutConstraint.activate(activityIndicatorConstraints)
-        activityIndicatorView.startAnimating()
     }
     
     private func updateImageConstraints() {

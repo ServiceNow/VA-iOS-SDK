@@ -258,7 +258,7 @@ extension ConversationViewController {
         
         let scrollOffsetToFetch: CGFloat = 100
         if scrollView.contentOffset.y + tableView.bounds.height > (tableView.contentSize.height + scrollOffsetToFetch) {
-            fetchOlderMessagesIfPossible()
+//            fetchOlderMessagesIfPossible()
         }
     }
     
@@ -437,21 +437,6 @@ extension ConversationViewController {
         
         messageViewControllerCache.cacheViewController(messageViewController)
         conversationCell.messageViewController = nil
-    }
-    
-    // to provide proper height for self-sizing table view
-    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        if let chatMessageModel = dataController.controlForIndex(indexPath.row) {
-            if chatMessageModel.type == .topicDivider {
-                return 2
-            }
-
-            if let controlType = chatMessageModel.controlModel?.type, controlType == .outputImage {
-                return 250
-            }
-        }
-
-        return 200
     }
 }
 
