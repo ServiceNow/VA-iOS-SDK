@@ -25,24 +25,22 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     var model: ChatMessageModel? {
         didSet {
-            guard let chatModel = model,
-                let controlModel = chatModel.controlModel,
-                let bubbleLocation = chatModel.bubbleLocation,
-                let control = controlCache?.control(forModel: controlModel, forResourceProvider: resourceProvider) else {
-                    return
+            if let model = model {
+                updateWithModel(model)
             }
-            
-            if let oldControl = uiControl, isPresentingControl(oldControl) {
-                // TODO: cache it upon removing
-                oldControl.removeFromParent()
-            }
-            
-            addUIControl(control, at: bubbleLocation)
-            
-            // if previous uiControl had a delegate we will pass it over to a new control
-            control.delegate = uiControl?.delegate
-            uiControl = control
         }
+    }
+    
+    private func updateWithModel(_ model: ChatMessageModel) {
+        guard let controlModel = model.controlModel,
+            let bubbleLocation = model.bubbleLocation,
+            let control = controlCache?.control(forModel: controlModel, forResourceProvider: resourceProvider) else {
+                return
+        }
+        
+        // if previous uiControl had a delegate we will pass it over to a new control
+        control.delegate = uiControl?.delegate
+        addUIControl(control, at: bubbleLocation)
     }
     
     func configure(withChatMessageModel model: ChatMessageModel, controlCache cache: ControlCache, controlDelegate delegate: ControlDelegate, resourceProvider provider: ControlResourceProvider) {
@@ -50,30 +48,42 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         self.resourceProvider = provider
         self.model = model
         uiControl?.delegate = delegate
+        loadAvatar()
         
-        agentImageView.af_imageDownloader = provider.imageProvider
-        agentImageView.af_setImage(withURL: provider.avatarURL)
-        agentImageView.addCircleMaskIfNeeded()
+        uiControl?.controlDidLoad()
     }
     
-    func prepareForReuse() {
+    private func loadAvatar() {
+        if let provider = resourceProvider {
+            agentImageView.af_imageDownloader = provider.imageProvider
+            agentImageView.af_setImage(withURL: provider.avatarURL)
+            agentImageView.addCircleMaskIfNeeded()
+        }
+    }
+    
+    private func prepareControlForReuse() {
         if let control = uiControl, isPresentingControl(control) {
             control.removeFromParent()
             controlCache?.cacheControl(forModel: control.model)
         }
-        
+    }
+    
+    func prepareForReuse() {
+        prepareControlForReuse()
+        model = nil
         uiControl = nil
         resourceProvider = nil
-        model = nil
         agentImageView.af_cancelImageRequest()
     }
     
     internal func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
         guard uiControl?.model.id != control.model.id,
             uiControl?.model.type != control.model.type else {
-            Logger.default.logDebug("Seems like you try to readd the same model!")
             return
         }
+        
+        // Remove current control if needed
+        prepareControlForReuse()
         
         let controlViewController = control.viewController
         controlViewController.willMove(toParentViewController: self)
@@ -107,6 +117,8 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         
         controlViewController.didMove(toParentViewController: self)
         view.layoutIfNeeded()
+        
+        uiControl = control
     }
     
     private func isPresentingControl(_ control: ControlProtocol?) -> Bool {

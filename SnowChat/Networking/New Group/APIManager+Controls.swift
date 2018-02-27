@@ -26,7 +26,6 @@ extension APIManager: ControlResourceProvider {
     
     func uploadImage(data: Data, withName name: String, taskId: String, completion: @escaping (_ result: String?) -> Void) {
         let url = apiURLWithPath("cs/media/\(taskId)")
-        
         sessionManager.upload(multipartFormData: { multipartData in
             multipartData.append(data, withName: name, fileName: name, mimeType: "image/jpeg")
         }, to: url, encodingCompletion: { encodingResult in

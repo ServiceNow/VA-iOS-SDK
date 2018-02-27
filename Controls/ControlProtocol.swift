@@ -88,7 +88,14 @@ protocol ControlProtocol: AnyObject {
     
     weak var delegate: ControlDelegate? { get set }
     
+    // removes viewController and view of the control from the hierarchy
     func removeFromParent()
+    
+    // called immediately after control was initialized and is ready to use
+    func controlDidLoad()
+    
+    // cleans up all necessary vars so they are ready for reuse. Default implementation does nothing.
+    func prepareForReuse()
     
     // If provided - control will be limited to that size
     var maxContentSize: CGSize? { get }
@@ -97,6 +104,12 @@ protocol ControlProtocol: AnyObject {
 // Code for self-removable control, just like UIView or UIViewController
 
 extension ControlProtocol {
+    
+    func controlDidLoad() {
+    }
+    
+    func prepareForReuse() {
+    }
     
     var maxContentSize: CGSize? {
         return nil
