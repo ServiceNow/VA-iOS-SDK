@@ -508,8 +508,8 @@ extension ConversationViewController: ControlDelegate, OutputImageControlDelegat
                 return 2
             }
             
-            if let imageViewModel = chatModel.controlModel as? OutputImageViewModel, let height = imageViewModel.imageHeight {
-                return height
+            if let imageViewModel = chatModel.controlModel as? OutputImageViewModel, let size = imageViewModel.imageSize {
+                return size.height
             }
         }
         return 200

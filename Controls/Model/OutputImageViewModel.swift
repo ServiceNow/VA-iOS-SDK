@@ -14,7 +14,7 @@ class OutputImageViewModel: ControlViewModel {
     
     let id: String
     
-    var imageHeight: CGFloat?
+    var imageSize: CGSize?
     
     let type: ControlType = .outputImage
     

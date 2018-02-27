@@ -32,7 +32,13 @@ class OutputImageControl: ControlProtocol {
     
     private var requestReceipt: RequestReceipt?
     
-    var model: ControlViewModel
+    var model: ControlViewModel {
+        didSet {
+            if let size = imageModel.imageSize {
+                imageViewController.prepareViewForImageWithSize(size)
+            }
+        }
+    }
     
     var imageDownloader: ImageDownloader?
     
@@ -53,7 +59,6 @@ class OutputImageControl: ControlProtocol {
         let imageModel = self.imageModel
         let urlRequest = URLRequest(url: imageModel.value)
         requestReceipt = imageDownloader?.download(urlRequest) { [weak self] (response) in
-            // Very likely could remove that guard since we are cancelling request on reuse
             guard let currentModel = self?.model as? OutputImageViewModel,
                 imageModel.value == currentModel.value else {
                     return
@@ -66,9 +71,16 @@ class OutputImageControl: ControlProtocol {
 
             let image = response.value
             guard let strongSelf = self, strongSelf.imageViewController.image != image else { return }
+            
+            // If we already fetched image before we don't need to call beginUpdate/endUpdate on tableView
+            // Which is called in didFinishImageDownload
+            let needsLayoutUpdate = strongSelf.imageModel.imageSize == nil
             strongSelf.imageViewController.image = image
-            strongSelf.imageModel.imageHeight = strongSelf.imageViewController.imageHeight
-            strongSelf.outputImageDelegate?.controlDidFinishImageDownload(strongSelf)
+            strongSelf.imageModel.imageSize = strongSelf.imageViewController.imageSize
+            
+            if needsLayoutUpdate {
+                strongSelf.outputImageDelegate?.controlDidFinishImageDownload(strongSelf)
+            }
         }
     }
     
