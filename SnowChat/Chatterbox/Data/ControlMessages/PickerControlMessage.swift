@@ -29,6 +29,10 @@ struct PickerControlMessage: Codable, ControlData {
         return data.conversationId
     }
     
+    var taskId: String? {
+        return data.taskId
+    }
+
     var messageTime: Date {
         return data.sendTime
     }

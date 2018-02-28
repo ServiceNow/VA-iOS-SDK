@@ -70,7 +70,7 @@ extension Chatterbox {
     }
     
     private func setupChatSubscription() {
-        chatSubscription = apiManager.ambClient.subscribe(chatChannel) { [weak self] (result, subscription) in
+        chatSubscription = apiManager.ambClient.subscribe(channel: chatChannel) { [weak self] (result, subscription) in
             guard let strongSelf = self else { return }
             guard let messageHandler = strongSelf.messageHandler else {
                 strongSelf.logger.logError("No handler set in Chatterbox setupChatSubscription!")

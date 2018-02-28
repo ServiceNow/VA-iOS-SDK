@@ -19,7 +19,7 @@
 //  During the chat session controls are delivered to clients via the chatDataListener, which must be set by the caller.
 //  Additionally, chat lifecycle events are deliverd via the chatEventListener, which must also be set by the caller.
 //   NOTE: both listeners are easily set when the Chattertbox instance is created via
-//         'init(dataListener: ChatDataListener?, eventListener: ChatEventListener?)'
+//         'init(instance: Instance, dataListener: ChatDataListener?, eventListener: ChatEventListener?)'
 //
 //  3) As user interaction takes place, push state changes via
 //     'update(control: CongtrolData)'
@@ -104,7 +104,7 @@ class Chatterbox {
     
     internal func publishMessage<T>(_ message: T) where T: Encodable {
         logger.logInfo("Chatterbox publishing message: \(message)")
-        apiManager.ambClient.sendMessage(message, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+        apiManager.sendMessage(message, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
     }
 
     internal func lastPendingControlMessage(forConversation conversationId: String) -> ControlData? {

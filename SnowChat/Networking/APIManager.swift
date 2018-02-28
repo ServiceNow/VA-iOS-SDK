@@ -9,6 +9,7 @@
 import Foundation
 import Alamofire
 import AlamofireImage
+import SNOWAMBClient
 
 enum APIManagerError: Error {
     case loginError(message: String)
@@ -38,8 +39,8 @@ class APIManager: NSObject {
         return ImageDownloader()
     }()
     
-    internal let ambClient: AMBClient
-    
+    internal let ambClient: SNOWAMBClient
+
     private var authStatus: AuthStatus
     
     // MARK: - Initialization
@@ -49,13 +50,14 @@ class APIManager: NSObject {
         self.transportListener = transportListener
         self.authStatus = .loggedOut(nil)
         
-        ambClient = AMBClient(sessionManager: sessionManager, baseURL: instance.instanceURL)
+        ambClient = SNOWAMBClient(httpClient: AMBHTTPClient(sessionManager: sessionManager, baseURL: instance.instanceURL))
 
         super.init()
+        
+        ambClient.delegate = self
 
         subscribeToAppStateChanges()
         listenForReachabilityChanges()
-        listenForAMBConnectionChanges()
         setupSessionTaskAuthListener()
     }
     
@@ -151,12 +153,12 @@ class APIManager: NSObject {
         reachabilityManager.listener = { [weak self] status in
             guard let strongSelf = self else { return }
             if reachabilityManager.isReachable {
-                strongSelf.ambClient.networkReachable()
+                strongSelf.ambClient.isPaused = false
                 
                 // FIXME: should only send this from AMB notification, but it is not working quite right
                 strongSelf.transportListener?.apiManagerTransportDidBecomeAvailable(strongSelf)
             } else {
-                strongSelf.ambClient.networkUnreachable()
+                strongSelf.ambClient.isPaused = true
                 
                 // FIXME: should only send this from AMB notification, but it is not working quite right
                 strongSelf.transportListener?.apiManagerTransportDidBecomeUnavailable(strongSelf)
@@ -170,33 +172,11 @@ class APIManager: NSObject {
     }
     
     @objc internal func applicationWillResignActiveNotification(_ notification: Notification) {
-        ambClient.applicationWillResignActiveNotification()
+        ambClient.isPaused = true
     }
     
     @objc internal func applicationDidBecomeActiveNotification(_ notification: Notification) {
-        ambClient.applicationDidBecomeActiveNotification()
+        ambClient.isPaused = false
     }
     
-    // FIXME: Update to new AMB client notifications
-    
-    private func listenForAMBConnectionChanges() {
-//        NotificationCenter.default.addObserver(self, selector: #selector(ambConnectionStatusChange(_:)), name: NSNotification.Name.NOWFayeClientConnectionStatusDidChange, object: nil)
-    }
-    
-    @objc func ambConnectionStatusChange(_ notification: Notification) {
-//        if let transportListener = transportListener,
-//           let info = notification.userInfo,
-//           let statusValue = info[NOWFayeClientConnectionStatusDidChangeNotificationStatusKey] as? UInt,
-//           let status = NOWFayeClientStatus(rawValue: statusValue) {
-//
-//            switch status {
-//            case .connected:
-//                transportListener.apiManagerTransportDidBecomeAvailable(self)
-//            case .disconnected:
-//                transportListener.apiManagerTransportDidBecomeUnavailable(self)
-//            default:
-//                Logger.default.logInfo("AMB connection notification: \(status)")
-//            }
-//        }
-    }
 }

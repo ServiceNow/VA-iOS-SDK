@@ -63,7 +63,7 @@ public struct SNOWAMBGlideStatus {
 public protocol SNOWAMBClientDelegate: AnyObject {
     func didConnect(client: SNOWAMBClient)
     func didDisconnect(client: SNOWAMBClient)
-    func didFail(client: SNOWAMBClient, withError: SNOWAMBError)
+    func didFail(client: SNOWAMBClient, withError error: SNOWAMBError)
     func didSubscribe(client: SNOWAMBClient, toChannel: String)
     func didUnsubscribe(client: SNOWAMBClient, fromchannel: String)
     func didReceive(client: SNOWAMBClient, message: SNOWAMBMessage, fromChannel channel: String)
@@ -113,7 +113,7 @@ public class SNOWAMBClient {
         }
     }
     
-    weak var delegate: SNOWAMBClientDelegate?
+    weak public var delegate: SNOWAMBClientDelegate?
     let httpClient: SNOWHTTPSessionClientProtocol
     
     public var clientId: String?
@@ -671,6 +671,11 @@ private extension SNOWAMBClient {
     
     func handleHTTPResponseError(message: SNOWAMBMessageDictionary, error: Error) {
         cleanupCompletedDataTasks()
+        
+        if self.isPaused {
+            log("AMB Client. HTTP Error received. Ignoring because client is paused")
+            return
+        }
 
         delegate?.didFail(client: self,
                           withError: SNOWAMBError(SNOWAMBErrorType.httpRequestFailed, "AMB HTTP Request failed with error:\(error)"))

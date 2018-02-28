@@ -43,6 +43,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		4635789A2040CCE900947541 /* APIManager+AMB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 463578992040CCE900947541 /* APIManager+AMB.swift */; };
 		46BC5778202EE97000FDDB43 /* SNOWAMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46BC5779202EE97000FDDB43 /* SNOWAMBClient.framework */; };
 		5704EA321FEAAD46001020E6 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5704EA311FEAAD46001020E6 /* TypingIndicatorView.swift */; };
 		5704EA341FEAAE4B001020E6 /* TypingIndicatorControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5704EA331FEAAE4B001020E6 /* TypingIndicatorControl.swift */; };
@@ -149,7 +150,7 @@
 		BE876FDD1FDF4F75008EEF04 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE876FDC1FDF4F75008EEF04 /* ChatService.swift */; };
 		BE876FDF1FDF5177008EEF04 /* ConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */; };
 		BE8C51062017B4EF0032BD05 /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEB6C8571FB92CD700B1D497 /* SnowChat.framework */; };
-		BE9E8BA11FBF7F3600499960 /* AMBClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8B9E1FBF7F3500499960 /* AMBClient.swift */; };
+		BE9E8BA31FBF7F3600499960 /* AuthHeadersAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */; };
 		BE9E8BA91FBF826300499960 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8BA81FBF826300499960 /* APIManager.swift */; };
 		BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E8BAA1FBF828E00499960 /* ServerInstance.swift */; };
 		BEB6C8611FB92CD700B1D497 /* SnowChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEB6C8571FB92CD700B1D497 /* SnowChat.framework */; };
@@ -226,6 +227,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		463578992040CCE900947541 /* APIManager+AMB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIManager+AMB.swift"; sourceTree = "<group>"; };
 		46BC5779202EE97000FDDB43 /* SNOWAMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SNOWAMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5704EA311FEAAD46001020E6 /* TypingIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorView.swift; sourceTree = "<group>"; };
 		5704EA331FEAAE4B001020E6 /* TypingIndicatorControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorControl.swift; sourceTree = "<group>"; };
@@ -332,8 +334,7 @@
 		BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewController.swift; sourceTree = "<group>"; };
 		BE8C51012017B4EF0032BD05 /* SnowChatAuthIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnowChatAuthIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE8C51052017B4EF0032BD05 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		BE9E8B621FBF5AEC00499960 /* AMBClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AMBClient.framework; path = Carthage/Build/iOS/AMBClient.framework; sourceTree = "<group>"; };
-		BE9E8B9E1FBF7F3500499960 /* AMBClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AMBClient.swift; sourceTree = "<group>"; };
+		BE9E8BA01FBF7F3600499960 /* AuthHeadersAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthHeadersAdapter.swift; sourceTree = "<group>"; };
 		BE9E8BA81FBF826300499960 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		BE9E8BAA1FBF828E00499960 /* ServerInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerInstance.swift; sourceTree = "<group>"; };
 		BEB6C8571FB92CD700B1D497 /* SnowChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SnowChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -649,15 +650,6 @@
 			path = Debug;
 			sourceTree = "<group>";
 		};
-		BE6FBE411FBFBAD10062A0EB /* AMB */ = {
-			isa = PBXGroup;
-			children = (
-				BE9E8B9E1FBF7F3500499960 /* AMBClient.swift */,
-				BE6FBE3F1FBFB3060062A0EB /* AMBHTTPClient.swift */,
-			);
-			path = AMB;
-			sourceTree = "<group>";
-		};
 		BE782DB31FEB201A00F848F5 /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
@@ -707,8 +699,9 @@
 			children = (
 				8BD222272037FC020040B657 /* Auth Interceptor */,
 				8BBAAA852031F9E100D50F66 /* Models */,
-				BE6FBE411FBFBAD10062A0EB /* AMB */,
+				BE6FBE3F1FBFB3060062A0EB /* AMBHTTPClient.swift */,
 				BE9E8BA81FBF826300499960 /* APIManager.swift */,
+				463578992040CCE900947541 /* APIManager+AMB.swift */,
 				C4B8D3282021090900871B36 /* TransportStatusListener.swift */,
 				BE782DB61FEB204200F848F5 /* API Extensions */,
 				BE9E8BAA1FBF828E00499960 /* ServerInstance.swift */,
@@ -1222,7 +1215,6 @@
 				C46A7D881FCE23D300DC12AC /* ActionMessageData.swift in Sources */,
 				572FAC1A1FC47B5600B0B956 /* MultiSelectControlViewModel.swift in Sources */,
 				5706C57B1FE499A0008D70D1 /* FakeChatViewController.swift in Sources */,
-				BE9E8BA11FBF7F3600499960 /* AMBClient.swift in Sources */,
 				C420ED7D1FC5F473002476C0 /* Logger.swift in Sources */,
 				C4FFCD4A2006D6A000B835C6 /* ChatDataStore+Persistence.swift in Sources */,
 				C41EF5D41FDB284600707F45 /* InputControlMessage.swift in Sources */,
@@ -1265,6 +1257,7 @@
 				C4CAFEA31FBCF2F8007007F5 /* ChatData.swift in Sources */,
 				C4AF7793200E7B0B0029598A /* ViewDataChangeListener.swift in Sources */,
 				C4CED93E1FD72544008E3E25 /* StartedUserTopicMessage.swift in Sources */,
+				4635789A2040CCE900947541 /* APIManager+AMB.swift in Sources */,
 				5740F431202269E90060B349 /* MultiPartControlMessage.swift in Sources */,
 				C41EF5D61FDB327800707F45 /* PickerControlMessage.swift in Sources */,
 				C40565F81FC4F4D3004BD28C /* BooleanControlMessage.swift in Sources */,
