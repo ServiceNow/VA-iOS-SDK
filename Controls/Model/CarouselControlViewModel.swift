@@ -6,6 +6,16 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
+class CarouselItem: PickerItem {
+    
+    var attachment: URL?
+    
+    init(label: String?, value: String, attachment: URL?) {
+        self.attachment = attachment
+        super.init(type: .custom, label: label, value: value)
+    }
+}
+
 class CarouselControlViewModel: PickerControlViewModel {
     let id: String
     

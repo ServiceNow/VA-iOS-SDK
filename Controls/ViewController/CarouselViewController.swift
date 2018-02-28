@@ -11,7 +11,6 @@ import UIKit
 class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
     
     private var collectionView: UICollectionView?
-    
     private var model: CarouselControlViewModel
     
     // MARK: - Initialization
@@ -32,9 +31,10 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     }
     
     private func setupCollectionView() {
-        let layout = UICollectionViewFlowLayout()
+        let layout = CarouselControlViewLayout()
         let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         collectionView.delegate = self
+        collectionView.dataSource = self
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -42,7 +42,9 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
                                      collectionView.topAnchor.constraint(equalTo: view.topAnchor),
                                      collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
         self.collectionView = collectionView
-        self.collectionView?.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+        
+        let bundle = Bundle(for: CarouselCollectionViewCell.self)
+        collectionView.register(UINib(nibName: "CarouselCollectionViewCell", bundle: bundle), forCellWithReuseIdentifier: CarouselCollectionViewCell.cellIdentifier)
     }
     
     // MARK: UICollectionViewDataSource
@@ -52,7 +54,10 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CarouselCollectionViewCell.cellIdentifier, for: indexPath) as! CarouselCollectionViewCell
+        
+        let item = model.items[indexPath.row] as! CarouselItem
+        cell.configureWithCarouselItem(item)
         return cell
     }
 }

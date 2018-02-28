@@ -51,6 +51,9 @@
 		5706C57B1FE499A0008D70D1 /* FakeChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706C57A1FE499A0008D70D1 /* FakeChatViewController.swift */; };
 		5706C5811FE49F78008D70D1 /* ChatMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706C5801FE49F78008D70D1 /* ChatMessageViewController.swift */; };
 		5717B1502003DABA00A4252C /* ChatMessageViewControllerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5717B14F2003DABA00A4252C /* ChatMessageViewControllerCache.swift */; };
+		5728D8E2204759480071EF9E /* CarouselCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728D8E1204759480071EF9E /* CarouselCollectionViewCell.swift */; };
+		5728D8E4204759740071EF9E /* CarouselCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5728D8E3204759740071EF9E /* CarouselCollectionViewCell.xib */; };
+		5728D8E620475C300071EF9E /* CarouselControlViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728D8E520475C300071EF9E /* CarouselControlViewLayout.swift */; };
 		572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572A4E3B1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift */; };
 		572A4E401FCF06320081318D /* PickerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 572A4E3F1FCF06320081318D /* PickerTableViewCell.xib */; };
 		572A4E421FCF07150081318D /* PickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572A4E411FCF07150081318D /* PickerTableViewCell.swift */; };
@@ -230,6 +233,9 @@
 		5706C57A1FE499A0008D70D1 /* FakeChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeChatViewController.swift; sourceTree = "<group>"; };
 		5706C5801FE49F78008D70D1 /* ChatMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageViewController.swift; sourceTree = "<group>"; };
 		5717B14F2003DABA00A4252C /* ChatMessageViewControllerCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageViewControllerCache.swift; sourceTree = "<group>"; };
+		5728D8E1204759480071EF9E /* CarouselCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselCollectionViewCell.swift; sourceTree = "<group>"; };
+		5728D8E3204759740071EF9E /* CarouselCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CarouselCollectionViewCell.xib; sourceTree = "<group>"; };
+		5728D8E520475C300071EF9E /* CarouselControlViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselControlViewLayout.swift; sourceTree = "<group>"; };
 		572A4E3B1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullSizeScrollViewContainerView.swift; sourceTree = "<group>"; };
 		572A4E3F1FCF06320081318D /* PickerTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PickerTableViewCell.xib; sourceTree = "<group>"; };
 		572A4E411FCF07150081318D /* PickerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerTableViewCell.swift; sourceTree = "<group>"; };
@@ -512,6 +518,9 @@
 				57B7E2C11FBA25A200196BA9 /* SelectableView.swift */,
 				572A4E3F1FCF06320081318D /* PickerTableViewCell.xib */,
 				572A4E411FCF07150081318D /* PickerTableViewCell.swift */,
+				5728D8E3204759740071EF9E /* CarouselCollectionViewCell.xib */,
+				5728D8E1204759480071EF9E /* CarouselCollectionViewCell.swift */,
+				5728D8E520475C300071EF9E /* CarouselControlViewLayout.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1029,6 +1038,7 @@
 				57B7E2C91FBA25A200196BA9 /* SelectableView.xib in Resources */,
 				BE50E2241FB9305C00948FBC /* Cartfile in Resources */,
 				57D997AB1FE5B00000394A6D /* ChatMessageViewController.xib in Resources */,
+				5728D8E4204759740071EF9E /* CarouselCollectionViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1234,6 +1244,7 @@
 				C40565F21FC49CD8004BD28C /* InitMessage.swift in Sources */,
 				C4CB0212202A606B003869F8 /* NotificationBanner.swift in Sources */,
 				5717B1502003DABA00A4252C /* ChatMessageViewControllerCache.swift in Sources */,
+				5728D8E620475C300071EF9E /* CarouselControlViewLayout.swift in Sources */,
 				5794793A203389B200C4C5C5 /* DateFormatter+Chat.swift in Sources */,
 				5771D2ED2011174000FF2483 /* MultiSelectControlMessage.swift in Sources */,
 				57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */,
@@ -1280,6 +1291,7 @@
 				57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */,
 				572A4E441FCF70070081318D /* BubbleView.swift in Sources */,
 				57B7E2C61FBA25A200196BA9 /* SelectableViewCell.swift in Sources */,
+				5728D8E2204759480071EF9E /* CarouselCollectionViewCell.swift in Sources */,
 				5796E4481FD0B3E0009D2035 /* CGPath+Bubble.swift in Sources */,
 				5706C5811FE49F78008D70D1 /* ChatMessageViewController.swift in Sources */,
 				57DF7C3D202CD97C008D013A /* OutputHtmlControl.swift in Sources */,

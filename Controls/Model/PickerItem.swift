@@ -34,16 +34,6 @@ class PickerItem {
     }
 }
 
-class CarouselItem: PickerItem {
-    
-    var attachment: URL?
-    
-    init(label: String?, value: String, attachment: URL?) {
-        self.attachment = attachment
-        super.init(type: .custom, label: label, value: value)
-    }
-}
-
 // MARK: - PickerItem Utils
 
 extension PickerItem {
