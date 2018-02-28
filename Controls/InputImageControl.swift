@@ -101,7 +101,7 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
             inputImageModel.imageName = imageURL.deletingPathExtension().lastPathComponent
         }
         
-        let imageData = UIImageJPEGRepresentation(image, 0.8)
+        let imageData = UIImageJPEGRepresentation(image, 0.2)
         inputImageModel.selectedImageData = imageData
         
         delegate?.control(self, didFinishWithModel: model)

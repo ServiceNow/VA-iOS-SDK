@@ -71,6 +71,7 @@ enum ChatterboxActionType: String, Codable, CodingKey {
     
     case topicPicker = "TopicPicker"
     case startUserTopic = "StartTopic"
+    case cancelUserTopic = "CancelTopic"
     case startedUserTopic = "StartedVendorTopic"
     case finishedUserTopic = "TopicFinished"
     
@@ -89,8 +90,9 @@ struct ActionDataUnknown: ActionData {
 
 enum ChatterboxControlType: String, Codable {
     case topicPicker = "TopicPicker"
-    case startTopicMessage = "StartTopic"
-    
+    case startTopic = "StartTopic"
+    case cancelTopic = "CancelTopic"
+
     case boolean = "Boolean"
     case input = "InputText"
     case picker = "Picker"

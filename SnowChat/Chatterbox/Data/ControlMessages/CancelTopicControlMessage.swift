@@ -8,8 +8,12 @@
 
 import Foundation
 
-struct StartTopicMessage: Codable, ControlData {
-
+struct CancelTopicControlMessage: Codable, ControlData {
+    
+    static var value: String {
+        return "cancelTopic"
+    }
+    
     var uniqueId: String {
         return id
     }
@@ -21,7 +25,7 @@ struct StartTopicMessage: Codable, ControlData {
     }
     
     var id: String = UUID().uuidString
-    var controlType = ChatterboxControlType.startTopic
+    var controlType = ChatterboxControlType.cancelTopic
     
     var messageId: String {
         return data.messageId
@@ -38,20 +42,20 @@ struct StartTopicMessage: Codable, ControlData {
     var isOutputOnly: Bool {
         return true
     }
-
-    let type: String
-    var data: RichControlData<StartTopicWrapper>
     
-    typealias StartTopicWrapper = ControlWrapper<String?, ContextualActionMetadata>
+    let type: String
+    var data: RichControlData<CancelTopicWrapper>
+    
+    typealias CancelTopicWrapper = ControlWrapper<String?, ContextualActionMetadata>
     
     struct ContextualActionMetadata: Codable {
-        // nothing more to add for this one
+        // nothing to add
     }
     
     init(withSessionId: String, withConversationId: String) {
         type = "consumerTextMessage"
-        let controlData: StartTopicWrapper = ControlWrapper(model: ControlModel(type: "task", name: nil), uiType: "ContextualAction", uiMetadata: nil, value: "startTopic", content: nil)
-        data = RichControlData<StartTopicWrapper>(sessionId: withSessionId, conversationId: withConversationId, direction: .fromClient, controlData: controlData)
+        let controlData: CancelTopicWrapper = ControlWrapper(model: ControlModel(type: "task", name: nil), uiType: "ContextualAction", uiMetadata: nil, value: CancelTopicControlMessage.value, content: nil)
+        data = RichControlData<CancelTopicWrapper>(sessionId: withSessionId, conversationId: withConversationId, direction: .fromClient, controlData: controlData)
     }
     
     private enum CodingKeys: String, CodingKey {

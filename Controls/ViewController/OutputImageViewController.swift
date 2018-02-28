@@ -11,17 +11,21 @@ import UIKit
 class OutputImageViewController: UIViewController {
     
     // Putting these constraints on image for now
-    let maxImageSize = CGSize(width: 250, height: 250)
-    let outputImageView = UIImageView()
-    var imageViewWidthToHeightConstraint: NSLayoutConstraint?
-    var imageViewSideConstraint: NSLayoutConstraint?
-    var activityIndicatorView: UIActivityIndicatorView?
+    private let maxImageSize = CGSize(width: 250, height: 250)
+    private var imageWidthConstraint: NSLayoutConstraint?
+    private var imageHeightConstraint: NSLayoutConstraint?
+    
+    private var imageConstraints = [NSLayoutConstraint]()
+    private let outputImageView = UIImageView()
+    private(set) var imageSize: CGSize?
     
     var image: UIImage? {
         didSet {
+            guard outputImageView.image != image else {
+                return
+            }
+            
             outputImageView.image = image
-            activityIndicatorView?.stopAnimating()
-            activityIndicatorView?.removeFromSuperview()
             updateImageConstraints()
         }
     }
@@ -29,57 +33,74 @@ class OutputImageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupOutputImageView()
-        setupActivityIndicatorView()
     }
     
     private func setupOutputImageView() {
-        outputImageView.setContentHuggingPriority(.veryHigh, for: .horizontal)
+        outputImageView.contentMode = .scaleAspectFill
         outputImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(outputImageView)
-        NSLayoutConstraint.activate([outputImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                     outputImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     outputImageView.topAnchor.constraint(equalTo: view.topAnchor),
-                                     outputImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
+        imageConstraints.append(contentsOf: [outputImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                                             outputImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                                             outputImageView.topAnchor.constraint(equalTo: view.topAnchor),
+                                             outputImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
+        
+        imageHeightConstraint = outputImageView.heightAnchor.constraint(equalToConstant: 50)
+        imageHeightConstraint?.isActive = true
+        imageWidthConstraint = outputImageView.widthAnchor.constraint(equalToConstant: 100)
+        imageWidthConstraint?.isActive = true
+        
+        NSLayoutConstraint.activate(imageConstraints)
         updateImageConstraints()
     }
     
-    private func setupActivityIndicatorView() {
-        // only display indicator if image was not loaded yet
-        guard outputImageView.image == nil else {
-            return
-        }
+    func prepareViewForImageWithSize(_ size: CGSize) {
+        imageSize = size
+        imageHeightConstraint?.constant = size.height
+        imageWidthConstraint?.constant = size.width
         
-        let activityIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(activityIndicatorView)
-        NSLayoutConstraint.activate([activityIndicatorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                     activityIndicatorView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     activityIndicatorView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
-                                     activityIndicatorView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
-                                     activityIndicatorView.widthAnchor.constraint(equalToConstant: 100)])
-        self.activityIndicatorView = activityIndicatorView
-        activityIndicatorView.startAnimating()
+        UIView.performWithoutAnimation {
+            view.layoutIfNeeded()
+        }
     }
     
     private func updateImageConstraints() {
-        imageViewWidthToHeightConstraint?.isActive = false
-        imageViewSideConstraint?.isActive = false
-
-        guard let image = image, image.size.height > maxImageSize.height || image.size.width > maxImageSize.width else {
+        guard let image = image else {
             return
         }
         
         // if image is in landscape - we will limit it horizontally. otherwise vertically.
+        // set width/height proportion
         if image.size.height > image.size.width {
-            imageViewSideConstraint = outputImageView.heightAnchor.constraint(lessThanOrEqualToConstant: maxImageSize.height)
+            adjustImageHeightIfNeeded()
         } else {
-            imageViewSideConstraint = outputImageView.widthAnchor.constraint(lessThanOrEqualToConstant: maxImageSize.width)
+            adjustImageWidthIfNeeded()
         }
         
-        // set width/height proportion
+        view.layoutIfNeeded()
+    }
+    
+    private func adjustImageHeightIfNeeded() {
+        guard let image = image, image.size.height > maxImageSize.height else {
+            return
+        }
+        
+        let height = maxImageSize.height
         let ratio = image.size.width / image.size.height
-        imageViewWidthToHeightConstraint = outputImageView.heightAnchor.constraint(equalTo: outputImageView.widthAnchor, multiplier: ratio)
-        imageViewWidthToHeightConstraint?.isActive = true
-        imageViewSideConstraint?.isActive = true
+        let width = height * ratio
+        imageHeightConstraint?.constant = height
+        imageWidthConstraint?.constant = width
+        imageSize = CGSize(width: width, height: height)
+    }
+    
+    private func adjustImageWidthIfNeeded() {
+        guard let image = image, image.size.width > maxImageSize.width else {
+            return
+        }
+        
+        let ratio = image.size.height / image.size.width
+        let height = maxImageSize.width * ratio
+        imageHeightConstraint?.constant = height
+        imageWidthConstraint?.constant = maxImageSize.width
+        imageSize = CGSize(width: maxImageSize.width, height: height)
     }
 }

@@ -180,10 +180,37 @@ class Chatterbox {
     }
     
     func endConversation() {
-        let sessionId = conversationContext.sessionId ?? "UNKNOWN_SESSION_ID"
-        let conversationId = conversationContext.conversationId ?? "UNKNOWN_CONVERSATION_ID"
+        guard let sessionId = conversationContext.sessionId,
+            let conversationId = conversationContext.conversationId  else {
+                logger.logError("endConversation with no conversation current - skipping")
+                return
+        }
+        
+        sendCancelTopic()
         
         handleTopicFinishedAction(TopicFinishedMessage(withSessionId: sessionId, withConversationId: conversationId))
+    }
+    
+    private func sendCancelTopic() {
+        if let cancelTopic = cancelTopicMessageFromContextualActions() {
+            messageHandler = cancelTopicHandler
+            apiManager.ambClient.sendMessage(cancelTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+        }
+    }
+    
+    private func cancelTopicMessageFromContextualActions() -> ContextualActionMessage? {
+        guard var cancelTopic = contextualActions,
+            let sessionId = conversationContext.sessionId,
+            let conversationId = conversationContext.systemConversationId else { return nil }
+    
+        cancelTopic.type = "consumerTextMessage"
+        cancelTopic.data.sessionId = sessionId
+        cancelTopic.data.conversationId = conversationId
+        cancelTopic.data.richControl?.value = CancelTopicControlMessage.value
+        cancelTopic.data.direction = .fromClient
+        cancelTopic.data.sendTime = Date()
+        
+        return cancelTopic
     }
     
     // MARK: - Session Methods
@@ -323,6 +350,22 @@ class Chatterbox {
                     messageHandler = startUserTopicHandshakeHandler
                     apiManager.sendMessage(outgoingMessage, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
                 }
+            }
+        }
+    }
+    
+    private func cancelTopicHandler(_ message: String) {
+        let control = ChatDataFactory.actionFromJSON(message)
+        
+        if var cancelTopic = control as? CancelUserTopicMessage {
+           if cancelTopic.data.direction == .fromServer {
+                cancelTopic.data.actionMessage.ready = true
+                cancelTopic.data.direction = .fromClient
+                cancelTopic.data.sendTime = Date()
+                apiManager.ambClient.sendMessage(cancelTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+
+                // switch back to userTopicMessageHandler for the final topic completion handling
+                messageHandler = userTopicMessageHandler
             }
         }
     }
@@ -571,11 +614,14 @@ extension Chatterbox {
         let conversationId = conversation.conversationId
         
         switch conversation.state {
-        case .inProgress:
+        case .inProgress,
+             .chatProgress:
             logger.logInfo("Conversation \(conversationId) is in progress")
-            let topicInfo = TopicInfo(topicId: "TOPIC_ID", conversationId: conversationId)
+            let topicInfo = TopicInfo(topicId: conversation.topicId, conversationId: conversationId)
             resumeUserTopic(topicInfo: topicInfo)
-        case .completed:
+        case .completed,
+             .canceled,
+             .error:
             logger.logInfo("Conversation is no longer in progress - ending current conversations")
             finishTopic(conversationId)
         case .unknown:
@@ -736,7 +782,7 @@ extension Chatterbox {
                     let isInProgress = conversation.conversationId == lastConversation?.conversationId && conversation.state == .inProgress
                     conversation.state = isInProgress ? .inProgress : .completed
                     
-                    self.logger.logDebug("--> Conversation \(conversationId) refreshed: \(conversation)")
+                    self.logger.logDebug("--> Conversation \(conversationId) refreshed: \(conversation.topicTypeName) (\(conversation.state)")
                     
                     self.chatDataListener?.chatterbox(self, willLoadConversation: conversationId, forChat: self.chatId)
                     self.storeConversationAndPublish(conversation)
@@ -771,8 +817,11 @@ extension Chatterbox {
     internal func storeConversationAndPublish(_ conversation: Conversation) {
         chatStore.storeConversation(conversation)
         
-        conversation.messageExchanges().forEach { (exchange) in
-            if conversation.state == .inProgress && !exchange.isComplete {
+        conversation.messageExchanges().forEach { exchange in
+            let outputOnlyMessage = exchange.message.isOutputOnly
+            let inputPending = conversation.state == .inProgress && !exchange.isComplete
+            
+            if outputOnlyMessage || inputPending {
                 notifyMessage(exchange.message)
             } else {
                 notifyMessageExchange(exchange)

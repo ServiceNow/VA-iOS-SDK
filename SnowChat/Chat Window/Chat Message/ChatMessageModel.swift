@@ -92,7 +92,7 @@ extension ChatMessageModel {
         case .systemError:
             guard let systemErrorMessage = message as? SystemErrorControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: systemErrorMessage)
-        case .startTopicMessage:
+        case .startTopic:
             guard let startTopicMessage = message as? StartTopicMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: startTopicMessage)
         case .unknown:

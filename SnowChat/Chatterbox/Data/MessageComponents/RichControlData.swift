@@ -26,8 +26,8 @@
 import Foundation
 
 struct RichControlData<T: Codable>: Codable {
-    let messageId: String
-    let sessionId: String?
+    var messageId: String
+    var sessionId: String?
     var conversationId: String?
     var taskId: String?
     var direction: MessageDirection
