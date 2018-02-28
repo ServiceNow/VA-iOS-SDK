@@ -907,7 +907,7 @@ extension ChatDataController: ContextItemProvider {
     }
     
     fileprivate func newConversation() {
-        chatterbox.endConversation()
+        chatterbox.endUserConversation()
     }
     
     fileprivate func presentSupportOptions(_ presentingController: UIViewController, _ sender: UIBarButtonItem) {
