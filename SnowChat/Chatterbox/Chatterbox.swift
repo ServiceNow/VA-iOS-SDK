@@ -370,6 +370,7 @@ class Chatterbox {
                 cancelTopic.data.actionMessage.ready = true
                 cancelTopic.data.direction = .fromClient
                 cancelTopic.data.sendTime = Date()
+
                 publishMessage(cancelTopic)
 
                 // switch back to userTopicMessageHandler for the final topic completion handling
