@@ -108,7 +108,7 @@ class CBDataTests: XCTestCase {
         XCTAssertNotNil(contextualAction)
         XCTAssertEqual(contextualAction.controlType, .contextualAction)
         XCTAssertEqual(contextualAction.data.richControl?.uiType, "ContextualAction")
-        XCTAssertEqual(contextualAction.data.richControl?.uiMetadata?.inputControls.count, 3)
+        XCTAssertEqual(contextualAction.data.richControl?.uiMetadata?.inputControls?.count, 3)
         XCTAssertEqual(contextualAction.options.count, 3)
         XCTAssertEqual(contextualAction.options[0].value, "showTopic")
         XCTAssertEqual(contextualAction.options[1].value, "startTopic")
@@ -124,6 +124,17 @@ class CBDataTests: XCTestCase {
         XCTAssertEqual(systemError.data.richControl?.uiMetadata?.error.message, "An unrecoverable error has occurred.")
         XCTAssertEqual(systemError.data.richControl?.uiMetadata?.error.handler.type, "Hmode")
         XCTAssertEqual(systemError.data.richControl?.uiMetadata?.error.handler.instruction, "This conversation has been transferred to the Live Agent queue, and someone will be with you momentarily.")
+    }
+    
+    func testAgentTextExample() {
+        let agentText = ExampleData.exampleAgentTextControlMessage()
+        
+        XCTAssertNotNil(agentText)
+        XCTAssertEqual(agentText.controlType, .agentText)
+        XCTAssertEqual(agentText.data.text, "Duty Now For The Future!")
+        XCTAssertEqual(agentText.data.agent, true)
+        XCTAssertEqual(agentText.data.isAgent, true)
+        XCTAssertEqual(agentText.data.sender?.name, "Beth Anglin")
     }
     
     func testCancelTopicMessageExample() {

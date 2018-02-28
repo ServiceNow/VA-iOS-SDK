@@ -35,6 +35,10 @@ struct BooleanControlMessage: Codable, ControlData {
         return data.sendTime
     }
     
+    var taskId: String? {
+        return data.taskId
+    }
+    
     let type: String = "consumerTextMessage"
     var data: RichControlData<ControlWrapper<Bool?, UIMetadata>>
  

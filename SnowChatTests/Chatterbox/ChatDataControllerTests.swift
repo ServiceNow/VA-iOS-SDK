@@ -120,14 +120,15 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
     func testStartTopicDivider() {
         XCTAssertEqual(0, controller?.controlCount())
         startConversation()
-        XCTAssertEqual(2, controller?.controlCount())
+        XCTAssertEqual(3, controller?.controlCount())
         XCTAssertEqual(ControlType.typingIndicator, controller?.controlForIndex(0)?.controlModel?.type)
-        XCTAssertEqual(ChatMessageType.topicDivider, controller?.controlForIndex(1)?.type)
+        XCTAssertEqual(ChatMessageType.control, controller?.controlForIndex(1)?.type)
+        XCTAssertEqual(ChatMessageType.topicDivider, controller?.controlForIndex(2)?.type)
     }
     
     func startConversation() {
         // mimic a started conversation
-        let topicInfo = TopicInfo(topicId: "f0760de6733a0300d63a566a4cf6a7b6", conversationId: "f0760de6733a0300d63a566a4cf6a7b6")
+        let topicInfo = TopicInfo(topicId: "f0760de6733a0300d63a566a4cf6a7b6", topicName: "Topic Name", taskId: nil, conversationId: "f0760de6733a0300d63a566a4cf6a7b6")
         controller?.topicDidStart(topicInfo)
     }
     

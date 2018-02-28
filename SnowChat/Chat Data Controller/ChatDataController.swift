@@ -83,6 +83,14 @@ class ChatDataController {
         updateChatterbox(data)
     }
     
+    public func sendControlData(_ data: ControlViewModel) {
+        guard data.type == .text else {
+            logger.logError("Only expecting text controls in sendControlData")
+            return
+        }
+        sendLiveAgentResponse(data)
+    }
+    
     private func currentConversationHasControlData(forId messageId: String) -> Bool {
         return chatterbox.currentConversationHasControlData(forId: messageId)
     }
@@ -190,6 +198,26 @@ class ChatDataController {
             return false
         }
         return true
+    }
+    
+    fileprivate func popTypingIndicator() {
+        if !isShowingTypingIndicator() {
+            return
+        }
+        controlData.remove(at: 0)
+        addChange(ModelChangeType.delete(index: 0))
+        applyChanges()
+    }
+    
+    fileprivate func sendLiveAgentResponse(_ data: ControlViewModel) {
+        if let textViewModel = data as? TextControlViewModel,
+           let sessionId = chatterbox.conversationContext.sessionId,
+           let conversationId = chatterbox.conversationContext.conversationId,
+           let taskId = chatterbox.conversationContext.taskId {
+            
+            let textMessage = AgentTextControlMessage(withValue: textViewModel.value, sessionId: sessionId, conversationId: conversationId, taskId: taskId)
+            chatterbox.update(control: textMessage)
+        }
     }
     
     fileprivate func updateChatterbox(_ data: ControlViewModel) {
@@ -302,6 +330,10 @@ class ChatDataController {
         conversationId = topicInfo.conversationId
     
         pushTopicStartDivider(topicInfo)
+        if topicInfo.topicName != nil {
+            pushTopicTitle(topicInfo: topicInfo)
+        }
+        
         pushTypingIndicator()
     }
 
@@ -317,6 +349,20 @@ class ChatDataController {
         presentCompletionMessage()
     }
 
+    func agentTopicWillStart() {
+        // TODO: set timer waiting?
+    }
+    
+    func agentTopicDidStart(agentInfo: AgentInfo) {
+        let message = NSLocalizedString("An agent is now taking your case.", comment: "Default agent responded message to show to user")
+        let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
+        bufferControlMessage(ChatMessageModel(model: completionTextControl, bubbleLocation: .left))
+    }
+    
+    func agentTopicDidFinish() {
+        presentCompletionMessage()
+    }
+    
     func presentCompletionMessage() {
         let message = NSLocalizedString("Thanks for visiting. If you need anything else, just ask!", comment: "Default end of topic message to show to user")
         let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
@@ -326,13 +372,34 @@ class ChatDataController {
     func presentWelcomeMessage() {
         let message = chatterbox.session?.welcomeMessage ?? "Welcome! What can we help you with?"
         let welcomeTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
+        
         // NOTE: we do not buffer the welcome message currently - this is intentional
         presentControlData(ChatMessageModel(model: welcomeTextControl, bubbleLocation: .left))
     }
     
     func pushTopicStartDivider(_ topicInfo: TopicInfo) {
+        // if there is a typing indicator we want to remove that first
+        popTypingIndicator()
+        
         // NOTE: we do not buffer the divider currently - this is intentional
         presentControlData(ChatMessageModel(type: .topicDivider))
+    }
+    
+    func pushTopicTitle(topicInfo: TopicInfo) {
+        guard let message = topicInfo.topicName else {
+            return
+        }
+        let titleTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
+        
+        // NOTE: we do not buffer the welcome message currently - this is intentional
+        presentControlData(ChatMessageModel(model: titleTextControl, bubbleLocation: .right))
+    }
+    
+    func appendTopicTitle(_ topicInfo: TopicInfo) {
+        guard let message = topicInfo.topicName else { return }
+        let titleTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
+        
+        addHistoryToCollection(ChatMessageModel(model: titleTextControl, bubbleLocation: .right))
     }
     
     func appendTopicStartDivider(_ topicInfo: TopicInfo) {
@@ -387,7 +454,7 @@ extension ChatDataController: ChatDataListener {
     // MARK: - ChatDataListener (from service)
 
     func chatterbox(_ chatterbox: Chatterbox, didReceiveControlMessage message: ControlData, forChat chatId: String) {
-        guard chatterbox.id == self.chatterbox.id, message.direction == .fromServer else {
+        guard chatterbox.id == self.chatterbox.id else {
             return
         }
         
@@ -412,6 +479,10 @@ extension ChatDataController: ChatDataListener {
     func chatterbox(_ chatterbox: Chatterbox, didCompleteMessageExchange messageExchange: MessageExchange, forChat chatId: String) {
         guard chatterbox.id == self.chatterbox.id else {
             return
+        }
+        
+        if messageExchange.message.isOutputOnly {
+            logger.logError("OutputOnly message is unexpected in didCompleteMessageExchange: caller should use didReceiveControlMessage instead")
         }
         
         switch messageExchange.message.controlType {
@@ -447,12 +518,24 @@ extension ChatDataController: ChatDataListener {
         }
         
         // we updated the controls for the response, so push a typing indicator while we wait for a new control to come in
-        pushTypingIndicator()
+        if isBufferingEnabled {
+            pushTypingIndicator()
+        }
     }
     
+    private func replaceOrPresentControlData(_ model: ControlViewModel, messageId: String) {
+        let messageModel = ChatMessageModel(model: model, messageId: messageId, bubbleLocation: .left)
+        
+        // if buffering, we replace the last control with the new one, otherwise we just present the control
+        if isBufferingEnabled {
+            replaceLastControl(with: messageModel)
+        } else {
+            presentControlData(messageModel)
+        }
+    }
     private func didCompleteBooleanExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForBoolean(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
+            replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
             if let response = viewModels.response {
                 presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
             }
@@ -461,13 +544,15 @@ extension ChatDataController: ChatDataListener {
     
     private func didCompleteInputExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForInput(from: messageExchange), let response = viewModels.response {
+            let message = viewModels.message 
+            presentControlData(ChatMessageModel(model: message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
             presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
         }
     }
     
     private func didCompletePickerExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForPicker(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
+            replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
             if let response = viewModels.response {
                 presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
             }
@@ -477,7 +562,7 @@ extension ChatDataController: ChatDataListener {
     private func didCompleteMultiSelectExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         // replace the picker with the picker's label, and add the response
         if let viewModels = controlsForMultiSelect(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
+            replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
             if let response = viewModels.response {
                 presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
             }
@@ -529,29 +614,33 @@ extension ChatDataController: ChatDataListener {
     // MARK: - ChatDataListener (bulk uopdates / history)
     
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversation conversationId: String, forChat chatId: String) {
-        logger.logInfo("Conversation \(conversationId) will load")
+        guard let conversation = chatterbox.conversation(forId: conversationId) else { fatalError("Conversation cannot be found for id \(conversationId)") }
+        
+        logger.logInfo("Conversation will load: topicName=\(conversation.topicTypeName) conversationId=\(conversationId) state=\(conversation.state)")
+        
+        let topicName = conversation.topicTypeName
+        let topicId = conversationId
+        let topicInfo = TopicInfo(topicId: topicId, topicName: topicName, taskId: nil, conversationId: conversationId)
+        pushTopicStartDivider(topicInfo)
+        pushTopicTitle(topicInfo: topicInfo)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
         logger.logInfo("Conversation \(conversationId) did load")
-
-        if let conversation = chatterbox.conversation(forId: conversationId) {
-            if conversation.state == .inProgress {
-                // do not push the start-topic divider if this is the active conversation
-                return
-            }
-        }
-        let topicId = conversationId
-        pushTopicStartDivider(TopicInfo(topicId: topicId, conversationId: conversationId))
     }
 
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversationHistory conversationId: String, forChat chatId: String) {
         logger.logInfo("Conversation \(conversationId) will load from history")
-        let topicId = conversationId
         
-        // NOTE: until the service delivers entire conversations this will cause the occasional extra-divider to appear...
-        //       do not fix this as the service is suppossed to fix it
-        appendTopicStartDivider(TopicInfo(topicId: topicId, conversationId: conversationId))
+        if let conversation = chatterbox.conversation(forId: conversationId) {
+            let topicId = conversationId
+            let topicInfo = TopicInfo(topicId: topicId, topicName: conversation.topicTypeName, taskId: nil, conversationId: conversationId)
+            
+            // NOTE: until the service delivers entire conversations this will cause the occasional extra-divider to appear...
+            //       do not fix this as the service is suppossed to fix it
+            appendTopicTitle(topicInfo)
+            appendTopicStartDivider(topicInfo)
+        }
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversationHistory conversationId: String, forChat chatId: String) {
@@ -621,7 +710,6 @@ extension ChatDataController: ChatDataListener {
                 addHistoryToCollection(viewModel)
             }
 
-        // MARK: - output-only
         case .outputImage,
              .multiPart,
              .outputHtml,
@@ -630,7 +718,11 @@ extension ChatDataController: ChatDataListener {
                let controlModel = messageModel.controlModel {
                 addHistoryToCollection(controlModel)
             }
-        
+        case .agentText:
+            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message),
+               let controlModel = messageModel.controlModel {
+                addHistoryToCollection(controlModel)
+            }
         case .unknown:
             if let viewModel = ChatMessageModel.model(withMessage: historyExchange.message) {
                 addHistoryToCollection(viewModel)
@@ -827,7 +919,7 @@ extension ChatDataController: ContextItemProvider {
         }
         
         let agent = UIAlertAction(title: NSLocalizedString("Chat with an Agent", comment: "Support Menu item"), style: .default) { (action) in
-            // TODO: transfer to live agent chat
+            self.chatterbox.transferToLiveAgent()
         }
         
         let call = UIAlertAction(title: NSLocalizedString("Call Support (Daily 5AM - 11PM)", comment: "Support Menu item"), style: .default) { (action) in
