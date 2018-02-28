@@ -8,10 +8,13 @@
 
 import UIKit
 
-class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    weak var delegate: PickerViewControllerDelegate?
     
     private var collectionView: UICollectionView?
     private var model: CarouselControlViewModel
+    private let fullSizeContainer = FullSizeScrollViewContainerView()
     
     // MARK: - Initialization
     
@@ -25,6 +28,12 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - View Life Cycle
+    
+    override func loadView() {
+        self.view = fullSizeContainer
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCollectionView()
@@ -35,16 +44,21 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(collectionView)
-        NSLayoutConstraint.activate([collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                     collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-                                     collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
-        self.collectionView = collectionView
         
         let bundle = Bundle(for: CarouselCollectionViewCell.self)
         collectionView.register(UINib(nibName: "CarouselCollectionViewCell", bundle: bundle), forCellWithReuseIdentifier: CarouselCollectionViewCell.cellIdentifier)
+        
+        fullSizeContainer.scrollView = collectionView
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        fullSizeContainer.addSubview(collectionView)
+        NSLayoutConstraint.activate([collectionView.leadingAnchor.constraint(equalTo: fullSizeContainer.leadingAnchor),
+                                     collectionView.trailingAnchor.constraint(equalTo: fullSizeContainer.trailingAnchor),
+                                     collectionView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
+                                     collectionView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor),
+                                     collectionView.heightAnchor.constraint(equalToConstant: 200)])
+        
+        self.collectionView = collectionView
+        collectionView.reloadData()
     }
     
     // MARK: UICollectionViewDataSource
@@ -55,9 +69,15 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CarouselCollectionViewCell.cellIdentifier, for: indexPath) as! CarouselCollectionViewCell
-        
+        cell.contentView.backgroundColor = UIColor.yellow
         let item = model.items[indexPath.row] as! CarouselItem
         cell.configureWithCarouselItem(item)
         return cell
+    }
+    
+    // MARK: UICollectionViewFlowLayoutDelegate
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 150, height: 150)
     }
 }

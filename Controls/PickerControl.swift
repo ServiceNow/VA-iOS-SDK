@@ -64,6 +64,8 @@ extension PickerControlProtocol {
             return tableViewController
         case .carousel:
             let carouselViewController = CarouselViewController(model: model)
+            // TODO: introduce protocol for Picker style view controllers
+            carouselViewController.delegate = self
             return carouselViewController
         }
     }

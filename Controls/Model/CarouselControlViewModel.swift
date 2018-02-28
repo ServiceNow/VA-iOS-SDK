@@ -28,7 +28,7 @@ class CarouselControlViewModel: PickerControlViewModel {
     var items = [PickerItem]()
     
     var type: ControlType {
-        return .singleSelect
+        return .carousel
     }
     
     init(id: String, label: String? = nil, required: Bool, items: [PickerItem], resultValue: String? = nil) {

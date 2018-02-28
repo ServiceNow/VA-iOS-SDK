@@ -10,12 +10,9 @@ import UIKit
 
 class CarouselControlViewLayout: UICollectionViewFlowLayout {
     
-    private let maxItemSize = CGSize(width: 100, height: 100)
-    
     override init() {
         super.init()
         scrollDirection = .horizontal
-        itemSize = maxItemSize
         minimumLineSpacing = 10
     }
     

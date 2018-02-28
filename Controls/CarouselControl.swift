@@ -17,11 +17,7 @@ class CarouselControl: PickerControlProtocol {
     
     var style: PickerControlStyle
     
-    var model: ControlViewModel {
-        didSet {
-            updateViewController(withModel: model)
-        }
-    }
+    var model: ControlViewModel
     
     weak var delegate: ControlDelegate?
     
