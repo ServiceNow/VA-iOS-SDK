@@ -164,7 +164,7 @@ public class SNOWAMBClient {
         didSet {
             if isPaused != oldValue {
                 if isPaused {
-//                    cancelAllDataTasks()
+                    cancelAllDataTasks()
                 } else {
                     self.clientStatus = .retrying
                     startConnectRequest(after: 0.1)
@@ -263,11 +263,6 @@ public class SNOWAMBClient {
 private extension SNOWAMBClient {
     
     func startConnectRequest(after interval: TimeInterval = 0.0) {
-        
-        //!!!
-        cleanupCompletedDataTasks()
-        log("opened dataTasks = \(dataTasks.count)")
-        
         guard !isPaused else {
             log("Client is paused. Connect request is skipped")
             return
