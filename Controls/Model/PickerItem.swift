@@ -6,7 +6,8 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-// class for picker item model
+// Used in all picker types but carousel
+
 class PickerItem {
     
     enum ItemType {
@@ -30,6 +31,16 @@ class PickerItem {
         self.label = label
         self.value = value
         self.type = type
+    }
+}
+
+class CarouselItem: PickerItem {
+    
+    var attachment: URL?
+    
+    init(label: String?, value: String, attachment: URL?) {
+        self.attachment = attachment
+        super.init(type: .custom, label: label, value: value)
     }
 }
 

@@ -137,12 +137,23 @@ extension ChatMessageModel {
         let direction = message.direction
         
         let options = message.data.richControl?.uiMetadata?.options ?? []
-        let items = options.map { PickerItem(label: $0.label, value: $0.value) }
         
         let pickerModel: PickerControlViewModel
         if message.data.richControl?.uiMetadata?.style == .carousel {
+            
+            // TODO: Is there a nicer way to create CarouselItems?
+            let items = options.map { (labeledValue: CarouselLabeledValue) -> CarouselItem in
+                var url: URL?
+                if let attachment = labeledValue.attachment {
+                    url = URL(string: attachment)
+                }
+                
+                return CarouselItem(label: labeledValue.label, value: labeledValue.value, attachment: url)
+            }
+            
             pickerModel = CarouselControlViewModel(id: message.messageId, label: title, required: required, items: items)
         } else {
+            let items = options.map { PickerItem(label: $0.label, value: $0.value) }
             pickerModel = SingleSelectControlViewModel(id: message.messageId, label: title, required: required, items: items)
         }
         
