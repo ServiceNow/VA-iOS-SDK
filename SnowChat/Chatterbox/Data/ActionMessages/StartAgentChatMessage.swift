@@ -15,8 +15,8 @@ struct StartAgentChatMessage: Codable, ActionData {
     var data: ActionMessageData<AgentChatMessageDetails>
     
     struct AgentChatMessageDetails: Codable {
-        var systemActionName: String = "startChat"
-        var type: String = "StartChat"
+        let systemActionName: String = "startChat"
+        let type: String = "StartChat"
         var topicId: String
         var taskId: String?
         var chatStage: String

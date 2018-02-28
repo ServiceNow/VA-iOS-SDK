@@ -137,6 +137,25 @@ class CBDataTests: XCTestCase {
         XCTAssertEqual(agentText.data.sender?.name, "Beth Anglin")
     }
     
+    func testCancelTopicMessageExample() {
+        let cancelTopic = ExampleData.exampleCancelTopicMessage()
+        
+        XCTAssertEqual(ChatterboxActionType.cancelUserTopic, cancelTopic.eventType)
+        XCTAssertEqual("actionMessage", cancelTopic.type)
+        XCTAssertEqual("CancelTopic", cancelTopic.data.actionMessage.type)
+        XCTAssertEqual("cancelVendorTopic", cancelTopic.data.actionMessage.systemActionName)
+        XCTAssertEqual(true, cancelTopic.data.actionMessage.ready)
+    }
+    
+    func testCancelTopicRequestExample() {
+        let cancelRequestMessage = ExampleData.exampleCancelTopicControlMessage()
+        
+        XCTAssertEqual(ChatterboxControlType.cancelTopic, cancelRequestMessage.controlType)
+        XCTAssertEqual("cancelTopic", (cancelRequestMessage.data.richControl?.value)!)
+        XCTAssertEqual("task", cancelRequestMessage.data.richControl?.model?.type)
+        XCTAssertEqual("ContextualAction", cancelRequestMessage.data.richControl?.uiType)
+    }
+    
     let jsonInitStart = """
         {
           "type" : "actionMessage",

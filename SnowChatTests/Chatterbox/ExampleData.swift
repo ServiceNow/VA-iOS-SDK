@@ -296,4 +296,92 @@ class ExampleData {
         """
         return ChatDataFactory.controlFromJSON(jsonAgentTextMessage) as! AgentTextControlMessage
     }
+    
+    static func exampleCancelTopicMessage() -> CancelUserTopicMessage {
+        let jsonMessage = """
+        {
+          "type" : "actionMessage",
+          "data" : {
+            "messageId" : "7691d5dddbe013005c06fd131d96197f",
+            "taskId" : "8181d5dddbe013005c06fd131d961977",
+            "sessionId" : "018199dddbe013005c06fd131d96196e",
+            "conversationId" : "0581d5dddbe013005c06fd131d961976",
+            "actionMessage" : {
+              "conversationId" : "b09199dddbe013005c06fd131d9619df",
+              "type" : "CancelTopic",
+              "ready" : true,
+              "systemActionName" : "cancelVendorTopic"
+            },
+            "sendTime" : 1519682720502,
+            "direction" : "inbound",
+            "receiveTime" : 0
+          }
+        }
+        """
+        return ChatDataFactory.actionFromJSON(jsonMessage) as! CancelUserTopicMessage
+    }
+    
+    static func exampleCancelTopicControlMessage() -> CancelTopicControlMessage {
+        let jsonMessage = """
+        {
+          "type" : "consumerTextMessage",
+          "data" : {
+            "messageId" : "9581d5dddbe013005c06fd131d96194e",
+            "richControl" : {
+              "value" : "cancelTopic",
+              "model" : {
+                "type" : "task"
+              },
+              "uiType" : "ContextualAction",
+              "uiMetadata" : {
+                "inputControls" : [
+                  {
+                    "model" : {
+                      "type" : "task"
+                    },
+                    "uiType" : "Picker",
+                    "uiMetadata" : {
+                      "options" : [
+                        {
+                          "label" : "Show Conversation",
+                          "value" : "showTopic"
+                        },
+                        {
+                          "label" : "Start a new conversation",
+                          "value" : "startTopic"
+                        },
+                        {
+                          "label" : "Chat with agent",
+                          "value" : "brb"
+                        }
+                      ],
+                      "multiSelect" : false,
+                      "openByDefault" : false
+                    }
+                  },
+                  {
+                    "model" : {
+                      "type" : "task"
+                    },
+                    "uiType" : "TextSearch"
+                  },
+                  {
+                    "model" : {
+                      "type" : "task"
+                    },
+                    "uiType" : "VoiceSearch"
+                  }
+                ]
+              }
+            },
+            "sessionId" : "018199dddbe013005c06fd131d96196e",
+            "conversationId" : "0581d5dddbe013005c06fd131d961976",
+            "sendTime" : 1519682720287,
+            "direction" : "inbound",
+            "receiveTime" : 0
+          }
+        }
+        """
+        return ChatDataFactory.controlFromJSON(jsonMessage) as! CancelTopicControlMessage
+    }
 }

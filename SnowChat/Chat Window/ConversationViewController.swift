@@ -106,7 +106,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         // NOTE: making section header height very tiny as 0 make it default size in iOS11
         // see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
         tableView.sectionHeaderHeight = CGFloat(0.01)
-        tableView.estimatedRowHeight = 200
+        tableView.estimatedRowHeight = 250
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
         tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
@@ -139,29 +139,24 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         textView.placeholder = NSLocalizedString("Type your question here...", comment: "Placeholder text for input field when user is selecting a topic")
     }
     
-    private func setupForConversation() {
+    fileprivate func setupTextViewForConversation() {
         registerPrefixes(forAutoCompletion: [])
         self.autocompleteHandler = nil
         
         rightButton.isHidden = false
-        rightButton.setTitle(NSLocalizedString("Send", comment: "Right button label in conversation mode"), for: UIControlState())
+        rightButton.setTitle(NSLocalizedString("Send", comment: "Right button label in conversation mode"), for: .normal)
         
         textView.text = ""
         textView.placeholder = ""
-        
+    }
+    
+    private func setupForConversation() {
+        setupTextViewForConversation()
         setTextInputbarHidden(true, animated: true)
     }
     
     private func setupForAgentConversation() {
-        registerPrefixes(forAutoCompletion: [])
-        self.autocompleteHandler = nil
-        
-        rightButton.isHidden = false
-        rightButton.setTitle(NSLocalizedString("Send", comment: "Right button label in Agent Chat mode"), for: UIControlState())
-        
-        textView.text = ""
-        textView.placeholder = ""
-        
+        setupTextViewForConversation()
         setTextInputbarHidden(false, animated: true)
     }
     
@@ -563,6 +558,19 @@ extension ConversationViewController: ControlDelegate, OutputImageControlDelegat
     func controlDidFinishImageDownload(_ control: OutputImageControl) {
         tableView.beginUpdates()
         tableView.endUpdates()
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        if let chatModel = dataController.controlForIndex(indexPath.row) {
+            if chatModel.type == .topicDivider {
+                return 2
+            }
+            
+            if let imageViewModel = chatModel.controlModel as? OutputImageViewModel, let size = imageViewModel.imageSize {
+                return size.height
+            }
+        }
+        return 200
     }
 }
 

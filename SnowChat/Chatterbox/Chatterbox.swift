@@ -152,12 +152,34 @@ class Chatterbox {
         
         case .fromServer:
             updateContextIfNeeded(control)
+
+            if control.controlType == .contextualAction, let contextualActionControl = control as? ContextualActionMessage {
+                updateContextualActions(contextualActionControl)
+                return
+            }
+            
             if let conversationId = conversationContext.conversationId {
                 processIncomingControlMessage(control, forConversation: conversationId)
             }
         }
     }
     
+    fileprivate func updateContextualActions(_ newContextualActions: ContextualActionMessage) {
+        logger.logInfo("Updating ContextualActions: \(newContextualActions.data.richControl?.uiMetadata?.inputControls ?? [])")
+        contextualActions = newContextualActions
+    }
+    
+    fileprivate func handleTopicFinishedAction(_ action: ActionData) {
+        if let topicFinishedMessage = action as? TopicFinishedMessage {
+            conversationContext.conversationId = nil
+            
+            saveDataToPersistence()
+            
+            let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, taskId: nil, conversationId: topicFinishedMessage.data.conversationId ?? "CONVERSATION_ID")
+            chatEventListener?.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
+        }
+    }
+
     fileprivate func updateContextIfNeeded(_ control: ControlData) {
         if let taskId = control.taskId,
             let conversationId = control.conversationId {

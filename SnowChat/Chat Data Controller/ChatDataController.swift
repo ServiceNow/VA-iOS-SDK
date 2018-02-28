@@ -730,7 +730,8 @@ extension ChatDataController: ChatDataListener {
             
         // MARK: - unrendered
         case .topicPicker,
-             .startTopicMessage,
+             .startTopic,
+             .cancelTopic,
              .contextualAction:
             break
         }

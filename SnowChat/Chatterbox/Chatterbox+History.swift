@@ -70,7 +70,7 @@ extension Chatterbox {
             logger.logInfo("Live Agent session \(conversationId) is in progress")
             resumeLiveAgentTopic(conversation: conversation)
         // TODO: how to resume a live agent chat session??
-        case .completed:
+        case .completed, .error, .canceled:
             logger.logInfo("Conversation is no longer in progress - ending current conversations")
             finishTopic(conversationId)
         case .unknown:

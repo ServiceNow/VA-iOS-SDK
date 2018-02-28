@@ -14,11 +14,7 @@ protocol OutputImageControlDelegate: ControlDelegate {
 
 class OutputImageControl: ControlProtocol {
     
-    var model: ControlViewModel {
-        didSet {
-            refreshDownload()
-        }
-    }
+    weak var delegate: ControlDelegate?
     
     var viewController: UIViewController
     
@@ -26,40 +22,26 @@ class OutputImageControl: ControlProtocol {
         return viewController as! OutputImageViewController
     }
     
-    weak var delegate: ControlDelegate?
-    
-    private var outputImageDelegate: OutputImageControlDelegate? {
+    private weak var outputImageDelegate: OutputImageControlDelegate? {
         return delegate as? OutputImageControlDelegate
     }
     
-    private func refreshDownload() {
-        guard let imageModel = model as? OutputImageViewModel else {
-            Logger.default.logError("wrong model type")
-            return
-        }
-        
-        let urlRequest = URLRequest(url: imageModel.value)
-        
-        imageDownloader?.download(urlRequest) { [weak self] (response) in
-            guard let currentModel = self?.model as? OutputImageViewModel,
-                imageModel.value == currentModel.value else {
-                    return
+    private var imageModel: OutputImageViewModel {
+        return model as! OutputImageViewModel
+    }
+    
+    private var requestReceipt: RequestReceipt?
+    
+    var model: ControlViewModel {
+        didSet {
+            if let size = imageModel.imageSize {
+                imageViewController.prepareViewForImageWithSize(size)
             }
-            
-            // FIXME: Handle error / no image case
-            self?.imageViewController.image = response.value
-            
-            guard let strongSelf = self else { return }
-            self?.outputImageDelegate?.controlDidFinishImageDownload(strongSelf)
         }
     }
     
-    var imageDownloader: ImageDownloader? {
-        didSet {
-            refreshDownload()
-        }
-    }
-
+    var imageDownloader: ImageDownloader?
+    
     required init(model: ControlViewModel) {
         guard let imageModel = model as? OutputImageViewModel else {
             fatalError("Wrong model class")
@@ -69,4 +51,46 @@ class OutputImageControl: ControlProtocol {
         self.viewController = OutputImageViewController()
     }
     
+    func controlDidLoad() {
+        downloadImageIfNeeded()
+    }
+    
+    private func downloadImageIfNeeded() {
+        let imageModel = self.imageModel
+        let urlRequest = URLRequest(url: imageModel.value)
+        requestReceipt = imageDownloader?.download(urlRequest) { [weak self] (response) in
+            guard let currentModel = self?.model as? OutputImageViewModel,
+                imageModel.value == currentModel.value else {
+                    return
+            }
+            
+            // FIXME: Handle error / no image case
+            if response.error != nil {
+                return
+            }
+
+            let image = response.value
+            guard let strongSelf = self, strongSelf.imageViewController.image != image else { return }
+            
+            // If we already fetched image before we don't need to call beginUpdate/endUpdate on tableView
+            // Which is called in didFinishImageDownload
+            let needsLayoutUpdate = strongSelf.imageModel.imageSize == nil
+            strongSelf.imageViewController.image = image
+            strongSelf.imageModel.imageSize = strongSelf.imageViewController.imageSize
+            
+            if needsLayoutUpdate {
+                strongSelf.outputImageDelegate?.controlDidFinishImageDownload(strongSelf)
+            }
+        }
+    }
+    
+    func prepareForReuse() {
+        if let receipt = requestReceipt {
+            imageDownloader?.cancelRequest(with: receipt)
+            requestReceipt = nil
+        }
+        
+        delegate = nil
+        imageViewController.image = nil
+    }
 }

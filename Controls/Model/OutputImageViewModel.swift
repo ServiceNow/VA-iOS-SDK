@@ -14,6 +14,8 @@ class OutputImageViewModel: ControlViewModel {
     
     let id: String
     
+    var imageSize: CGSize?
+    
     let type: ControlType = .outputImage
     
     let value: URL
