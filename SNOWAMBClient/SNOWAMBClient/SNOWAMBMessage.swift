@@ -1,10 +1,12 @@
-public struct SNOWAMBMessage {
+public class SNOWAMBMessage {
     
-    public let id: String
+    // id may be "" for handshake/connect message
+    public let id: String?
     public let successful: Bool
+    public let channel: String
+    
     // other fields are optional (set to nil or 0 for timestamp)
     public let authSuccessful: Bool?
-    public let channel: String?
     public let clientId: String?
     public let version: String?
     public let minimumVersion: String?
@@ -38,18 +40,18 @@ public struct SNOWAMBMessage {
         }
         
         guard let messageDict = rawMessage as? [String : Any] else {
-            throw SNOWAMBError(.messageParserError, "AMB Message is not [String:Any] dictionary")
+            throw SNOWAMBError.messageParserError(description: "AMB Message is not [String:Any] dictionary")
         }
-        
-        if let id = messageDict["id"] as? String {
-            self.id = id
-        } else {
-            throw SNOWAMBError(.messageParserError, "AMB Message is missing id field")
-        }
-        
+
+        self.id = messageDict["id"] as? String
         self.successful = messageDict["successful"] as? Bool ?? true
-        self.channel = messageDict["channel"] as? String
         self.clientId = messageDict["clientId"] as? String
+        if let channel = messageDict["channel"] as? String {
+            self.channel = channel
+        } else {
+            throw SNOWAMBError.messageParserError(description: "AMB Message is missing channel field")
+        }
+        
         self.authSuccessful = messageDict["authSuccessful"] as? Bool
         self.version = messageDict["version"] as? String
         self.minimumVersion = messageDict["minimumVersion"] as? String
