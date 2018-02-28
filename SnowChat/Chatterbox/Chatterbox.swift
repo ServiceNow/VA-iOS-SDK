@@ -171,7 +171,7 @@ class Chatterbox {
     private func sendCancelTopic() {
         if let cancelTopic = cancelTopicMessageFromContextualActions() {
             messageHandler = cancelTopicHandler
-            apiManager.ambClient.sendMessage(cancelTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+            publishMessage(cancelTopic)
         }
     }
     
@@ -211,7 +211,7 @@ class Chatterbox {
     }
 
     private func setupChatSubscription() {
-        chatSubscription = apiManager.ambClient.subscribe(chatChannel) { [weak self] (result, subscription) in
+        chatSubscription = apiManager.subscribe(chatChannel) { [weak self] (result, subscription) in
             guard let strongSelf = self else { return }
             guard let messageHandler = strongSelf.messageHandler else {
                 strongSelf.logger.logError("No handler set in Chatterbox setupChatSubscription!")
@@ -334,7 +334,7 @@ class Chatterbox {
 
     fileprivate func publishMessage<T>(_ message: T) where T: Encodable {
         logger.logInfo("Chatterbox publishing message: \(message)")
-        apiManager.ambClient.sendMessage(message, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+        apiManager.sendMessage(message, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
     }
     
     // MARK: - User Topic Methods
@@ -370,7 +370,7 @@ class Chatterbox {
                 cancelTopic.data.actionMessage.ready = true
                 cancelTopic.data.direction = .fromClient
                 cancelTopic.data.sendTime = Date()
-                apiManager.ambClient.sendMessage(cancelTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+                publishMessage(cancelTopic)
 
                 // switch back to userTopicMessageHandler for the final topic completion handling
                 messageHandler = userTopicMessageHandler
@@ -592,7 +592,10 @@ class Chatterbox {
     }
     
     fileprivate func handleResponseControlMessage(_ control: ControlData, forConversation conversationId: String) {
-        if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last, !lastExchange.isComplete {
+        if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last,
+            lastExchange.message.controlType == control.controlType,
+            !lastExchange.isComplete {
+            
             if let updatedExchange = chatStore.storeResponseData(control, forConversation: conversationId) {
                 chatDataListener?.chatterbox(self, didCompleteMessageExchange: updatedExchange, forChat: conversationId)
             }
@@ -782,7 +785,6 @@ extension Chatterbox {
         case .chatProgress:
             logger.logInfo("Live Agent session \(conversationId) is in progress")
             resumeLiveAgentTopic(conversation: conversation)
-            // TODO: how to resume a live agent chat session??
         case .completed,
              .canceled,
              .error:
