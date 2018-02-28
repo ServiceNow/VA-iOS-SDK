@@ -30,6 +30,8 @@ enum ControlType {
     
     case singleSelect
     
+    case carousel
+    
     case typingIndicator
     
     case button
@@ -59,6 +61,8 @@ enum ControlType {
             return "Boolean"
         case .singleSelect:
             return "Single Select"
+        case .carousel:
+            return "Carousel"
         case .typingIndicator:
             return "Typing Indicator"
         case .button:

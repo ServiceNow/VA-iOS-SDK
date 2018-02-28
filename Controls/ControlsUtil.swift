@@ -33,6 +33,8 @@ class ControlsUtil {
             return BooleanControl(model: model)
         case .singleSelect:
             return SingleSelectControl(model: model)
+        case .carousel:
+            return CarouselControl(model: model)
         case .typingIndicator:
             return TypingIndicatorControl()
         case .button:

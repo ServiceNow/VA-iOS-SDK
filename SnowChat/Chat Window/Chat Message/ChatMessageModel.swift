@@ -138,7 +138,14 @@ extension ChatMessageModel {
         
         let options = message.data.richControl?.uiMetadata?.options ?? []
         let items = options.map { PickerItem(label: $0.label, value: $0.value) }
-        let pickerModel = SingleSelectControlViewModel(id: message.messageId, label: title, required: required, items: items)
+        
+        let pickerModel: PickerControlViewModel
+        if message.data.richControl?.uiMetadata?.style == .carousel {
+            pickerModel = CarouselControlViewModel(id: message.messageId, label: title, required: required, items: items)
+        } else {
+            pickerModel = SingleSelectControlViewModel(id: message.messageId, label: title, required: required, items: items)
+        }
+        
         let snowViewModel = ChatMessageModel(model: pickerModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
