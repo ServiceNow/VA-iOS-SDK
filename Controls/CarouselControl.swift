@@ -1,14 +1,12 @@
 //
-//  SingleSelectControl.swift
+//  CarouselControl.swift
 //  SnowChat
 //
-//  Created by Michael Borowiec on 12/12/17.
-//  Copyright © 2017 ServiceNow. All rights reserved.
+//  Created by Michael Borowiec on 2/27/18.
+//  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-import UIKit
-
-class SingleSelectControl: PickerControlProtocol {
+class CarouselControl: PickerControlProtocol {
     
     var visibleItemCount: Int = PickerConstants.visibleItemCount
     
@@ -29,10 +27,10 @@ class SingleSelectControl: PickerControlProtocol {
     
     required init(model: ControlViewModel) {
         self.model = model
-        self.style = .regular
+        self.style = .carousel
     }
     
     func pickerViewController(_ viewController: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
-
+        
     }
 }

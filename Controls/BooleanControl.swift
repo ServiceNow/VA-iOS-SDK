@@ -12,7 +12,7 @@ class BooleanControl: PickerControlProtocol {
     
     var visibleItemCount: Int = PickerConstants.visibleItemCount
     
-    var style: PickerControlStyle = .inline
+    var style: PickerControlStyle = .regular
     
     var model: ControlViewModel {
         didSet {

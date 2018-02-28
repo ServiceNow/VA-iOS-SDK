@@ -9,13 +9,9 @@
 enum PickerControlStyle: Int {
     
     // can be embedded anywhere in parent view
-    case inline
+    case regular
     
-    // is presented at the bottom of the screen
-//    case bottom
-    
-    // classic actionSheet
-//    case actionSheet
+    case carousel
 }
 
 struct PickerConstants {
@@ -62,10 +58,13 @@ extension PickerControlProtocol {
         }
         
         switch style {
-        case .inline:
+        case .regular:
             let tableViewController = PickerViewController(model: model)
             tableViewController.delegate = self
             return tableViewController
+        case .carousel:
+            let carouselViewController = CarouselViewController(model: model)
+            return carouselViewController
         }
     }
     

@@ -39,7 +39,7 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
         }
 
         self.model = inputImageModel
-        self.style = .inline
+        self.style = .regular
     }
     
     // MARK: - PickerViewControllerDelegate
