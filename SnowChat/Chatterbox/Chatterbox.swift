@@ -194,7 +194,7 @@ class Chatterbox {
     private func sendCancelTopic() {
         if let cancelTopic = cancelTopicMessageFromContextualActions() {
             messageHandler = cancelTopicHandler
-            apiManager.ambClient.sendMessage(cancelTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+            apiManager.sendMessage(cancelTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
         }
     }
     
@@ -362,7 +362,7 @@ class Chatterbox {
                 cancelTopic.data.actionMessage.ready = true
                 cancelTopic.data.direction = .fromClient
                 cancelTopic.data.sendTime = Date()
-                apiManager.ambClient.sendMessage(cancelTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+                apiManager.sendMessage(cancelTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
 
                 // switch back to userTopicMessageHandler for the final topic completion handling
                 messageHandler = userTopicMessageHandler
