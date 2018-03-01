@@ -49,6 +49,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         
         let bundle = Bundle(for: CarouselCollectionViewCell.self)
         collectionView.register(UINib(nibName: "CarouselCollectionViewCell", bundle: bundle), forCellWithReuseIdentifier: CarouselCollectionViewCell.cellIdentifier)
+        collectionView.register(CarouselControlHeaderView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CarouselControlHeaderView.headerIdentifier)
         
         fullSizeContainer.scrollView = collectionView
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -57,9 +58,10 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
                                      collectionView.trailingAnchor.constraint(equalTo: fullSizeContainer.trailingAnchor),
                                      collectionView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
                                      collectionView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor),
-                                     collectionView.heightAnchor.constraint(equalToConstant: 200)])
+                                     collectionView.heightAnchor.constraint(equalToConstant: 250)])
         
         self.collectionView = collectionView
+        collectionView.backgroundColor = .white
         collectionView.reloadData()
     }
     
@@ -78,5 +80,16 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         }
         
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CarouselControlHeaderView.headerIdentifier, for: indexPath) as! CarouselControlHeaderView
+        headerView.backgroundColor = .controlHeaderBackgroundColor
+        headerView.configure(with: model)
+        return headerView
     }
 }

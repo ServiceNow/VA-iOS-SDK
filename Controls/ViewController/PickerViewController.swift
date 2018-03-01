@@ -101,6 +101,7 @@ class PickerViewController: UIViewController {
                                      tableView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor)])
         
         tableView.reloadData()
+        tableView.backgroundColor = .agentBubbleBackgroundColor
     }
 }
 

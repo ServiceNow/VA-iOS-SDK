@@ -15,12 +15,6 @@ class FullSizeScrollViewContainerView: UIView {
     
     var observer: NSKeyValueObservation?
     
-    override var backgroundColor: UIColor? {
-        didSet {
-            scrollView?.backgroundColor = backgroundColor
-        }
-    }
-    
     var scrollView: UIScrollView? {
         didSet {
             observer = scrollView?.observe(\UIScrollView.contentSize) { [weak self] (scrollView, change) in
