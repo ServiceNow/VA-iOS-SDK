@@ -447,6 +447,25 @@ class ChatDataController {
             pushTypingIndicator()
         }
     }
+    
+    fileprivate func chatMessageModel(withMessage message: ControlData) -> ChatMessageModel? {
+        
+        func modelWithUpdatedAvatarURL(model: ChatMessageModel, withInstance instance: ServerInstance) -> ChatMessageModel {
+            if let path = model.avatarURL?.absoluteString {
+                let updatedURL = URL(string: path, relativeTo: instance.instanceURL)
+                let newModel = model
+                newModel.avatarURL = updatedURL
+                return newModel
+            }
+            return model
+        }
+
+        if var messageModel = ChatMessageModel.model(withMessage: message) {
+            messageModel = modelWithUpdatedAvatarURL(model: messageModel, withInstance: chatterbox.instance)
+            return messageModel
+        }
+        return nil
+    }
 }
 
 extension ChatDataController: ChatDataListener {
@@ -458,7 +477,7 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if let messageModel = ChatMessageModel.model(withMessage: message) {
+        if let messageModel = chatMessageModel(withMessage: message) {
             bufferControlMessage(messageModel)
             
             // Only some controls have auxiliary data. They might appear as part of the conversation table view or on the bottom.
@@ -509,7 +528,7 @@ extension ChatDataController: ChatDataListener {
             self.didCompleteInputImageExchange(messageExchange, forChat: chatId)
         case .unknown:
             guard let message = messageExchange.message as? ControlDataUnknown else { fatalError("Could not view message as ControlDataUnknown in ChatDataListener") }
-            guard let chatControl = ChatMessageModel.model(withMessage: message) else { return }
+            guard let chatControl = chatMessageModel(withMessage: message) else { return }
             self.bufferControlMessage(chatControl)
             logger.logDebug("Unknown control type in ChatDataListener didCompleteMessageExchange: \(messageExchange.message.controlType)")
             return  // skip any post-processing, we canot proceed with unknown control
@@ -699,7 +718,7 @@ extension ChatDataController: ChatDataListener {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
         case .text:
-            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message),
+            if let messageModel = chatMessageModel(withMessage: historyExchange.message),
                let controlModel = messageModel.controlModel {
                 addHistoryToCollection(controlModel)
             }
@@ -713,18 +732,14 @@ extension ChatDataController: ChatDataListener {
         case .outputImage,
              .multiPart,
              .outputHtml,
+             .agentText,
              .systemError:
-            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message),
-               let controlModel = messageModel.controlModel {
-                addHistoryToCollection(controlModel)
-            }
-        case .agentText:
-            if let messageModel = ChatMessageModel.model(withMessage: historyExchange.message),
+            if let messageModel = chatMessageModel(withMessage: historyExchange.message),
                let controlModel = messageModel.controlModel {
                 addHistoryToCollection(controlModel)
             }
         case .unknown:
-            if let viewModel = ChatMessageModel.model(withMessage: historyExchange.message) {
+            if let viewModel = chatMessageModel(withMessage: historyExchange.message) {
                 addHistoryToCollection(viewModel)
             }
             

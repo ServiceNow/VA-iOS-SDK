@@ -56,8 +56,10 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     private func loadAvatar() {
         if let provider = resourceProvider {
+            let avatarURL = model?.avatarURL ?? provider.avatarURL
+            
             agentImageView.af_imageDownloader = provider.imageDownloader
-            agentImageView.af_setImage(withURL: provider.avatarURL)
+            agentImageView.af_setImage(withURL: avatarURL)
             agentImageView.addCircleMaskIfNeeded()
         }
     }
@@ -75,6 +77,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         uiControl = nil
         resourceProvider = nil
         agentImageView.af_cancelImageRequest()
+        agentImageView.image = nil
     }
     
     internal func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
