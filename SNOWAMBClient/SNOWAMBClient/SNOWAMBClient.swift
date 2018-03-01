@@ -664,6 +664,9 @@ private extension SNOWAMBClient {
         })
 
         if let task = task {
+            if channel == AMBChannel.connect.name {
+                
+            }
             dataTasks.append(task)
         }
         cleanupCompletedDataTasks()

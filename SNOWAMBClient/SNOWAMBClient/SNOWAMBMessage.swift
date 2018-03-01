@@ -1,4 +1,4 @@
-public class SNOWAMBMessage {
+public struct SNOWAMBMessage {
     
     // id may be "" for handshake/connect message
     public let id: String?
