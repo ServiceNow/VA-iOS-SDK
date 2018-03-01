@@ -94,7 +94,7 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         }
         
         let jumpWidth = itemSize.width + minimumLineSpacing
-        let rest: Int = Int((proposedContentOffset.x + collectionView.contentInset.left + jumpWidth * 0.5) / jumpWidth)
-        return CGPoint(x: CGFloat(rest) * jumpWidth - collectionView.contentInset.left, y: proposedContentOffset.y)
+        let reminder: Int = Int((proposedContentOffset.x + collectionView.contentInset.left + jumpWidth * 0.5) / jumpWidth)
+        return CGPoint(x: CGFloat(reminder) * jumpWidth - collectionView.contentInset.left, y: proposedContentOffset.y)
     }
 }

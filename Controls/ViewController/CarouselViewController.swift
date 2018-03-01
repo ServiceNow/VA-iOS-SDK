@@ -62,6 +62,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         
         self.collectionView = collectionView
         collectionView.backgroundColor = .white
+        collectionView.isPagingEnabled = true
         collectionView.reloadData()
     }
     
