@@ -39,8 +39,7 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
                 return
         }
         
-        let instance = ServerInstance(instanceURL: instanceURL)
-        let chatService = ChatService(instance: instance, delegate: self)
+        let chatService = ChatService(instanceURL: instanceURL, delegate: self)
         self.chatService = chatService
         
         navigationController?.pushViewController(chatService.chatViewController(), animated: true)

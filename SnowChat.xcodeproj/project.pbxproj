@@ -120,7 +120,9 @@
 		57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */; };
 		57EE77DF1FFEC2B1001F689A /* ChatMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */; };
 		57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F7B2531FE17823006D917C /* TextControlViewModel.swift */; };
+		8B0A1F67204080D400DE4D4C /* APIManager+ImageUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0A1F66204080D400DE4D4C /* APIManager+ImageUpload.swift */; };
 		8B8573DD203DE7410031A1F1 /* SNOWAMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B8573DE203DE7410031A1F1 /* SNOWAMBClient.framework */; };
+		8B98430F203FF31F00FE7DAD /* APIManager+RequestAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B98430E203FF31F00FE7DAD /* APIManager+RequestAuthorization.swift */; };
 		8BA70BB120250CCB0067EBF3 /* BaseAuthTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */; };
 		8BA70BB520250D2F0067EBF3 /* InstanceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB420250D2F0067EBF3 /* InstanceConfiguration.swift */; };
 		8BA70BB920250E660067EBF3 /* SessionTimeoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB820250E660067EBF3 /* SessionTimeoutTests.swift */; };
@@ -304,7 +306,9 @@
 		57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Utils.swift"; sourceTree = "<group>"; };
 		57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageModel.swift; sourceTree = "<group>"; };
 		57F7B2531FE17823006D917C /* TextControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControlViewModel.swift; sourceTree = "<group>"; };
+		8B0A1F66204080D400DE4D4C /* APIManager+ImageUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIManager+ImageUpload.swift"; sourceTree = "<group>"; };
 		8B8573DE203DE7410031A1F1 /* SNOWAMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SNOWAMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B98430E203FF31F00FE7DAD /* APIManager+RequestAuthorization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIManager+RequestAuthorization.swift"; sourceTree = "<group>"; };
 		8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseAuthTestCase.swift; sourceTree = "<group>"; };
 		8BA70BB420250D2F0067EBF3 /* InstanceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceConfiguration.swift; sourceTree = "<group>"; };
 		8BA70BB820250E660067EBF3 /* SessionTimeoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTimeoutTests.swift; sourceTree = "<group>"; };
@@ -663,9 +667,11 @@
 		BE782DB61FEB204200F848F5 /* API Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				57B741FE2024DC7800E638E0 /* APIManager+Controls.swift */,
 				BE782DB71FEB205200F848F5 /* APIManager+ChatSession.swift */,
 				BE3F1AB11FEC315100DCC21B /* APIManager+ChatTopics.swift */,
+				57B741FE2024DC7800E638E0 /* APIManager+Controls.swift */,
+				8B0A1F66204080D400DE4D4C /* APIManager+ImageUpload.swift */,
+				8B98430E203FF31F00FE7DAD /* APIManager+RequestAuthorization.swift */,
 				BE6932851FFEDB0000DD5A2A /* APIManager+Routes.swift */,
 			);
 			name = "API Extensions";
@@ -1256,6 +1262,7 @@
 				575566A9200FAF1D000953F7 /* PickerHeaderFooterView.swift in Sources */,
 				C4CAFEA31FBCF2F8007007F5 /* ChatData.swift in Sources */,
 				C4AF7793200E7B0B0029598A /* ViewDataChangeListener.swift in Sources */,
+				8B0A1F67204080D400DE4D4C /* APIManager+ImageUpload.swift in Sources */,
 				C4CED93E1FD72544008E3E25 /* StartedUserTopicMessage.swift in Sources */,
 				4635789A2040CCE900947541 /* APIManager+AMB.swift in Sources */,
 				5740F431202269E90060B349 /* MultiPartControlMessage.swift in Sources */,
@@ -1287,6 +1294,7 @@
 				57E1EA331FC33D1C009FC76D /* RoundedView.swift in Sources */,
 				C4CBF2CB2045D9270038F120 /* Chatterbox+TransportNotifications.swift in Sources */,
 				572A4E441FCF70070081318D /* BubbleView.swift in Sources */,
+				8B98430F203FF31F00FE7DAD /* APIManager+RequestAuthorization.swift in Sources */,
 				57B7E2C61FBA25A200196BA9 /* SelectableViewCell.swift in Sources */,
 				5796E4481FD0B3E0009D2035 /* CGPath+Bubble.swift in Sources */,
 				5706C5811FE49F78008D70D1 /* ChatMessageViewController.swift in Sources */,

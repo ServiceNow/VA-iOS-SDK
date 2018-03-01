@@ -78,8 +78,6 @@ protocol ControlDelegate: AnyObject {
 
 protocol ControlProtocol: AnyObject {
     
-    init(model: ControlViewModel)
-    
     // representation of ui control state
     var model: ControlViewModel { get set }
     
