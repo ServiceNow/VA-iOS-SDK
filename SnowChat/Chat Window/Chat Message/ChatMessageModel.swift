@@ -33,6 +33,7 @@ class ChatMessageModel {
     
     var isAuxiliary: Bool = false
     var bubbleLocation: BubbleLocation?
+    var avatarURL: URL?
     
     init(model: ControlViewModel, messageId: String? = nil, bubbleLocation: BubbleLocation, requiresInput: Bool = false) {
         self.type = .control
@@ -188,7 +189,9 @@ extension ChatMessageModel {
         let textModel = TextControlViewModel(id: message.messageId, value: value)
         let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
 
-        // TODO: set agent avatar into the message model
+        if let avatarPath = message.data.sender?.avatarPath {
+            snowViewModel.avatarURL = URL(string: avatarPath)
+        }
         
         return snowViewModel
     }
