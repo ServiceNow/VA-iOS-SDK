@@ -6,6 +6,8 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
+import AlamofireImage
+
 class CarouselControl: PickerControlProtocol {
     
     var visibleItemCount: Int = PickerConstants.visibleItemCount
@@ -18,6 +20,8 @@ class CarouselControl: PickerControlProtocol {
     var style: PickerControlStyle
     
     var model: ControlViewModel
+    
+    var imageDownloader: ImageDownloader?
     
     weak var delegate: ControlDelegate?
     

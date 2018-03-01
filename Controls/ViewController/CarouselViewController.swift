@@ -71,13 +71,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CarouselCollectionViewCell.cellIdentifier, for: indexPath) as! CarouselCollectionViewCell
         cell.contentView.backgroundColor = UIColor.yellow
         let item = model.items[indexPath.row] as! CarouselItem
-        cell.configureWithCarouselItem(item)
+        cell.configure(withCarouselItem: item)
         return cell
-    }
-    
-    // MARK: UICollectionViewFlowLayoutDelegate
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 150, height: 150)
     }
 }

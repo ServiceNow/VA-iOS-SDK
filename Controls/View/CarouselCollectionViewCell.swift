@@ -12,7 +12,7 @@ class CarouselCollectionViewCell: UICollectionViewCell {
     
     static let cellIdentifier = "CarouselCollectionViewCellIdentifier"
     
-    func configureWithCarouselItem(_ item: CarouselItem) {
+    func configure(withCarouselItem item: CarouselItem) {
         
     }
 }
