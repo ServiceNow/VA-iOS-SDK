@@ -19,19 +19,39 @@
                 <rect key="frame" x="0.0" y="0.0" width="222" height="211"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="u7p-Qn-t1q">
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PzE-G9-mIv" customClass="RoundedView" customModule="SnowChat" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="222" height="211"/>
-                    </imageView>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="u7p-Qn-t1q">
+                                <rect key="frame" x="0.0" y="0.0" width="222" height="211"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="u7p-Qn-t1q" firstAttribute="leading" secondItem="PzE-G9-mIv" secondAttribute="leading" id="9fR-y9-aSm"/>
+                            <constraint firstAttribute="trailing" secondItem="u7p-Qn-t1q" secondAttribute="trailing" id="X7B-KE-TF1"/>
+                            <constraint firstAttribute="bottom" secondItem="u7p-Qn-t1q" secondAttribute="bottom" id="hby-zI-udt"/>
+                            <constraint firstItem="u7p-Qn-t1q" firstAttribute="top" secondItem="PzE-G9-mIv" secondAttribute="top" id="nY0-pO-jSc"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="10"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
                 </subviews>
             </view>
             <constraints>
-                <constraint firstItem="u7p-Qn-t1q" firstAttribute="trailing" secondItem="DD9-db-jmH" secondAttribute="trailing" id="VP9-sn-4MH"/>
-                <constraint firstAttribute="bottom" secondItem="u7p-Qn-t1q" secondAttribute="bottom" id="Zsl-OP-4Ba"/>
-                <constraint firstItem="u7p-Qn-t1q" firstAttribute="top" secondItem="DD9-db-jmH" secondAttribute="top" id="aMw-bB-NKu"/>
-                <constraint firstItem="u7p-Qn-t1q" firstAttribute="leading" secondItem="DD9-db-jmH" secondAttribute="leading" id="rIA-9n-HiG"/>
+                <constraint firstAttribute="bottom" secondItem="PzE-G9-mIv" secondAttribute="bottom" id="4rB-we-GcC"/>
+                <constraint firstAttribute="leading" secondItem="PzE-G9-mIv" secondAttribute="leading" id="NFU-rt-icR"/>
+                <constraint firstItem="PzE-G9-mIv" firstAttribute="top" secondItem="DD9-db-jmH" secondAttribute="top" id="U4z-J7-vhG"/>
+                <constraint firstItem="PzE-G9-mIv" firstAttribute="trailing" secondItem="DD9-db-jmH" secondAttribute="trailing" id="fZX-4L-Fe1"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="rW1-as-1Yk"/>
             <size key="customSize" width="222" height="211"/>
+            <connections>
+                <outlet property="imageView" destination="u7p-Qn-t1q" id="wZ6-sG-U8g"/>
+            </connections>
             <point key="canvasLocation" x="-98" y="73.5"/>
         </collectionViewCell>
     </objects>

@@ -50,7 +50,7 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
             return attributes
         }
         
-        centerAttribute.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
+        centerAttribute.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
         return attributes
     }
     

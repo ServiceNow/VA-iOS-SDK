@@ -17,11 +17,19 @@ class CarouselControl: PickerControlProtocol {
         return vc
     }()
     
+    private var carouselViewController: CarouselViewController {
+        return self.viewController as! CarouselViewController
+    }
+    
     var style: PickerControlStyle
     
     var model: ControlViewModel
     
-    var imageDownloader: ImageDownloader?
+    var imageDownloader: ImageDownloader? {
+        didSet {
+            carouselViewController.imageDownloader = imageDownloader
+        }
+    }
     
     weak var delegate: ControlDelegate?
     

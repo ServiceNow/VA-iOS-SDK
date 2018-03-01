@@ -7,10 +7,12 @@
 //
 
 import UIKit
+import AlamofireImage
 
 class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     weak var delegate: PickerViewControllerDelegate?
+    var imageDownloader: ImageDownloader?
     
     private var collectionView: UICollectionView?
     private var model: CarouselControlViewModel
@@ -69,9 +71,12 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CarouselCollectionViewCell.cellIdentifier, for: indexPath) as! CarouselCollectionViewCell
-        cell.contentView.backgroundColor = UIColor.yellow
+        cell.contentView.backgroundColor = .clear
         let item = model.items[indexPath.row] as! CarouselItem
-        cell.configure(withCarouselItem: item)
+        if let imageDownloader = imageDownloader {
+            cell.configure(withCarouselItem: item, imageDownloader: imageDownloader)
+        }
+        
         return cell
     }
 }
