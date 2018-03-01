@@ -131,11 +131,13 @@ public class SNOWAMBClient {
     private var dataTasks = [URLSessionDataTask]()
     
     private var scheduledConnectTask: DispatchWorkItem?
+    private var connectDataTask: URLSessionDataTask?
     private var messageId = 0
     
     public var clientStatus = SNOWAMBClientStatus.disconnected {
         didSet {
             if oldValue != self.clientStatus {
+                log("client state \(clientStatus)")
                 delegate?.didClientStatusChange(client: self, status: clientStatus)
                 switch self.clientStatus {
                 case .retrying, .handshake:
@@ -164,10 +166,13 @@ public class SNOWAMBClient {
         didSet {
             if isPaused != oldValue {
                 if isPaused {
-                    cancelAllDataTasks()
+                    // Looks like connect task cancellation often leaves server in bad state,
+                    // so instead we keep all tasks alive until they die on timeout or server explicitely kills them (alex a, 02-27-18)
+                    // TODO: Keep testing this!
+//                    cancelAllDataTasks()
                 } else {
                     self.clientStatus = .retrying
-                    startConnectRequest(after: 0.1)
+                    startConnectRequest()
                 }
             }
         }
@@ -180,7 +185,7 @@ public class SNOWAMBClient {
     // TODO: Use Logger instead?
     func log(_ logString: String) {
         #if DEBUG
-            NSLog(logString)
+            NSLog("AMB Client: \(logString)")
         #endif
     }
     
@@ -273,6 +278,16 @@ private extension SNOWAMBClient {
             return
         }
         
+        if let connectDataTask = self.connectDataTask {
+            if connectDataTask.state == URLSessionDataTask.State.running {
+                log("data task is still in flight, new connect request was not created")
+                if self.clientStatus == .retrying {
+                    self.clientStatus = .connected
+                }
+                return
+            }
+        }
+        
         self.scheduledConnectTask = DispatchWorkItem { [weak self] in
             self?.sendBayeuxConnectMessage()
         }
@@ -361,7 +376,7 @@ private extension SNOWAMBClient {
     
     func handleChannelMessage(_ ambMessage: SNOWAMBMessage, channel: String) {
         if self.isPaused {
-            log("AMB Client: incoming message when client is paused. Skipping.")
+            log("incoming message when client is paused. Skipping.")
             return
         }
         
@@ -450,7 +465,7 @@ private extension SNOWAMBClient {
                 }
                 
                 if interval > 0 {
-                    log("AMB Client: Delaying connection by: \(interval)")
+                    log("Delaying connection by: \(interval)")
                     startConnectRequest(after: interval)
                     return
                 }
@@ -665,7 +680,7 @@ private extension SNOWAMBClient {
 
         if let task = task {
             if channel == AMBChannel.connect.name {
-                
+                connectDataTask = task
             }
             dataTasks.append(task)
         }

@@ -30,7 +30,7 @@ extension SNOWAMBError: LocalizedError {
         case .messageParserError(description: let description):
             return "parser error (\(description))"
         case .unhandledMessageReceived(channel: let channel):
-            return "message recieved for unsubscribed channel \(channel)"
+            return "message received for unsubscribed channel \(channel)"
         }
     }
 }

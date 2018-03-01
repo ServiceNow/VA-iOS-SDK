@@ -10,7 +10,7 @@ extension APIManager {
                                     switch result {
                                     case .success:
                                         Logger.default.logInfo("published message successfully")
-                                    //TODO: Implement handler here
+                                        //TODO: Implement handler here
                                     case .failure:
                                         Logger.default.logInfo("failed to publish message")
                                         //TODO: same
