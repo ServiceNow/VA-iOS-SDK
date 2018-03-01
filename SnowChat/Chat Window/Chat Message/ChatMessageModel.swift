@@ -187,9 +187,9 @@ extension ChatMessageModel {
         let direction = message.data.direction
         let textModel = TextControlViewModel(id: message.messageId, value: value)
         let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
-        if let agentPath = message.data.sender?.avatarPath {
-            //snowViewModel.avatarURL = URL(string: agentPath)
-        }
+
+        // TODO: set agent avatar into the message model
+        
         return snowViewModel
     }
     

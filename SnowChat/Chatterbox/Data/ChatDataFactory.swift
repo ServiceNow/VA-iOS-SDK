@@ -1,5 +1,5 @@
 //
-//  CBDataFactory.swift
+//  DataFactory.swift
 //  SnowChat
 //
 //  Created by Marc Attinasi on 11/15/17.
