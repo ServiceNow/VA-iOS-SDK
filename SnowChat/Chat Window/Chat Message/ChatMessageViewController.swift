@@ -23,7 +23,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     private(set) var uiControl: ControlProtocol?
     
-    var model: ChatMessageModel? {
+    private var model: ChatMessageModel? {
         didSet {
             if let model = model {
                 updateWithModel(model)
