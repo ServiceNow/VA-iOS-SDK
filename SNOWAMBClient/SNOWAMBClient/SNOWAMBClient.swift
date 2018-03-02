@@ -61,8 +61,8 @@ public struct SNOWAMBGlideStatus {
 //
 
 public protocol SNOWAMBClientDelegate: AnyObject {
-    func didConnect(_ client: SNOWAMBClient)
-    func didDisconnect(_ client: SNOWAMBClient)
+    func ambClientDidConnect(_ client: SNOWAMBClient)
+    func ambClientDidDisconnect(_ client: SNOWAMBClient)
     func ambClient(_ client: SNOWAMBClient, didSubscribeToChannel channel: String)
     func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromchannel channel: String)
     func ambClient(_ client: SNOWAMBClient, didReceiveMessage: SNOWAMBMessage, fromChannel channel: String)
@@ -144,8 +144,10 @@ public class SNOWAMBClient {
                     retryAttempt = 0
                 case .connected:
                     subscribeQueuedChannels()
+                    delegate?.ambClientDidConnect(self)
                 case .disconnected:
                     cancelAllDataTasks()
+                    delegate?.ambClientDidDisconnect(self)
                 case .maximumRetriesReached:
                     delegate?.ambClient(self,
                                       didFailWithError: SNOWAMBError.connectFailed(description: "Maximum connect retry attempts have been reached"))
@@ -512,6 +514,7 @@ private extension SNOWAMBClient {
                     }
                 })
                 subscriptionsByChannel[channel] = updatedSubscriptions
+                delegate?.ambClient(self, didSubscribeToChannel: channel)
             }
         } else {
             delegate?.ambClient(self, didFailWithError: SNOWAMBError.disconnectFailed)
@@ -522,6 +525,7 @@ private extension SNOWAMBClient {
         if ambMessage.successful {
             subscribedChannels.remove(ambMessage.channel)
             cleanupSubscriptions()
+            delegate?.ambClient(self, didUnsubscribeFromchannel: ambMessage.channel)
         } else {
             delegate?.ambClient(self, didFailWithError: SNOWAMBError.disconnectFailed)
         }

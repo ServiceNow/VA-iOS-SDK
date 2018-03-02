@@ -54,8 +54,8 @@ extension APIManager {
 // MARK: - AMB Delegate
 
 extension APIManager: SNOWAMBClientDelegate {
-    func didConnect(_ client: SNOWAMBClient) {}
-    func didDisconnect(_ client: SNOWAMBClient) {}
+    func ambClientDidConnect(_ client: SNOWAMBClient) {}
+    func ambClientDidDisconnect(_ client: SNOWAMBClient) {}
     func ambClient(_ client: SNOWAMBClient, didSubscribeToChannel channel: String) {}
     func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromchannel channel: String) {}
     func ambClient(_ client: SNOWAMBClient, didReceiveMessage: SNOWAMBMessage, fromChannel channel: String) {}
