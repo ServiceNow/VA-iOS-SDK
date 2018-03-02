@@ -19,7 +19,7 @@ struct ChatVendor: Codable {
 }
 
 struct ChatSessionContext {
-    var deviceId: String { return "1234" } //{ return deviceIdentifier() }
+    var deviceId: String { return deviceIdentifier() }
     var vendor: ChatVendor
 }
 
