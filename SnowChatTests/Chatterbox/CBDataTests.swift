@@ -156,6 +156,17 @@ class CBDataTests: XCTestCase {
         XCTAssertEqual("ContextualAction", cancelRequestMessage.data.richControl?.uiType)
     }
     
+    func testSubscribeToSupportQueueExample() {
+        let message = ExampleData.exampleSubscribeToSupportQueueMessage()
+        XCTAssertEqual(ChatterboxActionType.supportQueueSubscribe, message.eventType)
+        XCTAssertEqual("/cs/support_queue/c3lzX2lkPWY0ZDcwMWIxYjM5MDAzMDBmN2QxYTEzODE2YThkYzhl", message.channel)
+        XCTAssertEqual("actionMessage", message.type)
+        XCTAssertEqual("SubscribeToSupportQueue", message.data.actionMessage.type)
+        XCTAssertEqual(true, message.data.actionMessage.supportQueue.active)
+        XCTAssertEqual("30 Seconds", message.data.actionMessage.supportQueue.averageWaitTime)
+        XCTAssertTrue(message.data.actionMessage.supportQueue.sysId.lengthOfBytes(using: String.Encoding.utf8) > 0)
+    }
+    
     let jsonInitStart = """
         {
           "type" : "actionMessage",

@@ -82,6 +82,7 @@ class ChatDataFactory {
         return ControlDataUnknown()
     }
     
+    //swiftlint:disable:next cyclomatic_complexity
     static func actionFromJSON(_ json: String) -> ActionData {
          
         if let jsonData = json.data(using: .utf8) {
@@ -107,6 +108,8 @@ class ChatDataFactory {
                     return try ChatUtil.jsonDecoder.decode(SystemTopicPickerMessage.self, from: jsonData)
                 case .startAgentChat:
                     return try ChatUtil.jsonDecoder.decode(StartAgentChatMessage.self, from: jsonData)
+                case .supportQueueSubscribe:
+                    return try ChatUtil.jsonDecoder.decode(SubscribeToSupportQueueMessage.self, from: jsonData)
                 case .unknown:
                     return ActionDataUnknown()
                 }

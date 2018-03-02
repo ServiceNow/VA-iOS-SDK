@@ -384,4 +384,37 @@ class ExampleData {
         """
         return ChatDataFactory.controlFromJSON(jsonMessage) as! CancelTopicControlMessage
     }
+    
+    static func exampleSubscribeToSupportQueueMessage() -> SubscribeToSupportQueueMessage {
+        let jsonMessage = """
+        {
+            "type": "actionMessage",
+            "data": {
+                "@class": ".ActionMessageDto",
+                "messageId": "9c2fe862dba01300c527dfea5e96199f",
+                "sequence": "161e79c2aae0000001",
+                "sessionId": "002f20eedb601300c527dfea5e9619af",
+                "conversationId": "082fe062dba01300c527dfea5e9619b2",
+                "actionMessage": {
+                    "type": "SubscribeToSupportQueue",
+                    "supportQueue": {
+                        "active": true,
+                        "queueAmbChannel": "/cs/support_queue/c3lzX2lkPWY0ZDcwMWIxYjM5MDAzMDBmN2QxYTEzODE2YThkYzhl",
+                        "averageWaitTime": "30 Seconds",
+                        "sysId": "f4d701b1b3900300f7d1a13816a8dc8e"
+                    }
+                },
+                "links": [
+
+                ],
+                "direction": "outbound",
+                "isAgent": false,
+                "receiveTime": 0,
+                "sendTime": 0
+            },
+            "source": "server"
+        }
+        """
+        return ChatDataFactory.actionFromJSON(jsonMessage) as! SubscribeToSupportQueueMessage
+    }
 }

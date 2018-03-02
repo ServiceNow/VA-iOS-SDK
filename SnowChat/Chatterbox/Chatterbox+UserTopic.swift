@@ -53,8 +53,15 @@ extension Chatterbox {
     }
     
     private func topicSelectionMessageHandler(_ message: String) {
-        let choices: ControlData = ChatDataFactory.controlFromJSON(message)
         
+        let action = ChatDataFactory.actionFromJSON(message)
+        if action.eventType == .supportQueueSubscribe,
+            let subscribeMessage = action as? SubscribeToSupportQueueMessage {
+            subscribeToSupportQueue(subscribeMessage)
+            return
+        }
+        
+        let choices: ControlData = ChatDataFactory.controlFromJSON(message)
         if choices.controlType == .contextualAction {
             if let completion = handshakeCompletedHandler {
                 let topicChoices = choices as? ContextualActionMessage

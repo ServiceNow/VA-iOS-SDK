@@ -72,6 +72,8 @@ class Chatterbox {
     
     internal let chatId = ChatUtil.uuidString()
     internal var chatSubscription: SNOWAMBSubscription?
+    internal var supportQueueSubscription: SNOWAMBSubscription?
+    internal var supportQueueInfo: SupportQueue?
     
     internal let instance: ServerInstance
     
@@ -117,8 +119,12 @@ class Chatterbox {
         let action = ChatDataFactory.actionFromJSON(message)
         
         switch action.eventType {
-        case ChatterboxActionType.finishedUserTopic:
+        case .finishedUserTopic:
             didReceiveTopicFinishedAction(action)
+        case .supportQueueSubscribe:
+            if let subscribeMessage = action as? SubscribeToSupportQueueMessage {
+                subscribeToSupportQueue(subscribeMessage)
+            }
         default:
             logger.logInfo("Unhandled event message: \(action.eventType)")
             return false
