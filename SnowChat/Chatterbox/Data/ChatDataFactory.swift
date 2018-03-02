@@ -77,7 +77,7 @@ class ChatDataFactory {
                 break
             }
         } catch let parseError {
-            print(parseError)
+            Logger.default.logError("Parsing Error in controlFromJSON: \(parseError)")
         }
         return ControlDataUnknown()
     }
@@ -87,9 +87,9 @@ class ChatDataFactory {
          
         if let jsonData = json.data(using: .utf8) {
             do {
-                let actionMessage = try ChatUtil.jsonDecoder.decode(ActionMessage.self, from: jsonData)
+                let actionMessageStub = try ChatUtil.jsonDecoder.decode(ActionMessageStub.self, from: jsonData)
                 
-                guard let eventType = ChatterboxActionType(rawValue: actionMessage.data.actionMessage.type) else {
+                guard let type = actionMessageStub.data.actionMessage?.type, let eventType = ChatterboxActionType(rawValue: type) else {
                     return ActionDataUnknown()
                 }
                 
@@ -114,7 +114,7 @@ class ChatDataFactory {
                     return ActionDataUnknown()
                 }
             } catch let decodeError {
-                print(decodeError)
+                Logger.default.logError("Decode Error in actionFromJSON: \(decodeError)")
             }
         }
         
@@ -185,5 +185,18 @@ private struct ControlMessageStub: Codable {
     
     struct UIType: Codable {
         let uiType: String
+    }
+}
+
+private struct ActionMessageStub: Codable {
+    let type: String
+    let data: ActionStub
+    
+    struct ActionStub: Codable {
+        let actionMessage: ActionType?
+    }
+    
+    struct ActionType: Codable {
+        let type: String
     }
 }

@@ -28,7 +28,7 @@ class TestControlData: ControlData {
     }
 }
 
-class CBDataTests: XCTestCase {
+class ChatterboxDataTests: XCTestCase {
     
     var encoder: JSONEncoder?
     var decoder: JSONDecoder?
@@ -162,8 +162,8 @@ class CBDataTests: XCTestCase {
         XCTAssertEqual("/cs/support_queue/c3lzX2lkPWY0ZDcwMWIxYjM5MDAzMDBmN2QxYTEzODE2YThkYzhl", message.channel)
         XCTAssertEqual("actionMessage", message.type)
         XCTAssertEqual("SubscribeToSupportQueue", message.data.actionMessage.type)
-        XCTAssertEqual(true, message.data.actionMessage.supportQueue.active)
-        XCTAssertEqual("30 Seconds", message.data.actionMessage.supportQueue.averageWaitTime)
+        XCTAssertEqual(true, message.active)
+        XCTAssertEqual("30 Seconds", message.waitTimeDisplayString)
         XCTAssertTrue(message.data.actionMessage.supportQueue.sysId.lengthOfBytes(using: String.Encoding.utf8) > 0)
     }
     
