@@ -140,7 +140,7 @@ extension Chatterbox {
         return initUserEvent
     }
     
-    private func serverContextResponse(fromRequest request: [String: ContextItem]) -> [String: Bool] {
+    private func serverContextResponse(fromRequest request: ServerContextRequest) -> [String: Bool] {
         var response: [String: Bool] = [:]
         
         request.forEach { item in
