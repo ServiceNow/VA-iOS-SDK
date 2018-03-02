@@ -42,6 +42,9 @@ class AuthInterceptor: RequestAdapter, RequestRetrier {
         // Prefer end user session
         urlRequest.setValue(String(true), forHTTPHeaderField: HTTPHeaderField.endUser)
         
+        // Opt out of Qlue public API support
+        urlRequest.setValue(String(true), forHTTPHeaderField: HTTPHeaderField.requireLoggedIn)
+        
         // Set current user token on the request
         userTokenQueue.sync {
             if let userToken = userToken {
