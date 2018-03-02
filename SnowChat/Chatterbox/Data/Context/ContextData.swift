@@ -7,13 +7,11 @@
 //
 
 struct ContextData: Encodable {
-    var location: ContextItem?
-    var appVersion: ContextItem?
-    var deviceTimeZone: ContextItem?
-    var deviceType: ContextItem?
-    var cameraPermission: ContextItem?
-    var photoPermission: ContextItem?
-    var mobileOS: ContextItem?
+    var location: LocationContextData?
+    var appVersion: String?
+    var deviceTimeZone: String?
+    var deviceType: String?
+    var mobileOS: String?
     
     func encode(to encoder: Encoder) throws {
         
@@ -32,12 +30,4 @@ struct LocationContextData: Encodable {
         case longitude = "lng"
         case address = "address"
     }
-}
-
-enum AppVersion: String, Encodable {
-    case value
-}
-
-enum DeviceTimeZone: String, Encodable {
-    case value = "deviceTimeZone"
 }
