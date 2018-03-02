@@ -13,9 +13,8 @@ extension Chatterbox {
     func subscribeToSupportQueue(_ message: SubscribeToSupportQueueMessage) {
         let channel = message.channel
         
-        if supportQueueSubscription != nil {
-            supportQueueSubscription?.unsubscribe()
-        }
+        // unsubscribe existing subscription if it is set
+        supportQueueSubscription?.unsubscribe()
         
         logger.logInfo("Subscribing to SupportQueue channel \(channel)")
         
