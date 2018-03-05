@@ -23,10 +23,6 @@ struct ContextHandshake: Codable {
     }
 }
 
-protocol ContextItemHandler {
-    
-}
-
 struct ContextItem: Codable {
     let updateType: ContextItemUpdateType
     let frequency: ContextItemFrequency
@@ -110,6 +106,17 @@ struct ServerContextRequest: Codable {
         self.mobileOS = contextItem
         self.mobileOS?.type = .mobileOS
         predefinedContextItems.append(contextItem)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: ContextItemType.self)
+        try container.encode(location, forKey: .location)
+        try container.encode(appVersion, forKey: .appVersion)
+        try container.encode(deviceTimeZone, forKey: .deviceTimeZone)
+        try container.encode(deviceType, forKey: .deviceType)
+        try container.encode(cameraPermission, forKey: .cameraPermission)
+        try container.encode(photoPermission, forKey: .photoPermission)
+        try container.encode(mobileOS, forKey: .mobileOS)
     }
 }
 
