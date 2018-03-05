@@ -45,6 +45,10 @@ extension APIManager {
                     chatSession.welcomeMessage = data.object(forKey: "welcomeMessage") as? String
                     chatSession.sessionState = .opened
                     
+                    if let settings = sessionData["settings"] as? NSDictionary {
+                        chatSession.settings = ChatSessionSettings(fromDictionary: settings)
+                    }
+                    
                     completion(.success(chatSession))
                 } else {
                     Logger.default.logError("Error getting response data from session request: malformed server response")
@@ -168,5 +172,5 @@ extension APIManager {
             return nil
         }
         return assumeMessagesReversed ? messages.reversed() : messages
-    }
+    }    
 }

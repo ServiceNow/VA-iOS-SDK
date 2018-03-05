@@ -77,18 +77,19 @@ class ChatDataFactory {
                 break
             }
         } catch let parseError {
-            print(parseError)
+            Logger.default.logError("Parsing Error in controlFromJSON: \(parseError)")
         }
         return ControlDataUnknown()
     }
     
+    //swiftlint:disable:next cyclomatic_complexity
     static func actionFromJSON(_ json: String) -> ActionData {
          
         if let jsonData = json.data(using: .utf8) {
             do {
-                let actionMessage = try ChatUtil.jsonDecoder.decode(ActionMessage.self, from: jsonData)
+                let actionMessageStub = try ChatUtil.jsonDecoder.decode(ActionMessageStub.self, from: jsonData)
                 
-                guard let eventType = ChatterboxActionType(rawValue: actionMessage.data.actionMessage.type) else {
+                guard let type = actionMessageStub.data.actionMessage?.type, let eventType = ChatterboxActionType(rawValue: type) else {
                     return ActionDataUnknown()
                 }
                 
@@ -107,11 +108,13 @@ class ChatDataFactory {
                     return try ChatUtil.jsonDecoder.decode(SystemTopicPickerMessage.self, from: jsonData)
                 case .startAgentChat:
                     return try ChatUtil.jsonDecoder.decode(StartAgentChatMessage.self, from: jsonData)
+                case .supportQueueSubscribe:
+                    return try ChatUtil.jsonDecoder.decode(SubscribeToSupportQueueMessage.self, from: jsonData)
                 case .unknown:
                     return ActionDataUnknown()
                 }
             } catch let decodeError {
-                print(decodeError)
+                Logger.default.logError("Decode Error in actionFromJSON: \(decodeError)")
             }
         }
         
@@ -182,5 +185,18 @@ private struct ControlMessageStub: Codable {
     
     struct UIType: Codable {
         let uiType: String
+    }
+}
+
+private struct ActionMessageStub: Codable {
+    let type: String
+    let data: ActionStub
+    
+    struct ActionStub: Codable {
+        let actionMessage: ActionType?
+    }
+    
+    struct ActionType: Codable {
+        let type: String
     }
 }

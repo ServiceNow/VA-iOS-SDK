@@ -53,15 +53,14 @@ extension Chatterbox {
     }
     
     private func topicSelectionMessageHandler(_ message: String) {
-        let choices: ControlData = ChatDataFactory.controlFromJSON(message)
         
-        if choices.controlType == .contextualAction {
-            if let completion = handshakeCompletedHandler {
-                let topicChoices = choices as? ContextualActionMessage
-                completion(topicChoices)
-            } else {
-                logger.logFatal("Could not call user session completion handler: invalid message or no handler provided")
-            }
+        if let subscribeMessage = ChatDataFactory.actionFromJSON(message) as? SubscribeToSupportQueueMessage {
+            didReceiveSubscribeToSupportAction(subscribeMessage)
+            return
+        }
+        
+        if let topicChoices = ChatDataFactory.controlFromJSON(message) as? ContextualActionMessage {
+            handshakeCompletedHandler?(topicChoices)
         }
     }
     
