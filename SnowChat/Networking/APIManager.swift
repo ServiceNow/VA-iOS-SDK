@@ -10,6 +10,7 @@ import Foundation
 import Alamofire
 import AlamofireImage
 import SNOWAMBClient
+import WebKit
 
 enum APIManagerError: Error {
     case loginError(message: String)
@@ -40,7 +41,18 @@ class APIManager: NSObject {
     }()
     
     internal let ambClient: SNOWAMBClient
-
+    
+    private let webViewProcessPool = WKProcessPool()
+    private let webViewDataStorage = WKWebsiteDataStore.nonPersistent()
+    
+    internal var webViewConfiguration: WKWebViewConfiguration {
+        let configuration = WKWebViewConfiguration()
+        configuration.suppressesIncrementalRendering = true
+        configuration.processPool = webViewProcessPool
+        configuration.websiteDataStore = webViewDataStorage
+        return configuration
+    }
+    
     private var authStatus: AuthStatus
     
     // MARK: - Initialization
@@ -67,7 +79,7 @@ class APIManager: NSObject {
         // TODO: Should we only clear some session cookies instead of all?
         clearAllCookies()
         
-        let authInterceptor = AuthInterceptor(instanceURL: instance.instanceURL, token: token)
+        let authInterceptor = AuthInterceptor(instance: instance, token: token)
         sessionManager.adapter = authInterceptor
         sessionManager.retrier = authInterceptor
         

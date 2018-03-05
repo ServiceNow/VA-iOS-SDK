@@ -17,6 +17,7 @@ extension APIManager {
     
     func startChatSession(with sessionContext: ChatSessionContext, chatId: String, completion: @escaping (Result<ChatSession>) -> Void) {
         let parameters: Parameters = [ "deviceId": sessionContext.deviceId,
+                                       "deviceType": "ios",
                                        "channelId": "/cs/messages/" + chatId,
                                        "vendorId": sessionContext.vendor.vendorId]
         
@@ -127,7 +128,6 @@ extension APIManager {
                 let status = conversationDictionary["status"] as? String ?? "UNKNOWN"
                 let topicTypeName = conversationDictionary["topicTypeName"] as? String ?? "UNKNOWN"
                 let messages = APIManager.messagesFromResult(messagesDictionary, assumeMessagesReversed: assumeMessagesReversed)
-
                 let state = Conversation.ConversationState(rawValue: status) ?? .completed
                 var conversation = Conversation(withConversationId: conversationId, withTopic: topicTypeName, withState: state)
                 

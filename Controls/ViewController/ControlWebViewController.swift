@@ -11,18 +11,30 @@ import WebKit
 
 class ControlWebViewController: UIViewController, WKNavigationDelegate {
     
-    private var request: URLRequest?
-    private var htmlString: String?
-    private(set) var webView: WKWebView?
-    private let fullSizeContainer = FullSizeScrollViewContainerView()
-    
-    init(request: URLRequest) {
-        self.request = request
-        super.init(nibName: nil, bundle: nil)
+    enum Request {
+        case url(URL)
+        case html(String)
     }
     
-    init(htmlString: String) {
-        self.htmlString = htmlString
+    private let initialRequest: Request
+    private let resourceProvider: ControlWebResourceProvider
+    
+    private var webView: WKWebView!
+    private let fullSizeContainer = FullSizeScrollViewContainerView()
+    
+    // MARK: - Initialization
+    
+    convenience init(url: URL, resourceProvider: ControlWebResourceProvider) {
+        self.init(initialRequest: .url(url), resourceProvider: resourceProvider)
+    }
+    
+    convenience init(htmlString: String, resourceProvider: ControlWebResourceProvider) {
+        self.init(initialRequest: .html(htmlString), resourceProvider: resourceProvider)
+    }
+    
+    private init(initialRequest: Request, resourceProvider: ControlWebResourceProvider) {
+        self.initialRequest = initialRequest
+        self.resourceProvider = resourceProvider
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -30,45 +42,47 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - View Life Cycle
+    
     override func loadView() {
         self.view = fullSizeContainer
     }
     
-    // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setupWebView()
+        loadInitialRequest()
     }
     
+    // MARK: - Setup
+    
     private func setupWebView() {
-        let configuration = WKWebViewConfiguration()
-        configuration.suppressesIncrementalRendering = true
-        
-        // TODO: Make it shared like in NOW app?
-        configuration.processPool = WKProcessPool()
-        configuration.websiteDataStore = WKWebsiteDataStore.nonPersistent()
-        
-        let webView = WKWebView(frame: CGRect.zero, configuration: configuration)
-        webView.navigationDelegate = self
-        webView.allowsBackForwardNavigationGestures = true
+        let webView = WKWebView(frame: CGRect.zero, configuration: resourceProvider.webViewConfiguration)
         
         fullSizeContainer.maxHeight = 400
         fullSizeContainer.scrollView = webView.scrollView
+        
         webView.translatesAutoresizingMaskIntoConstraints = false
         fullSizeContainer.addSubview(webView)
         NSLayoutConstraint.activate([webView.leadingAnchor.constraint(equalTo: fullSizeContainer.leadingAnchor),
                                      webView.trailingAnchor.constraint(equalTo: fullSizeContainer.trailingAnchor),
                                      webView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
                                      webView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor)])
-        
-        if let request = self.request {
-            webView.load(request)
-        }
-        
-        if let htmlString = htmlString {
-            webView.loadHTMLString(htmlString, baseURL: nil)
-        }
-        
+
         self.webView = webView
     }
+    
+    // MARK: - Request Loading
+    
+    private func loadInitialRequest() {
+        switch self.initialRequest {
+        case let .html(html):
+            webView.loadHTMLString(html, baseURL: nil)
+        case let .url(url):
+            let request = resourceProvider.authorizedRequest(with: url)
+            webView.load(request)
+        }
+    }
+    
 }

@@ -26,7 +26,7 @@ class ChatDataStore {
     // storeControlData: find or create a conversation and add a new MessageExchange with the new control data
     //
     func storeControlData(_ data: ControlData, forConversation conversationId: String, fromChat source: Chatterbox) {
-        let index = findOrCreateConversation(conversationId)
+        let index = findOrCreateConversation(conversationId, withName: "", withState: .inProgress)
         conversations[index].add(MessageExchange(withMessage: data))
     }
     
@@ -48,10 +48,10 @@ class ChatDataStore {
         return conversations[index].removeResponse(from: exchange)
     }
     
-    internal func findOrCreateConversation(_ conversationId: String) -> Int {
+    internal func findOrCreateConversation(_ conversationId: String, withName name: String, withState conversationState: Conversation.ConversationState) -> Int {
         guard let foundIndex = conversations.index(where: { $0.conversationId == conversationId }) else {
             let index = conversations.count
-            conversations.append(Conversation(withConversationId: conversationId))
+            conversations.append(Conversation(withConversationId: conversationId, withTopic: name, withState: conversationState))
             return index
         }
         return foundIndex

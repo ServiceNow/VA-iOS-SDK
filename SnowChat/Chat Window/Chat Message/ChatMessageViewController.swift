@@ -23,7 +23,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     private(set) var uiControl: ControlProtocol?
     
-    var model: ChatMessageModel? {
+    private var model: ChatMessageModel? {
         didSet {
             if let model = model {
                 updateWithModel(model)
@@ -33,6 +33,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     private func updateWithModel(_ model: ChatMessageModel) {
         guard let controlModel = model.controlModel,
+            let resourceProvider = resourceProvider,
             let bubbleLocation = model.bubbleLocation,
             let control = controlCache?.control(forModel: controlModel, forResourceProvider: resourceProvider) else {
                 return
@@ -55,8 +56,10 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     private func loadAvatar() {
         if let provider = resourceProvider {
-            agentImageView.af_imageDownloader = provider.imageProvider
-            agentImageView.af_setImage(withURL: provider.avatarURL)
+            let avatarURL = model?.avatarURL ?? provider.avatarURL
+            
+            agentImageView.af_imageDownloader = provider.imageDownloader
+            agentImageView.af_setImage(withURL: avatarURL)
             agentImageView.addCircleMaskIfNeeded()
         }
     }
@@ -74,6 +77,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         uiControl = nil
         resourceProvider = nil
         agentImageView.af_cancelImageRequest()
+        agentImageView.image = nil
     }
     
     internal func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {

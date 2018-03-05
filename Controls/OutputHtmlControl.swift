@@ -14,12 +14,12 @@ class OutputHtmlControl: ControlProtocol {
     
     weak var delegate: ControlDelegate?
     
-    required init(model: ControlViewModel) {
+    required init(model: ControlViewModel, resourceProvider: ControlWebResourceProvider) {
         guard let htmlModel = model as? OutputHtmlControlViewModel else {
             fatalError("Wrong model class")
         }
         
         self.model = htmlModel
-        self.viewController = ControlWebViewController(htmlString: htmlModel.value)
+        self.viewController = ControlWebViewController(htmlString: htmlModel.value, resourceProvider: resourceProvider)
     }
 }
