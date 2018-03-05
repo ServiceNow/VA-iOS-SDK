@@ -22,6 +22,7 @@ struct InitMessage: Codable, ActionData {
         var userId: String?
         var consumerAcctId: String?
         var contextHandshake: ContextHandshake
+        var contextData: ContextData?
     }
 
     // define the properties that we decode / encode

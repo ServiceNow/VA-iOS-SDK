@@ -117,8 +117,17 @@ extension Chatterbox {
     }
     
     private func startUserSession(withInitEvent initEvent: InitMessage) {
-        let initUserEvent = userSessionInitMessage(fromInitEvent: initEvent)
-        publishMessage(initUserEvent)
+        var initUserEvent = userSessionInitMessage(fromInitEvent: initEvent)
+        if let request = initUserEvent.data.actionMessage.contextHandshake.serverContextRequest {
+            appContextManager.authorizeContextItems(for: request, completion: { [weak self] response in
+                initUserEvent.data.actionMessage.contextHandshake.serverContextResponse = response
+                
+                self?.appContextManager.fetchContextData(completion: { [weak self] contextData in
+                    initUserEvent.data.actionMessage.contextData = contextData
+                    self?.publishMessage(initUserEvent)
+                })
+            })
+        }
     }
     
     private func userSessionInitMessage(fromInitEvent initEvent: InitMessage) -> InitMessage {
@@ -132,22 +141,7 @@ extension Chatterbox {
         initUserEvent.data.actionMessage.contextHandshake.deviceId = deviceIdentifier()
         initUserEvent.data.actionMessage.consumerAcctId = session?.user.consumerAccountId
         initUserEvent.data.actionMessage.extId = (initUserEvent.data.actionMessage.contextHandshake.deviceId ?? "") + (session?.user.consumerAccountId ?? "")
-        
-        if let request = initUserEvent.data.actionMessage.contextHandshake.serverContextRequest {
-            initUserEvent.data.actionMessage.contextHandshake.serverContextResponse = serverContextResponse(fromRequest: request)
-        }
-        
         return initUserEvent
-    }
-    
-    private func serverContextResponse(fromRequest request: ServerContextRequest) -> [String: Bool] {
-        var response: [String: Bool] = [:]
-        
-        request.forEach { item in
-            // say YES to all requests (for now)
-            response[item.key] = true
-        }
-        return response
     }
     
     private func handshakeMessageHandler(_ message: String) {

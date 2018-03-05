@@ -9,7 +9,6 @@
 import AVFoundation
 import Photos
 
-
 class UserData {
     
     // MARK: - Authorization

@@ -53,7 +53,6 @@
 		5706C5811FE49F78008D70D1 /* ChatMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706C5801FE49F78008D70D1 /* ChatMessageViewController.swift */; };
 		5717B1502003DABA00A4252C /* ChatMessageViewControllerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5717B14F2003DABA00A4252C /* ChatMessageViewControllerCache.swift */; };
 		5728D8EA20485BB30071EF9E /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728D8E920485BB30071EF9E /* Context.swift */; };
-		5728D8EF204876F30071EF9E /* AppContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728D8EE204876F30071EF9E /* AppContextManager.swift */; };
 		5728D8F12048D74A0071EF9E /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728D8F02048D74A0071EF9E /* UserData.swift */; };
 		5728D8F42048D9200071EF9E /* ContextData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728D8F32048D9200071EF9E /* ContextData.swift */; };
 		572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572A4E3B1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift */; };
@@ -107,6 +106,7 @@
 		57D1DB6D1FEB592D00082F78 /* OutputImageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB6C1FEB592D00082F78 /* OutputImageControl.swift */; };
 		57D1DB6F1FEC74E200082F78 /* OutputImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB6E1FEC74E200082F78 /* OutputImageViewModel.swift */; };
 		57D1DB791FEC88D200082F78 /* OutputImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB781FEC88D200082F78 /* OutputImageViewController.swift */; };
+		57D33BFB2049D37200CB606D /* AppContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D33BFA2049D37200CB606D /* AppContextManager.swift */; };
 		57D997AB1FE5B00000394A6D /* ChatMessageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57D997AA1FE5B00000394A6D /* ChatMessageViewController.xib */; };
 		57DF7C34202C1066008D013A /* ControlWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DF7C33202C1066008D013A /* ControlWebViewController.swift */; };
 		57DF7C36202CBAAE008D013A /* UIViewController+ModalNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DF7C35202CBAAE008D013A /* UIViewController+ModalNavigation.swift */; };
@@ -240,7 +240,6 @@
 		5706C5801FE49F78008D70D1 /* ChatMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageViewController.swift; sourceTree = "<group>"; };
 		5717B14F2003DABA00A4252C /* ChatMessageViewControllerCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageViewControllerCache.swift; sourceTree = "<group>"; };
 		5728D8E920485BB30071EF9E /* Context.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
-		5728D8EE204876F30071EF9E /* AppContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContextManager.swift; sourceTree = "<group>"; };
 		5728D8F02048D74A0071EF9E /* UserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
 		5728D8F32048D9200071EF9E /* ContextData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextData.swift; sourceTree = "<group>"; };
 		572A4E3B1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullSizeScrollViewContainerView.swift; sourceTree = "<group>"; };
@@ -294,6 +293,7 @@
 		57D1DB6C1FEB592D00082F78 /* OutputImageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputImageControl.swift; sourceTree = "<group>"; };
 		57D1DB6E1FEC74E200082F78 /* OutputImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputImageViewModel.swift; sourceTree = "<group>"; };
 		57D1DB781FEC88D200082F78 /* OutputImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputImageViewController.swift; sourceTree = "<group>"; };
+		57D33BFA2049D37200CB606D /* AppContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContextManager.swift; sourceTree = "<group>"; };
 		57D997AA1FE5B00000394A6D /* ChatMessageViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatMessageViewController.xib; sourceTree = "<group>"; };
 		57DF7C33202C1066008D013A /* ControlWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlWebViewController.swift; sourceTree = "<group>"; };
 		57DF7C35202CBAAE008D013A /* UIViewController+ModalNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+ModalNavigation.swift"; sourceTree = "<group>"; };
@@ -435,19 +435,12 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5728D8EB2048671D0071EF9E /* AppContext */ = {
-			isa = PBXGroup;
-			children = (
-				5728D8EE204876F30071EF9E /* AppContextManager.swift */,
-			);
-			path = AppContext;
-			sourceTree = "<group>";
-		};
 		5728D8F22048D9110071EF9E /* Context */ = {
 			isa = PBXGroup;
 			children = (
 				5728D8E920485BB30071EF9E /* Context.swift */,
 				5728D8F32048D9200071EF9E /* ContextData.swift */,
+				57D33BFA2049D37200CB606D /* AppContextManager.swift */,
 			);
 			path = Context;
 			sourceTree = "<group>";
@@ -757,7 +750,6 @@
 		BEB6C8591FB92CD700B1D497 /* SnowChat */ = {
 			isa = PBXGroup;
 			children = (
-				5728D8EB2048671D0071EF9E /* AppContext */,
 				BE876FDB1FDF4F64008EEF04 /* Chat Service */,
 				BE29E0CD1FDF06990029D1F0 /* Chat Data Controller */,
 				BE29E0CA1FDEF79B0029D1F0 /* Chat Window */,
@@ -1289,7 +1281,6 @@
 				C40565F81FC4F4D3004BD28C /* BooleanControlMessage.swift in Sources */,
 				575EBFB4203785CA009CBD05 /* InputImageControl.swift in Sources */,
 				C40565CD1FBE292B004BD28C /* ChatDataStore.swift in Sources */,
-				5728D8EF204876F30071EF9E /* AppContextManager.swift in Sources */,
 				C48441D020321FFA00D67757 /* StartAgentChatMessage.swift in Sources */,
 				C48441CA202D165900D67757 /* StartTopicDividerCell.swift in Sources */,
 				8BD222252037F65F0040B657 /* AuthInterceptor.swift in Sources */,
@@ -1325,6 +1316,7 @@
 				57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */,
 				5778CF9E1FE07023004F77D8 /* SingleSelectControlViewModel.swift in Sources */,
 				C4CBF2C92045D90C0038F120 /* Chatterbox+History.swift in Sources */,
+				57D33BFB2049D37200CB606D /* AppContextManager.swift in Sources */,
 				5728D8F12048D74A0071EF9E /* UserData.swift in Sources */,
 				57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */,
 				572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */,
