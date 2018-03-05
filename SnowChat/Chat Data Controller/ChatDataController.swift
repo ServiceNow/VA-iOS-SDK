@@ -480,8 +480,11 @@ extension ChatDataController: ChatDataListener {
         if let messageModel = chatMessageModel(withMessage: message) {
             bufferControlMessage(messageModel)
             
-            // Only some controls have auxiliary data. They might appear as part of the conversation table view or on the bottom.
-            presentAuxiliaryDataIfNeeded(forMessage: message)
+            if isBufferingEnabled {
+                // Only some controls have auxiliary data. They might appear as part of the conversation table view or on the bottom.
+                // NOTE: we do not show the aux-controls if we are not buffering
+                presentAuxiliaryDataIfNeeded(forMessage: message)
+            }
             
         } else {
             dataConversionError(controlId: message.uniqueId, controlType: message.controlType)
