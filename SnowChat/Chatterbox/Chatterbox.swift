@@ -123,7 +123,7 @@ class Chatterbox {
             didReceiveTopicFinishedAction(action)
         case .supportQueueSubscribe:
             if let subscribeMessage = action as? SubscribeToSupportQueueMessage {
-                subscribeToSupportQueue(subscribeMessage)
+                didReceiveSubscribeToSupportAction(subscribeMessage)
             }
         default:
             logger.logInfo("Unhandled event message: \(action.eventType)")
@@ -220,6 +220,11 @@ class Chatterbox {
         }
     }
 
+    internal func didReceiveSubscribeToSupportAction(_ subscribeMessage: SubscribeToSupportQueueMessage) {
+        supportQueueInfo = subscribeMessage.data.actionMessage.supportQueue
+        subscribeToSupportQueue(subscribeMessage)
+    }
+    
     // MARK: - Update Controls (outgoing from user)
     
     func update(control: ControlData) {

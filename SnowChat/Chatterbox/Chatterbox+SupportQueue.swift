@@ -25,7 +25,7 @@ extension Chatterbox {
             case .success:
                 guard let message = result.value else { return }
                 
-                strongSelf.logger.logDebug("Support Queue Update: \(message)")
+                strongSelf.logger.logDebug("Support Queue Update: \(message.jsonDataString)")
                 
                 if let jsonData = message.jsonDataString.data(using: .utf8) {
                     do {

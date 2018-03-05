@@ -55,7 +55,7 @@ extension Chatterbox {
     private func topicSelectionMessageHandler(_ message: String) {
         
         if let subscribeMessage = ChatDataFactory.actionFromJSON(message) as? SubscribeToSupportQueueMessage {
-            subscribeToSupportQueue(subscribeMessage)
+            didReceiveSubscribeToSupportAction(subscribeMessage)
             return
         }
         
