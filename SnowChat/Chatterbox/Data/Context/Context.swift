@@ -129,6 +129,27 @@ struct ServerContextResponse: Codable {
     var photoPermission: Bool
     var mobileOS: Bool
     
+    init(location: Bool, appVersion: Bool, deviceTimeZone: Bool, deviceType: Bool, cameraPermission: Bool, photoPermission: Bool, mobileOS: Bool) {
+        self.location = location
+        self.appVersion = appVersion
+        self.deviceTimeZone = deviceTimeZone
+        self.deviceType = deviceType
+        self.cameraPermission = cameraPermission
+        self.photoPermission = photoPermission
+        self.mobileOS = mobileOS
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: ContextItemType.self)
+        self.location = try container.decode(Bool.self, forKey: .location)
+        self.appVersion = try container.decode(Bool.self, forKey: .appVersion)
+        self.deviceTimeZone = try container.decode(Bool.self, forKey: .deviceTimeZone)
+        self.deviceType = try container.decode(Bool.self, forKey: .deviceType)
+        self.cameraPermission = try container.decode(Bool.self, forKey: .cameraPermission)
+        self.photoPermission = try container.decode(Bool.self, forKey: .photoPermission)
+        self.mobileOS = try container.decode(Bool.self, forKey: .mobileOS)
+    }
+    
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: ContextItemType.self)
         try container.encode(location, forKey: .location)

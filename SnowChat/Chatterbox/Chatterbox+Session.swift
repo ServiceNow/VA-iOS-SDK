@@ -121,7 +121,7 @@ extension Chatterbox {
         if let request = initUserEvent.data.actionMessage.contextHandshake.serverContextRequest {
             appContextManager.authorizeContextItems(for: request, completion: { [weak self] response in
                 initUserEvent.data.actionMessage.contextHandshake.serverContextResponse = response
-                
+
                 self?.appContextManager.fetchContextData(completion: { [weak self] contextData in
                     initUserEvent.data.actionMessage.contextData = contextData
                     self?.publishMessage(initUserEvent)
