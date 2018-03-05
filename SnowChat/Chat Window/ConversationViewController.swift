@@ -337,7 +337,7 @@ extension ConversationViewController {
             let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
             dataController.updateControlData(model, isSkipped: false)
         case .inAgentConversation:
-            // send ther input as a straight-up data control (not an update)
+            // send the input as a straight-up data control (not an update)
             let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
             dataController.sendControlData(model)
             textView.text = ""

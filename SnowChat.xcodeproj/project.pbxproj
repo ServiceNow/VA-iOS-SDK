@@ -181,6 +181,8 @@
 		C47B363F2048BFFE00559410 /* SubscribeToSupportQueueMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47B363E2048BFFE00559410 /* SubscribeToSupportQueueMessage.swift */; };
 		C47B36412048C57A00559410 /* Chatterbox+SupportQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47B36402048C57A00559410 /* Chatterbox+SupportQueue.swift */; };
 		C47B3643204DB38200559410 /* ChatSessionSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47B3642204DB38200559410 /* ChatSessionSettings.swift */; };
+		C47B3647204DEFDA00559410 /* ChatDataController+ContextItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47B3646204DEFDA00559410 /* ChatDataController+ContextItemProvider.swift */; };
+		C47B3649204DFB4800559410 /* ChatDataController+ChatDataListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47B3648204DFB4800559410 /* ChatDataController+ChatDataListener.swift */; };
 		C483C17F2017DAD300C28E46 /* ExampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C483C17E2017DAD300C28E46 /* ExampleData.swift */; };
 		C48441C8202CB6C600D67757 /* SystemErrorControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C48441C7202CB6C600D67757 /* SystemErrorControlMessage.swift */; };
 		C48441CA202D165900D67757 /* StartTopicDividerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C48441C9202D165900D67757 /* StartTopicDividerCell.swift */; };
@@ -371,6 +373,8 @@
 		C47B363E2048BFFE00559410 /* SubscribeToSupportQueueMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscribeToSupportQueueMessage.swift; sourceTree = "<group>"; };
 		C47B36402048C57A00559410 /* Chatterbox+SupportQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chatterbox+SupportQueue.swift"; sourceTree = "<group>"; };
 		C47B3642204DB38200559410 /* ChatSessionSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSessionSettings.swift; sourceTree = "<group>"; };
+		C47B3646204DEFDA00559410 /* ChatDataController+ContextItemProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatDataController+ContextItemProvider.swift"; sourceTree = "<group>"; };
+		C47B3648204DFB4800559410 /* ChatDataController+ChatDataListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatDataController+ChatDataListener.swift"; sourceTree = "<group>"; };
 		C483C17E2017DAD300C28E46 /* ExampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleData.swift; sourceTree = "<group>"; };
 		C48441C7202CB6C600D67757 /* SystemErrorControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemErrorControlMessage.swift; sourceTree = "<group>"; };
 		C48441C9202D165900D67757 /* StartTopicDividerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartTopicDividerCell.swift; sourceTree = "<group>"; };
@@ -612,6 +616,8 @@
 			isa = PBXGroup;
 			children = (
 				BE29E0CE1FDF06C20029D1F0 /* ChatDataController.swift */,
+				C47B3646204DEFDA00559410 /* ChatDataController+ContextItemProvider.swift */,
+				C47B3648204DFB4800559410 /* ChatDataController+ChatDataListener.swift */,
 				C4AF7792200E7B0B0029598A /* ViewDataChangeListener.swift */,
 			);
 			path = "Chat Data Controller";
@@ -1288,6 +1294,7 @@
 				C40565FF1FC508D3004BD28C /* RichControlData.swift in Sources */,
 				57EE77DF1FFEC2B1001F689A /* ChatMessageModel.swift in Sources */,
 				57B7E2D21FBA75B100196BA9 /* PickerControlViewModel.swift in Sources */,
+				C47B3647204DEFDA00559410 /* ChatDataController+ContextItemProvider.swift in Sources */,
 				57B7E2CD1FBA3C8400196BA9 /* UIView+Additions.swift in Sources */,
 				578632161FBB9E0300FA0282 /* ControlProtocol.swift in Sources */,
 				5704EA321FEAAD46001020E6 /* TypingIndicatorView.swift in Sources */,
@@ -1309,6 +1316,7 @@
 				57DF7C3D202CD97C008D013A /* OutputHtmlControl.swift in Sources */,
 				57DF7C3F202CD991008D013A /* OutputHtmlControlViewModel.swift in Sources */,
 				57DF7C38202CC1D6008D013A /* DateTimePickerControl.swift in Sources */,
+				C47B3649204DFB4800559410 /* ChatDataController+ChatDataListener.swift in Sources */,
 				575EBFB220378465009CBD05 /* InputImageControlMessage.swift in Sources */,
 				57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */,
 				5778CF9E1FE07023004F77D8 /* SingleSelectControlViewModel.swift in Sources */,
