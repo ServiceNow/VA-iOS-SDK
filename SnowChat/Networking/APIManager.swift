@@ -24,7 +24,7 @@ class APIManager: NSObject {
         case loggedOut(User?)
     }
     
-    internal let instance: ServerInstance
+    internal var instance: ServerInstance
     
     // Each API Manager instance has a private session. That's why we use an ephemeral configuration.
     internal let sessionManager = SessionManager(configuration: .ephemeral)
