@@ -243,7 +243,7 @@ class Chatterbox {
             updateMultiPartControl(control)
         case .dateTime, .date, .time:
             updateDateTimeControl(control)
-        case .agentText:
+        case .agentText, .text:
             // NOTE: only used for live agent mode
             updateTextControl(control)
         case .inputImage:
@@ -309,6 +309,10 @@ class Chatterbox {
     
     fileprivate func updateTextControl(_ control: ControlData) {
         if let textControl = control as? AgentTextControlMessage, let conversationId = textControl.conversationId {
+            publishControlUpdate(textControl, forConversation: conversationId)
+        }
+        
+        if let textControl = control as? OutputTextControlMessage, let conversationId = textControl.conversationId {
             publishControlUpdate(textControl, forConversation: conversationId)
         }
     }

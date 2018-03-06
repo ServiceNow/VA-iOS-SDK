@@ -57,4 +57,10 @@ struct InputControlMessage: Codable, ControlData {
         data.sendTime = Date()
         data.richControl?.value = value
     }
+    
+    init(withValue value: String, sessionId: String, conversationId: String, taskId: String, direction: MessageDirection = .fromClient) {
+        let wrapper = ControlWrapper<String?, UIMetadata>(model: nil, uiType: "InputText", uiMetadata: nil, value: value, content: nil)
+        self.data = RichControlData<ControlWrapper<String?, UIMetadata>>(sessionId: sessionId, conversationId: conversationId, controlData: wrapper)
+        self.data.taskId = taskId
+    }
 }

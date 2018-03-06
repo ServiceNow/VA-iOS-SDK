@@ -214,9 +214,13 @@ class ChatDataController {
            let sessionId = chatterbox.conversationContext.sessionId,
            let conversationId = chatterbox.conversationContext.conversationId,
            let taskId = chatterbox.conversationContext.taskId {
+
+// TODO: when server is ready, switch to InputControl and get rid of AgetnTextControl
+            let inputMessage = OutputTextControlMessage(withValue: textViewModel.value, sessionId: sessionId, conversationId: conversationId, taskId: taskId)
+            chatterbox.update(control: inputMessage)
             
-            let textMessage = AgentTextControlMessage(withValue: textViewModel.value, sessionId: sessionId, conversationId: conversationId, taskId: taskId)
-            chatterbox.update(control: textMessage)
+//            let textMessage = AgentTextControlMessage(withValue: textViewModel.value, sessionId: sessionId, conversationId: conversationId, taskId: taskId)
+//            chatterbox.update(control: textMessage)
         }
     }
     
@@ -964,7 +968,15 @@ extension ChatDataController: ContextItemProvider {
             agent.isEnabled = active
             return agent
         }
+        
+    #if DEBUG
+        // TODO: testing only!!! remove
+        return UIAlertAction(title: "Chat Live Agent", style: .default) { action in
+            self.chatterbox.transferToLiveAgent()
+        }
+    #else
         return nil
+    #endif
     }
     
     fileprivate func callSupportAction() -> UIAlertAction? {
