@@ -67,8 +67,8 @@ class Chatterbox {
     
     internal var session: ChatSession? {
         didSet {
-            if let settings = session?.settings {
-                apiManager.instance.avatar = settings.virtualAgentSettings?.avatar
+            if let settings = session?.settings?.virtualAgentSettings {
+                apiManager.instance.avatar = settings.avatar
             }
         }
     }
