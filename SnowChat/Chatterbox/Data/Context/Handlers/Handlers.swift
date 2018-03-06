@@ -27,13 +27,13 @@ class BaseContextHandler: ContextHandler {
         case .photoPermission:
             return PhotoContextHandler(contextItem: contextItem)
         case .appVersion:
-            return AppVersionContextHandler(contextItem: contextItem)
+            return BaseContextHandler(contextItem: contextItem)
         case .deviceType:
-            return DeviceTypeContextHandler(contextItem: contextItem)
+            return BaseContextHandler(contextItem: contextItem)
         case .deviceTimeZone:
-            return DeviceTimeZoneContextHandler(contextItem: contextItem)
+            return BaseContextHandler(contextItem: contextItem)
         case .mobileOS:
-            return MobileOSContextHandler(contextItem: contextItem)
+            return BaseContextHandler(contextItem: contextItem)
         }
     }
 }
@@ -65,29 +65,4 @@ class PhotoContextHandler: BaseContextHandler {
             completion((status == .authorized))
         }
     }
-}
-
-// MARK: AppVersion
-
-class AppVersionContextHandler: BaseContextHandler, DataFetchable {
-    override func authorize(completion: @escaping (Bool) -> Void) {
-        UserData.authorizePhoto { status in
-            completion((status == .authorized))
-        }
-    }
-}
-
-// MARK: DeviceTimeZone
-
-class DeviceTimeZoneContextHandler: BaseContextHandler, DataFetchable {
-}
-
-// MARK: DeviceType
-
-class DeviceTypeContextHandler: BaseContextHandler, DataFetchable {
-}
-
-// MARK: MobileOS
-
-class MobileOSContextHandler: BaseContextHandler, DataFetchable {
 }

@@ -17,6 +17,7 @@ protocol ContextHandler {
     func authorize(completion: @escaping (Bool) -> Swift.Void)
 }
 
+// TODO: Depending if we add location this will be uncommented and used
 protocol DataFetchable {
     
     // On init we have to request data. When frequence is supported we should use commented method below
