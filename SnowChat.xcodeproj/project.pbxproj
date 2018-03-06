@@ -45,6 +45,8 @@
 /* Begin PBXBuildFile section */
 		4635789A2040CCE900947541 /* APIManager+AMB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 463578992040CCE900947541 /* APIManager+AMB.swift */; };
 		46BC5778202EE97000FDDB43 /* SNOWAMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46BC5779202EE97000FDDB43 /* SNOWAMBClient.framework */; };
+		57026187204E2B14003D56DE /* Handlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57026186204E2B14003D56DE /* Handlers.swift */; };
+		57026189204E2B2B003D56DE /* ContextHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57026188204E2B2B003D56DE /* ContextHandler.swift */; };
 		5704EA321FEAAD46001020E6 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5704EA311FEAAD46001020E6 /* TypingIndicatorView.swift */; };
 		5704EA341FEAAE4B001020E6 /* TypingIndicatorControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5704EA331FEAAE4B001020E6 /* TypingIndicatorControl.swift */; };
 		57067C8D1FE62EE900812266 /* FakeChatViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57067C8C1FE62EE900812266 /* FakeChatViewCell.swift */; };
@@ -232,6 +234,8 @@
 /* Begin PBXFileReference section */
 		463578992040CCE900947541 /* APIManager+AMB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIManager+AMB.swift"; sourceTree = "<group>"; };
 		46BC5779202EE97000FDDB43 /* SNOWAMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SNOWAMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		57026186204E2B14003D56DE /* Handlers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Handlers.swift; sourceTree = "<group>"; };
+		57026188204E2B2B003D56DE /* ContextHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextHandler.swift; sourceTree = "<group>"; };
 		5704EA311FEAAD46001020E6 /* TypingIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorView.swift; sourceTree = "<group>"; };
 		5704EA331FEAAE4B001020E6 /* TypingIndicatorControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorControl.swift; sourceTree = "<group>"; };
 		57067C8C1FE62EE900812266 /* FakeChatViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeChatViewCell.swift; sourceTree = "<group>"; };
@@ -435,12 +439,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		57026185204E2ADB003D56DE /* Handlers */ = {
+			isa = PBXGroup;
+			children = (
+				57026188204E2B2B003D56DE /* ContextHandler.swift */,
+				57026186204E2B14003D56DE /* Handlers.swift */,
+			);
+			path = Handlers;
+			sourceTree = "<group>";
+		};
 		5728D8F22048D9110071EF9E /* Context */ = {
 			isa = PBXGroup;
 			children = (
 				5728D8E920485BB30071EF9E /* Context.swift */,
 				5728D8F32048D9200071EF9E /* ContextData.swift */,
 				57D33BFA2049D37200CB606D /* AppContextManager.swift */,
+				57026185204E2ADB003D56DE /* Handlers */,
 			);
 			path = Context;
 			sourceTree = "<group>";
@@ -1201,6 +1215,7 @@
 				C4A774A91FDF22E200B6DF68 /* ChatEventListener.swift in Sources */,
 				579479342031F44F00C4C5C5 /* DateTimePickerViewController.swift in Sources */,
 				BE9E8BA91FBF826300499960 /* APIManager.swift in Sources */,
+				57026187204E2B14003D56DE /* Handlers.swift in Sources */,
 				C43479EC1FE460700091806D /* TopicSelection.swift in Sources */,
 				8BD222292037FC550040B657 /* HTTPURLResponse+Auth.swift in Sources */,
 				C48441C8202CB6C600D67757 /* SystemErrorControlMessage.swift in Sources */,
@@ -1236,6 +1251,7 @@
 				C420ED7D1FC5F473002476C0 /* Logger.swift in Sources */,
 				C4FFCD4A2006D6A000B835C6 /* ChatDataStore+Persistence.swift in Sources */,
 				C41EF5D41FDB284600707F45 /* InputControlMessage.swift in Sources */,
+				57026189204E2B2B003D56DE /* ContextHandler.swift in Sources */,
 				575EBFB6203785EF009CBD05 /* InputImageViewModel.swift in Sources */,
 				579A48F220125039007CF338 /* PickerMetadata.swift in Sources */,
 				57E65F51202BA5240087E5DE /* OutputLinkControlViewModel.swift in Sources */,
