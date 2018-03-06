@@ -6,24 +6,51 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-// MARK: Location
-
-class LocationContextHandler: ContextHandler, DataFetchable {
+class BaseContextHandler: ContextHandler {
+    
+    var contextItem: ContextItem
+    
+    required init(contextItem: ContextItem) {
+        self.contextItem = contextItem
+    }
     
     func authorize(completion: @escaping (Bool) -> Void) {
         completion(true)
     }
     
-    func fetchData(completion: @escaping (AnyObject?) -> Swift.Void) {
-        
+    static func handler(for contextItem: ContextItem) -> ContextHandler {
+        switch contextItem.type {
+        case .location:
+            return LocationContextHandler(contextItem: contextItem)
+        case .cameraPermission:
+            return CameraContextHandler(contextItem: contextItem)
+        case .photoPermission:
+            return PhotoContextHandler(contextItem: contextItem)
+        case .appVersion:
+            return AppVersionContextHandler(contextItem: contextItem)
+        case .deviceType:
+            return DeviceTypeContextHandler(contextItem: contextItem)
+        case .deviceTimeZone:
+            return DeviceTimeZoneContextHandler(contextItem: contextItem)
+        case .mobileOS:
+            return MobileOSContextHandler(contextItem: contextItem)
+        }
+    }
+}
+
+// MARK: Location
+
+class LocationContextHandler: BaseContextHandler, DataFetchable {
+    
+    override func authorize(completion: @escaping (Bool) -> Void) {
+        completion(false)
     }
 }
 
 // MARK: Camera
 
-class CameraContextHandler: ContextHandler {
-    
-    func authorize(completion: @escaping (Bool) -> Void) {
+class CameraContextHandler: BaseContextHandler {
+    override func authorize(completion: @escaping (Bool) -> Void) {
         UserData.authorizeCamera { status in
             completion((status == .authorized))
         }
@@ -32,9 +59,8 @@ class CameraContextHandler: ContextHandler {
 
 // MARK: Photo
 
-class PhotoContextHandler: ContextHandler {
-    
-    func authorize(completion: @escaping (Bool) -> Void) {
+class PhotoContextHandler: BaseContextHandler {
+    override func authorize(completion: @escaping (Bool) -> Void) {
         UserData.authorizePhoto { status in
             completion((status == .authorized))
         }
@@ -43,54 +69,25 @@ class PhotoContextHandler: ContextHandler {
 
 // MARK: AppVersion
 
-class AppVersionContextHandler: ContextHandler, DataFetchable {
-    
-    func authorize(completion: @escaping (Bool) -> Void) {
+class AppVersionContextHandler: BaseContextHandler, DataFetchable {
+    override func authorize(completion: @escaping (Bool) -> Void) {
         UserData.authorizePhoto { status in
             completion((status == .authorized))
         }
-    }
-    
-    func fetchData(completion: @escaping (AnyObject?) -> Swift.Void) {
-        
     }
 }
 
 // MARK: DeviceTimeZone
 
-class DeviceTimeZoneContextHandler: ContextHandler, DataFetchable {
-    
-    func authorize(completion: @escaping (Bool) -> Void) {
-        completion(true)
-    }
-    
-    func fetchData(completion: @escaping (AnyObject?) -> Swift.Void) {
-        
-    }
+class DeviceTimeZoneContextHandler: BaseContextHandler, DataFetchable {
 }
 
 // MARK: DeviceType
 
-class DeviceTypeContextHandler: ContextHandler, DataFetchable {
-    
-    func authorize(completion: @escaping (Bool) -> Void) {
-        completion(true)
-    }
-    
-    func fetchData(completion: @escaping (AnyObject?) -> Swift.Void) {
-        
-    }
+class DeviceTypeContextHandler: BaseContextHandler, DataFetchable {
 }
 
 // MARK: MobileOS
 
-class MobileOSContextHandler: ContextHandler, DataFetchable {
-    
-    func authorize(completion: @escaping (Bool) -> Void) {
-        completion(true)
-    }
-    
-    func fetchData(completion: @escaping (AnyObject?) -> Swift.Void) {
-        
-    }
+class MobileOSContextHandler: BaseContextHandler, DataFetchable {
 }

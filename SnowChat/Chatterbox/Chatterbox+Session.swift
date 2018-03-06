@@ -119,6 +119,7 @@ extension Chatterbox {
     private func startUserSession(withInitEvent initEvent: InitMessage) {
         var initUserEvent = userSessionInitMessage(fromInitEvent: initEvent)
         if let request = initUserEvent.data.actionMessage.contextHandshake.serverContextRequest {
+            appContextManager.registerHandlers(for: request)
             appContextManager.authorizeContextItems(for: request, completion: { [weak self] response in
                 initUserEvent.data.actionMessage.contextHandshake.serverContextResponse = response
 

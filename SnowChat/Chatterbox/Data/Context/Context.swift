@@ -78,33 +78,33 @@ struct ServerContextRequest: Codable {
         predefinedContextItems.append(contextItem)
         
         contextItem = try container.decode(ContextItem.self, forKey: .appVersion)
+        contextItem.type = .appVersion
         self.appVersion = contextItem
-        self.appVersion?.type = .appVersion
         predefinedContextItems.append(contextItem)
         
         contextItem = try container.decode(ContextItem.self, forKey: .deviceTimeZone)
+        contextItem.type = .deviceTimeZone
         self.deviceTimeZone = contextItem
-        self.deviceTimeZone?.type = .deviceTimeZone
         predefinedContextItems.append(contextItem)
         
         contextItem = try container.decode(ContextItem.self, forKey: .deviceType)
+        contextItem.type = .deviceType
         self.deviceType = contextItem
-        self.deviceType?.type = .deviceType
         predefinedContextItems.append(contextItem)
         
         contextItem = try container.decode(ContextItem.self, forKey: .cameraPermission)
+        contextItem.type = .cameraPermission
         self.cameraPermission = contextItem
-        self.cameraPermission?.type = .cameraPermission
         predefinedContextItems.append(contextItem)
         
         contextItem = try container.decode(ContextItem.self, forKey: .photoPermission)
+        contextItem.type = .photoPermission
         self.photoPermission = contextItem
-        self.photoPermission?.type = .photoPermission
         predefinedContextItems.append(contextItem)
         
         contextItem = try container.decode(ContextItem.self, forKey: .mobileOS)
+        contextItem.type = .mobileOS
         self.mobileOS = contextItem
-        self.mobileOS?.type = .mobileOS
         predefinedContextItems.append(contextItem)
     }
     
@@ -121,22 +121,16 @@ struct ServerContextRequest: Codable {
 }
 
 struct ServerContextResponse: Codable {
-    var location: Bool
-    var appVersion: Bool
-    var deviceTimeZone: Bool
-    var deviceType: Bool
-    var cameraPermission: Bool
-    var photoPermission: Bool
-    var mobileOS: Bool
+    var location: Bool = false
+    var appVersion: Bool = false
+    var deviceTimeZone: Bool = false
+    var deviceType: Bool = false
+    var cameraPermission: Bool = false
+    var photoPermission: Bool = false
+    var mobileOS: Bool = false
     
-    init(location: Bool, appVersion: Bool, deviceTimeZone: Bool, deviceType: Bool, cameraPermission: Bool, photoPermission: Bool, mobileOS: Bool) {
-        self.location = location
-        self.appVersion = appVersion
-        self.deviceTimeZone = deviceTimeZone
-        self.deviceType = deviceType
-        self.cameraPermission = cameraPermission
-        self.photoPermission = photoPermission
-        self.mobileOS = mobileOS
+    init() {
+        
     }
     
     init(from decoder: Decoder) throws {
