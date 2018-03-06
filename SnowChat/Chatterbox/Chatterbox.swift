@@ -51,15 +51,6 @@ class Chatterbox {
     weak var chatEventListener: ChatEventListener?
     weak var chatAuthListener: ChatAuthListener?
     
-    internal struct ConversationContext {
-        var topicName: String?
-        var sessionId: String?
-
-        var taskId: String?
-        
-        var conversationId: String?
-        var systemConversationId: String?
-    }
     internal var conversationContext = ConversationContext()
     internal var contextualActions: ContextualActionMessage?
     
@@ -336,10 +327,20 @@ class Chatterbox {
         return chatStore.conversation(forId: conversationId)
     }
     
-    // MARK: - Cleanup
-    
     internal func clearMessageHandlers() {
         messageHandler = nil
         handshakeCompletedHandler = nil
+    }
+    
+    // MARK: Structures and Types
+    
+    internal struct ConversationContext {
+        var topicName: String?
+        var sessionId: String?
+        
+        var taskId: String?
+        
+        var conversationId: String?
+        var systemConversationId: String?
     }
 }

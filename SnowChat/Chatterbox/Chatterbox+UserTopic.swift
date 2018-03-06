@@ -40,6 +40,7 @@ extension Chatterbox {
     }
     
     internal func resumeUserTopic(topicInfo: TopicInfo) {
+        // TODO: notify server that we are resuming the topic (showTopic)
         if conversationContext.conversationId != topicInfo.conversationId {
             state = .userConversation
             setupForConversation(topicInfo: topicInfo)
