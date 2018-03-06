@@ -14,15 +14,15 @@ struct ContextData: Codable {
     var mobileOS: String?
     
     init() {
-        self.location = nil
-        self.appVersion = nil
-        self.deviceType = nil
-        self.deviceTimeZone = nil
-        self.mobileOS = nil
     }
     
     init(from decoder: Decoder) throws {
-        self.init()
+        let container = try decoder.container(keyedBy: ContextItemType.self)
+        self.location = try container.decodeIfPresent(LocationContextData.self, forKey: .location)
+        self.appVersion = try container.decodeIfPresent(String.self, forKey: .appVersion)
+        self.deviceTimeZone = try container.decodeIfPresent(String.self, forKey: .deviceTimeZone)
+        self.deviceType = try container.decodeIfPresent(String.self, forKey: .deviceType)
+        self.mobileOS = try container.decodeIfPresent(String.self, forKey: .mobileOS)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -37,7 +37,7 @@ struct ContextData: Codable {
 
 // MARK: Location
 
-struct LocationContextData: Encodable {
+struct LocationContextData: Codable {
     var latitude: Double?
     var longitude: Double?
     var address: String?

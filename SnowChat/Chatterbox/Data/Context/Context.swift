@@ -129,9 +129,7 @@ struct ServerContextResponse: Codable {
     var photoPermission: Bool = false
     var mobileOS: Bool = false
     
-    init() {
-        
-    }
+    init() {}
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: ContextItemType.self)
