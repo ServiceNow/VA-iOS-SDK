@@ -64,7 +64,14 @@ class Chatterbox {
     internal var contextualActions: ContextualActionMessage?
     
     internal let chatStore = ChatDataStore(storeId: "ChatterboxDataStore")
-    internal var session: ChatSession?
+    
+    internal var session: ChatSession? {
+        didSet {
+            if let settings = session?.settings {
+                apiManager.instance.avatar = settings.virtualAgentSettings?.avatar
+            }
+        }
+    }
     
     internal var chatChannel: String {
         return "/cs/messages/\(chatId)"

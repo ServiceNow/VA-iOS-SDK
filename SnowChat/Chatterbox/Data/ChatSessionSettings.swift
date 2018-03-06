@@ -11,19 +11,25 @@ import Foundation
 struct ChatSessionSettings: Codable {
     var generalSettings: GeneralSettings?
     var brandingSettings: BrandingSettings?
-    var virtualAgentProfile: VirtualAgentSettings?
+    var virtualAgentSettings: VirtualAgentSettings?
     var liveAgentSettings: LiveAgentSettings?
     
     private enum CodingKeys: String, CodingKey {
         case generalSettings
         case brandingSettings
-        case virtualAgentProfile
+        case virtualAgentSettings
         case liveAgentSettings
     }
     
     init(fromDictionary dictionary: NSDictionary) {
         if let general = dictionary["generalSettings"] as? NSDictionary {
             generalSettings = GeneralSettings(fromDictionary: general)
+        }
+        
+        if let virtualAgent = dictionary["virtualAgentProfile"] as? NSDictionary {
+            let avatar = virtualAgent["avatar"] as? String
+            let name = virtualAgent["name"] as? String
+            virtualAgentSettings = VirtualAgentSettings(avatar: avatar, name: name)
         }
     }
 }
@@ -64,7 +70,8 @@ struct BrandingSettings: Codable {
 }
 
 struct VirtualAgentSettings: Codable {
-    
+    var avatar: String?
+    var name: String?
 }
 
 struct LiveAgentSettings: Codable {
