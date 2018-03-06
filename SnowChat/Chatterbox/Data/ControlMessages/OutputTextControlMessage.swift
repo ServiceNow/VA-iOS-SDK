@@ -52,6 +52,12 @@ struct OutputTextControlMessage: Codable, ControlData {
         case data
     }
     
+    init(withValue value: String, sessionId: String, conversationId: String, taskId: String?, direction: MessageDirection = .fromClient) {
+        let wrapper = ControlWrapper<String, UIMetadata>(model: nil, uiType: "OutputText", uiMetadata: nil, value: value, content: nil)
+        self.data = RichControlData<ControlWrapper<String, UIMetadata>>(sessionId: sessionId, conversationId: conversationId, direction: direction, controlData: wrapper)
+        self.data.taskId = taskId
+    }
+    
     init(withData: RichControlData<ControlWrapper<String, UIMetadata>>) {
         data = withData
     }
