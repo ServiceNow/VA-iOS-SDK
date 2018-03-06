@@ -30,6 +30,15 @@ public enum SNOWAMBResult<Value> {
             return error
         }
     }
+    
+    public var isSuccess: Bool {
+        switch self {
+        case .success:
+            return true
+        case .failure:
+            return false
+        }
+    }
 }
 
 //
@@ -198,7 +207,7 @@ public class SNOWAMBClient {
     }
     
     public func publishMessage(_ message: SNOWAMBMessageDictionary,
-                               toChannel channel: String,
+                                toChannel channel: String,
                                withExtension ext: SNOWAMBMessageDataExtention? = nil,
                                completion handler: @escaping SNOWAMBPublishMessageHandler) {
         sendBayeuxPublishMessage(message, toChannel: channel, withExtension: ext, completion: handler)
@@ -642,7 +651,7 @@ private extension SNOWAMBClient {
                 guard let lastPart = parts.last else {
                     return ""
                 }
-                switch lastPart {
+                switch channel {
                 case AMBChannel.handshake.name:
                     path = lastPart
                 case AMBChannel.connect.name:
