@@ -13,6 +13,8 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     
     private var chatService: ChatService?
 
+    @IBOutlet weak var statusLabel: UILabel!
+    
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
@@ -20,6 +22,7 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         
         title = "SnowKangaroo"
         
+        setupStatusLabel()
         setupNavigationBarButtons()
         setupAuthNotificationObserving()
     }
@@ -29,6 +32,12 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     private func setupNavigationBarButtons() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Log Out", comment: ""), style: .plain, target: self, action: #selector(logOutButtonTapped(_:)))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "🐞", style: .plain, target: self, action: #selector(debugButtonTapped(_:)))
+    }
+
+    fileprivate func setupStatusLabel() {
+        if let instanceURL = InstanceSettings.shared.instanceURL, let host = instanceURL.host {
+            statusLabel.text = "Instance: \(host)"
+        }
     }
     
     // MARK: - Chat

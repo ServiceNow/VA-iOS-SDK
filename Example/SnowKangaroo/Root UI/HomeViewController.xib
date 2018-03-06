@@ -12,6 +12,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="HomeViewController" customModule="SnowKangaroo" customModuleProvider="target">
             <connections>
+                <outlet property="statusLabel" destination="sOR-2o-VVs" id="ztq-c0-jQt"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -28,13 +29,22 @@
                         <action selector="chatButtonTapped:" destination="-1" eventType="touchUpInside" id="fLP-Fe-CsV"/>
                     </connections>
                 </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Instance: " textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sOR-2o-VVs">
+                    <rect key="frame" x="0.0" y="628" width="375" height="29"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
+                <constraint firstItem="sOR-2o-VVs" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="GOB-QY-q3E"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="sOR-2o-VVs" secondAttribute="bottom" constant="5" id="VqZ-ND-mTf"/>
                 <constraint firstItem="0uk-o0-ZvU" firstAttribute="centerY" secondItem="fnl-2z-Ty3" secondAttribute="centerY" id="lXS-Mp-hLf"/>
                 <constraint firstItem="0uk-o0-ZvU" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="xMK-dJ-MG9"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <point key="canvasLocation" x="26.5" y="51.5"/>
         </view>
     </objects>
 </document>
