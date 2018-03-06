@@ -61,14 +61,14 @@ public struct SNOWAMBGlideStatus {
 //
 
 public protocol SNOWAMBClientDelegate: AnyObject {
-    func didConnect(client: SNOWAMBClient)
-    func didDisconnect(client: SNOWAMBClient)
-    func didFail(client: SNOWAMBClient, withError error: SNOWAMBError)
-    func didSubscribe(client: SNOWAMBClient, toChannel: String)
-    func didUnsubscribe(client: SNOWAMBClient, fromchannel: String)
-    func didReceive(client: SNOWAMBClient, message: SNOWAMBMessage, fromChannel channel: String)
-    func didClientStatusChange(client: SNOWAMBClient, status: SNOWAMBClientStatus)
-    func didGlideStatusChange(client: SNOWAMBClient, status: SNOWAMBGlideStatus)
+    func ambClientDidConnect(_ client: SNOWAMBClient)
+    func ambClientDidDisconnect(_ client: SNOWAMBClient)
+    func ambClient(_ client: SNOWAMBClient, didSubscribeToChannel channel: String)
+    func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromchannel channel: String)
+    func ambClient(_ client: SNOWAMBClient, didReceiveMessage: SNOWAMBMessage, fromChannel channel: String)
+    func ambClient(_ client: SNOWAMBClient, didChangeClientStatus status: SNOWAMBClientStatus)
+    func ambClient(_ client: SNOWAMBClient, didChangeGlideStatus status: SNOWAMBGlideStatus)
+    func ambClient(_ client: SNOWAMBClient, didFailWithError error: SNOWAMBError)
 }
 
 //
@@ -131,25 +131,26 @@ public class SNOWAMBClient {
     private var dataTasks = [URLSessionDataTask]()
     
     private var scheduledConnectTask: DispatchWorkItem?
-    // TODO: will probably don't need to keep reference to http data task.
-    // it's used for debugging for now (alex a, 02-15-18)
-    private weak var connectDataTask: URLSessionDataTask?
-    // sequential message id
+    private var connectDataTask: URLSessionDataTask?
     private var messageId = 0
     
     public var clientStatus = SNOWAMBClientStatus.disconnected {
         didSet {
             if oldValue != self.clientStatus {
-                delegate?.didClientStatusChange(client: self, status: clientStatus)
+                log("client state \(clientStatus)")
+                delegate?.ambClient(self, didChangeClientStatus: clientStatus)
                 switch self.clientStatus {
                 case .retrying, .handshake:
                     retryAttempt = 0
                 case .connected:
                     subscribeQueuedChannels()
+                    delegate?.ambClientDidConnect(self)
                 case .disconnected:
                     cancelAllDataTasks()
+                    delegate?.ambClientDidDisconnect(self)
                 case .maximumRetriesReached:
-                    delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.connectFailed, "Maximum connect retry attempts have been reached"))
+                    delegate?.ambClient(self,
+                                      didFailWithError: SNOWAMBError.connectFailed(description: "Maximum connect retry attempts have been reached"))
                 }
             }
         }
@@ -158,7 +159,7 @@ public class SNOWAMBClient {
     public var glideStatus: SNOWAMBGlideStatus = SNOWAMBGlideStatus(ambActive: false, sessionStatus: nil) {
         didSet {
             if oldValue != glideStatus {
-                delegate?.didGlideStatusChange(client: self, status: glideStatus)
+                delegate?.ambClient(self, didChangeGlideStatus: glideStatus)
             }
         }
     }
@@ -167,7 +168,10 @@ public class SNOWAMBClient {
         didSet {
             if isPaused != oldValue {
                 if isPaused {
-                    cancelAllDataTasks()
+                    // Looks like connect task cancellation often leaves server in bad state,
+                    // so instead we keep all tasks alive until they die on timeout or server explicitely kills them (alex a, 02-27-18)
+                    // TODO: Keep testing this!
+//                    cancelAllDataTasks()
                 } else {
                     self.clientStatus = .retrying
                     startConnectRequest()
@@ -183,7 +187,7 @@ public class SNOWAMBClient {
     // TODO: Use Logger instead?
     func log(_ logString: String) {
         #if DEBUG
-            NSLog(logString)
+            NSLog("AMB Client: \(logString)")
         #endif
     }
     
@@ -191,10 +195,6 @@ public class SNOWAMBClient {
     
     public func connect() {
         sendBayeuxHandshakeMessage()
-    }
-    
-    public func reconnectIfNeeded() {
-        startConnectRequest()
     }
     
     public func publishMessage(_ message: SNOWAMBMessageDictionary,
@@ -205,6 +205,8 @@ public class SNOWAMBClient {
     }
     
     public func subscribe(channel: String, messageHandler: @escaping SNOWAMBMessageHandler) -> SNOWAMBSubscription {
+        cleanupSubscriptions()
+        
         let subscription = SNOWAMBSubscription(channel: channel, client: self, messageHandler: messageHandler)
         let newWrapper = SNOWAMBSubscriptionWeakWrapper(subscription)
         if subscriptionsByChannel[channel] == nil {
@@ -230,6 +232,8 @@ public class SNOWAMBClient {
     }
     
     public func unsubscribe(subscription: SNOWAMBSubscription) {
+        cleanupSubscriptions()
+
         guard var subscriptions = subscriptionsByChannel[subscription.channel] else {
             return
         }
@@ -266,7 +270,6 @@ public class SNOWAMBClient {
 private extension SNOWAMBClient {
     
     func startConnectRequest(after interval: TimeInterval = 0.0) {
-        
         guard !isPaused else {
             log("Client is paused. Connect request is skipped")
             return
@@ -275,6 +278,16 @@ private extension SNOWAMBClient {
         guard self.clientStatus != .disconnected else {
             log("Client is disconnected. Connect request is skipped. Handshake must be completed first")
             return
+        }
+        
+        if let connectDataTask = self.connectDataTask {
+            if connectDataTask.state == URLSessionDataTask.State.running {
+                log("data task is still in flight, new connect request was not created")
+                if self.clientStatus == .retrying {
+                    self.clientStatus = .connected
+                }
+                return
+            }
         }
         
         self.scheduledConnectTask = DispatchWorkItem { [weak self] in
@@ -298,66 +311,74 @@ private extension SNOWAMBClient {
         dataTasks = dataTasks.filter({ $0.state != URLSessionTask.State.completed })
     }
     
+    func cleanupSubscriptions() {
+        for (channel, subscriptions) in self.subscriptionsByChannel {
+            self.subscriptionsByChannel[channel] = subscriptions.filter({ $0.subscription != nil })
+        }
+    }
+    
     // MARK: AMB/Bayeux message handlers
     
     func parseResponseObject(_ responseObject: Any?) -> SNOWAMBResult<[SNOWAMBMessage]> {
         var parsedMessages = [SNOWAMBMessage]()
         
         guard responseObject as? [SNOWAMBMessageDictionary] != nil else {
-            let error = SNOWAMBError(SNOWAMBErrorType.messageParserError, "AMB Messages structure is not Array")
-            delegate?.didFail(client: self, withError: error)
+            let error = SNOWAMBError.messageParserError(description: "messages are not packaged in array")
+            delegate?.ambClient(self, didFailWithError: error)
             return SNOWAMBResult.failure(error)
         }
         
         for rawMessage in (responseObject as! [AnyObject]) {
             guard rawMessage as? SNOWAMBMessageDictionary != nil else {
-                let error = SNOWAMBError(SNOWAMBErrorType.messageParserError, "AMB Message is not Dictionary")
-                delegate?.didFail(client: self, withError: error)
+                let error = SNOWAMBError.messageParserError(description: "message is not Dictionary")
+                delegate?.ambClient(self, didFailWithError: error)
                 return SNOWAMBResult.failure(error)
             }
             do {
                 if let ambMessage = try SNOWAMBMessage(rawMessage: rawMessage) {
-                   parseAMBMessage(ambMessage)
-                   parsedMessages.append(ambMessage)
+                   handleAMBMessage(ambMessage)
+                    // messages with data/payload are passed through subscription handler and corresponding delegate.
+                    // here we return response messages without payload
+                    if ambMessage.data == nil {
+                       parsedMessages.append(ambMessage)
+                    }
                 }
             } catch {
-                let error = SNOWAMBError(SNOWAMBErrorType.messageParserError, "AMB Message is not well formatted")
-                delegate?.didFail(client: self, withError: error)
+                let error = SNOWAMBError.messageParserError(description: "message is not well formatted")
+                delegate?.ambClient(self, didFailWithError: error)
                 return SNOWAMBResult.failure(error)
             }
         }
         return SNOWAMBResult.success(parsedMessages)
     }
     
-    private func parseAMBMessage(_ ambMessage: SNOWAMBMessage) {
-        guard let channel = ambMessage.channel else {
-            return
-        }
+    private func handleAMBMessage(_ ambMessage: SNOWAMBMessage) {
+        let channel = ambMessage.channel
         
         switch channel {
         case AMBChannel.handshake.name:
-            parseHandshakeMessage(ambMessage)
+            handleHandshakeMessage(ambMessage)
             
         case AMBChannel.connect.name:
-            parseConnectMessage(ambMessage)
+            handleConnectMessage(ambMessage)
             
         case AMBChannel.disconnect.name:
-            parseDisconnectMessage(ambMessage)
+            handleDisconnectMessage(ambMessage)
             
         case AMBChannel.subscribe.name:
-            parseSubscribeMessage(ambMessage)
+            handleSubscribeMessage(ambMessage)
             
         case AMBChannel.unsubscribe.name:
-            parseUnsubscribeMessage(ambMessage)
+            handleUnsubscribeMessage(ambMessage)
             
         default:
-            parseChannelMessage(ambMessage, channel: channel)
+            handleChannelMessage(ambMessage, channel: channel)
         }
     }
     
-    func parseChannelMessage(_ ambMessage: SNOWAMBMessage, channel: String) {
+    func handleChannelMessage(_ ambMessage: SNOWAMBMessage, channel: String) {
         if self.isPaused {
-            log("AMB Client: incoming message when client is paused. Skipping.")
+            log("incoming message when client is paused. Skipping.")
             return
         }
         
@@ -373,23 +394,23 @@ private extension SNOWAMBClient {
                 })
             } else {
                 // no handler for this channel, using delegate
-                delegate?.didReceive(client: self, message: ambMessage, fromChannel: channel)
+                delegate?.ambClient(self, didReceiveMessage: ambMessage, fromChannel: channel)
             }
         } else {
             // message was received for a channel client is not subscribed to
-            delegate?.didFail(client: self,
-                              withError: SNOWAMBError(SNOWAMBErrorType.unhandledMessageReceived, "AMB Client: Unhandled Bayuex message: \(ambMessage) for channel: \(channel)"))
+            delegate?.ambClient(self,
+                              didFailWithError: SNOWAMBError.unhandledMessageReceived(channel: channel))
         }
     }
     
-    func parseHandshakeMessage(_ ambMessage: SNOWAMBMessage) {
+    func handleHandshakeMessage(_ ambMessage: SNOWAMBMessage) {
         if ambMessage.successful {
             retryAttempt = 0
             self.clientId = ambMessage.clientId
             self.clientStatus = .connected
         } else {
-            delegate?.didFail(client: self,
-                              withError: SNOWAMBError(SNOWAMBErrorType.handshakeFailed, "Faye could not handshake with error:\(ambMessage.errorString ?? "")"))
+            delegate?.ambClient(self,
+                              didFailWithError: SNOWAMBError.handshakeFailed(description: "AMB could not handshake with error:\(ambMessage.errorString ?? "")"))
         }
         self.reopenChannelsAfterSuccessfulConnectMessages = true
         startConnectRequest()
@@ -409,7 +430,7 @@ private extension SNOWAMBClient {
         })
     }
     
-    func parseConnectMessage(_ ambMessage: SNOWAMBMessage) {
+    func handleConnectMessage(_ ambMessage: SNOWAMBMessage) {
         
         func parseGlideSessionStatus(_ ext: [String : Any]?) {
             if let ext = ext {
@@ -446,7 +467,7 @@ private extension SNOWAMBClient {
                 }
                 
                 if interval > 0 {
-                    log("AMB Client: Delaying connection by: \(interval)")
+                    log("Delaying connection by: \(interval)")
                     startConnectRequest(after: interval)
                     return
                 }
@@ -462,22 +483,22 @@ private extension SNOWAMBClient {
                     startConnectRequest()
                 }
             } else {
-                delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.connectFailed, "AMB Connect was unsuccessful"))
+                delegate?.ambClient(self, didFailWithError: SNOWAMBError.connectFailed(description: "success flag was set to false by server"))
             }
         }
     }
     
-    func parseDisconnectMessage(_ ambMessage : SNOWAMBMessage) {
+    func handleDisconnectMessage(_ ambMessage : SNOWAMBMessage) {
         if ambMessage.successful {
             cancelAllDataTasks()
             subscribedChannels.removeAll()
             subscriptionsByChannel.removeAll()
         } else {
-            delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.disconnectFailed, "AMB Disconnect was unsuccessful"))
+            delegate?.ambClient(self, didFailWithError: SNOWAMBError.disconnectFailed)
         }
     }
     
-    func parseSubscribeMessage(_ ambMessage : SNOWAMBMessage) {
+    func handleSubscribeMessage(_ ambMessage : SNOWAMBMessage) {
         if ambMessage.successful {
             guard let channel = ambMessage.subscription else {
                 return
@@ -493,20 +514,20 @@ private extension SNOWAMBClient {
                     }
                 })
                 subscriptionsByChannel[channel] = updatedSubscriptions
+                delegate?.ambClient(self, didSubscribeToChannel: channel)
             }
         } else {
-            delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.disconnectFailed, "AMB Subscribe was unsuccessful"))
+            delegate?.ambClient(self, didFailWithError: SNOWAMBError.disconnectFailed)
         }
     }
     
-    func parseUnsubscribeMessage(_ ambMessage : SNOWAMBMessage) {
+    func handleUnsubscribeMessage(_ ambMessage : SNOWAMBMessage) {
         if ambMessage.successful {
-            guard let channel = ambMessage.channel else {
-                return
-            }
-            subscribedChannels.remove(channel)
+            subscribedChannels.remove(ambMessage.channel)
+            cleanupSubscriptions()
+            delegate?.ambClient(self, didUnsubscribeFromchannel: ambMessage.channel)
         } else {
-            delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.disconnectFailed, "AMB Unsubscribe was unsuccessful"))
+            delegate?.ambClient(self, didFailWithError: SNOWAMBError.disconnectFailed)
         }
     }
 
@@ -526,7 +547,8 @@ private extension SNOWAMBClient {
     
     func sendBayeuxConnectMessage() {
         guard let clientId = self.clientId else {
-            delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.connectFailed, "Connect message can't be send because clientId is not received yet"))
+            delegate?.ambClient(self,
+                              didFailWithError: SNOWAMBError.connectFailed(description: "Connect message can't be send because clientId is not received yet"))
             return
         }
         
@@ -546,7 +568,7 @@ private extension SNOWAMBClient {
     
     func sendBayeuxSubscribeMessage(channel: String) {
         guard let clientId = self.clientId else {
-            delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.subscribeFailed, "AMB Subscription for channel\(channel) can't be done. clientId was not set yet"))
+            delegate?.ambClient(self, didFailWithError: SNOWAMBError.subscribeFailed)
             return
         }
         
@@ -561,7 +583,7 @@ private extension SNOWAMBClient {
     
     func sendBayeuxUnsubscribeMessage(channel: String) {
         guard let clientId = self.clientId else {
-            delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.unsubscribeFailed, "AMB Unsubscription for channel\(channel) can't be done. clientId was not set yet"))
+            delegate?.ambClient(self, didFailWithError: SNOWAMBError.unsubscribeFailed)
             return
         }
         
@@ -580,13 +602,14 @@ private extension SNOWAMBClient {
                                   completion handler: SNOWAMBPublishMessageHandler? = nil) {
         
         guard clientStatus == .connected else {
-            delegate?.didFail(client: self,
-                              withError: SNOWAMBError(SNOWAMBErrorType.publishFailed, "AMB Publish failed. Client not connected to server"))
+            delegate?.ambClient(self,
+                              didFailWithError: SNOWAMBError.publishFailed(description: "client not connected to server"))
             return
         }
         
         guard let clientId = self.clientId else {
-            delegate?.didFail(client: self, withError: SNOWAMBError(SNOWAMBErrorType.publishFailed, "AMB Publish for channel\(channel) can't be done. clientId was not set yet"))
+            delegate?.ambClient(self,
+                              didFailWithError: SNOWAMBError.publishFailed(description: "clientId was not set yet"))
             return
         }
 
@@ -632,7 +655,8 @@ private extension SNOWAMBClient {
         }
         
         guard let channel = message["channel"] as? String else {
-            delegate?.didFail(client: self, withError:SNOWAMBError(SNOWAMBErrorType.httpRequestFailed, "AMB Message is missing a channel name"))
+            delegate?.ambClient(self,
+                              didFailWithError:SNOWAMBError.httpRequestFailed(description: "message is missing a channel field"))
             return nil
         }
         
@@ -642,27 +666,27 @@ private extension SNOWAMBClient {
 
         let path = channelNameToPath(channel)
         let fullPath = String(format:"/amb/%@", path)
-        
         let task = httpClient.post(fullPath, jsonParameters: myMessage as Any, timeout: timeout,
-            success: { (responseObject: Any?) -> Void in
-                let result = self.parseResponseObject(responseObject)
-                if let handler = handler {
+            success: { [weak self] (responseObject: Any?) -> Void in
+                let result = self?.parseResponseObject(responseObject)
+                if let handler = handler,
+                   let result = result {
                     handler(result)
                 }
             },
-            failure: { (error: Any?) -> Void in
+            failure: { [weak self] (error: Any?) -> Void in
                 let httpError = error as! Error
                 if let handler = handler {
-                    handler(SNOWAMBResult.failure(SNOWAMBError(SNOWAMBErrorType.httpRequestFailed, httpError.localizedDescription)))
+                    handler(SNOWAMBResult.failure(SNOWAMBError.httpRequestFailed(description: httpError.localizedDescription)))
                 }
-                self.handleHTTPResponseError(message: myMessage, error: httpError)
+                self?.handleHTTPResponseError(message: myMessage, error: httpError)
         })
 
         if let task = task {
-            dataTasks.append(task)
             if channel == AMBChannel.connect.name {
                 connectDataTask = task
             }
+            dataTasks.append(task)
         }
         cleanupCompletedDataTasks()
         
@@ -673,15 +697,15 @@ private extension SNOWAMBClient {
         cleanupCompletedDataTasks()
         
         if self.isPaused {
-            log("AMB Client. HTTP Error received. Ignoring because client is paused")
+            log("AMB Client. HTTP Error \(error.localizedDescription) received. Ignoring because client is paused")
             return
         }
 
-        delegate?.didFail(client: self,
-                          withError: SNOWAMBError(SNOWAMBErrorType.httpRequestFailed, "AMB HTTP Request failed with error:\(error)"))
+        delegate?.ambClient(self,
+                          didFailWithError: SNOWAMBError.httpRequestFailed(description: "request failed with error:\(error.localizedDescription)"))
         if self.clientStatus == .handshake {
-            delegate?.didFail(client: self,
-                              withError: SNOWAMBError(SNOWAMBErrorType.handshakeFailed, "AMB Handshake failed"))
+            delegate?.ambClient(self,
+                              didFailWithError: SNOWAMBError.handshakeFailed(description: "Handshake request failed"))
             return
         }
         if self.clientStatus == .connected {

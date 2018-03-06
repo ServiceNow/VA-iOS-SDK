@@ -11,22 +11,20 @@ import AlamofireImage
 class ControlsUtil {
     
     //swiftlint:disable:next cyclomatic_complexity
-    static func controlForViewModel(_ model: ControlViewModel, resourceProvider provider: ControlResourceProvider? = nil) -> ControlProtocol {
+    static func controlForViewModel(_ model: ControlViewModel, resourceProvider provider: ControlResourceProvider) -> ControlProtocol {
         switch model.type {
         case .multiSelect:
             return MultiSelectControl(model: model)
         case .text:
             return TextControl(model: model)
         case .outputImage:
-            let outputImageControl = OutputImageControl(model: model)
-            outputImageControl.imageDownloader = provider?.imageProvider
-            return outputImageControl
+            return OutputImageControl(model: model, imageDownloader: provider.imageDownloader)
         case .inputImage:
             return InputImageControl(model: model)
         case .outputLink:
-            return OutputLinkControl(model: model)
+            return OutputLinkControl(model: model, resourceProvider: provider)
         case .outputHtml:
-            return OutputHtmlControl(model: model)
+            return OutputHtmlControl(model: model, resourceProvider: provider)
         case .dateTime, .time, .date:
             return DateTimePickerControl(model: model)
         case .boolean:

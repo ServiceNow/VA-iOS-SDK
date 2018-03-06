@@ -281,7 +281,7 @@ extension Chatterbox {
         self.chatDataListener?.chatterbox(self, willLoadConversation: conversation.conversationId, forChat: self.chatId)
         
         conversation.messageExchanges().forEach { exchange in
-            let outputOnlyMessage = exchange.message.isOutputOnly
+            let outputOnlyMessage = exchange.message.isOutputOnly || exchange.message.controlType == .multiPart
             let inputPending = conversation.state == .inProgress && !exchange.isComplete
             
             if outputOnlyMessage || inputPending {

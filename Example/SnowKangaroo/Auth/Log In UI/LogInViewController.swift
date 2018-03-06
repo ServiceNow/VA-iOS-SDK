@@ -21,7 +21,12 @@ class LogInViewController: UIViewController {
 
     @IBOutlet private weak var instanceTextField: UITextField!
     @IBOutlet private weak var usernameTextField: UITextField!
-    @IBOutlet private weak var passwordTextField: UITextField!
+    @IBOutlet private weak var passwordTextField: UITextField! {
+        didSet {
+            passwordTextField.returnKeyType = .go
+            passwordTextField.addTarget(self, action: #selector(enterPressed), for: .editingDidEndOnExit)
+        }
+    }
     @IBOutlet private weak var activityIndicatorView: UIActivityIndicatorView!
     @IBOutlet private weak var openIDButton: UIButton!
     @IBOutlet private weak var logInButton: UIButton!
@@ -67,6 +72,10 @@ class LogInViewController: UIViewController {
     
     @IBAction private func useOpenIDButtonTapped(_ sender: Any) {
         logIn(authProvider: .openID)
+    }
+    
+    @objc private func enterPressed() {
+        logIn(authProvider: .local)
     }
     
     // MARK: - Log In

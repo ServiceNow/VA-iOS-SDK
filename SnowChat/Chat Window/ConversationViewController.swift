@@ -168,7 +168,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             return
         }
         
-        cell.messageViewController?.model = model
+        cell.messageViewController?.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self, resourceProvider: chatterbox.apiManager)
         UIView.animate(withDuration: 0.3, animations: {
             self.tableView.beginUpdates()
             self.tableView.endUpdates()
@@ -337,7 +337,7 @@ extension ConversationViewController {
             let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
             dataController.updateControlData(model, isSkipped: false)
         case .inAgentConversation:
-            // send ther input as a straight-up data control (not an update)
+            // send the input as a straight-up data control (not an update)
             let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
             dataController.sendControlData(model)
             textView.text = ""
@@ -394,7 +394,7 @@ extension ConversationViewController {
             guard let controlModel = chatMessageModel.controlModel else { return UITableViewCell() }
             if chatMessageModel.isAuxiliary {
                 let controlCell = tableView.dequeueReusableCell(withIdentifier: ControlViewCell.cellIdentifier, for: indexPath) as! ControlViewCell
-                controlCell.configure(with: controlModel)
+                controlCell.configure(with: controlModel, resourceProvider: chatterbox.apiManager)
                 controlCell.control?.delegate = self
                 cell = controlCell
             } else {

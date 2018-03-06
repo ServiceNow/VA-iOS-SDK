@@ -1,5 +1,5 @@
 //
-//  SystemTextMessage.swift
+//  ControlMessage.swift
 //  SnowChat
 //
 //  Created by Marc Attinasi on 11/21/17.

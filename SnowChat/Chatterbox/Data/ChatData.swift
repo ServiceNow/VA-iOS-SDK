@@ -19,7 +19,7 @@ struct ChatVendor: Codable {
 }
 
 struct ChatSessionContext {
-    var deviceId: String { return "1234" } //{ return deviceIdentifier() }
+    var deviceId: String { return deviceIdentifier() }
     var vendor: ChatVendor
 }
 
@@ -28,7 +28,8 @@ struct ChatSession: Codable {
     var user: ChatUser
     var sessionState: SessionState = .closed
     var welcomeMessage: String?
-
+    var settings: ChatSessionSettings?
+    
     var contextId: String { return "context" }
         // NOTE: unknown what this should be - reference impl had it hard-coded and commented as 'what?'
 
@@ -42,10 +43,12 @@ struct ChatSession: Codable {
     private enum CodingKeys: String, CodingKey {
         case id
         case user
+        case sessionState
         case welcomeMessage
+        case settings
     }
     
-    enum SessionState {
+    enum SessionState: String, Codable {
         case closed
         case opened
         case error
@@ -76,6 +79,7 @@ enum ChatterboxActionType: String, Codable, CodingKey {
     case finishedUserTopic = "TopicFinished"
     
     case startAgentChat = "StartChat"
+    case supportQueueSubscribe = "SubscribeToSupportQueue"
     
     case unknown = "unknownAction"
 }

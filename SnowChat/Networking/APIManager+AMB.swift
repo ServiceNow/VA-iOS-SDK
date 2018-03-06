@@ -10,7 +10,7 @@ extension APIManager {
                                     switch result {
                                     case .success:
                                         Logger.default.logInfo("published message successfully")
-                                    //TODO: Implement handler here
+                                        //TODO: Implement handler here
                                     case .failure:
                                         Logger.default.logInfo("failed to publish message")
                                         //TODO: same
@@ -54,19 +54,18 @@ extension APIManager {
 // MARK: - AMB Delegate
 
 extension APIManager: SNOWAMBClientDelegate {
+    func ambClientDidConnect(_ client: SNOWAMBClient) {}
+    func ambClientDidDisconnect(_ client: SNOWAMBClient) {}
+    func ambClient(_ client: SNOWAMBClient, didSubscribeToChannel channel: String) {}
+    func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromchannel channel: String) {}
+    func ambClient(_ client: SNOWAMBClient, didReceiveMessage: SNOWAMBMessage, fromChannel channel: String) {}
+    func ambClient(_ client: SNOWAMBClient, didChangeGlideStatus status: SNOWAMBGlideStatus) {}
     
-    func didConnect(client: SNOWAMBClient) {}
-    func didDisconnect(client: SNOWAMBClient) {}
-    func didSubscribe(client: SNOWAMBClient, toChannel: String) {}
-    func didUnsubscribe(client: SNOWAMBClient, fromchannel: String) {}
-    func didReceive(client: SNOWAMBClient, message: SNOWAMBMessage, fromChannel channel: String) {}
-    func didGlideStatusChange(client: SNOWAMBClient, status: SNOWAMBGlideStatus) {}
-    
-    func didFail(client: SNOWAMBClient, withError error: SNOWAMBError) {
+    func ambClient(_ client: SNOWAMBClient, didFailWithError error: SNOWAMBError) {
         Logger.default.logInfo("AMB client error: \(error.localizedDescription)")
     }
     
-    func didClientStatusChange(client: SNOWAMBClient, status: SNOWAMBClientStatus) {
+    func ambClient(_ client: SNOWAMBClient, didChangeClientStatus status: SNOWAMBClientStatus) {
         if let transportListener = transportListener {
             switch status {
             case .connected:
