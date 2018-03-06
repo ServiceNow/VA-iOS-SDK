@@ -833,13 +833,19 @@ extension ChatDataController: ChatDataListener {
             let response = messageExchange.response as? DateTimePickerControlMessage,
             let message = messageExchange.message as? DateTimePickerControlMessage,
             let label = message.data.richControl?.uiMetadata?.label,
-            let value: Date = response.data.richControl?.value ?? Date() else {
+            var value: Date = response.data.richControl?.value ?? Date() else {
                 logger.logError("MessageExchange is not valid in dateTimePickerControlsFromMessageExchange method - skipping!")
                 return nil
         }
         
         let dateFormatter = DateFormatter.formatterForChatterboxControlType(response.controlType)
         let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        
+        // Time value comes as a GMT from the server and we need to display it in local timezone.
+        // It is tricky becase 3:00AM GMT is not 3:00AM PST
+        if response.controlType == .time {
+            value = TimePickerControlViewModel.dateInLocalTimeZoneByKeepingTimeComponents(value)
+        }
         let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: dateFormatter.string(from: value))
         
         return (message: questionModel, response: answerModel)

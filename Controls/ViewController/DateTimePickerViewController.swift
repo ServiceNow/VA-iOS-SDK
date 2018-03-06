@@ -31,6 +31,7 @@ class DateTimePickerViewController: UIViewController {
     
     private var displayMode: DisplayMode = .dateTime {
         didSet {
+            updateSelectedDateLabelWithDate(datePicker.date)
             updateDateTitleLabel()
             updatePickerMode()
         }
@@ -114,20 +115,8 @@ class DateTimePickerViewController: UIViewController {
         case .dateTime:
             return date
         case .time:
-            var adjustedComponents = DateComponents()
-            let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: date)
-            adjustedComponents.setValue(timeComponents.hour, for: .hour)
-            adjustedComponents.setValue(timeComponents.minute, for: .minute)
-            adjustedComponents.setValue(timeComponents.second, for: .second)
-            
-            adjustedComponents.setValue(1, for: .day)
-            adjustedComponents.setValue(1, for: .month)
-            adjustedComponents.setValue(1970, for: .year)
-            guard let adjustedDate = calendar.date(from: adjustedComponents) else {
-                fatalError("Error during date adjustment")
-            }
-            
-            return adjustedDate
+            let timeInterval = date.timeIntervalSince(calendar.startOfDay(for: date))
+            return Date(timeIntervalSince1970: timeInterval)
         }
     }
 }

@@ -59,4 +59,13 @@ class TimePickerControlViewModel: DateTimePickerControlViewModel {
     override var dateFormatter: DateFormatter {
         return DateFormatter.timeOnlyFormatter
     }
+    
+    class func dateInLocalTimeZoneByKeepingTimeComponents(_ date: Date) -> Date {
+        
+        guard let calendar = DateFormatter.timeOnlyFormatter.calendar else {
+            return date
+        }
+        let timeInterval = date.timeIntervalSince1970
+        return calendar.startOfDay(for: date).addingTimeInterval(timeInterval)
+    }
 }

@@ -25,22 +25,10 @@ class AppContextManager {
         completion(response)
     }
     
-    func authorize() -> ServerContextResponse {
-        let response = ServerContextResponse(location: true, appVersion: true, deviceTimeZone: true, deviceType: true, cameraPermission: true, photoPermission: true, mobileOS: true)
-        return response
-    }
-    
-    func fetchData() -> ContextData {
-        var data = ContextData()
-        data.appVersion = "1.1"
-        data.deviceTimeZone = "UTC"
-        return data
-    }
-    
     func fetchContextData(completion: @escaping (ContextData) -> Swift.Void) {
         var data = ContextData()
         data.appVersion = "1.1"
-        data.deviceTimeZone = "UTC"
+        data.deviceTimeZone = TimeZone.current.identifier
         completion(data)
     }
 }
