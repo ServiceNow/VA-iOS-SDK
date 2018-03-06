@@ -128,6 +128,8 @@ extension Chatterbox {
                     self?.publishMessage(initUserEvent)
                 })
             })
+        } else {
+            publishMessage(initUserEvent)
         }
     }
     
