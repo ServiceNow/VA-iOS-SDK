@@ -41,6 +41,7 @@ class DateTimePickerViewController: UIViewController {
         super.viewDidLoad()
         datePicker.backgroundColor = UIColor.white
         datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
+        updatePickerDate()
         updateSelectedDateLabelWithDate(datePicker.date)
         updateDateTitleLabel()
         updateDisplayMode()
@@ -52,15 +53,33 @@ class DateTimePickerViewController: UIViewController {
         switch model.type {
         case .dateTime:
             displayMode = .dateTime
+            datePicker.date = Date()
         case .time:
             displayMode = .time
+            datePicker.date = Date(timeIntervalSince1970: 0)
         case .date:
             displayMode = .date
+            datePicker.date = Date()
         default:
             fatalError("Wrong model assigned")
         }
         
         updatePickerMode()
+    }
+    
+    private func updatePickerDate() {
+        guard let model = model else { return }
+        
+        switch model.type {
+        case .dateTime:
+            datePicker.date = Date()
+        case .time:
+            datePicker.date = Date(timeIntervalSince1970: 0)
+        case .date:
+            datePicker.date = Date()
+        default:
+            fatalError("Wrong model assigned")
+        }
     }
     
     private func updateDateTitleLabel() {
@@ -112,11 +131,8 @@ class DateTimePickerViewController: UIViewController {
             }
             
             return adjustedDate
-        case .dateTime:
+        case .dateTime, .time:
             return date
-        case .time:
-            let timeInterval = date.timeIntervalSince(calendar.startOfDay(for: date))
-            return Date(timeIntervalSince1970: timeInterval)
         }
     }
 }
