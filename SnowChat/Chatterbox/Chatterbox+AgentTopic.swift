@@ -37,6 +37,8 @@ extension Chatterbox {
     }
     
     internal func resumeLiveAgentTopic(conversation: Conversation) {
+        // TODO: notify server that we are resuming the topic (showTopic)
+
         // have to reset the taskId to the last live agent message's taskId
         if let taskId = conversation.messageExchanges().last?.message.taskId {
             let topicInfo = TopicInfo(topicId: Chatterbox.liveAgentTopicId, topicName: nil, taskId: taskId, conversationId: conversation.conversationId)
