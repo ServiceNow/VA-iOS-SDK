@@ -75,8 +75,11 @@ class AppContextManager {
                 data.cameraPermission = handler.isAuthorized
             case .photoPermission:
                 data.photoPermission = handler.isAuthorized
-            default:
-                Logger.default.logDebug("No data to push for item: \(handler.contextItem.type)")
+            case .location:
+                // TODO: needs more generic solution
+                if let locationHandler = handler as? LocationContextHandler {
+                    data.location = locationHandler.locationData
+                }
             }
         }
         

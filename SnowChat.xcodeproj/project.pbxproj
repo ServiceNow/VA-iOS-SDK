@@ -103,6 +103,7 @@
 		57B7E2CD1FBA3C8400196BA9 /* UIView+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2CB1FBA3C8400196BA9 /* UIView+Additions.swift */; };
 		57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2CF1FBA6DA500196BA9 /* BooleanControlViewModel.swift */; };
 		57B7E2D21FBA75B100196BA9 /* PickerControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */; };
+		57C1054D205035880007740C /* LocationContextHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C1054C205035880007740C /* LocationContextHandler.swift */; };
 		57CBFE021FE8D921006396E8 /* UILayoutPriority+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57CBFE011FE8D921006396E8 /* UILayoutPriority+Additions.swift */; };
 		57D1DB6B1FEAC94A00082F78 /* ConversationViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB6A1FEAC94A00082F78 /* ConversationViewCell.swift */; };
 		57D1DB6D1FEB592D00082F78 /* OutputImageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D1DB6C1FEB592D00082F78 /* OutputImageControl.swift */; };
@@ -299,6 +300,7 @@
 		57B7E2CB1FBA3C8400196BA9 /* UIView+Additions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Additions.swift"; sourceTree = "<group>"; };
 		57B7E2CF1FBA6DA500196BA9 /* BooleanControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooleanControlViewModel.swift; sourceTree = "<group>"; };
 		57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControlViewModel.swift; sourceTree = "<group>"; };
+		57C1054C205035880007740C /* LocationContextHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationContextHandler.swift; sourceTree = "<group>"; };
 		57CBFE011FE8D921006396E8 /* UILayoutPriority+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILayoutPriority+Additions.swift"; sourceTree = "<group>"; };
 		57D1DB6A1FEAC94A00082F78 /* ConversationViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewCell.swift; sourceTree = "<group>"; };
 		57D1DB6C1FEB592D00082F78 /* OutputImageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputImageControl.swift; sourceTree = "<group>"; };
@@ -458,6 +460,7 @@
 			children = (
 				57026188204E2B2B003D56DE /* ContextHandler.swift */,
 				57026186204E2B14003D56DE /* Handlers.swift */,
+				57C1054C205035880007740C /* LocationContextHandler.swift */,
 			);
 			path = Handlers;
 			sourceTree = "<group>";
@@ -1234,6 +1237,7 @@
 				572A4E421FCF07150081318D /* PickerTableViewCell.swift in Sources */,
 				572FAC181FC47A9C00B0B956 /* MultiSelectControl.swift in Sources */,
 				C4A774A91FDF22E200B6DF68 /* ChatEventListener.swift in Sources */,
+				57C1054D205035880007740C /* LocationContextHandler.swift in Sources */,
 				579479342031F44F00C4C5C5 /* DateTimePickerViewController.swift in Sources */,
 				BE9E8BA91FBF826300499960 /* APIManager.swift in Sources */,
 				57026187204E2B14003D56DE /* Handlers.swift in Sources */,

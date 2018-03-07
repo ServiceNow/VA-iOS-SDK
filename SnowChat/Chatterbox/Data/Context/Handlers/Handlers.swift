@@ -6,7 +6,7 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-class BaseContextHandler: ContextHandler {
+class BaseContextHandler: NSObject, ContextHandler {
     
     var isAuthorized: Bool = false
     
@@ -41,19 +41,9 @@ class BaseContextHandler: ContextHandler {
     }
 }
 
-// MARK: Location
-
-class LocationContextHandler: BaseContextHandler, DataFetchable {
-    
-    override func authorize(completion: @escaping (Bool) -> Void) {
-        completion(false)
-    }
-}
-
 // MARK: Camera
 
 class CameraContextHandler: BaseContextHandler {
-    
     override func authorize(completion: @escaping (Bool) -> Void) {
         UserData.authorizeCamera { [weak self] status in
             guard let strongSelf = self else { return }
