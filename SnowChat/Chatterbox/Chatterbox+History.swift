@@ -238,7 +238,12 @@ extension Chatterbox {
             apiManager.fetchConversations(forConsumer: consumerId, completionHandler: { [weak self] conversations in
                 guard let strongSelf = self else { return }
                 
-                let lastConversation = conversations.last
+                guard let lastConversation = conversations.last else {
+                    // no messages - signal we are finished
+                    strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
+                    completionHandler(nil)
+                    return
+                }
                 
                 conversations.forEach { conversation in
                     guard !conversation.isForSystemTopic() else {
@@ -247,7 +252,7 @@ extension Chatterbox {
                     }
                     
                     var conversation = conversation
-                    let isLastConversation = conversation.conversationId == lastConversation?.conversationId
+                    let isLastConversation = conversation.conversationId == lastConversation.conversationId
                     let isInProgress = isLastConversation && (conversation.state == .inProgress || conversation.state == .chatProgress)
                     
                     if isInProgress {
@@ -272,7 +277,6 @@ extension Chatterbox {
                         strongSelf.syncConversationState(conversation)
                     }
                 }
-                
                 completionHandler(nil)
             })
         } else {
