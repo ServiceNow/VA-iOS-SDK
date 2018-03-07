@@ -11,6 +11,7 @@ class AppContextManager {
     private var handlers = [ContextHandler]()
     
     func registerHandlers(for request: ServerContextRequest) {
+        handlers.removeAll()
         request.predefinedContextItems.forEach({ contextItem in
             let handler = BaseContextHandler.handler(for: contextItem)
             handlers.append(handler)
