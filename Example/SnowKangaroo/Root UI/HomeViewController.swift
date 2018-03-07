@@ -59,9 +59,9 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     private func establishChatSession(credential: OAuthCredential, logOutOnAuthFailure: Bool) {
         guard let chatService = chatService else { return }
         
+        let userDefinedContextData = UserDefinedContextData()
         let token = credential.idToken ?? credential.accessToken
-        
-        chatService.establishUserSession(token: token) { [weak self] (error) in
+        chatService.establishUserSession(token: token, userContextData: userDefinedContextData) { [weak self] (error) in
             if let error = error {
                 if case ChatServiceError.invalidCredentials = error {
                     if logOutOnAuthFailure {
@@ -138,5 +138,4 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     func chatServiceAuthenticationDidBecomeInvalid(_ chatService: ChatService) {
         postAuthenticationDidBecomeInvalidNotification()
     }
-
 }

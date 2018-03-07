@@ -8,6 +8,8 @@
 
 class BaseContextHandler: ContextHandler {
     
+    var isAuthorized: Bool = false
+    
     var contextItem: ContextItem
     
     required init(contextItem: ContextItem) {
@@ -15,6 +17,7 @@ class BaseContextHandler: ContextHandler {
     }
     
     func authorize(completion: @escaping (Bool) -> Void) {
+        isAuthorized = true
         completion(true)
     }
     
@@ -50,9 +53,12 @@ class LocationContextHandler: BaseContextHandler, DataFetchable {
 // MARK: Camera
 
 class CameraContextHandler: BaseContextHandler {
+    
     override func authorize(completion: @escaping (Bool) -> Void) {
-        UserData.authorizeCamera { status in
-            completion((status == .authorized))
+        UserData.authorizeCamera { [weak self] status in
+            guard let strongSelf = self else { return }
+            strongSelf.isAuthorized = (status == .authorized)
+            completion(strongSelf.isAuthorized)
         }
     }
 }
@@ -61,8 +67,10 @@ class CameraContextHandler: BaseContextHandler {
 
 class PhotoContextHandler: BaseContextHandler {
     override func authorize(completion: @escaping (Bool) -> Void) {
-        UserData.authorizePhoto { status in
-            completion((status == .authorized))
+        UserData.authorizePhoto { [weak self] status in
+            guard let strongSelf = self else { return }
+            strongSelf.isAuthorized = (status == .authorized)
+            completion(strongSelf.isAuthorized)
         }
     }
 }

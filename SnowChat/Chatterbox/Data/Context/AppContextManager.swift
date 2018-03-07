@@ -54,8 +54,9 @@ class AppContextManager {
         }
     }
     
-    func fetchContextData(completion: @escaping (ContextData) -> Swift.Void) {
+    func fetchContextData(with userData: Codable? = nil, completion: @escaping (ContextData) -> Swift.Void) {
         var data = ContextData()
+        data.userData = userData
         handlers.forEach { handler in
             switch handler.contextItem.type {
             case .appVersion:
@@ -70,6 +71,10 @@ class AppContextManager {
                 data.deviceType = UIDevice.current.model
             case .mobileOS:
                 data.mobileOS = ProcessInfo.processInfo.operatingSystemVersionString
+            case .cameraPermission:
+                data.cameraPermission = handler.isAuthorized
+            case .photoPermission:
+                data.photoPermission = handler.isAuthorized
             default:
                 Logger.default.logDebug("No data to push for item: \(handler.contextItem.type)")
             }

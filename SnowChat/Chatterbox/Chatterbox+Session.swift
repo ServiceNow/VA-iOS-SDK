@@ -12,7 +12,8 @@ import Foundation
 
 extension Chatterbox {
 
-    func establishUserSession(vendor: ChatVendor, token: OAuthToken, completion: @escaping (Result<ContextualActionMessage>) -> Void) {
+    func establishUserSession(vendor: ChatVendor, token: OAuthToken, userContextData contextData: Codable? = nil, completion: @escaping (Result<ContextualActionMessage>) -> Void) {
+        self.userContextData = contextData
         self.vendor = vendor
         
         apiManager.prepareUserSession(token: token) { [weak self] result in
@@ -123,7 +124,7 @@ extension Chatterbox {
             appContextManager.authorizeContextItems(for: request, completion: { [weak self] response in
                 initUserEvent.data.actionMessage.contextHandshake.serverContextResponse = response
 
-                self?.appContextManager.fetchContextData(completion: { [weak self] contextData in
+                self?.appContextManager.fetchContextData(with: self?.userContextData, completion: { [weak self] contextData in
                     initUserEvent.data.actionMessage.contextData = contextData
                     self?.publishMessage(initUserEvent)
                 })
