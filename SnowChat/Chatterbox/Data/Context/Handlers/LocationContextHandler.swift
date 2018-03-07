@@ -10,7 +10,7 @@ import CoreLocation
 
 class LocationContextHandler: BaseContextHandler, DataFetchable, CLLocationManagerDelegate {
     
-    private var locationManager = CLLocationManager()
+    private let locationManager = CLLocationManager()
     private var authorizationCompletion: ((Bool) -> Void)?
     private(set) var locationData: LocationContextData?
     
