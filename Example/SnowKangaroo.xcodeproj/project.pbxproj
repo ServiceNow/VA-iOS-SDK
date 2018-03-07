@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		57C1054B204F72A30007740C /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C1054A204F72A30007740C /* UserData.swift */; };
 		8B5CF99C2034AC9C0020DF53 /* AuthNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5CF99B2034AC9C0020DF53 /* AuthNotifications.swift */; };
 		8B67BEF72037B72B008AAB18 /* OAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B67BEF62037B72B008AAB18 /* OAuthManager.swift */; };
 		8B67BEF92037B75C008AAB18 /* OAuthManagerConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B67BEF82037B75C008AAB18 /* OAuthManagerConfiguration.swift */; };
@@ -66,6 +67,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		57C1054A204F72A30007740C /* UserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
 		8B5CF99B2034AC9C0020DF53 /* AuthNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthNotifications.swift; sourceTree = "<group>"; };
 		8B67BEF62037B72B008AAB18 /* OAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthManager.swift; sourceTree = "<group>"; };
 		8B67BEF82037B75C008AAB18 /* OAuthManagerConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthManagerConfiguration.swift; sourceTree = "<group>"; };
@@ -208,6 +210,7 @@
 			isa = PBXGroup;
 			children = (
 				BE50E1EC1FB92EB800948FBC /* AppDelegate.swift */,
+				57C1054A204F72A30007740C /* UserData.swift */,
 				BE50E1F31FB92EB800948FBC /* Assets.xcassets */,
 				8B98430A203F8E6300FE7DAD /* Auth */,
 				8B72FC2D202AA5BD00C1AFC9 /* Foundation */,
@@ -431,6 +434,7 @@
 				8B72FC37202B696A00C1AFC9 /* OAuthCredential.swift in Sources */,
 				8B67BEF72037B72B008AAB18 /* OAuthManager.swift in Sources */,
 				8B67BEF92037B75C008AAB18 /* OAuthManagerConfiguration.swift in Sources */,
+				57C1054B204F72A30007740C /* UserData.swift in Sources */,
 				8B72FC32202B61FD00C1AFC9 /* RootViewController.swift in Sources */,
 				8B67BEFB2037BA92008AAB18 /* OAuthManagerConfiguration+Examples.swift in Sources */,
 				8B5CF99C2034AC9C0020DF53 /* AuthNotifications.swift in Sources */,

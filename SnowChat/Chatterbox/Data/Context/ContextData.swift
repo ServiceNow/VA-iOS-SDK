@@ -14,6 +14,7 @@ struct ContextData: Codable {
     var mobileOS: String?
     var cameraPermission: Bool?
     var photoPermission: Bool?
+    var userData: Codable?
     
     init() {
     }
@@ -27,6 +28,7 @@ struct ContextData: Codable {
         self.mobileOS = try container.decodeIfPresent(String.self, forKey: .mobileOS)
         self.photoPermission = try container.decodeIfPresent(Bool.self, forKey: .photoPermission)
         self.cameraPermission = try container.decodeIfPresent(Bool.self, forKey: .cameraPermission)
+        // TODO: Do we need to decode userData? I dont think so..
     }
     
     func encode(to encoder: Encoder) throws {
@@ -38,6 +40,7 @@ struct ContextData: Codable {
         try container.encodeIfPresent(mobileOS, forKey: .mobileOS)
         try container.encodeIfPresent(cameraPermission, forKey: .cameraPermission)
         try container.encodeIfPresent(photoPermission, forKey: .photoPermission)
+        try userData?.encode(to: encoder)
     }
 }
 

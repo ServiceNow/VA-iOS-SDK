@@ -54,8 +54,9 @@ class AppContextManager {
         }
     }
     
-    func fetchContextData(completion: @escaping (ContextData) -> Swift.Void) {
+    func fetchContextData(withUserContextData userData: Codable? = nil, completion: @escaping (ContextData) -> Swift.Void) {
         var data = ContextData()
+        data.userData = userData
         handlers.forEach { handler in
             switch handler.contextItem.type {
             case .appVersion:

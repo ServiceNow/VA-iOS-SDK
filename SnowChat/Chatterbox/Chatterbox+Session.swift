@@ -124,7 +124,7 @@ extension Chatterbox {
             appContextManager.authorizeContextItems(for: request, completion: { [weak self] response in
                 initUserEvent.data.actionMessage.contextHandshake.serverContextResponse = response
 
-                self?.appContextManager.fetchContextData(completion: { [weak self] contextData in
+                self?.appContextManager.fetchContextData(withUserContextData: self?.userContextData, completion: { [weak self] contextData in
                     initUserEvent.data.actionMessage.contextData = contextData
                     self?.publishMessage(initUserEvent)
                 })
