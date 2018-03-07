@@ -12,7 +12,8 @@ import Foundation
 
 extension Chatterbox {
 
-    func establishUserSession(vendor: ChatVendor, token: OAuthToken, completion: @escaping (Result<ContextualActionMessage>) -> Void) {
+    func establishUserSession(vendor: ChatVendor, token: OAuthToken, userContextData contextData: Codable? = nil, completion: @escaping (Result<ContextualActionMessage>) -> Void) {
+        self.userContextData = contextData
         self.vendor = vendor
         
         apiManager.prepareUserSession(token: token) { [weak self] result in

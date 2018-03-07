@@ -96,6 +96,7 @@ class Chatterbox {
     
     internal let logger = Logger.logger(for: "Chatterbox")
     
+    internal var userContextData: Codable?
     internal let appContextManager = AppContextManager()
     
     init(instance: ServerInstance, dataListener: ChatDataListener? = nil, eventListener: ChatEventListener? = nil) {

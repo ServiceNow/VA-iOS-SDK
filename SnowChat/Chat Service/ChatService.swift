@@ -53,14 +53,14 @@ public final class ChatService {
         return viewController
     }
     
-    public func establishUserSession(token: OAuthToken, completion: @escaping (ChatServiceError?) -> Void) {
+    public func establishUserSession(token: OAuthToken, userContextData contextData: Codable? = nil, completion: @escaping (ChatServiceError?) -> Void) {
         if isInitializing {
             fatalError("Only one initialization can be performed at a time.")
         }
         
         isInitializing = true
         
-        chatterbox.establishUserSession(vendor: vendor, token: token) { (result) in
+        chatterbox.establishUserSession(vendor: vendor, token: token, userContextData: contextData) { (result) in
             
             self.isInitializing = false
             
