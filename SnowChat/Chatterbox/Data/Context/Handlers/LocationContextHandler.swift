@@ -48,6 +48,11 @@ class LocationContextHandler: BaseContextHandler, DataFetchable, CLLocationManag
         }
     }
     
+    private func stopLocationManager() {
+        locationManager.stopUpdatingLocation()
+        locationManager.delegate = nil
+    }
+    
     // MARK: CLLocationManagerDelegate
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
@@ -64,11 +69,6 @@ class LocationContextHandler: BaseContextHandler, DataFetchable, CLLocationManag
         
         // Don't update authorization status (not supported right now on the server)
         authorizationCompletion = nil
-    }
-    
-    private func stopLocationManager() {
-        locationManager.stopUpdatingLocation()
-        locationManager.delegate = nil
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
