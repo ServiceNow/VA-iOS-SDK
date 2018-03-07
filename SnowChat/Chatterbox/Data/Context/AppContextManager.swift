@@ -55,7 +55,7 @@ class AppContextManager {
         }
     }
     
-    func fetchContextData(withUserContextData userData: Codable? = nil, completion: @escaping (ContextData) -> Swift.Void) {
+    func fetchContextData(with userData: Codable? = nil, completion: @escaping (ContextData) -> Swift.Void) {
         var data = ContextData()
         data.userData = userData
         handlers.forEach { handler in
