@@ -12,6 +12,8 @@ struct ContextData: Codable {
     var deviceTimeZone: String?
     var deviceType: String?
     var mobileOS: String?
+    var cameraPermission: Bool?
+    var photoPermission: Bool?
     
     init() {
     }
@@ -23,6 +25,8 @@ struct ContextData: Codable {
         self.deviceTimeZone = try container.decodeIfPresent(String.self, forKey: .deviceTimeZone)
         self.deviceType = try container.decodeIfPresent(String.self, forKey: .deviceType)
         self.mobileOS = try container.decodeIfPresent(String.self, forKey: .mobileOS)
+        self.photoPermission = try container.decodeIfPresent(Bool.self, forKey: .photoPermission)
+        self.cameraPermission = try container.decodeIfPresent(Bool.self, forKey: .cameraPermission)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -32,6 +36,8 @@ struct ContextData: Codable {
         try container.encodeIfPresent(deviceTimeZone, forKey: .deviceTimeZone)
         try container.encodeIfPresent(deviceType, forKey: .deviceType)
         try container.encodeIfPresent(mobileOS, forKey: .mobileOS)
+        try container.encodeIfPresent(cameraPermission, forKey: .cameraPermission)
+        try container.encodeIfPresent(photoPermission, forKey: .photoPermission)
     }
 }
 

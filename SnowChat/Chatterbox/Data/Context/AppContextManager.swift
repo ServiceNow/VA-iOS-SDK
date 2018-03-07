@@ -70,6 +70,10 @@ class AppContextManager {
                 data.deviceType = UIDevice.current.model
             case .mobileOS:
                 data.mobileOS = ProcessInfo.processInfo.operatingSystemVersionString
+            case .cameraPermission:
+                data.cameraPermission = handler.isAuthorized
+            case .photoPermission:
+                data.photoPermission = handler.isAuthorized
             default:
                 Logger.default.logDebug("No data to push for item: \(handler.contextItem.type)")
             }
