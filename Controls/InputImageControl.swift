@@ -47,13 +47,13 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
         
         switch item.type {
         case .takePhoto:
-            UserData.authorizeCamera({ [weak self] status in
+            UserDataManager.authorizeCamera({ [weak self] status in
                 if status == .authorized {
                     self?.presentImagePickerControllerWithSourceType(.camera)
                 }
             })
         case .photoLibrary:
-            UserData.authorizePhoto({ [weak self] status in
+            UserDataManager.authorizePhoto({ [weak self] status in
                 if status == .authorized {
                     self?.presentImagePickerControllerWithSourceType(.photoLibrary)
                 }

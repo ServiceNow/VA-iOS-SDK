@@ -8,9 +8,8 @@
 
 import AVFoundation
 import Photos
-import CoreLocation
 
-class UserData {
+class UserDataManager {
     
     // MARK: - Authorization
     

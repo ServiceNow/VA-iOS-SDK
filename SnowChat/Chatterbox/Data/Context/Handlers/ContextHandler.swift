@@ -10,11 +10,7 @@ protocol ContextHandler {
     
     var isAuthorized: Bool { get }
     
-    var contextItem: ContextItem { get }
-    
-    // TODO: We are not using it for now since frequency is not supported.
-    // Each ContextHandler has corresponding ContextTtem
-    init(contextItem: ContextItem)
+    var contextItem: ContextItem? { get set }
     
     func authorize(completion: @escaping (Bool) -> Swift.Void)
 }

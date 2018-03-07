@@ -55,7 +55,7 @@
 		5706C5811FE49F78008D70D1 /* ChatMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5706C5801FE49F78008D70D1 /* ChatMessageViewController.swift */; };
 		5717B1502003DABA00A4252C /* ChatMessageViewControllerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5717B14F2003DABA00A4252C /* ChatMessageViewControllerCache.swift */; };
 		5728D8EA20485BB30071EF9E /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728D8E920485BB30071EF9E /* Context.swift */; };
-		5728D8F12048D74A0071EF9E /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728D8F02048D74A0071EF9E /* UserData.swift */; };
+		5728D8F12048D74A0071EF9E /* UserDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728D8F02048D74A0071EF9E /* UserDataManager.swift */; };
 		5728D8F42048D9200071EF9E /* ContextData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728D8F32048D9200071EF9E /* ContextData.swift */; };
 		572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572A4E3B1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift */; };
 		572A4E401FCF06320081318D /* PickerTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 572A4E3F1FCF06320081318D /* PickerTableViewCell.xib */; };
@@ -252,7 +252,7 @@
 		5706C5801FE49F78008D70D1 /* ChatMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageViewController.swift; sourceTree = "<group>"; };
 		5717B14F2003DABA00A4252C /* ChatMessageViewControllerCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageViewControllerCache.swift; sourceTree = "<group>"; };
 		5728D8E920485BB30071EF9E /* Context.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
-		5728D8F02048D74A0071EF9E /* UserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
+		5728D8F02048D74A0071EF9E /* UserDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataManager.swift; sourceTree = "<group>"; };
 		5728D8F32048D9200071EF9E /* ContextData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextData.swift; sourceTree = "<group>"; };
 		572A4E3B1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullSizeScrollViewContainerView.swift; sourceTree = "<group>"; };
 		572A4E3F1FCF06320081318D /* PickerTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PickerTableViewCell.xib; sourceTree = "<group>"; };
@@ -523,7 +523,7 @@
 		57B7E2B91FBA24A600196BA9 /* Controls */ = {
 			isa = PBXGroup;
 			children = (
-				5728D8F02048D74A0071EF9E /* UserData.swift */,
+				5728D8F02048D74A0071EF9E /* UserDataManager.swift */,
 				5706C5781FE43FB3008D70D1 /* ControlsUtil.swift */,
 				578632151FBB9E0300FA0282 /* ControlProtocol.swift */,
 				57532BAC1FD777FA001D674C /* TextControl.swift */,
@@ -1364,7 +1364,7 @@
 				5778CF9E1FE07023004F77D8 /* SingleSelectControlViewModel.swift in Sources */,
 				C4CBF2C92045D90C0038F120 /* Chatterbox+History.swift in Sources */,
 				57D33BFB2049D37200CB606D /* AppContextManager.swift in Sources */,
-				5728D8F12048D74A0071EF9E /* UserData.swift in Sources */,
+				5728D8F12048D74A0071EF9E /* UserDataManager.swift in Sources */,
 				57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */,
 				C47B36412048C57A00559410 /* Chatterbox+SupportQueue.swift in Sources */,
 				572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */,

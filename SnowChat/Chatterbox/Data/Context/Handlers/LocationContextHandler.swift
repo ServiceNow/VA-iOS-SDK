@@ -10,7 +10,7 @@ import CoreLocation
 
 class LocationContextHandler: BaseContextHandler, DataFetchable, CLLocationManagerDelegate {
     
-    private let locationManager = CLLocationManager()
+    private var locationManager = CLLocationManager()
     private var authorizationCompletion: ((Bool) -> Void)?
     private(set) var locationData: LocationContextData?
     
@@ -20,8 +20,8 @@ class LocationContextHandler: BaseContextHandler, DataFetchable, CLLocationManag
         }
     }
     
-    required init(contextItem: ContextItem) {
-        super.init(contextItem: contextItem)
+    override init() {
+        super.init()
         setupLocationManager()
     }
     
@@ -45,6 +45,9 @@ class LocationContextHandler: BaseContextHandler, DataFetchable, CLLocationManag
         let authorizationStatus = CLLocationManager.authorizationStatus()
         if authorizationStatus == .notDetermined {
             locationManager.requestWhenInUseAuthorization()
+        } else {
+            isAuthorized = (authorizationStatus == .authorizedWhenInUse)
+            authorizationCompletion = nil
         }
     }
     
