@@ -68,6 +68,8 @@ struct ServerContextRequest: Codable {
     var photoPermission: ContextItem?
     var mobileOS: ContextItem?
     
+    typealias CodingKeys = ContextItemType
+    
     private(set) var predefinedContextItems = [ContextItem]()
     
     init(from decoder: Decoder) throws {
@@ -107,17 +109,6 @@ struct ServerContextRequest: Codable {
         self.mobileOS = contextItem
         predefinedContextItems.append(contextItem)
     }
-    
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: ContextItemType.self)
-        try container.encode(location, forKey: .location)
-        try container.encode(appVersion, forKey: .appVersion)
-        try container.encode(deviceTimeZone, forKey: .deviceTimeZone)
-        try container.encode(deviceType, forKey: .deviceType)
-        try container.encode(cameraPermission, forKey: .cameraPermission)
-        try container.encode(photoPermission, forKey: .photoPermission)
-        try container.encode(mobileOS, forKey: .mobileOS)
-    }
 }
 
 struct ServerContextResponse: Codable {
@@ -129,27 +120,5 @@ struct ServerContextResponse: Codable {
     var photoPermission: Bool = false
     var mobileOS: Bool = false
     
-    init() {}
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: ContextItemType.self)
-        self.location = try container.decode(Bool.self, forKey: .location)
-        self.appVersion = try container.decode(Bool.self, forKey: .appVersion)
-        self.deviceTimeZone = try container.decode(Bool.self, forKey: .deviceTimeZone)
-        self.deviceType = try container.decode(Bool.self, forKey: .deviceType)
-        self.cameraPermission = try container.decode(Bool.self, forKey: .cameraPermission)
-        self.photoPermission = try container.decode(Bool.self, forKey: .photoPermission)
-        self.mobileOS = try container.decode(Bool.self, forKey: .mobileOS)
-    }
-    
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: ContextItemType.self)
-        try container.encode(location, forKey: .location)
-        try container.encode(appVersion, forKey: .appVersion)
-        try container.encode(deviceTimeZone, forKey: .deviceTimeZone)
-        try container.encode(deviceType, forKey: .deviceType)
-        try container.encode(cameraPermission, forKey: .cameraPermission)
-        try container.encode(photoPermission, forKey: .photoPermission)
-        try container.encode(mobileOS, forKey: .mobileOS)
-    }
+    typealias CodingKeys = ContextItemType
 }

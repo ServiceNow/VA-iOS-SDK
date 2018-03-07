@@ -16,8 +16,7 @@ struct ContextData: Codable {
     var photoPermission: Bool?
     var userData: Codable?
     
-    init() {
-    }
+    init() {}
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: ContextItemType.self)
@@ -51,7 +50,7 @@ struct LocationContextData: Codable {
     var longitude: Double?
     var address: String?
     
-    private enum LocationCodingKeys: String, CodingKey {
+    private enum CodingKeys: String, CodingKey {
         case latitude = "lat"
         case longitude = "lng"
         case address = "address"
