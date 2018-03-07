@@ -13,7 +13,7 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     
     private var chatService: ChatService?
 
-    @IBOutlet weak var statusLabel: UILabel!
+    @IBOutlet private weak var statusLabel: UILabel!
     
     // MARK: - View Life Cycle
     
@@ -34,7 +34,7 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "🐞", style: .plain, target: self, action: #selector(debugButtonTapped(_:)))
     }
 
-    fileprivate func setupStatusLabel() {
+    private func setupStatusLabel() {
         if let instanceURL = InstanceSettings.shared.instanceURL, let host = instanceURL.host {
             statusLabel.text = "Instance: \(host)"
         }
