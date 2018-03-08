@@ -194,6 +194,15 @@ struct Conversation: Storable, Codable {
         case canceled =     "CANCELED"
         case error =        "ERROR"
         case unknown =      "UKNONWN"
+        
+        var isInProgress: Bool {
+            switch self {
+            case .inProgress, .chatProgress:
+                return true
+            default :
+                return false
+            }
+        }
     }
 }
 
