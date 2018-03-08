@@ -6,29 +6,43 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
+import CoreLocation
+
 class AppContextManager {
+    private let handlers: [ContextItemType : ContextHandler]
     
-    private var handlers = [ContextHandler]()
+    init() {
+        self.handlers = [.location : LocationContextHandler(),
+                         .cameraPermission : CameraContextHandler(),
+                         .photoPermission : PhotoContextHandler(),
+                         .appVersion : BaseContextHandler(),
+                         .deviceType : BaseContextHandler(),
+                         .deviceTimeZone : BaseContextHandler(),
+                         .mobileOS : BaseContextHandler()]
+    }
     
-    func registerHandlers(for request: ServerContextRequest) {
+    func setupHandlers(for request: ServerContextRequest) {
         request.predefinedContextItems.forEach({ contextItem in
-            let handler = BaseContextHandler.handler(for: contextItem)
-            handlers.append(handler)
+            var handler = handlers[contextItem.type]
+            handler?.contextItem = contextItem
         })
-        
-        // TODO: Add custom handler
     }
     
     // Fires authorization action on all predefined context variables
     func authorizeContextItems(for request: ServerContextRequest, completion: @escaping (ServerContextResponse) -> Swift.Void) {
-        
         // use group dispatch to receive authorization from all context items
         var response = ServerContextResponse()
         let dispatchGroup = DispatchGroup()
-        handlers.forEach { handler in
+        handlers.forEach { (itemType, handler) in
             dispatchGroup.enter()
             handler.authorize(completion: { authorized in
-                switch handler.contextItem.type {
+                guard let contextItem = handler.contextItem else {
+                    Logger.default.logError("Handler is missing ContextItem...something went terribly wrong")
+                    dispatchGroup.leave()
+                    return
+                }
+                
+                switch contextItem.type {
                 case .location:
                     response.location = authorized
                 case .cameraPermission:
@@ -57,8 +71,13 @@ class AppContextManager {
     func fetchContextData(with userData: Codable? = nil, completion: @escaping (ContextData) -> Swift.Void) {
         var data = ContextData()
         data.userData = userData
-        handlers.forEach { handler in
-            switch handler.contextItem.type {
+        handlers.forEach { (itemType, handler) in
+            guard let contextItem = handler.contextItem else {
+                Logger.default.logError("Handler is missing ContextItem...something went terribly wrong")
+                return
+            }
+            
+            switch contextItem.type {
             case .appVersion:
                 if let dictionary = Bundle.main.infoDictionary,
                     let version = dictionary["CFBundleShortVersionString"] as? String,
@@ -75,8 +94,11 @@ class AppContextManager {
                 data.cameraPermission = handler.isAuthorized
             case .photoPermission:
                 data.photoPermission = handler.isAuthorized
-            default:
-                Logger.default.logDebug("No data to push for item: \(handler.contextItem.type)")
+            case .location:
+                // TODO: needs more generic solution
+                if let locationHandler = handler as? LocationContextHandler {
+                    data.location = locationHandler.locationData
+                }
             }
         }
         
