@@ -9,13 +9,14 @@
 import AVFoundation
 import Photos
 
-class UserData {
+class UserDataManager {
     
     // MARK: - Authorization
     
     class func authorizeCamera(_ handler: @escaping (AVAuthorizationStatus) -> Swift.Void) {
         guard nil != Bundle.main.infoDictionary?["NSCameraUsageDescription"] else {
-            fatalError("Please provide value for the NSCameraUsageDescription key in Info.plist of your application")
+            handler(.denied)
+            return
         }
         
         guard UIImagePickerController.isCameraDeviceAvailable(.rear) else {
@@ -42,7 +43,8 @@ class UserData {
         
         // Check if Info.plist has a value for NSPhotoLibraryUsageDescription key. Otherwise the app will crash
         guard nil != Bundle.main.infoDictionary?["NSPhotoLibraryUsageDescription"] else {
-            fatalError("Please provide value for the NSPhotoLibraryUsageDescription key in Info.plist of your application")
+            handler(.denied)
+            return
         }
         
         let authorizationStatus = PHPhotoLibrary.authorizationStatus()
