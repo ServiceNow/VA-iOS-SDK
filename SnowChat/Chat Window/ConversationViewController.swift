@@ -566,7 +566,7 @@ extension ConversationViewController: ControlDelegate {
                 return 2
             }
             
-            if let imageViewModel = chatModel.controlModel as? OutputImageViewModel, let size = imageViewModel.imageSize {
+            if let viewModel = chatModel.controlModel as? Resizable, let size = viewModel.size {
                 return size.height
             }
         }

@@ -10,13 +10,17 @@ class OutputHtmlControl: ControlProtocol, FullSizeScrollViewContainerViewDelegat
     
     var model: ControlViewModel
     
+    let viewController: UIViewController
+    
+    weak var delegate: ControlDelegate?
+    
     private var outputHtmlViewController: ControlWebViewController {
         return viewController as! ControlWebViewController
     }
     
-    let viewController: UIViewController
-    
-    weak var delegate: ControlDelegate?
+    private var outputHtmlModel: OutputHtmlControlViewModel {
+        return model as! OutputHtmlControlViewModel
+    }
     
     required init(model: ControlViewModel, resourceProvider: ControlWebResourceProvider) {
         guard let htmlModel = model as? OutputHtmlControlViewModel else {
@@ -31,6 +35,9 @@ class OutputHtmlControl: ControlProtocol, FullSizeScrollViewContainerViewDelegat
     // MARK: FullSizeScrollViewContainerViewDelegate
     
     func fullSizeContainerViewDidInvalidateIntrinsicContentSize(_ fullSizeContainerView: FullSizeScrollViewContainerView) {
+        let shouldUpdateHeight = fullSizeContainerView.intrinsicContentSize.height > 0
+        guard shouldUpdateHeight, outputHtmlModel.size == nil else { return }
+        outputHtmlModel.size = fullSizeContainerView.intrinsicContentSize
         delegate?.controlDidFinishLoading(self)
     }
 }

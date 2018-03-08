@@ -28,7 +28,7 @@ class OutputImageControl: ControlProtocol {
     
     var model: ControlViewModel {
         didSet {
-            if let size = imageModel.imageSize {
+            if let size = imageModel.size {
                 imageViewController.prepareViewForImageWithSize(size)
             }
         }
@@ -67,9 +67,9 @@ class OutputImageControl: ControlProtocol {
             
             // If we already fetched image before we don't need to call beginUpdate/endUpdate on tableView
             // Which is called in didFinishImageDownload
-            let needsLayoutUpdate = strongSelf.imageModel.imageSize == nil
+            let needsLayoutUpdate = strongSelf.imageModel.size == nil
             strongSelf.imageViewController.image = image
-            strongSelf.imageModel.imageSize = strongSelf.imageViewController.imageSize
+            strongSelf.imageModel.size = strongSelf.imageViewController.imageSize
             
             if needsLayoutUpdate {
                 strongSelf.delegate?.controlDidFinishLoading(strongSelf)

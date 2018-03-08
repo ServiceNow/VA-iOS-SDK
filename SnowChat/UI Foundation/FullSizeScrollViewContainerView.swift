@@ -30,7 +30,6 @@ class FullSizeScrollViewContainerView: UIView {
     var scrollView: UIScrollView? {
         didSet {
             observer = scrollView?.observe(\UIScrollView.contentSize) { [weak self] (scrollView, change) in
-                
                 guard let strongSelf = self else { return }
                 strongSelf.invalidateIntrinsicContentSize()
                 strongSelf.uiDelegate?.fullSizeContainerViewDidInvalidateIntrinsicContentSize(strongSelf)

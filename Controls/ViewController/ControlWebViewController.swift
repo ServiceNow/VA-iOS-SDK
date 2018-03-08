@@ -19,7 +19,7 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
     private let initialRequest: Request
     private let resourceProvider: ControlWebResourceProvider
     
-    private var webView: WKWebView!
+    private(set) var webView: WKWebView!
     let fullSizeContainer = FullSizeScrollViewContainerView()
     
     // MARK: - Initialization

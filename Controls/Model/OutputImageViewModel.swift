@@ -6,7 +6,7 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-class OutputImageViewModel: ControlViewModel {
+class OutputImageViewModel: ControlViewModel, Resizable {
     
     let label: String?
     
@@ -14,7 +14,7 @@ class OutputImageViewModel: ControlViewModel {
     
     let id: String
     
-    var imageSize: CGSize?
+    var size: CGSize?
     
     let type: ControlType = .outputImage
     
