@@ -26,6 +26,10 @@ struct ChatSessionSettings: Codable {
             generalSettings = GeneralSettings(fromDictionary: general)
         }
         
+        if let branding = dictionary["brandingSettings"] as? NSDictionary {
+            brandingSettings = BrandingSettings(fromDictionary: branding)
+        }
+        
         if let virtualAgent = dictionary["virtualAgentProfile"] as? NSDictionary {
             let avatar = virtualAgent["avatar"] as? String
             let name = virtualAgent["name"] as? String
@@ -44,10 +48,6 @@ struct GeneralSettings: Codable {
     var liveAgentHandoffMessage: String
     var genericErrorMessage: String
 
-    var supportHours: String?
-    var supportPhone: String?
-    var supportEmail: String?
-    
     init(fromDictionary dictionary: NSDictionary) {
         botName = dictionary["bot_name"] as? String ?? "ChatBot"
         vendorName = dictionary["vendor_name"] as? String ?? "Vendor"
@@ -58,15 +58,23 @@ struct GeneralSettings: Codable {
         introMessage = dictionary["intro_msg"] as? String ?? "Hello and welcome to our support chat! How can I help you?"
         liveAgentHandoffMessage = dictionary["live_agent_handoff"] as? String ?? "We will be transferring you to an Agent when the next available Agent is ready."
         genericErrorMessage = dictionary["generic_error"] as? String ?? "There are no agents available right now. Please try again later."
-        
-        supportEmail = dictionary["support_email"] as? String
-        supportPhone = dictionary["support_phone"] as? String
-        supportHours = dictionary["support_hours"] as? String
     }
 }
 
 struct BrandingSettings: Codable {
+    var supportEmailLabel: String?
+    var supportEmail: String?
+    var supportPhoneLabel: String?
+    var supportPhone: String?
+    var supportHoursLabel: String?
     
+    init(fromDictionary dictionary: NSDictionary) {
+        supportEmailLabel = dictionary["support_email_label"] as? String
+        supportEmail = dictionary["support_email"] as? String
+        supportPhoneLabel = dictionary["support_phone_label"] as? String
+        supportHoursLabel = dictionary["support_hours_label"] as? String
+        supportPhone = dictionary["support_phone"] as? String
+    }
 }
 
 struct VirtualAgentSettings: Codable {
