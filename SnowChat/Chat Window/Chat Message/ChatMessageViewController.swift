@@ -67,7 +67,10 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     private func prepareControlForReuse() {
         if let control = uiControl, isPresentingControl(control) {
             control.removeFromParent()
-            controlCache?.cacheControl(forModel: control.model)
+            
+            if control.isReusable {
+                controlCache?.cacheControl(forModel: control.model)
+            }
         }
     }
     

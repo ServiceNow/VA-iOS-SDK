@@ -16,6 +16,10 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
         case html(String)
     }
     
+    var hasNavigated: Bool {
+        return webView.backForwardList.backItem != nil
+    }
+    
     private let initialRequest: Request
     private let resourceProvider: ControlWebResourceProvider
     
@@ -59,6 +63,7 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
     
     private func setupWebView() {
         let webView = WKWebView(frame: CGRect.zero, configuration: resourceProvider.webViewConfiguration)
+        webView.navigationDelegate = self
         
         fullSizeContainer.maxHeight = 400
         fullSizeContainer.scrollView = webView.scrollView
@@ -84,5 +89,4 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
             webView.load(request)
         }
     }
-    
 }

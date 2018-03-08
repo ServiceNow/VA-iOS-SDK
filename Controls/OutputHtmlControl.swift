@@ -10,9 +10,13 @@ class OutputHtmlControl: ControlProtocol, FullSizeScrollViewContainerViewDelegat
     
     var model: ControlViewModel
     
-    let viewController: UIViewController
+    var isReusable: Bool {
+        return !outputHtmlViewController.hasNavigated
+    }
     
     weak var delegate: ControlDelegate?
+    
+    let viewController: UIViewController
     
     private var outputHtmlViewController: ControlWebViewController {
         return viewController as! ControlWebViewController
