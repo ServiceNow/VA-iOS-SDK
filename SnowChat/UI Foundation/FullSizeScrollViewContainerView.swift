@@ -8,12 +8,18 @@
 
 import UIKit
 
+protocol FullSizeScrollViewContainerViewDelegate: AnyObject {
+    func fullSizeContainerViewDidInvalidateIntrinsicContentSize(_ fullSizeContainerView: FullSizeScrollViewContainerView)
+}
+
 class FullSizeScrollViewContainerView: UIView {
+    
+    weak var uiDelegate: FullSizeScrollViewContainerViewDelegate?
     
     // Only when scrollView is UITableView type
     var maxVisibleItemCount: Int?
     
-    var observer: NSKeyValueObservation?
+    private var observer: NSKeyValueObservation?
     
     override var backgroundColor: UIColor? {
         didSet {
@@ -24,7 +30,10 @@ class FullSizeScrollViewContainerView: UIView {
     var scrollView: UIScrollView? {
         didSet {
             observer = scrollView?.observe(\UIScrollView.contentSize) { [weak self] (scrollView, change) in
-                self?.invalidateIntrinsicContentSize()
+                
+                guard let strongSelf = self else { return }
+                strongSelf.invalidateIntrinsicContentSize()
+                strongSelf.uiDelegate?.fullSizeContainerViewDidInvalidateIntrinsicContentSize(strongSelf)
             }
         }
     }

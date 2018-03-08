@@ -8,10 +8,6 @@
 
 import AlamofireImage
 
-protocol OutputImageControlDelegate: ControlDelegate {
-    func controlDidFinishImageDownload(_ control: OutputImageControl)
-}
-
 class OutputImageControl: ControlProtocol {
     
     weak var delegate: ControlDelegate?
@@ -22,10 +18,6 @@ class OutputImageControl: ControlProtocol {
     
     private var imageViewController: OutputImageViewController {
         return viewController as! OutputImageViewController
-    }
-    
-    private weak var outputImageDelegate: OutputImageControlDelegate? {
-        return delegate as? OutputImageControlDelegate
     }
     
     private var imageModel: OutputImageViewModel {
@@ -80,7 +72,7 @@ class OutputImageControl: ControlProtocol {
             strongSelf.imageModel.imageSize = strongSelf.imageViewController.imageSize
             
             if needsLayoutUpdate {
-                strongSelf.outputImageDelegate?.controlDidFinishImageDownload(strongSelf)
+                strongSelf.delegate?.controlDidFinishLoading(strongSelf)
             }
         }
     }

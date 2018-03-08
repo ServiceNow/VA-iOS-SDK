@@ -72,6 +72,8 @@ enum ControlType {
 protocol ControlDelegate: AnyObject {
     
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel)
+    
+    func controlDidFinishLoading(_ control: ControlProtocol)
 }
 
 // MARK: Control Protocol

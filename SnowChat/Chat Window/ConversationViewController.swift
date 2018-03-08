@@ -546,7 +546,7 @@ extension ConversationViewController: ChatEventListener {
     }
 }
 
-extension ConversationViewController: ControlDelegate, OutputImageControlDelegate {
+extension ConversationViewController: ControlDelegate {
     
     // MARK: - ControlDelegate
     
@@ -555,7 +555,7 @@ extension ConversationViewController: ControlDelegate, OutputImageControlDelegat
         dataController.updateControlData(model, isSkipped: false)
     }
     
-    func controlDidFinishImageDownload(_ control: OutputImageControl) {
+    func controlDidFinishLoading(_ control: ControlProtocol) {
         tableView.beginUpdates()
         tableView.endUpdates()
     }

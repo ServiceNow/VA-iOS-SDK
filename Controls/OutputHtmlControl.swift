@@ -6,9 +6,13 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-class OutputHtmlControl: ControlProtocol {
+class OutputHtmlControl: ControlProtocol, FullSizeScrollViewContainerViewDelegate {
     
     var model: ControlViewModel
+    
+    private var outputHtmlViewController: ControlWebViewController {
+        return viewController as! ControlWebViewController
+    }
     
     let viewController: UIViewController
     
@@ -21,5 +25,12 @@ class OutputHtmlControl: ControlProtocol {
         
         self.model = htmlModel
         self.viewController = ControlWebViewController(htmlString: htmlModel.value, resourceProvider: resourceProvider)
+        self.outputHtmlViewController.fullSizeContainer.uiDelegate = self
+    }
+    
+    // MARK: FullSizeScrollViewContainerViewDelegate
+    
+    func fullSizeContainerViewDidInvalidateIntrinsicContentSize(_ fullSizeContainerView: FullSizeScrollViewContainerView) {
+        delegate?.controlDidFinishLoading(self)
     }
 }
