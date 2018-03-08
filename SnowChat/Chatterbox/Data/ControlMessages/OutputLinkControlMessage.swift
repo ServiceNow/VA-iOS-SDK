@@ -41,7 +41,11 @@ struct OutputLinkControlMessage: Codable, ControlData {
     }
 
     let type: String = "systemTextMessage"
-    var data: RichControlData<ControlWrapper<String, UIMetadata>>
+    var data: RichControlData<ControlWrapper<OutputLinkValue, UIMetadata>>
+    
+    struct OutputLinkValue: Codable {
+        var action: String
+    }
     
     // define the properties that we decode / encode
     private enum CodingKeys: String, CodingKey {
@@ -49,7 +53,7 @@ struct OutputLinkControlMessage: Codable, ControlData {
         case data
     }
     
-    init(withData: RichControlData<ControlWrapper<String, UIMetadata>>) {
+    init(withData: RichControlData<ControlWrapper<OutputLinkValue, UIMetadata>>) {
         data = withData
     }
 }
