@@ -35,19 +35,7 @@ extension APIManager {
                 if let value = response.result.value,
                     let data = value as? NSDictionary,
                     let sessionData = data.object(forKey: "session") as? NSDictionary,
-                    let consumerId = sessionData.object(forKey: "consumerId") as? String,
-                    let consumerAccountId = sessionData.object(forKey: "consumerAccountId") as? String,
-                    let sessionId = sessionData.object(forKey: "sessionId") as? String {
-                    
-                    let user = ChatUser(consumerId: consumerId, consumerAccountId: consumerAccountId)
-                    var chatSession = ChatSession(id: sessionId, user: user)
-                    
-                    chatSession.welcomeMessage = data.object(forKey: "welcomeMessage") as? String
-                    chatSession.sessionState = .opened
-                    
-                    if let settings = sessionData["settings"] as? NSDictionary {
-                        chatSession.settings = ChatSessionSettings(fromDictionary: settings)
-                    }
+                    let chatSession = self.initializeChatSession(sessionData, welcomeMessage: data.object(forKey: "welcomeMessage") as? String) {
                     
                     completion(.success(chatSession))
                 } else {
@@ -55,6 +43,25 @@ extension APIManager {
                     completion(.failure(ChatterboxError.unknown(details: "malformed server response")))
                 }
         }
+    }
+
+    private func initializeChatSession(_ sessionData: NSDictionary, welcomeMessage: String?) -> ChatSession? {
+        if let consumerId = sessionData.object(forKey: "consumerId") as? String,
+            let consumerAccountId = sessionData.object(forKey: "consumerAccountId") as? String,
+            let sessionId = sessionData.object(forKey: "sessionId") as? String {
+            
+            let user = ChatUser(consumerId: consumerId, consumerAccountId: consumerAccountId)
+            var chatSession = ChatSession(id: sessionId, user: user)
+            
+            chatSession.welcomeMessage = welcomeMessage
+            chatSession.sessionState = .opened
+            
+            if let settings = sessionData["settings"] as? NSDictionary {
+                chatSession.settings = ChatSessionSettings(fromDictionary: settings)
+            }
+            return chatSession
+        }
+        return nil
     }
     
     func fetchConversation(_ conversationId: String, completionHandler: @escaping (Conversation?) -> Void) {
