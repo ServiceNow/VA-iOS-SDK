@@ -6,12 +6,12 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-class OutputHtmlControl: ControlProtocol, FullSizeScrollViewContainerViewDelegate {
+class OutputHtmlControl: ControlProtocol, ControlWebViewControllerDelegate {
     
     var model: ControlViewModel
     
     var isReusable: Bool {
-        return !outputHtmlViewController.hasNavigated
+        return false
     }
     
     weak var delegate: ControlDelegate?
@@ -33,15 +33,14 @@ class OutputHtmlControl: ControlProtocol, FullSizeScrollViewContainerViewDelegat
         
         self.model = htmlModel
         self.viewController = ControlWebViewController(htmlString: htmlModel.value, resourceProvider: resourceProvider)
-        self.outputHtmlViewController.fullSizeContainer.uiDelegate = self
+        self.outputHtmlViewController.uiDelegate = self
     }
     
     // MARK: FullSizeScrollViewContainerViewDelegate
     
-    func fullSizeContainerViewDidInvalidateIntrinsicContentSize(_ fullSizeContainerView: FullSizeScrollViewContainerView) {
-        let shouldUpdateHeight = fullSizeContainerView.intrinsicContentSize.height > 0
-        guard shouldUpdateHeight, outputHtmlModel.size == nil else { return }
-        outputHtmlModel.size = fullSizeContainerView.intrinsicContentSize
+    func webViewController(_ webViewController: ControlWebViewController, didFinishLoadingWebViewWithSize size: CGSize) {
+        print("Size: \(size)")
+        outputHtmlModel.size = size
         delegate?.controlDidFinishLoading(self)
     }
 }

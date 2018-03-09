@@ -9,7 +9,13 @@
 import UIKit
 import WebKit
 
+protocol ControlWebViewControllerDelegate: AnyObject {
+    func webViewController(_ webViewController: ControlWebViewController, didFinishLoadingWebViewWithSize size: CGSize)
+}
+
 class ControlWebViewController: UIViewController, WKNavigationDelegate {
+    
+    weak var uiDelegate: ControlWebViewControllerDelegate?
     
     enum Request {
         case url(URL)
@@ -65,6 +71,12 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
         let webView = WKWebView(frame: CGRect.zero, configuration: resourceProvider.webViewConfiguration)
         webView.navigationDelegate = self
         
+        if #available(iOS 11.0, *) {
+            webView.scrollView.contentInsetAdjustmentBehavior = .never
+        } else {
+            automaticallyAdjustsScrollViewInsets = false
+        }
+        
         fullSizeContainer.maxHeight = 400
         fullSizeContainer.scrollView = webView.scrollView
         
@@ -74,7 +86,6 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
                                      webView.trailingAnchor.constraint(equalTo: fullSizeContainer.trailingAnchor),
                                      webView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
                                      webView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor)])
-
         self.webView = webView
     }
     
@@ -87,6 +98,22 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
         case let .url(url):
             let request = resourceProvider.authorizedRequest(with: url)
             webView.load(request)
+        }
+    }
+    
+    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+    }
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        if webView.isLoading == false {
+            webView.evaluateJavaScript("document.body.scrollHeight", completionHandler: { [weak self] (result, error) in
+                guard let strongSelf = self else { return }
+                
+                if let height = result as? CGFloat, let adjustedHeight = [height, strongSelf.fullSizeContainer.maxHeight].min() {
+                    let size = CGSize(width: webView.frame.width, height: adjustedHeight)
+                    strongSelf.uiDelegate?.webViewController(strongSelf, didFinishLoadingWebViewWithSize: size)
+                }
+            })
         }
     }
 }

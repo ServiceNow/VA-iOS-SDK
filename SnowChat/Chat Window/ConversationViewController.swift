@@ -570,6 +570,7 @@ extension ConversationViewController: ControlDelegate {
                 return size.height
             }
         }
+        
         return 200
     }
 }
