@@ -19,6 +19,8 @@ extension Chatterbox {
             return
         }
         
+        cancelPendingExchangeIfAny()
+        
         if let sessionId = session?.id, let conversationId = conversationContext.systemConversationId {
             state = .agentConversation
             messageHandler = startLiveAgentHandshakeHandler
