@@ -12,7 +12,9 @@ class SNOWAMBClientTests: XCTestCase {
         case subscribed
         case published
         case unsubscribed
+        case messagePublished
         case messageReceived
+        case glideInitialState
         case glideLoggedIn
         case glideLoggedOut
         case errorOccurred
@@ -26,8 +28,7 @@ class SNOWAMBClientTests: XCTestCase {
     let baseURL = URL(string: "https://snowchat.service-now.com")
 //    let baseURL = URL(string: "http://localhost:8080")
     let username = "admin"
-//    let password = "snow2004"
-    let password = "admin"
+    let password = "snow2004"
     let testChannelName = "C3E4C47D16AC4B8ABB424F59B7C29FF3"
     var ambHTTPClient: SNOWTestHTTPClient?
     var ambClient: SNOWAMBClient?
@@ -59,10 +60,6 @@ class SNOWAMBClientTests: XCTestCase {
         return urlWithPath("/api/now/v\(version)").appendingPathComponent(path)
     }
     
-    private func accessTokenAuthHeaders() -> HTTPHeaders {
-        return ["Authorization" : "Bearer \(accessToken)"]
-    }
-    
     private func basicAuthHeaders(username: String, password: String) -> HTTPHeaders {
         let credentials = "\(username):\(password)"
         let data = credentials.data(using: .utf8)
@@ -88,6 +85,8 @@ class SNOWAMBClientTests: XCTestCase {
         super.tearDown()
     }
     
+    // MARK: - helpers
+    
     private func httpRequest(url: URL, headers: HTTPHeaders, completion handler: @escaping (SNOWAMBResult<Data>) -> Void) -> Void {
         
         func addHeaders(toRequest request: inout URLRequest) {
@@ -100,7 +99,7 @@ class SNOWAMBClientTests: XCTestCase {
         request.httpMethod = "GET"
         addHeaders(toRequest: &request)
         dataTask = session.dataTask(with: request as URLRequest) { data, response, error in
-//            defer { self.dataTask = nil }
+            defer { self.dataTask = nil }
             if let error = error {
                 let errorMessage = "http error: " + error.localizedDescription
                 if let response = response as? HTTPURLResponse {
@@ -128,36 +127,127 @@ class SNOWAMBClientTests: XCTestCase {
     }
     
     private func waitForLogin() {
-        self.wait(for: [loggedInExpectation], timeout: 1000)
+        self.wait(for: [loggedInExpectation], timeout: 10)
+        
     }
+    
+    func publishMessage() {
+        ambClient?.publishMessage(["message": "whatever"], toChannel: testChannelName, withExtension: [:],
+                                  completion: { (result) in
+                                    switch result {
+                                    case .success:
+                                        print("message was published successfully")
+                                    case .failure:
+                                        XCTFail("AMB failed to publish message")
+                                    }
+        })
+    }
+
+    @discardableResult func subscribeToTestChannel() -> SNOWAMBSubscription? {
+        let subscription = ambClient?.subscribe(channel: testChannelName, messageHandler: { [weak self] (result, subscription) in
+            if result.isSuccess {
+                if let messageReceivedExpectation = self?.testExpectations[ExpectationType.messageReceived] {
+                    messageReceivedExpectation.fulfill()
+                }
+            } else {
+                XCTFail("AMB message received with error")
+            }
+        })
+        return subscription
+    }
+    
+    // MARK: - Tests
 
     func testHandshake() {
         waitForLogin()
         
         let handshakenExpectation = XCTestExpectation(description: "AMB handshake")
-        let glideLoggedInExpectation = XCTestExpectation(description: "AMB Glide session logged in")
+        let glideInitialStateSetExpectation = XCTestExpectation(description: "AMB Glide session initial state set")
+
         testExpectations.removeAll()
         testExpectations[ExpectationType.handshaken] = handshakenExpectation
-        testExpectations[ExpectationType.glideLoggedIn] = glideLoggedInExpectation
-        ambClient?.delegate = self
+        testExpectations[ExpectationType.glideInitialState] = glideInitialStateSetExpectation
         
+        ambClient?.delegate = self
         ambClient?.connect()
 
         self.wait(for: [handshakenExpectation], timeout: 10)
-        self.wait(for: [glideLoggedInExpectation], timeout: 10)
+        self.wait(for: [glideInitialStateSetExpectation], timeout: 10)
         ambClient?.tearDown()
     }
     
-    func testPerformanceExample() {
-        self.measure {
-        }
+    func testSubscribe() {
+        waitForLogin()
+        
+        let handshakenExpectation = XCTestExpectation(description: "AMB handshake")
+        let subscribedExpectation = XCTestExpectation(description: "AMB subscribed to test channel")
+        let unsubscribedExpectation = XCTestExpectation(description: "AMB unsubscribed from test channel")
+        
+        testExpectations.removeAll()
+        testExpectations[ExpectationType.handshaken] = handshakenExpectation
+        testExpectations[ExpectationType.subscribed] = subscribedExpectation
+        testExpectations[ExpectationType.unsubscribed] = unsubscribedExpectation
+        
+        ambClient?.delegate = self
+        ambClient?.connect()
+        let subscription = subscribeToTestChannel()
+        XCTAssert(subscription != nil, "failed to subscribe to test channel")
+        
+        self.wait(for: [handshakenExpectation], timeout: 10)
+        self.wait(for: [subscribedExpectation], timeout: 10)
+        XCTAssert(ambClient?.clientId != nil, "clientId is not received")
+        subscription?.unsubscribe()
+        self.wait(for: [unsubscribedExpectation], timeout: 10)
+        
+        ambClient?.tearDown()
+    }
+    
+    func testGlideStateLoggedIn() {
+        waitForLogin()
+        
+        let subscribedExpectation = XCTestExpectation(description: "AMB subscribed to test channel")
+        let glideLoggedInExpectation = XCTestExpectation(description: "AMB Glide session logged in")
+        
+        testExpectations.removeAll()
+        testExpectations[ExpectationType.glideLoggedIn] = glideLoggedInExpectation
+        testExpectations[ExpectationType.subscribed] = subscribedExpectation
+
+        ambClient?.delegate = self
+        ambClient?.connect()
+        // important to wait for subscription going through before publishing
+        let subscription = subscribeToTestChannel()
+        self.wait(for: [subscribedExpectation], timeout: 10)
+        XCTAssert(subscription != nil, "AMB subcription subscription is nil")
+        // publish message and wait for reply with
+        print("glide status=\(String(describing: ambClient?.glideStatus))")
+        publishMessage()
+        self.wait(for: [glideLoggedInExpectation], timeout: 10)
+        print("glide status=\(String(describing: ambClient?.glideStatus))")
+    }
+    
+    
+    func testPublishMessage() {
+        waitForLogin()
+        
+        let publishedMessageExpectation = XCTestExpectation(description: "AMB published message")
+        let subscribedExpectation = XCTestExpectation(description: "AMB subscribed to test channel")
+        
+        testExpectations.removeAll()
+        testExpectations[ExpectationType.subscribed] = subscribedExpectation
+        testExpectations[ExpectationType.published] = publishedMessageExpectation
+        
+        ambClient?.delegate = self
+        ambClient?.connect()
+        subscribeToTestChannel()
+        
+        self.wait(for: [subscribedExpectation], timeout: 10)
+        publishMessage()
+        self.wait(for: [publishedMessageExpectation], timeout: 10)
     }
     
 }
 
-//
-// SNOWAMBClientDelegate
-//
+// MARK: - SNOWAMBClientDelegate
 
 extension SNOWAMBClientTests: SNOWAMBClientDelegate {
     func ambClientDidConnect(_ client: SNOWAMBClient) {
@@ -182,7 +272,7 @@ extension SNOWAMBClientTests: SNOWAMBClientDelegate {
         }
     }
     
-    func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromchannel channel: String) {
+    func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromChannel channel: String) {
         if let expectation = testExpectations[ExpectationType.unsubscribed],
             channel == testChannelName {
             expectation.fulfill()
@@ -201,17 +291,24 @@ extension SNOWAMBClientTests: SNOWAMBClientDelegate {
     }
     
     func ambClient(_ client: SNOWAMBClient, didChangeGlideStatus status: SNOWAMBGlideStatus) {
-        switch status.sessionStatus! {
-        case AMBGlideSessionStatus.loggedIn.rawValue:
-            if let expectation = testExpectations[ExpectationType.glideLoggedIn] {
-                expectation.fulfill()
+        if status.ambActive,
+            let expectation = testExpectations[ExpectationType.glideInitialState] {
+            expectation.fulfill()
+        }
+        
+        if let sessionStatus = status.sessionStatus {
+            switch sessionStatus {
+            case AMBGlideSessionStatus.loggedIn.rawValue:
+                if let expectation = testExpectations[ExpectationType.glideLoggedIn] {
+                    expectation.fulfill()
+                }
+            case AMBGlideSessionStatus.loggedOut.rawValue:
+                if let expectation = testExpectations[ExpectationType.glideLoggedOut] {
+                    expectation.fulfill()
+                }
+            default:
+                XCTAssertTrue(false, "unexpected gilde session status")
             }
-        case AMBGlideSessionStatus.loggedOut.rawValue:
-            if let expectation = testExpectations[ExpectationType.glideLoggedOut] {
-                expectation.fulfill()
-            }
-        default:
-            XCTAssertTrue(false, "unexpected gilde session status")
         }
     }
     
@@ -220,7 +317,8 @@ extension SNOWAMBClientTests: SNOWAMBClientDelegate {
             expectation.fulfill()
         } else {
             // if error was not expected, then test fails
-            XCTAssertTrue(false, "unexpected error occurred \(error.localizedDescription)")
+            print("AMB error: \(error.localizedDescription)")
+            XCTFail("unexpected error occurred \(error.localizedDescription)")
         }
     }
 }

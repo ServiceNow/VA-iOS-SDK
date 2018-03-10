@@ -37,20 +37,21 @@ class SNOWTestHTTPClient: SNOWHTTPSessionClientProtocol {
         
         return nil
     }
-    private func httpRequest(url: URL, data: Data, completion handler: @escaping (SNOWAMBResult<SNOWAMBMessageDictionary>) -> Void) -> Void {
+    private func httpRequest(url: URL, data: Data, completion handler: @escaping (SNOWAMBResult<[Any]>) -> Void) -> Void {
         
-        func toJSON(_ data: Data?) -> [String : Any] {
+        func toJSON(_ data: Data?) -> [Any] {
             do {
                 if let data = data {
                     let strResponse = String(data: data, encoding: String.Encoding.utf8) ?? "{}"
                     print(strResponse)
-                    let parsedDict = try JSONSerialization.jsonObject(with: data, options: []) as! [String : Any]
-                    return parsedDict
+                    let parsedArray = try JSONSerialization.jsonObject(with: data, options: []) as? [Any]
+                    return parsedArray ?? []
                 } else {
-                    return [:]
+                    return []
                 }
             } catch {
-                return [:]
+                print("json error: \(error.localizedDescription)")
+                return []
             }
         }
         

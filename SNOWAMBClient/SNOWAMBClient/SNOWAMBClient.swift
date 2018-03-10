@@ -12,8 +12,7 @@ public typealias SNOWAMBPublishMessageHandler = (SNOWAMBResult<[SNOWAMBMessage]>
 public enum SNOWAMBResult<Value> {
     case success(Value)
     case failure(SNOWAMBError)
-    
-    public var value: Value? {
+        public var value: Value? {
         switch self {
         case .success(let value):
             return value
@@ -50,7 +49,7 @@ public enum AMBGlideSessionStatus: String {
     case loggedOut = "session.logged.out"
 }
 
-public struct SNOWAMBGlideStatus {
+public struct SNOWAMBGlideStatus: Equatable {
     let ambActive: Bool
     let sessionStatus: String?
     
@@ -59,9 +58,9 @@ public struct SNOWAMBGlideStatus {
         self.sessionStatus = sessionStatus
     }
     
-    static public func != (lhs: SNOWAMBGlideStatus, rhs: SNOWAMBGlideStatus) -> Bool {
-        return lhs.ambActive != rhs.ambActive ||
-               lhs.sessionStatus != rhs.sessionStatus
+    static public func == (lhs: SNOWAMBGlideStatus, rhs: SNOWAMBGlideStatus) -> Bool {
+        return lhs.ambActive == rhs.ambActive &&
+               lhs.sessionStatus == rhs.sessionStatus
     }
 }
 
@@ -73,7 +72,7 @@ public protocol SNOWAMBClientDelegate: AnyObject {
     func ambClientDidConnect(_ client: SNOWAMBClient)
     func ambClientDidDisconnect(_ client: SNOWAMBClient)
     func ambClient(_ client: SNOWAMBClient, didSubscribeToChannel channel: String)
-    func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromchannel channel: String)
+    func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromChannel channel: String)
     func ambClient(_ client: SNOWAMBClient, didReceiveMessage: SNOWAMBMessage, fromChannel channel: String)
     func ambClient(_ client: SNOWAMBClient, didChangeClientStatus status: SNOWAMBClientStatus)
     func ambClient(_ client: SNOWAMBClient, didChangeGlideStatus status: SNOWAMBGlideStatus)
@@ -427,6 +426,7 @@ private extension SNOWAMBClient {
 
     func subscribeQueuedChannels() {
         queuedSubscriptionChannels.forEach({ sendBayeuxSubscribeMessage(channel: $0) })
+        queuedSubscriptionChannels.removeAll()
     }
     
     func reopenSubscriptions() {
@@ -534,7 +534,7 @@ private extension SNOWAMBClient {
         if ambMessage.successful {
             subscribedChannels.remove(ambMessage.channel)
             cleanupSubscriptions()
-            delegate?.ambClient(self, didUnsubscribeFromchannel: ambMessage.channel)
+            delegate?.ambClient(self, didUnsubscribeFromChannel: ambMessage.subscription ?? "")
         } else {
             delegate?.ambClient(self, didFailWithError: SNOWAMBError.disconnectFailed)
         }
@@ -675,6 +675,8 @@ private extension SNOWAMBClient {
 
         let path = channelNameToPath(channel)
         let fullPath = String(format:"/amb/%@", path)
+        //!!!
+        print(">>>> \(myMessage)")
         let task = httpClient.post(fullPath, jsonParameters: myMessage as Any, timeout: timeout,
             success: { [weak self] (responseObject: Any?) -> Void in
                 let result = self?.parseResponseObject(responseObject)
