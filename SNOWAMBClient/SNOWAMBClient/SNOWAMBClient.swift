@@ -39,21 +39,19 @@ public enum SNOWAMBResult<Value> {
 public enum AMBGlideSessionStatus: String {
     case loggedIn = "session.logged.in"
     case loggedOut = "session.logged.out"
+    case invalidated = "session.invalidated"
 }
 
-public struct SNOWAMBGlideStatus {
-    let ambActive: Bool
-    let sessionStatus: String?
+public struct SNOWAMBGlideStatus: Equatable {
     
-    init(ambActive: Bool, sessionStatus: String?) {
-        self.ambActive = ambActive
-        self.sessionStatus = sessionStatus
+    public let ambActive: Bool
+    public let sessionStatus: AMBGlideSessionStatus?
+    
+    public static func == (lhs: SNOWAMBGlideStatus, rhs: SNOWAMBGlideStatus) -> Bool {
+        return lhs.ambActive == rhs.ambActive &&
+            lhs.sessionStatus == rhs.sessionStatus
     }
     
-    static public func != (lhs: SNOWAMBGlideStatus, rhs: SNOWAMBGlideStatus) -> Bool {
-        return lhs.ambActive != rhs.ambActive ||
-               lhs.sessionStatus != rhs.sessionStatus
-    }
 }
 
 //
@@ -432,11 +430,17 @@ private extension SNOWAMBClient {
     
     func handleConnectMessage(_ ambMessage: SNOWAMBMessage) {
         
-        func parseGlideSessionStatus(_ ext: [String : Any]?) {
-            if let ext = ext {
-                self.glideStatus = SNOWAMBGlideStatus(ambActive: ext["glide.amb.active"] as? Bool ?? false,
-                                                      sessionStatus: ext["glide.session.status"] as? String)
+        func parseGlideSessionStatus(from ext: [String : Any]) {
+            let sessionStatus: AMBGlideSessionStatus?
+            if let sessionStatusString = ext["glide.session.status"] as? String {
+                sessionStatus = AMBGlideSessionStatus(rawValue: sessionStatusString)
+            } else {
+                sessionStatus = nil
             }
+            
+            let ambActive = ext["glide.amb.active"] as? Bool ?? false
+            
+            glideStatus = SNOWAMBGlideStatus(ambActive: ambActive, sessionStatus: sessionStatus)
         }
         
         if  let advice = ambMessage.advice,
@@ -451,7 +455,9 @@ private extension SNOWAMBClient {
         if ambMessage.successful {
             scheduledConnectTask = nil
     
-            parseGlideSessionStatus(ambMessage.ext)
+            if let ext = ambMessage.ext {
+                parseGlideSessionStatus(from: ext)
+            }
             
             if self.reopenChannelsAfterSuccessfulConnectMessages {
                 self.reopenChannelsAfterSuccessfulConnectMessages = false
