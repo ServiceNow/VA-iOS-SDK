@@ -6,7 +6,7 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-class OutputHtmlControl: ControlProtocol, ControlWebViewControllerDelegate {
+class OutputHtmlControl: ControlProtocol, ScrollViewContainerDelegate {
     
     var model: ControlViewModel
     
@@ -32,14 +32,16 @@ class OutputHtmlControl: ControlProtocol, ControlWebViewControllerDelegate {
         }
         
         self.model = htmlModel
+        htmlModel.size = CGSize(width: 100, height: 100)
         self.viewController = ControlWebViewController(htmlString: htmlModel.value, resourceProvider: resourceProvider)
-        self.outputHtmlViewController.uiDelegate = self
+        self.outputHtmlViewController.fullSizeContainer.uiDelegate = self
     }
     
-    // MARK: FullSizeScrollViewContainerViewDelegate
+    // MARK: ScrollViewContainerDelegate
     
-    func webViewController(_ webViewController: ControlWebViewController, didFinishLoadingWebViewWithSize size: CGSize) {
-        print("Size: \(size)")
+    func container(_ container: FullSizeScrollViewContainerView, didChangeContentSize size: CGSize) {
+        guard let outputHtmlSize = outputHtmlModel.size, !size.equalTo(outputHtmlSize) else { return }
+        outputHtmlViewController.didLoadHtml()
         outputHtmlModel.size = size
         delegate?.controlDidFinishLoading(self)
     }

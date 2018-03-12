@@ -9,13 +9,7 @@
 import UIKit
 import WebKit
 
-protocol ControlWebViewControllerDelegate: AnyObject {
-    func webViewController(_ webViewController: ControlWebViewController, didFinishLoadingWebViewWithSize size: CGSize)
-}
-
 class ControlWebViewController: UIViewController, WKNavigationDelegate {
-    
-    weak var uiDelegate: ControlWebViewControllerDelegate?
     
     enum Request {
         case url(URL)
@@ -26,10 +20,11 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
         return webView.backForwardList.backItem != nil
     }
     
+    private(set) var webView: WKWebView!
     private let initialRequest: Request
     private let resourceProvider: ControlWebResourceProvider
-    
-    private(set) var webView: WKWebView!
+    private var heightConstraint: NSLayoutConstraint?
+    private var widthConstraint: NSLayoutConstraint?
     let fullSizeContainer = FullSizeScrollViewContainerView()
     
     // MARK: - Initialization
@@ -77,16 +72,25 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
             automaticallyAdjustsScrollViewInsets = false
         }
         
-        fullSizeContainer.maxHeight = 400
+        fullSizeContainer.maxHeight = 300
         fullSizeContainer.scrollView = webView.scrollView
-        
         webView.translatesAutoresizingMaskIntoConstraints = false
         fullSizeContainer.addSubview(webView)
         NSLayoutConstraint.activate([webView.leadingAnchor.constraint(equalTo: fullSizeContainer.leadingAnchor),
                                      webView.trailingAnchor.constraint(equalTo: fullSizeContainer.trailingAnchor),
                                      webView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
                                      webView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor)])
+        heightConstraint = webView.heightAnchor.constraint(equalToConstant: 100)
+        widthConstraint = webView.widthAnchor.constraint(equalToConstant: 100)
+        heightConstraint?.isActive = true
+        widthConstraint?.isActive = true
+        
         self.webView = webView
+    }
+    
+    func didLoadHtml() {
+        heightConstraint?.isActive = false
+        widthConstraint?.isActive = false
     }
     
     // MARK: - Request Loading
@@ -101,19 +105,14 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
         }
     }
     
-    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+    // MARK: - WKNavigationDelegate
+    
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        decisionHandler(.allow)
     }
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        if webView.isLoading == false {
-            webView.evaluateJavaScript("document.body.scrollHeight", completionHandler: { [weak self] (result, error) in
-                guard let strongSelf = self else { return }
-                
-                if let height = result as? CGFloat, let adjustedHeight = [height, strongSelf.fullSizeContainer.maxHeight].min() {
-                    let size = CGSize(width: webView.frame.width, height: adjustedHeight)
-                    strongSelf.uiDelegate?.webViewController(strongSelf, didFinishLoadingWebViewWithSize: size)
-                }
-            })
-        }
+        fullSizeContainer.scrollView?.sizeToFit()
+        print("aa")
     }
 }
