@@ -210,7 +210,7 @@ class Chatterbox {
     internal func didReceiveTopicFinishedAction(_ action: ActionData) {
         if let topicFinishedMessage = action as? TopicFinishedMessage {
             
-            cancelPendingExchangeIfAny()
+            cancelPendingExchangeIfNeeded()
                 
             conversationContext.conversationId = nil
             
@@ -229,7 +229,7 @@ class Chatterbox {
         subscribeToSupportQueue(subscribeMessage)
     }
     
-    internal func cancelPendingExchangeIfAny() {
+    internal func cancelPendingExchangeIfNeeded() {
         if let conversationId = conversationContext.conversationId,
             let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last, !lastExchange.isComplete {
             
