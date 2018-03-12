@@ -52,7 +52,7 @@ protocol PickerControlProtocol: ControlProtocol, PickerViewControllerDelegate {
 extension PickerControlProtocol {
     
     var maxContentSize: CGSize? {
-        return CGSize(width: 250, height: CGFloat.greatestFiniteMagnitude)
+        return CGSize(width: 250, height: CGFloat.nan)
     }
     
     // default implementation of protocol method. returns viewController based on provided style of the picker

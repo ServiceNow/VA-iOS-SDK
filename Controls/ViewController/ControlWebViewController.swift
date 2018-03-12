@@ -23,9 +23,6 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
     private(set) var webView: WKWebView!
     private let initialRequest: Request
     private let resourceProvider: ControlWebResourceProvider
-    private var heightConstraint: NSLayoutConstraint?
-    private var widthConstraint: NSLayoutConstraint?
-    let fullSizeContainer = FullSizeScrollViewContainerView()
     
     // MARK: - Initialization
     
@@ -49,10 +46,6 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
     
     // MARK: - View Life Cycle
     
-    override func loadView() {
-        self.view = fullSizeContainer
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -72,25 +65,14 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
             automaticallyAdjustsScrollViewInsets = false
         }
         
-        fullSizeContainer.maxHeight = 300
-        fullSizeContainer.scrollView = webView.scrollView
         webView.translatesAutoresizingMaskIntoConstraints = false
-        fullSizeContainer.addSubview(webView)
-        NSLayoutConstraint.activate([webView.leadingAnchor.constraint(equalTo: fullSizeContainer.leadingAnchor),
-                                     webView.trailingAnchor.constraint(equalTo: fullSizeContainer.trailingAnchor),
-                                     webView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
-                                     webView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor)])
-        heightConstraint = webView.heightAnchor.constraint(equalToConstant: 100)
-        widthConstraint = webView.widthAnchor.constraint(equalToConstant: 100)
-        heightConstraint?.isActive = true
-        widthConstraint?.isActive = true
+        view.addSubview(webView)
+        NSLayoutConstraint.activate([webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+                                     webView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+                                     webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
+                                     webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10)])
         
         self.webView = webView
-    }
-    
-    func didLoadHtml() {
-        heightConstraint?.isActive = false
-        widthConstraint?.isActive = false
     }
     
     // MARK: - Request Loading

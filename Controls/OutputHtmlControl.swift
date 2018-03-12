@@ -6,12 +6,16 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-class OutputHtmlControl: ControlProtocol, ScrollViewContainerDelegate {
+class OutputHtmlControl: ControlProtocol {
     
     var model: ControlViewModel
     
     var isReusable: Bool {
         return false
+    }
+    
+    var maxContentSize: CGSize? {
+        return outputHtmlModel.size
     }
     
     weak var delegate: ControlDelegate?
@@ -32,17 +36,6 @@ class OutputHtmlControl: ControlProtocol, ScrollViewContainerDelegate {
         }
         
         self.model = htmlModel
-        htmlModel.size = CGSize(width: 100, height: 100)
         self.viewController = ControlWebViewController(htmlString: htmlModel.value, resourceProvider: resourceProvider)
-        self.outputHtmlViewController.fullSizeContainer.uiDelegate = self
-    }
-    
-    // MARK: ScrollViewContainerDelegate
-    
-    func container(_ container: FullSizeScrollViewContainerView, didChangeContentSize size: CGSize) {
-        guard let outputHtmlSize = outputHtmlModel.size, !size.equalTo(outputHtmlSize) else { return }
-        outputHtmlViewController.didLoadHtml()
-        outputHtmlModel.size = size
-        delegate?.controlDidFinishLoading(self)
     }
 }

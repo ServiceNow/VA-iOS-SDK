@@ -106,12 +106,14 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
                                      controlView.bottomAnchor.constraint(equalTo: bubbleView.contentView.bottomAnchor)])
         
         if let preferredControlSize = control.maxContentSize {
-            if preferredControlSize.width != .greatestFiniteMagnitude {
-                controlView.widthAnchor.constraint(lessThanOrEqualToConstant: preferredControlSize.width).isActive = true
+            if !preferredControlSize.width.isNaN {
+                let widthConstraint = controlView.widthAnchor.constraint(equalToConstant: preferredControlSize.width)
+                widthConstraint.priority = .defaultLow
+                widthConstraint.isActive = true
             }
             
-            if preferredControlSize.height != .greatestFiniteMagnitude {
-                controlView.heightAnchor.constraint(lessThanOrEqualToConstant: preferredControlSize.height).isActive = true
+            if !preferredControlSize.height.isNaN {
+                controlView.heightAnchor.constraint(equalToConstant: preferredControlSize.height).isActive = true
             }
         }
         

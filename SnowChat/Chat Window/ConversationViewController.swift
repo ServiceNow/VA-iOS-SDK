@@ -568,6 +568,8 @@ extension ConversationViewController: ControlDelegate {
             
             if let viewModel = chatModel.controlModel as? Resizable, let size = viewModel.size {
                 return size.height
+            } else {
+                return 500
             }
         }
         
