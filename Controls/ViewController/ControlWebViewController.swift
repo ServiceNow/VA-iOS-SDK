@@ -112,7 +112,6 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
     }
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        fullSizeContainer.scrollView?.sizeToFit()
-        print("aa")
+
     }
 }

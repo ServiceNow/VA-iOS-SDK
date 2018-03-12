@@ -40,8 +40,15 @@ struct OutputHtmlControlMessage: Codable, ControlData {
         return true
     }
     
+    struct OutputHtmlMetadata: Codable {
+        var style: String
+        var type: String
+        var width: Int
+        var height: Int
+    }
+    
     let type: String = "systemTextMessage"
-    var data: RichControlData<ControlWrapper<String, UIMetadata>>
+    var data: RichControlData<ControlWrapper<String, OutputHtmlMetadata>>
     
     // define the properties that we decode / encode
     private enum CodingKeys: String, CodingKey {
@@ -49,7 +56,7 @@ struct OutputHtmlControlMessage: Codable, ControlData {
         case data
     }
     
-    init(withData: RichControlData<ControlWrapper<String, UIMetadata>>) {
+    init(withData: RichControlData<ControlWrapper<String, OutputHtmlMetadata>>) {
         data = withData
     }
 }
