@@ -11,7 +11,7 @@ class OutputHtmlControl: ControlProtocol {
     var model: ControlViewModel
     
     var isReusable: Bool {
-        return false
+        return !outputHtmlViewController.hasNavigated
     }
     
     var maxContentSize: CGSize? {
