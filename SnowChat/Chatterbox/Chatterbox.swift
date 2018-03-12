@@ -209,6 +209,9 @@ class Chatterbox {
     
     internal func didReceiveTopicFinishedAction(_ action: ActionData) {
         if let topicFinishedMessage = action as? TopicFinishedMessage {
+            
+            cancelPendingExchangeIfAny()
+                
             conversationContext.conversationId = nil
             
             saveDataToPersistence()
@@ -224,6 +227,15 @@ class Chatterbox {
     internal func didReceiveSubscribeToSupportAction(_ subscribeMessage: SubscribeToSupportQueueMessage) {
         supportQueueInfo = subscribeMessage.data.actionMessage.supportQueue
         subscribeToSupportQueue(subscribeMessage)
+    }
+    
+    internal func cancelPendingExchangeIfAny() {
+        if let conversationId = conversationContext.conversationId,
+            let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last, !lastExchange.isComplete {
+            
+            chatStore.cancelPendingExchange(forConversation: conversationId)
+            chatDataListener?.chatterbox(self, didCompleteMessageExchange: lastExchange, forChat: conversationId)
+        }
     }
     
     // MARK: - Update Controls (outgoing from user)
