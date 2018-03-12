@@ -182,6 +182,7 @@
 		C43479EC1FE460700091806D /* TopicSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43479EB1FE460700091806D /* TopicSelection.swift */; };
 		C43479EE1FE850D20091806D /* AutoCompleteHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */; };
 		C44FD9CB200010900079E107 /* ChatDataControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44FD9CA200010900079E107 /* ChatDataControllerTests.swift */; };
+		C4666DCA205730DF00DABD1B /* ShowTopicMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4666DC9205730DF00DABD1B /* ShowTopicMessage.swift */; };
 		C4694A54203E3C18006A3C23 /* AgentTextControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4694A53203E3C18006A3C23 /* AgentTextControlMessage.swift */; };
 		C46A7D881FCE23D300DC12AC /* ActionMessageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46A7D871FCE23D300DC12AC /* ActionMessageData.swift */; };
 		C46A7D8A1FD0BD8900DC12AC /* ContextualActionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46A7D891FD0BD8900DC12AC /* ContextualActionMessage.swift */; };
@@ -381,6 +382,7 @@
 		C43479EB1FE460700091806D /* TopicSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicSelection.swift; sourceTree = "<group>"; };
 		C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoCompleteHandler.swift; sourceTree = "<group>"; };
 		C44FD9CA200010900079E107 /* ChatDataControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataControllerTests.swift; sourceTree = "<group>"; };
+		C4666DC9205730DF00DABD1B /* ShowTopicMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowTopicMessage.swift; sourceTree = "<group>"; };
 		C4694A53203E3C18006A3C23 /* AgentTextControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentTextControlMessage.swift; sourceTree = "<group>"; };
 		C46A7D871FCE23D300DC12AC /* ActionMessageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionMessageData.swift; sourceTree = "<group>"; };
 		C46A7D891FD0BD8900DC12AC /* ContextualActionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextualActionMessage.swift; sourceTree = "<group>"; };
@@ -863,6 +865,7 @@
 				C48441CF20321FFA00D67757 /* StartAgentChatMessage.swift */,
 				C4CBF2C02044B5370038F120 /* CancelUserTopicMessage.swift */,
 				C47B363E2048BFFE00559410 /* SubscribeToSupportQueueMessage.swift */,
+				C4666DC9205730DF00DABD1B /* ShowTopicMessage.swift */,
 			);
 			path = ActionMessages;
 			sourceTree = "<group>";
@@ -1298,6 +1301,7 @@
 				5717B1502003DABA00A4252C /* ChatMessageViewControllerCache.swift in Sources */,
 				5794793A203389B200C4C5C5 /* DateFormatter+Chat.swift in Sources */,
 				5771D2ED2011174000FF2483 /* MultiSelectControlMessage.swift in Sources */,
+				C4666DCA205730DF00DABD1B /* ShowTopicMessage.swift in Sources */,
 				57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */,
 				573F78FD202288F40008391D /* ControlViewCell.swift in Sources */,
 				BE3F1AB21FEC315100DCC21B /* APIManager+ChatTopics.swift in Sources */,

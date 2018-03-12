@@ -10,10 +10,10 @@
 
 struct PickerMetadata: Codable {
     let multiSelect: Bool
-    let style: String
+    let style: String?
     let openByDefault: Bool
-    let required: Bool
-    let itemType: String
+    let required: Bool?
+    let itemType: String?
     let label: String
     let options: [LabeledValue]
 }

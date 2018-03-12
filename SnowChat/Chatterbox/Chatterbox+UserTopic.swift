@@ -40,14 +40,66 @@ extension Chatterbox {
     }
     
     internal func resumeUserTopic(topicInfo: TopicInfo) {
-        // TODO: notify server that we are resuming the topic (showTopic)
-        if conversationContext.conversationId != topicInfo.conversationId {
-            state = .userConversation
-            setupForConversation(topicInfo: topicInfo)
-        }
-        chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: chatId)
+        showTopic(conversationId: topicInfo.conversationId, completion: {
+            if self.conversationContext.conversationId != topicInfo.conversationId {
+                self.state = .userConversation
+                self.setupForConversation(topicInfo: topicInfo)
+            }
+            self.chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: self.chatId)
+        })
     }
 
+    internal func showTopic(conversationId: String, completion: @escaping () -> Void ) {
+        guard let sessionId = session?.id,
+            let conversationId = conversationContext.systemConversationId,
+            let uiMetadata = contextualActions?.data.richControl?.uiMetadata else {
+                completion()
+                return
+        }
+    
+        var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId, uiMetadata: uiMetadata)
+        startTopic.data.richControl?.value = "showTopic"
+        startTopic.data.direction = .fromClient
+        startTopic.data.taskId = conversationContext.taskId
+        
+        let previousHandler = messageHandler
+        messageHandler = { message in
+            
+            // get a topicPicker back, and resend it
+            let controlMessage = ChatDataFactory.controlFromJSON(message)
+            
+            if let pickerMessage = controlMessage as? PickerControlMessage {
+                guard pickerMessage.direction == .fromServer,
+                    let count = pickerMessage.data.richControl?.uiMetadata?.options.count, count > 0 else { return }
+                
+                let topicToResume = pickerMessage.data.richControl?.uiMetadata?.options[0].value
+                var responseMessage = pickerMessage
+                responseMessage.data.richControl?.value = topicToResume
+                responseMessage.data.sendTime = Date()
+                responseMessage.data.direction = MessageDirection.fromClient
+                self.publishMessage(responseMessage)
+                
+            } else {
+                let actionMessage = ChatDataFactory.actionFromJSON(message)
+                if let showTopicMessage = actionMessage as? ShowTopicMessage {
+                    
+                    let conversationId = showTopicMessage.data.conversationId
+                    let sessionId = showTopicMessage.data.sessionId
+                    let topicId = showTopicMessage.data.actionMessage.topicId
+                    
+                    self.conversationContext.conversationId = conversationId
+                    self.conversationContext.sessionId = sessionId
+                    
+                    self.logger.logDebug("Topic resumed: topicId=\(topicId)")
+                    self.messageHandler = previousHandler
+                    
+                    completion()
+                }
+            }
+        }
+        publishMessage(startTopic)
+    }
+    
     internal func installTopicSelectionMessageHandler() {
         state = .topicSelection
         messageHandler = topicSelectionMessageHandler
