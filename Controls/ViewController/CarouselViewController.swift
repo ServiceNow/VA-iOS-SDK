@@ -61,8 +61,8 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
                                      collectionView.heightAnchor.constraint(equalToConstant: 250)])
         
         self.collectionView = collectionView
+        collectionView.showsHorizontalScrollIndicator = false
         collectionView.backgroundColor = .white
-        collectionView.isPagingEnabled = true
         collectionView.reloadData()
     }
     

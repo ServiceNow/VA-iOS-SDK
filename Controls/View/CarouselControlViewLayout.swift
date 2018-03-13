@@ -10,6 +10,10 @@ import UIKit
 
 class CarouselControlViewLayout: UICollectionViewFlowLayout {
     
+    private var lastIndexPath = IndexPath(item: 0, section: 0)
+    private var lastContentOffset = CGPoint.zero
+    private var itemCount: Int = 0
+    
     override init() {
         super.init()
         scrollDirection = .horizontal
@@ -30,6 +34,8 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         let leftContentInset = collectionView.frame.width * 0.5 - itemSize.width * 0.5
         collectionView.contentInset = UIEdgeInsets(top: 20, left: leftContentInset, bottom: 0, right: leftContentInset)
         headerReferenceSize = CGSize(width: 1, height: 40)
+        collectionView.decelerationRate = UIScrollViewDecelerationRateFast
+        itemCount = collectionView.numberOfItems(inSection: 0)
     }
     
     override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
@@ -85,16 +91,32 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
             return super.targetContentOffset(forProposedContentOffset: proposedContentOffset, withScrollingVelocity: velocity)
         }
         
-        return targetContentOffset(forProposedContentOffset: proposedContentOffset)
+        lastContentOffset = targetContentOffset(forProposedContentOffset: proposedContentOffset)
+        return lastContentOffset
     }
     
     override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
         guard let collectionView = self.collectionView else {
             return super.targetContentOffset(forProposedContentOffset: proposedContentOffset)
         }
+
+        // Find next indexPath for proposed contentOffset. Check for boundary conditions
+        let nextIndexPath: IndexPath
+        if lastContentOffset.x < proposedContentOffset.x {
+            let nextItem = min(lastIndexPath.item + 1, itemCount)
+            nextIndexPath = IndexPath(item: nextItem, section: 0)
+        } else {
+            let nextItem = max(lastIndexPath.item - 1, 0)
+            nextIndexPath = IndexPath(item: nextItem, section: 0)
+        }
         
-        let jumpWidth = itemSize.width + minimumLineSpacing
-        let reminder: Int = Int((proposedContentOffset.x + collectionView.contentInset.left + jumpWidth * 0.5) / jumpWidth)
-        return CGPoint(x: CGFloat(reminder) * jumpWidth - collectionView.contentInset.left, y: proposedContentOffset.y)
+        guard let cell = collectionView.cellForItem(at: nextIndexPath) else {
+            Logger.default.logError("Couldn't find collection cell!")
+            return CGPoint(x: collectionView.contentInset.left, y: proposedContentOffset.y)
+        }
+        
+        lastIndexPath = nextIndexPath
+        let cellMinX = cell.frame.minX
+        return CGPoint(x: cellMinX - collectionView.contentInset.left, y: proposedContentOffset.y)
     }
 }
