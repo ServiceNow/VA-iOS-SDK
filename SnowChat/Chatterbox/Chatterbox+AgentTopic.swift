@@ -41,22 +41,18 @@ extension Chatterbox {
     internal func resumeLiveAgentTopic(conversation: Conversation) {
         showTopic {
             guard var taskId = self.conversationContext.taskId,
-                var conversationId = self.conversationContext.conversationId else {
+                let conversationId = self.conversationContext.conversationId else {
                     self.logger.logError("No ConversationId or taskId from ShowTopic: cannot resume agent chat!")
                     self.endAgentTopic()
                     return
             }
             // FIXME: have to get the taskId from the last message in history, since the server is sending the incorrect
             //        taskId in the showTopic response. Remove when server fixes this!
-            if let correctTaskId = conversation.messageExchanges().last?.message.taskId,
-                let correctConversationId = conversation.messageExchanges().last?.message.conversationId {
+            if let correctTaskId = conversation.messageExchanges().last?.message.taskId {
                 self.logger.logDebug("*** Resume LiveAgent conversation: original taskId=\(correctTaskId) - incoming taskId=\(taskId) ***")
-                self.logger.logDebug("*** Resume LiveAgent conversation: original conversationId=\(correctConversationId) - incoming conversationId=\(conversationId) ***")
 
                 self.conversationContext.taskId = correctTaskId
-                self.conversationContext.conversationId = correctConversationId
                 taskId = correctTaskId
-                conversationId = correctConversationId
             }
             
             let topicInfo = TopicInfo(topicId: Chatterbox.liveAgentTopicId, topicName: nil, taskId: taskId, conversationId: conversationId)

@@ -385,12 +385,11 @@ class Chatterbox {
                 guard actionMessage.direction == .fromServer,
                     let showTopicMessage = actionMessage as? ShowTopicMessage else { return }
                 
-                let conversationId = showTopicMessage.data.conversationId
                 let sessionId = showTopicMessage.data.sessionId
                 let topicId = showTopicMessage.data.actionMessage.topicId
                 let taskId = showTopicMessage.data.taskId
                 
-                strongSelf.conversationContext.conversationId = conversationId
+                strongSelf.conversationContext.conversationId = topicId
                 strongSelf.conversationContext.sessionId = sessionId
                 strongSelf.conversationContext.taskId = taskId
                 
