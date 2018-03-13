@@ -27,11 +27,38 @@ extension Chatterbox {
         }
     }
     
-    func endUserConversation() {
-        let sessionId = conversationContext.sessionId ?? "UNKNOWN_SESSION_ID"
-        let conversationId = conversationContext.conversationId ?? "UNKNOWN_CONVERSATION_ID"
+    internal func endUserConversation() {
+        guard let sessionId = conversationContext.sessionId,
+            let conversationId = conversationContext.conversationId  else {
+                logger.logError("endConversation with no conversation current - skipping")
+                return
+        }
+        
+        sendCancelTopic()
         
         didReceiveTopicFinishedAction(TopicFinishedMessage(withSessionId: sessionId, withConversationId: conversationId))
+    }
+    
+    private func sendCancelTopic() {
+        if let cancelTopic = cancelTopicMessageFromContextualActions() {
+            messageHandler = cancelTopicHandler
+            publishMessage(cancelTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+        }
+    }
+    
+    private func cancelTopicMessageFromContextualActions() -> ContextualActionMessage? {
+        guard var cancelTopic = contextualActions,
+            let sessionId = conversationContext.sessionId,
+            let conversationId = conversationContext.systemConversationId else { return nil }
+        
+        cancelTopic.type = "consumerTextMessage"
+        cancelTopic.data.sessionId = sessionId
+        cancelTopic.data.conversationId = conversationId
+        cancelTopic.data.richControl?.value = CancelTopicControlMessage.value
+        cancelTopic.data.direction = .fromClient
+        cancelTopic.data.sendTime = Date()
+        
+        return cancelTopic
     }
     
     internal func finishTopic(_ conversationId: String) {
