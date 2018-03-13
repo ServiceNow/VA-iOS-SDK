@@ -33,7 +33,7 @@ class ControlsUtil {
             return SingleSelectControl(model: model)
         case .carousel:
             let carousel = CarouselControl(model: model)
-            carousel.imageDownloader = provider?.imageProvider
+            carousel.imageDownloader = provider.imageDownloader
             return carousel
         case .typingIndicator:
             return TypingIndicatorControl()
