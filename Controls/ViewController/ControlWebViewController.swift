@@ -17,6 +17,7 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
     }
     
     var hasNavigated: Bool {
+        // Did user navigated within the web view?
         return webView.backForwardList.backItem != nil
     }
     
@@ -59,6 +60,7 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
         let webView = WKWebView(frame: CGRect.zero, configuration: resourceProvider.webViewConfiguration)
         webView.navigationDelegate = self
         
+        // Scroll view inside scroll view is...pretty ugly. Especially when adjustment is on!
         if #available(iOS 11.0, *) {
             webView.scrollView.contentInsetAdjustmentBehavior = .never
         } else {
@@ -67,10 +69,10 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
         
         webView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(webView)
-        NSLayoutConstraint.activate([webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
-                                     webView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-                                     webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
-                                     webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10)])
+        NSLayoutConstraint.activate([webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 5),
+                                     webView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5),
+                                     webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 5),
+                                     webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -5)])
         
         self.webView = webView
     }
@@ -103,9 +105,5 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         decisionHandler(.allow)
-    }
-    
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-
     }
 }
