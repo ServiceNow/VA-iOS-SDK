@@ -32,6 +32,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     private var canFetchOlderMessages = false
     private var timeLastHistoryFetch: Date = Date()
     private var isLoading = false
+    private var defaultMessageHeight: CGFloat?
     
     override var tableView: UITableView {
         // swiftlint:disable:next force_unwrapping
@@ -79,6 +80,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     override func viewWillLayoutSubviews() {
         // not calling super to override slack's behavior
         adjustContentInset()
+        defaultMessageHeight = tableView.bounds.height * 0.3
     }
     
     private func adjustContentInset() {
@@ -426,6 +428,7 @@ extension ConversationViewController {
     private func configureConversationCell(_ cell: ConversationViewCell, messageModel model: ChatMessageModel, at indexPath: IndexPath) {
         let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
         cell.messageViewController = messageViewController
+        adjustModelSizeIfNeeded(model)
         messageViewController.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self, resourceProvider: chatterbox.apiManager)
         messageViewController.didMove(toParentViewController: self)
     }
@@ -436,6 +439,17 @@ extension ConversationViewController {
         } else {
             return nil
         }
+    }
+    
+    // MARK: - Special case for OutputHtmlViewModel..
+    private func adjustModelSizeIfNeeded(_ messageModel: ChatMessageModel) {
+        guard let outputHtmlModel = messageModel.controlModel as? OutputHtmlControlViewModel,
+            let messageHeight = defaultMessageHeight,
+            outputHtmlModel.size == nil else {
+                return
+        }
+        
+        outputHtmlModel.size = CGSize(width: CGFloat.nan, height: messageHeight)
     }
     
     // MARK: - ChatMessageViewController reuse
@@ -568,8 +582,6 @@ extension ConversationViewController: ControlDelegate {
             
             if let viewModel = chatModel.controlModel as? Resizable, let size = viewModel.size {
                 return size.height
-            } else {
-                return 500
             }
         }
         
