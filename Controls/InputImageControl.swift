@@ -42,7 +42,7 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
     
     // MARK: - PickerViewControllerDelegate
     
-    func pickerViewController(_ viewController: PickerViewController, didFinishWithModel model: PickerControlViewModel) {
+    func pickerViewController(_ viewController: UIViewController, didFinishWithModel model: PickerControlViewModel) {
         guard let item = model.selectedItem else { return }
         
         switch item.type {
@@ -63,7 +63,7 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
         }
     }
     
-    func pickerViewController(_ viewController: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
+    func pickerViewController(_ viewController: UIViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
         
     }
     

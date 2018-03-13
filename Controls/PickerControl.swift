@@ -24,10 +24,10 @@ struct PickerConstants {
 protocol PickerViewControllerDelegate: AnyObject {
     
     // pickerTable:didSelectItemWithModel: is called when touch comes down on an item
-    func pickerViewController(_ viewController: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel)
+    func pickerViewController(_ viewController: UIViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel)
     
     // pickerTable:didFinishWithModel: is called when touch comes down on Done button if one exists
-    func pickerViewController(_ viewController: PickerViewController, didFinishWithModel model: PickerControlViewModel)
+    func pickerViewController(_ viewController: UIViewController, didFinishWithModel model: PickerControlViewModel)
 }
 
 // MARK: - PickerControlProtocol
@@ -72,7 +72,7 @@ extension PickerControlProtocol {
     
     // MARK: - PickerTableDelegate
     
-    func pickerViewController(_ viewController: PickerViewController, didFinishWithModel model: PickerControlViewModel) {
+    func pickerViewController(_ viewController: UIViewController, didFinishWithModel model: PickerControlViewModel) {
         delegate?.control(self, didFinishWithModel: model)
     }
     

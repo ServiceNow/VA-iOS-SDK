@@ -21,6 +21,10 @@ class CarouselControl: PickerControlProtocol {
         return self.viewController as! CarouselViewController
     }
     
+    var isReusable: Bool {
+        return false
+    }
+    
     var style: PickerControlStyle
     
     var model: ControlViewModel
@@ -38,7 +42,7 @@ class CarouselControl: PickerControlProtocol {
         self.style = .carousel
     }
     
-    func pickerViewController(_ viewController: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
+    func pickerViewController(_ viewController: UIViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
         
     }
 }

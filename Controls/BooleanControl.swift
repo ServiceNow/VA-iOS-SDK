@@ -33,7 +33,7 @@ class BooleanControl: PickerControlProtocol {
     
     // MARK: - PickerTableDelegate
     
-    func pickerViewController(_ viewController: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
+    func pickerViewController(_ viewController: UIViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
 
     }
 }
