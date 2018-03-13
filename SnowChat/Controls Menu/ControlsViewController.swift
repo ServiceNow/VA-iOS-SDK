@@ -120,6 +120,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
                                               controlData: ControlWrapper(model: ControlModel(type: "Boolean", name: "Boolean"),
                                                                          uiType: "BooleanControl",
                                                                          uiMetadata: UIMetadata(label:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eleifend dapibus lacus, faucibus efficitur enim malesuada vel.",
+                                                                                                header:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eleifend dapibus lacus, faucibus efficitur enim malesuada vel.",
                                                                                                required: false,
                                                                                                error: nil),
                                                                          value: nil, content: nil))

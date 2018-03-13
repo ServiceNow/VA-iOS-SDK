@@ -88,7 +88,7 @@ struct AgentTextData: Codable {
 }
 
 struct SenderInfo: Codable {
-    var sysId: String
-    var name: String
-    var avatarPath: String
+    var sysId: String?
+    var name: String?
+    var avatarPath: String?
 }

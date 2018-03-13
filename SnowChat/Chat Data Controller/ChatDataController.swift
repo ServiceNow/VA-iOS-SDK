@@ -394,7 +394,7 @@ class ChatDataController {
     }
 
     func presentWelcomeMessage() {
-        let message = chatterbox.session?.welcomeMessage ?? "Welcome! What can we help you with?"
+        let message = chatterbox.session?.welcomeMessage ?? NSLocalizedString("Welcome! What can we help you with?", comment: "Default welcome message")
         let welcomeTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         
         // NOTE: we do not buffer the welcome message currently - this is intentional

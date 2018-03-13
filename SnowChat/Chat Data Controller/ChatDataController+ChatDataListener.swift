@@ -429,7 +429,7 @@ extension ChatDataController: ChatDataListener {
                 return nil
         }
         
-        if let url = URL(string: value) {
+        if let url = URL(string: value.action) {
             return OutputLinkControlViewModel(id: ChatUtil.uuidString(), value: url)
         }
         

@@ -253,7 +253,7 @@ extension Chatterbox {
                     
                     var conversation = conversation
                     let isLastConversation = conversation.conversationId == lastConversation.conversationId
-                    let isInProgress = isLastConversation && (conversation.state == .inProgress || conversation.state == .chatProgress)
+                    let isInProgress = isLastConversation && conversation.state.isInProgress
                     
                     if isInProgress {
                         guard isLastConversation else { fatalError("inProgress conversation MUST be the last conversation!") }
@@ -297,7 +297,7 @@ extension Chatterbox {
         
         conversation.messageExchanges().forEach { exchange in
             let outputOnlyMessage = exchange.message.isOutputOnly || exchange.message.controlType == .multiPart
-            let inputPending = conversation.state == .inProgress && !exchange.isComplete
+            let inputPending = exchange.isComplete == false && conversation.state.isInProgress
             
             if outputOnlyMessage || inputPending {
                 notifyMessage(exchange.message)

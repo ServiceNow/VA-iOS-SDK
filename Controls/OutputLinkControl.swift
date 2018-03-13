@@ -50,6 +50,7 @@ class OutputLinkControl: NSObject, ControlProtocol {
             let doneButton = UIBarButtonItem(title: localizedDoneString, style: .done, target: webViewController, action: #selector(finishModalPresentation(_:)))
             webViewController.navigationItem.leftBarButtonItem = doneButton
             let navigationController = UINavigationController(rootViewController: webViewController)
+            navigationController.modalPresentationStyle = .overFullScreen
             present(navigationController, animated: true, completion: nil)
             return false
         }

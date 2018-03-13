@@ -19,6 +19,8 @@ extension Chatterbox {
             return
         }
         
+        cancelPendingExchangeIfNeeded()
+        
         if let sessionId = session?.id, let conversationId = conversationContext.systemConversationId {
             state = .agentConversation
             messageHandler = startLiveAgentHandshakeHandler
@@ -133,13 +135,12 @@ extension Chatterbox {
     }
     
     private func showLiveAgentUnavailableMessage() {
-        if let email = session?.settings?.generalSettings?.supportEmail,
-            let phone = session?.settings?.generalSettings?.supportPhone,
-            let hours = session?.settings?.generalSettings?.supportHours,
+        if let email = session?.settings?.brandingSettings?.supportEmail,
+            let phone = session?.settings?.brandingSettings?.supportPhone,
             let conversationId = conversationContext.conversationId,
             let sessionId = conversationContext.sessionId {
                 let taskId = conversationContext.taskId
-                let message = NSLocalizedString("I'm sorry, no agents are currently available. Please call us at \(phone) (\(hours)), email us at \(email), or try again later.",
+                let message = NSLocalizedString("I'm sorry, no agents are currently available. Please call us at \(phone), email us at \(email), or try again later.",
                     comment: "Message when no agents available during live agent transfer")
                 let textControl = OutputTextControlMessage(withValue: message, sessionId: sessionId, conversationId: conversationId, taskId: taskId, direction: MessageDirection.fromServer)
                 chatDataListener?.chatterbox(self, didReceiveControlMessage: textControl, forChat: chatId)
