@@ -39,16 +39,28 @@ extension Chatterbox {
     }
     
     internal func resumeLiveAgentTopic(conversation: Conversation) {
-        // TODO: notify server that we are resuming the topic (showTopic)
+        showTopic {
+            guard var taskId = self.conversationContext.taskId,
+                var conversationId = self.conversationContext.conversationId else {
+                    self.logger.logError("No ConversationId or taskId from ShowTopic: cannot resume agent chat!")
+                    self.endAgentTopic()
+                    return
+            }
+            // FIXME: have to get the taskId from the last message in history, since the server is sending the incorrect
+            //        taskId in the showTopic response. Remove when server fixes this!
+            if let correctTaskId = conversation.messageExchanges().last?.message.taskId,
+                let correctConversationId = conversation.messageExchanges().last?.message.conversationId {
+                self.logger.logDebug("*** Resume LiveAgent conversation: original taskId=\(correctTaskId) - incoming taskId=\(taskId) ***")
+                self.logger.logDebug("*** Resume LiveAgent conversation: original conversationId=\(correctConversationId) - incoming conversationId=\(conversationId) ***")
 
-        // have to reset the taskId to the last live agent message's taskId
-        if let taskId = conversation.messageExchanges().last?.message.taskId {
-            let topicInfo = TopicInfo(topicId: Chatterbox.liveAgentTopicId, topicName: nil, taskId: taskId, conversationId: conversation.conversationId)
-            conversationContext.taskId = taskId
-            startAgentTopic(topicInfo: topicInfo)
-        } else {
-            // cannot resume the live-agent chat without a taskId, so end it
-            endAgentTopic()
+                self.conversationContext.taskId = correctTaskId
+                self.conversationContext.conversationId = correctConversationId
+                taskId = correctTaskId
+                conversationId = correctConversationId
+            }
+            
+            let topicInfo = TopicInfo(topicId: Chatterbox.liveAgentTopicId, topicName: nil, taskId: taskId, conversationId: conversationId)
+            self.startAgentTopic(topicInfo: topicInfo)
         }
     }
 
@@ -69,7 +81,7 @@ extension Chatterbox {
             let startAgentChatMessage = actionMessage as? StartAgentChatMessage,
             startAgentChatMessage.data.actionMessage.chatStage == "ConnectToAgent" {
             
-            if startAgentChatMessage.data.direction == .fromServer {
+            if startAgentChatMessage.direction == .fromServer {
                 logger.logDebug("*** ConnectToAgent Message from server: conversationId=\(startAgentChatMessage.data.conversationId ?? "NIL") topicId=\(startAgentChatMessage.data.actionMessage.topicId) taskId=\(startAgentChatMessage.data.taskId ?? "NIL")")
                 
                 let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)

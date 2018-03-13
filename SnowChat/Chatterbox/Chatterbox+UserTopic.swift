@@ -40,64 +40,11 @@ extension Chatterbox {
     }
     
     internal func resumeUserTopic(topicInfo: TopicInfo) {
-        showTopic(conversationId: topicInfo.conversationId, completion: {
-            if self.conversationContext.conversationId != topicInfo.conversationId {
-                self.state = .userConversation
-                self.setupForConversation(topicInfo: topicInfo)
-            }
+        showTopic {
+            self.state = .userConversation
+            self.setupForConversation(topicInfo: topicInfo)
             self.chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: self.chatId)
-        })
-    }
-
-    internal func showTopic(conversationId: String, completion: @escaping () -> Void ) {
-        guard let sessionId = session?.id,
-            let conversationId = conversationContext.systemConversationId,
-            let uiMetadata = contextualActions?.data.richControl?.uiMetadata else {
-                completion()
-                return
         }
-    
-        var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId, uiMetadata: uiMetadata)
-        startTopic.data.richControl?.value = "showTopic"
-        startTopic.data.direction = .fromClient
-        startTopic.data.taskId = conversationContext.taskId
-        
-        let previousHandler = messageHandler
-        messageHandler = { message in
-            
-            // get a topicPicker back, and resend it
-            let controlMessage = ChatDataFactory.controlFromJSON(message)
-            
-            if let pickerMessage = controlMessage as? PickerControlMessage {
-                guard pickerMessage.direction == .fromServer,
-                    let count = pickerMessage.data.richControl?.uiMetadata?.options.count, count > 0 else { return }
-                
-                let topicToResume = pickerMessage.data.richControl?.uiMetadata?.options[0].value
-                var responseMessage = pickerMessage
-                responseMessage.data.richControl?.value = topicToResume
-                responseMessage.data.sendTime = Date()
-                responseMessage.data.direction = MessageDirection.fromClient
-                self.publishMessage(responseMessage)
-                
-            } else {
-                let actionMessage = ChatDataFactory.actionFromJSON(message)
-                if let showTopicMessage = actionMessage as? ShowTopicMessage {
-                    
-                    let conversationId = showTopicMessage.data.conversationId
-                    let sessionId = showTopicMessage.data.sessionId
-                    let topicId = showTopicMessage.data.actionMessage.topicId
-                    
-                    self.conversationContext.conversationId = conversationId
-                    self.conversationContext.sessionId = sessionId
-                    
-                    self.logger.logDebug("Topic resumed: topicId=\(topicId)")
-                    self.messageHandler = previousHandler
-                    
-                    completion()
-                }
-            }
-        }
-        publishMessage(startTopic)
     }
     
     internal func installTopicSelectionMessageHandler() {
@@ -124,7 +71,7 @@ extension Chatterbox {
         switch controlMessage.controlType {
         case .topicPicker:
             if let topicPicker = controlMessage as? UserTopicPickerMessage {
-                if topicPicker.data.direction == .fromServer {
+                if topicPicker.direction == .fromServer {
                     var outgoingMessage = topicPicker
                     outgoingMessage.type = "consumerTextMessage"
                     outgoingMessage.data.direction = .fromClient
@@ -149,7 +96,7 @@ extension Chatterbox {
             if let startUserTopic = actionMessage as? StartUserTopicMessage {
                 
                 // client and server messages are the same, so only look at server responses!
-                if startUserTopic.data.direction == .fromServer {
+                if startUserTopic.direction == .fromServer {
                     let startUserTopicReadyMessage = createStartTopicReadyMessage(fromMessage: startUserTopic)
                     publishMessage(startUserTopicReadyMessage)
                 }

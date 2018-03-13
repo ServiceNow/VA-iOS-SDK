@@ -305,8 +305,11 @@ extension ConversationViewController {
         case .inConversation:
             // TODO: validate the text against the input type when we have such a notion...
             break
+        case .inAgentConversation:
+            // TODO: validate?
+            break
         default:
-            Logger.default.logDebug("Text updated: state=\(inputState)")
+            break
         }
     }
     

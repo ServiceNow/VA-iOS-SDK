@@ -11,6 +11,10 @@ import Foundation
 struct StartedUserTopicMessage: Codable, ActionData {
     var eventType = ChatterboxActionType.startedUserTopic
     
+    var direction: MessageDirection {
+        return data.direction
+    }
+
     let type: String
     var data: ActionMessageData<UserTopicMessageDetails>
     
