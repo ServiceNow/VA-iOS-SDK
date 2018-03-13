@@ -75,16 +75,28 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
         self.webView = webView
     }
     
-    // MARK: - Request Loading
+    func load(_ url: URL) {
+        load(.url(url))
+    }
     
-    private func loadInitialRequest() {
-        switch self.initialRequest {
+    func load(_ htmlString: String) {
+        load(.html(htmlString))
+    }
+    
+    private func load(_ request: Request) {
+        switch request {
         case let .html(html):
             webView.loadHTMLString(html, baseURL: nil)
         case let .url(url):
             let request = resourceProvider.authorizedRequest(with: url)
             webView.load(request)
         }
+    }
+    
+    // MARK: - Request Loading
+    
+    private func loadInitialRequest() {
+        load(initialRequest)
     }
     
     // MARK: - WKNavigationDelegate

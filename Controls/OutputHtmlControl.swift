@@ -8,7 +8,15 @@
 
 class OutputHtmlControl: ControlProtocol {
     
-    var model: ControlViewModel
+    var model: ControlViewModel {
+        didSet {
+            // load new html
+            outputHtmlViewController.load(outputHtmlModel.value)
+            guard let oldHtmlModel = oldValue as? OutputHtmlControlViewModel else { return }
+            guard let newSize = outputHtmlModel.size, let oldSize = oldHtmlModel.size, !newSize.equalTo(oldSize) else { return }
+            delegate?.controlDidFinishLoading(self)
+        }
+    }
     
     var isReusable: Bool {
         return !outputHtmlViewController.hasNavigated
