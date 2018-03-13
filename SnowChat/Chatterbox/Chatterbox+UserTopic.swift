@@ -27,23 +27,33 @@ extension Chatterbox {
         }
     }
     
-    internal func endUserConversation() {
-        guard let sessionId = conversationContext.sessionId,
-            let conversationId = conversationContext.conversationId  else {
-                logger.logError("endConversation with no conversation current - skipping")
-                return
+    internal func cancelUserConversation() {
+        guard conversationContext.conversationId != nil else {
+            logger.logError("endConversation with no conversation current - skipping")
+            return
+        }
+
+        guard let cancelTopic = cancelTopicMessageFromContextualActions() else { return }
+        
+        messageHandler = { message in
+            self.logger.logDebug("CancelTopic handler: \(message)")
+            
+            if let cancelTopic = ChatDataFactory.actionFromJSON(message) as? CancelUserTopicMessage,
+                cancelTopic.data.direction == .fromServer {
+                var cancelTopicReply = cancelTopic
+                cancelTopicReply.data.messageId = ChatUtil.uuidString()
+                cancelTopicReply.data.direction = .fromClient
+                cancelTopicReply.data.sendTime = Date()
+                cancelTopicReply.data.actionMessage.ready = true
+
+                self.publishMessage(cancelTopicReply)
+            } else if let topicFinished = ChatDataFactory.actionFromJSON(message) as? TopicFinishedMessage {
+
+                self.didReceiveTopicFinishedAction(topicFinished)
+            }
         }
         
-        sendCancelTopic()
-        
-        didReceiveTopicFinishedAction(TopicFinishedMessage(withSessionId: sessionId, withConversationId: conversationId))
-    }
-    
-    private func sendCancelTopic() {
-        if let cancelTopic = cancelTopicMessageFromContextualActions() {
-            messageHandler = cancelTopicHandler
-            publishMessage(cancelTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
-        }
+        publishMessage(cancelTopic)
     }
     
     private func cancelTopicMessageFromContextualActions() -> ContextualActionMessage? {
