@@ -6,13 +6,15 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-class OutputHtmlControlViewModel: ControlViewModel {
+class OutputHtmlControlViewModel: ControlViewModel, Resizable {
     
     let label: String?
     
     let isRequired: Bool = true
     
     let id: String
+    
+    var size: CGSize?
     
     let type: ControlType = .outputHtml
     

@@ -18,6 +18,9 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     @IBOutlet private weak var bubbleTrailingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var agentImageTopConstraint: NSLayoutConstraint!
     
+    private var controlHeightConstraint: NSLayoutConstraint?
+    private var controlWidthConstraint: NSLayoutConstraint?
+    
     var controlCache: ControlCache?
     var resourceProvider: ControlResourceProvider?
     
@@ -66,8 +69,13 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     private func prepareControlForReuse() {
         if let control = uiControl, isPresentingControl(control) {
+            controlHeightConstraint?.isActive = false
+            controlWidthConstraint?.isActive = false
             control.removeFromParent()
-            controlCache?.cacheControl(forModel: control.model)
+            
+            if control.isReusable {
+                controlCache?.cacheControl(forModel: control.model)
+            }
         }
     }
     
@@ -96,19 +104,22 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
 
         controlView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(controlView)
-        
         NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: bubbleView.contentView.leadingAnchor),
                                      controlView.trailingAnchor.constraint(equalTo: bubbleView.contentView.trailingAnchor),
                                      controlView.topAnchor.constraint(equalTo: bubbleView.contentView.topAnchor),
                                      controlView.bottomAnchor.constraint(equalTo: bubbleView.contentView.bottomAnchor)])
         
-        if let preferredControlSize = control.maxContentSize {
-            if preferredControlSize.width != .greatestFiniteMagnitude {
-                controlView.widthAnchor.constraint(lessThanOrEqualToConstant: preferredControlSize.width).isActive = true
+        // Adjust width and height of the control if needed
+        if let preferredControlSize = control.preferredContentSize {
+            if !preferredControlSize.width.isNaN {
+                controlWidthConstraint = controlView.widthAnchor.constraint(equalToConstant: preferredControlSize.width)
+                controlWidthConstraint?.priority = .defaultLow
+                controlWidthConstraint?.isActive = true
             }
             
-            if preferredControlSize.height != .greatestFiniteMagnitude {
-                controlView.heightAnchor.constraint(lessThanOrEqualToConstant: preferredControlSize.height).isActive = true
+            if !preferredControlSize.height.isNaN {
+                controlHeightConstraint = controlView.heightAnchor.constraint(equalToConstant: preferredControlSize.height)
+                controlHeightConstraint?.isActive = true
             }
         }
         

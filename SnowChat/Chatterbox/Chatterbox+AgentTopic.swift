@@ -19,7 +19,7 @@ extension Chatterbox {
             return
         }
         
-        cancelPendingExchangeIfAny()
+        cancelPendingExchangeIfNeeded()
         
         if let sessionId = session?.id, let conversationId = conversationContext.systemConversationId {
             state = .agentConversation
