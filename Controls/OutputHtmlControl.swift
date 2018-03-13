@@ -22,7 +22,7 @@ class OutputHtmlControl: ControlProtocol {
         return !outputHtmlViewController.hasNavigated
     }
     
-    var maxContentSize: CGSize? {
+    var preferredContentSize: CGSize? {
         return outputHtmlModel.size
     }
     

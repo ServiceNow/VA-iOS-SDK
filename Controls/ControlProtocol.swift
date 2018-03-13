@@ -98,7 +98,7 @@ protocol ControlProtocol: AnyObject {
     func prepareForReuse()
     
     // If provided - control will be limited to that size
-    var maxContentSize: CGSize? { get }
+    var preferredContentSize: CGSize? { get }
     
     var isReusable: Bool { get }
 }
@@ -113,7 +113,7 @@ extension ControlProtocol {
     func prepareForReuse() {
     }
     
-    var maxContentSize: CGSize? {
+    var preferredContentSize: CGSize? {
         return nil
     }
     

@@ -51,7 +51,7 @@ protocol PickerControlProtocol: ControlProtocol, PickerViewControllerDelegate {
 
 extension PickerControlProtocol {
     
-    var maxContentSize: CGSize? {
+    var preferredContentSize: CGSize? {
         return CGSize(width: 250, height: CGFloat.nan)
     }
     
