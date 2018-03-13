@@ -182,6 +182,7 @@
 		C43479EC1FE460700091806D /* TopicSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43479EB1FE460700091806D /* TopicSelection.swift */; };
 		C43479EE1FE850D20091806D /* AutoCompleteHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */; };
 		C44FD9CB200010900079E107 /* ChatDataControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44FD9CA200010900079E107 /* ChatDataControllerTests.swift */; };
+		C4666DC82056F7E000DABD1B /* menu.png in Resources */ = {isa = PBXBuildFile; fileRef = C4666DC72056F7DF00DABD1B /* menu.png */; };
 		C4694A54203E3C18006A3C23 /* AgentTextControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4694A53203E3C18006A3C23 /* AgentTextControlMessage.swift */; };
 		C46A7D881FCE23D300DC12AC /* ActionMessageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46A7D871FCE23D300DC12AC /* ActionMessageData.swift */; };
 		C46A7D8A1FD0BD8900DC12AC /* ContextualActionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46A7D891FD0BD8900DC12AC /* ContextualActionMessage.swift */; };
@@ -381,6 +382,7 @@
 		C43479EB1FE460700091806D /* TopicSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicSelection.swift; sourceTree = "<group>"; };
 		C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoCompleteHandler.swift; sourceTree = "<group>"; };
 		C44FD9CA200010900079E107 /* ChatDataControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataControllerTests.swift; sourceTree = "<group>"; };
+		C4666DC72056F7DF00DABD1B /* menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu.png; sourceTree = "<group>"; };
 		C4694A53203E3C18006A3C23 /* AgentTextControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentTextControlMessage.swift; sourceTree = "<group>"; };
 		C46A7D871FCE23D300DC12AC /* ActionMessageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionMessageData.swift; sourceTree = "<group>"; };
 		C46A7D891FD0BD8900DC12AC /* ContextualActionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextualActionMessage.swift; sourceTree = "<group>"; };
@@ -785,6 +787,7 @@
 		BEB6C8591FB92CD700B1D497 /* SnowChat */ = {
 			isa = PBXGroup;
 			children = (
+				C4666DC72056F7DF00DABD1B /* menu.png */,
 				BE876FDB1FDF4F64008EEF04 /* Chat Service */,
 				BE29E0CD1FDF06990029D1F0 /* Chat Data Controller */,
 				BE29E0CA1FDEF79B0029D1F0 /* Chat Window */,
@@ -1016,6 +1019,9 @@
 		BEB6C84E1FB92CD600B1D497 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				KnownAssetTags = (
+					New,
+				);
 				LastSwiftUpdateCheck = 0920;
 				LastUpgradeCheck = 0910;
 				ORGANIZATIONNAME = ServiceNow;
@@ -1089,6 +1095,7 @@
 				57B7E2C91FBA25A200196BA9 /* SelectableView.xib in Resources */,
 				BE50E2241FB9305C00948FBC /* Cartfile in Resources */,
 				57D997AB1FE5B00000394A6D /* ChatMessageViewController.xib in Resources */,
+				C4666DC82056F7E000DABD1B /* menu.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
