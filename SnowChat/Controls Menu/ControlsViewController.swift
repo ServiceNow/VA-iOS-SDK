@@ -8,6 +8,7 @@
 
 import UIKit
 import AlamofireImage
+import WebKit
 
 class ControlsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ControlDelegate {
 
@@ -79,8 +80,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             // swiftlint:disable:next force_unwrapping
             let url = URL(string: "https://i.ytimg.com/vi/uXF9MqdKlTM/maxresdefault.jpg")!
             let imageModel = OutputImageViewModel(id: "image_output_blah_blah_blah", value: url)
-            let outputImageControl = OutputImageControl(model: imageModel)
-            outputImageControl.imageDownloader = ImageDownloader()
+            let outputImageControl = OutputImageControl(model: imageModel, imageDownloader: ImageDownloader())
             uiControl = outputImageControl
         case .outputLink:
             guard let url = URL(string: "https://i.ytimg.com/vi/uXF9MqdKlTM/maxresdefault.jpg") else {
@@ -88,7 +88,7 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
             }
             
             let linkModel = OutputLinkControlViewModel(id: "image_output_blah_blah_blah", value: url)
-            let outputLinkControl = OutputLinkControl(model: linkModel)
+            let outputLinkControl = OutputLinkControl(model: linkModel, resourceProvider: FakeControlResourceProvider())
             uiControl = outputLinkControl
         case .singleSelect:
             fatalError("Single select not implemented yet")
@@ -116,9 +116,20 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
                                               controlData: ControlWrapper(model: ControlModel(type: "Boolean", name: "Boolean"),
                                                                          uiType: "BooleanControl",
                                                                          uiMetadata: UIMetadata(label:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eleifend dapibus lacus, faucibus efficitur enim malesuada vel.",
+                                                                                                header:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eleifend dapibus lacus, faucibus efficitur enim malesuada vel.",
                                                                                                required: false,
                                                                                                error: nil),
                                                                          value: nil, content: nil))
     }
     
+}
+
+class FakeControlResourceProvider: ControlWebResourceProvider {
+    var webViewConfiguration: WKWebViewConfiguration {
+        return WKWebViewConfiguration()
+    }
+    
+    func authorizedRequest(with url: URL) -> URLRequest {
+        return URLRequest(url: url)
+    }
 }

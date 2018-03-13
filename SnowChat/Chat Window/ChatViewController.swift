@@ -68,7 +68,11 @@ public class ChatViewController: UIViewController {
     }
     
     private func setupContextMenu() {
-        let contextMenu = UIBarButtonItem(title: "...", style: .plain, target: self, action: #selector(contextMenuTapped(_:)))
+        let button: UIButton = UIButton(type: UIButtonType.custom)
+        let image = UIImage(named: "menu", in: Bundle(for: type(of: self)), compatibleWith: nil)
+        button.setImage(image, for: .normal)
+        button.addTarget(self, action: #selector(contextMenuTapped(_:)), for: .touchUpInside)
+        let contextMenu = UIBarButtonItem(customView: button)
         navigationItem.rightBarButtonItem = contextMenu
     }
     
@@ -118,6 +122,7 @@ public class ChatViewController: UIViewController {
 }
 
 extension ChatViewController: ChatEventListener {
+    
     func chatterbox(_ chatterbox: Chatterbox, didStartTopic topicInfo: TopicInfo, forChat chatId: String) {
         conversationViewController?.chatterbox(chatterbox, didStartTopic: topicInfo, forChat: chatId)
     }
@@ -130,6 +135,22 @@ extension ChatViewController: ChatEventListener {
         conversationViewController?.chatterbox(chatterbox, didFinishTopic: topicInfo, forChat: chatId)
     }
 
+    func chatterbox(_ chatterbox: Chatterbox, willStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        conversationViewController?.chatterbox(chatterbox, willStartAgentChat: agentInfo, forChat: chatId)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        conversationViewController?.chatterbox(chatterbox, willStartAgentChat: agentInfo, forChat: chatId)
+    }
+
+    func chatterbox(_ chatterbox: Chatterbox, didResumeAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        conversationViewController?.chatterbox(chatterbox, didResumeAgentChat: agentInfo, forChat: chatId)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didFinishAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        conversationViewController?.chatterbox(chatterbox, didFinishAgentChat: agentInfo, forChat: chatId)
+    }
+    
     func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
         conversationViewController?.chatterbox(chatterbox, didEstablishUserSession: sessionId, forChat: chatId)
     }

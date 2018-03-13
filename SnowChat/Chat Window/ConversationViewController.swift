@@ -15,6 +15,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         case inSystemTopicSelection     // user can select topic, talk to tagent, or quit
         case inTopicSelection           // user is searching topics
         case inConversation             // user is in an active conversation
+        case inAgentConversation        // in a conversation with an agent
     }
     
     private let bottomInset: CGFloat = 60
@@ -62,9 +63,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         super.viewDidLoad()
         
         setupActivityIndicator()
-        setupTableView()
-        
-        loadHistory()
+        setupTableView()        
     }
     
     internal func loadHistory() {
@@ -120,6 +119,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             setupForTopicSelection()
         case .inSystemTopicSelection:
             setupForSystemTopicSelection()
+        case .inAgentConversation:
+            setupForAgentConversation()
         case .inConversation:
             setupForConversation()
         }
@@ -138,17 +139,25 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         textView.placeholder = NSLocalizedString("Type your question here...", comment: "Placeholder text for input field when user is selecting a topic")
     }
     
-    private func setupForConversation() {
+    fileprivate func setupTextViewForConversation() {
         registerPrefixes(forAutoCompletion: [])
         self.autocompleteHandler = nil
         
         rightButton.isHidden = false
-        rightButton.setTitle(NSLocalizedString("Send", comment: "Right button label in conversation mode"), for: UIControlState())
+        rightButton.setTitle(NSLocalizedString("Send", comment: "Right button label in conversation mode"), for: .normal)
         
         textView.text = ""
         textView.placeholder = ""
-        
+    }
+    
+    private func setupForConversation() {
+        setupTextViewForConversation()
         setTextInputbarHidden(true, animated: true)
+    }
+    
+    private func setupForAgentConversation() {
+        setupTextViewForConversation()
+        setTextInputbarHidden(false, animated: true)
     }
     
     // MARK: - ViewDataChangeListener
@@ -159,7 +168,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             return
         }
         
-        cell.messageViewController?.model = model
+        cell.messageViewController?.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self, resourceProvider: chatterbox.apiManager)
         UIView.animate(withDuration: 0.3, animations: {
             self.tableView.beginUpdates()
             self.tableView.endUpdates()
@@ -234,12 +243,11 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
 
                 if lastControl.controlModel is TextControlViewModel && lastControl.requiresInput {
                     isTextInputbarHidden = false
-                    //textView.becomeFirstResponder()
                 } else {
                     isTextInputbarHidden = true
                 }
             }
-        case .inTopicSelection:
+        case .inTopicSelection, .inAgentConversation:
             isTextInputbarHidden = false
         default:
             Logger.default.logDebug("unhandled inputState in manageInputControl: \(inputState)")
@@ -314,17 +322,28 @@ extension ConversationViewController {
         switch inputState {
         case .inTopicSelection:
             autocompleteHandler?.didCommitEditing(inputText)
-        case .inConversation:
-            processUserInput(inputText)
+        case .inConversation,
+             .inAgentConversation:
+            dispatchUserInput(inputText)
         default:
             Logger.default.logDebug("Right button or enter pressed: state=\(inputState)")
         }
     }
     
-    func processUserInput(_ inputText: String) {
-        // send the input as a control update
-        let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
-        dataController.updateControlData(model, isSkipped: false)
+    func dispatchUserInput(_ inputText: String) {
+        switch inputState {
+        case .inConversation:
+            // send the input as a control update
+            let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
+            dataController.updateControlData(model, isSkipped: false)
+        case .inAgentConversation:
+            // send the input as a straight-up data control (not an update)
+            let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
+            dataController.sendControlData(model)
+            textView.text = ""
+        default:
+            break
+        }
     }
     
     override func heightForAutoCompletionView() -> CGFloat {
@@ -375,7 +394,7 @@ extension ConversationViewController {
             guard let controlModel = chatMessageModel.controlModel else { return UITableViewCell() }
             if chatMessageModel.isAuxiliary {
                 let controlCell = tableView.dequeueReusableCell(withIdentifier: ControlViewCell.cellIdentifier, for: indexPath) as! ControlViewCell
-                controlCell.configure(with: controlModel)
+                controlCell.configure(with: controlModel, resourceProvider: chatterbox.apiManager)
                 controlCell.control?.delegate = self
                 cell = controlCell
             } else {
@@ -442,6 +461,44 @@ extension ConversationViewController {
 
 extension ConversationViewController: ChatEventListener {
     
+    func chatterbox(_ chatterbox: Chatterbox, willStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        guard self.chatterbox.id == chatterbox.id else {
+            return
+        }
+        inputState = .inAgentConversation
+        setupInputForState()
+        
+        dataController.agentTopicWillStart()
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        guard self.chatterbox.id == chatterbox.id else {
+            return
+        }
+        
+        dataController.agentTopicDidStart(agentInfo: agentInfo)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didResumeAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        guard self.chatterbox.id == chatterbox.id else {
+            return
+        }
+        
+        inputState = .inAgentConversation
+        setupInputForState()
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didFinishAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        guard self.chatterbox.id == chatterbox.id else {
+            return
+        }
+        
+        inputState = .inTopicSelection
+        setupInputForState()
+        
+        dataController.agentTopicDidFinish()
+    }
+    
     // MARK: - ChatEventListener
     
     func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
@@ -457,6 +514,7 @@ extension ConversationViewController: ChatEventListener {
         dataController.topicDidStart(topicInfo)
         
         inputState = .inConversation
+        
         setupInputForState()
     }
     

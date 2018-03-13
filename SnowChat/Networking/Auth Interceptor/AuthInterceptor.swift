@@ -12,7 +12,7 @@ import Alamofire
 /// The auth interceptor class is responsible for adding auth headers and for retrying user token challenges
 class AuthInterceptor: RequestAdapter, RequestRetrier {
     
-    private let instanceURL: URL
+    private let instance: ServerInstance
     private let token: OAuthToken
     
     private var userToken: String?
@@ -20,16 +20,16 @@ class AuthInterceptor: RequestAdapter, RequestRetrier {
     
     // MARK: - Initialization
     
-    init(instanceURL: URL, token: OAuthToken) {
+    init(instance: ServerInstance, token: OAuthToken) {
         self.token = token
-        self.instanceURL = instanceURL
+        self.instance = instance
     }
     
     // MARK: - RequestAdapter
     
     func adapt(_ urlRequest: URLRequest) throws -> URLRequest {
         // Only authenticate instance requests
-        guard isValidInstanceURLRequest(urlRequest) else { return urlRequest }
+        guard let url = urlRequest.url, instance.isValidInstanceURL(url) else { return urlRequest }
         
         var urlRequest = urlRequest
         
@@ -41,6 +41,9 @@ class AuthInterceptor: RequestAdapter, RequestRetrier {
         
         // Prefer end user session
         urlRequest.setValue(String(true), forHTTPHeaderField: HTTPHeaderField.endUser)
+        
+        // Opt out of Qlue public API support
+        urlRequest.setValue(String(true), forHTTPHeaderField: HTTPHeaderField.requireLoggedIn)
         
         // Set current user token on the request
         userTokenQueue.sync {
@@ -62,7 +65,7 @@ class AuthInterceptor: RequestAdapter, RequestRetrier {
         }
         
         // Only retry instance requests
-        guard let urlRequest = request.request, isValidInstanceURLRequest(urlRequest) else {
+        guard let urlRequest = request.request, let url = urlRequest.url, instance.isValidInstanceURL(url) else {
             completion(false, 0)
             return
         }
@@ -79,15 +82,6 @@ class AuthInterceptor: RequestAdapter, RequestRetrier {
         }
         
         completion(true, 0)
-    }
-    
-    // MARK: - Helpers
-    
-    private func isValidInstanceURLRequest(_ urlRequest: URLRequest) -> Bool {
-        guard let requestHost = urlRequest.url?.host, let instanceHost = instanceURL.host else {
-            return false
-        }
-        return requestHost.lowercased() == instanceHost.lowercased()
     }
     
 }

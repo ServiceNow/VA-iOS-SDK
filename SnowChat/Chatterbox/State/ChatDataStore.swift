@@ -26,7 +26,7 @@ class ChatDataStore {
     // storeControlData: find or create a conversation and add a new MessageExchange with the new control data
     //
     func storeControlData(_ data: ControlData, forConversation conversationId: String, fromChat source: Chatterbox) {
-        let index = findOrCreateConversation(conversationId)
+        let index = findOrCreateConversation(conversationId, withName: "", withState: .inProgress)
         conversations[index].add(MessageExchange(withMessage: data))
     }
     
@@ -48,10 +48,10 @@ class ChatDataStore {
         return conversations[index].removeResponse(from: exchange)
     }
     
-    internal func findOrCreateConversation(_ conversationId: String) -> Int {
+    internal func findOrCreateConversation(_ conversationId: String, withName name: String, withState conversationState: Conversation.ConversationState) -> Int {
         guard let foundIndex = conversations.index(where: { $0.conversationId == conversationId }) else {
             let index = conversations.count
-            conversations.append(Conversation(withConversationId: conversationId))
+            conversations.append(Conversation(withConversationId: conversationId, withTopic: name, withState: conversationState))
             return index
         }
         return foundIndex
@@ -61,6 +61,15 @@ class ChatDataStore {
     //
     func lastPendingMessage(forConversation conversationId: String) -> Storable? {
         return conversations.first(where: { $0.conversationId == conversationId })?.lastPendingMessage()
+    }
+    
+    func cancelPendingExchange(forConversation conversationId: String) {
+        guard lastPendingMessage(forConversation: conversationId) != nil,
+            let index = conversations.index(where: { $0.conversationId == conversationId }) else {
+            Logger.default.logError("No conversation found for \(conversationId) in storeResponseData")
+            return
+        }
+        return conversations[index].cancelPendingExchange()
     }
     
     func oldestMessage() -> ControlData? {
@@ -164,6 +173,13 @@ struct Conversation: Storable, Codable {
         return false
     }
     
+    mutating func cancelPendingExchange() {
+        guard exchanges.count > 0 else { return }
+        
+        let index = exchanges.count - 1
+        exchanges[index].isCancelled = true
+    }
+    
     func lastPendingMessage() -> Storable? {
         guard let pending = lastPendingExchange() else { return nil }
         return pending.message
@@ -194,6 +210,15 @@ struct Conversation: Storable, Codable {
         case canceled =     "CANCELED"
         case error =        "ERROR"
         case unknown =      "UKNONWN"
+        
+        var isInProgress: Bool {
+            switch self {
+            case .inProgress, .chatProgress:
+                return true
+            default :
+                return false
+            }
+        }
     }
 }
 
@@ -201,10 +226,11 @@ struct MessageExchange: Codable {
     
     let message: ControlData
     var response: ControlData?
+    var isCancelled: Bool = false
     
     var isComplete: Bool {
-        // Exchange is complete if there is a response, or if the message type needs no response
-        if !needsResponse() {
+        // Exchange is complete if there is a response, if it was cancelled, or if the message type needs no response
+        if !needsResponse() || isCancelled {
             return true
         } else {
             return response != nil

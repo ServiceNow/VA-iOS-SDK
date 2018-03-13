@@ -21,7 +21,7 @@ struct TopicFinishedMessage: Codable, ActionData {
     
     init(withSessionId sessionId: String, withConversationId conversationId: String) {
         self.type = "actionMessage"
-        self.data = ActionMessageData<TopicFinishMessageDetails>(taskId: nil, messageId: ChatUtil.uuidString(), sessionId: sessionId, conversationId: conversationId, direction: MessageDirection.fromServer, sendTime: Date(), receiveTime: Date(), actionMessage: TopicFinishedMessage.TopicFinishMessageDetails(type: "TopicFinished", systemActionName: "TopicFinished"))
+        self.data = ActionMessageData<TopicFinishMessageDetails>(messageId: ChatUtil.uuidString(), sessionId: sessionId, conversationId: conversationId, taskId: nil, direction: MessageDirection.fromServer, sendTime: Date(), receiveTime: Date(), actionMessage: TopicFinishedMessage.TopicFinishMessageDetails(type: "TopicFinished", systemActionName: "TopicFinished"))
     }
     
     // define the properties that we decode / encode

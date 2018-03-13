@@ -33,6 +33,7 @@ class ChatMessageModel {
     
     var isAuxiliary: Bool = false
     var bubbleLocation: BubbleLocation?
+    var avatarURL: URL?
     
     init(model: ControlViewModel, messageId: String? = nil, bubbleLocation: BubbleLocation, requiresInput: Bool = false) {
         self.type = .control
@@ -51,9 +52,7 @@ class ChatMessageModel {
 }
 
 extension ChatMessageModel {
-    
-    // swiftlint:disable function_body_length
-    //swiftlint:disable:next cyclomatic_complexity
+    //swiftlint:disable:next cyclomatic_complexity function_body_length
     static func model(withMessage message: ControlData) -> ChatMessageModel? {
         switch message.controlType {
         case .boolean:
@@ -95,6 +94,9 @@ extension ChatMessageModel {
         case .startTopic:
             guard let startTopicMessage = message as? StartTopicMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: startTopicMessage)
+        case .agentText:
+            guard let controlMessage = message as? AgentTextControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
         case .unknown:
             guard let controlMessage = message as? ControlDataUnknown else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage)
@@ -199,6 +201,19 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
+    static func model(withMessage message: AgentTextControlMessage) -> ChatMessageModel? {
+        let value = message.data.text
+        let direction = message.data.direction
+        let textModel = TextControlViewModel(id: message.messageId, value: value)
+        let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
+
+        if let avatarPath = message.data.sender?.avatarPath {
+            snowViewModel.avatarURL = URL(string: avatarPath)
+        }
+        
+        return snowViewModel
+    }
+    
     static func model(withMessage message: InputControlMessage) -> ChatMessageModel? {
         guard let value = message.data.richControl?.uiMetadata?.label else {
             return nil
@@ -234,7 +249,8 @@ extension ChatMessageModel {
         
         let direction = message.data.direction
         
-        let outputLinkModel = OutputLinkControlViewModel(id: message.messageId, value: URL(fileURLWithPath: value))
+        guard let url = URL(string: value.action) else { return nil }
+        let outputLinkModel = OutputLinkControlViewModel(id: message.messageId, value: url)
         let snowViewModel = ChatMessageModel(model: outputLinkModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }

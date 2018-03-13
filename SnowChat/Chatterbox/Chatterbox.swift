@@ -19,7 +19,7 @@
 //  During the chat session controls are delivered to clients via the chatDataListener, which must be set by the caller.
 //  Additionally, chat lifecycle events are deliverd via the chatEventListener, which must also be set by the caller.
 //   NOTE: both listeners are easily set when the Chattertbox instance is created via
-//         'init(dataListener: ChatDataListener?, eventListener: ChatEventListener?)'
+//         'init(instance: Instance, dataListener: ChatDataListener?, eventListener: ChatEventListener?)'
 //
 //  3) As user interaction takes place, push state changes via
 //     'update(control: CongtrolData)'
@@ -42,45 +42,62 @@ enum ChatterboxError: Error {
 class Chatterbox {
     let id = ChatUtil.uuidString()
     
-    var user: ChatUser?
+    var user: ChatUser? {
+        return session?.user
+    }
     var vendor: ChatVendor?
     
     weak var chatDataListener: ChatDataListener?
     weak var chatEventListener: ChatEventListener?
     weak var chatAuthListener: ChatAuthListener?
     
-    private struct ConversationContext {
-        var topicName: String?
-        var sessionId: String?
-
-        var conversationId: String?
-        var systemConversationId: String?
-    }
-    private var conversationContext = ConversationContext()
+    internal var conversationContext = ConversationContext()
     internal var contextualActions: ContextualActionMessage?
     
-    private let chatStore = ChatDataStore(storeId: "ChatterboxDataStore")
-    private(set) var session: ChatSession?
+    internal let chatStore = ChatDataStore(storeId: "ChatterboxDataStore")
     
-    private var chatChannel: String {
+    internal var session: ChatSession? {
+        didSet {
+            if let settings = session?.settings?.virtualAgentSettings {
+                apiManager.instance.avatar = settings.avatar
+            }
+        }
+    }
+    
+    internal var chatChannel: String {
         return "/cs/messages/\(chatId)"
     }
     
     internal let chatId = ChatUtil.uuidString()
-    private var chatSubscription: SNOWAMBSubscription?
+    internal var chatSubscription: SNOWAMBSubscription?
+    internal var supportQueueSubscription: SNOWAMBSubscription?
+    internal var supportQueueInfo: SupportQueue?
     
     internal let instance: ServerInstance
     
     private(set) internal lazy var apiManager: APIManager = {
         return APIManager(instance: instance, transportListener: self)
     }()
+
+    internal enum ChatState {
+        case uninitialized
+        case topicSelection
+        case userConversation
+        case agentConversation
+    }
+    internal var state = ChatState.uninitialized {
+        didSet {
+            logger.logDebug("Chatterbox State set to: \(state) from \(oldValue)")
+        }
+    }
     
-    private var messageHandler: ((String) -> Void)?
-    private var handshakeCompletedHandler: ((ContextualActionMessage?) -> Void)?
+    internal var messageHandler: ((String) -> Void)?
+    internal var handshakeCompletedHandler: ((ContextualActionMessage?) -> Void)?
     
     internal let logger = Logger.logger(for: "Chatterbox")
-
-    // MARK: - Client Callable methods
+    
+    internal var userContextData: Codable?
+    internal let appContextManager = AppContextManager()
     
     init(instance: ServerInstance, dataListener: ChatDataListener? = nil, eventListener: ChatEventListener? = nil) {
         self.instance = instance
@@ -88,370 +105,27 @@ class Chatterbox {
         chatEventListener = eventListener
     }
     
-    // TODO: We should clean this up. Less nesting, less force unwrapping, weak self :)
-    func establishUserSession(vendor: ChatVendor, token: OAuthToken, completion: @escaping (Result<ContextualActionMessage>) -> Void) {
-        apiManager.prepareUserSession(token: token) { (result) in
-            if result.error == nil {
-                self.createChatSession(vendor: vendor) { error in
-                    if error == nil {
-                        self.performChatHandshake { actionMessage in
-                            guard let actionMessage = actionMessage else {
-                                completion(.failure(ChatterboxError.unknown(details: "Chat Handshake failed for an unknown reason")))
-                                return
-                            }
-                            self.contextualActions = actionMessage
-                            
-                            self.chatEventListener?.chatterbox(self, didEstablishUserSession: self.session?.id ?? "UNKNOWN_SESSION_ID", forChat: self.chatId)
-                            
-                            completion(.success(actionMessage))
-                        }
-                    } else {
-                        // swiftlint:disable:next force_unwrapping
-                        completion(.failure(error!))
-                    }
-                }
-            } else {
-                // swiftlint:disable:next force_unwrapping
-                completion(.failure(result.error!))
-            }
-        }
+    internal func publishMessage<T>(_ message: T) where T: Encodable {
+        logger.logInfo("Chatterbox publishing message: \(message)")
+        apiManager.sendMessage(message, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
     }
-    
-    func startTopic(withName: String) throws {
-        conversationContext.topicName = withName
-        
-        if let sessionId = session?.id, let conversationId = conversationContext.systemConversationId {
-            messageHandler = startTopicHandler
-            
-            let startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
-            apiManager.ambClient.sendMessage(startTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
-            
-            // TODO: how do we signal an error?
-        } else {
-            throw ChatterboxError.invalidParameter(details: "Session must be initialized before startTopic is called")
-        }
-    }
-    
-    func lastPendingControlMessage(forConversation conversationId: String) -> ControlData? {
+
+    internal func lastPendingControlMessage(forConversation conversationId: String) -> ControlData? {
         return chatStore.lastPendingMessage(forConversation: conversationId) as? ControlData
-    }
-    
-    func fetchOlderMessages(_ completion: @escaping (Int) -> Void) {
-        // request another page of messages prior to the first message we have
-        guard let oldestMessage = chatStore.oldestMessage(),
-              let consumerAccountId = session?.user.consumerAccountId  else {
-                logger.logError("No oldest message or consumerAccountId in fetchOlderMessages")
-                completion(0)
-                return
-        }
-
-        apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { conversations in
-            var count = 0
-            
-            self.chatDataListener?.chatterbox(self, willLoadConversationsForConsumerAccount: consumerAccountId, forChat: self.chatId)
-
-            conversations.forEach({ [weak self] conversation in
-                guard let strongSelf = self else { return }
-                
-                if conversation.isForSystemTopic() {
-                    strongSelf.logger.logInfo("Skipping System Topic conversation in fetchOlderMessages")
-                    return
-                }
-                
-                let conversationId = conversation.conversationId
-                _ = strongSelf.chatStore.findOrCreateConversation(conversationId)
-                
-                strongSelf.chatDataListener?.chatterbox(strongSelf, willLoadConversationHistory: conversationId, forChat: strongSelf.chatId)
-
-                conversation.messageExchanges().forEach({ [weak self] exchange in
-                    guard let strongSelf = self else { return }
-
-                    strongSelf.storeHistoryAndPublish(exchange, forConversation: conversationId)
-                    count += (exchange.response != nil ? 2 : 1)
-                })
-
-                strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationHistory: conversationId, forChat: strongSelf.chatId)
-            })
-            
-            self.chatDataListener?.chatterbox(self, didLoadConversationsForConsumerAccount: consumerAccountId, forChat: self.chatId)
-            
-            completion(count)
-        })
-    }
-    
-    func endConversation() {
-        guard let sessionId = conversationContext.sessionId,
-            let conversationId = conversationContext.conversationId  else {
-                logger.logError("endConversation with no conversation current - skipping")
-                return
-        }
-        
-        sendCancelTopic()
-        
-        handleTopicFinishedAction(TopicFinishedMessage(withSessionId: sessionId, withConversationId: conversationId))
-    }
-    
-    private func sendCancelTopic() {
-        if let cancelTopic = cancelTopicMessageFromContextualActions() {
-            messageHandler = cancelTopicHandler
-            apiManager.ambClient.sendMessage(cancelTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
-        }
-    }
-    
-    private func cancelTopicMessageFromContextualActions() -> ContextualActionMessage? {
-        guard var cancelTopic = contextualActions,
-            let sessionId = conversationContext.sessionId,
-            let conversationId = conversationContext.systemConversationId else { return nil }
-    
-        cancelTopic.type = "consumerTextMessage"
-        cancelTopic.data.sessionId = sessionId
-        cancelTopic.data.conversationId = conversationId
-        cancelTopic.data.richControl?.value = CancelTopicControlMessage.value
-        cancelTopic.data.direction = .fromClient
-        cancelTopic.data.sendTime = Date()
-        
-        return cancelTopic
-    }
-    
-    // MARK: - Session Methods
-    
-    private func createChatSession(vendor: ChatVendor, completion: @escaping (Error?) -> Void) {
-        let sessionContext = ChatSessionContext(vendor: vendor)
-        
-        apiManager.startChatSession(with: sessionContext, chatId: chatId) { [weak self] result in
-            guard let strongSelf = self else { return }
-            
-            switch result {
-            case .success(let session):
-                strongSelf.session = session
-                
-                strongSelf.logger.logDebug("--> Chat Session established: sessionId: \(strongSelf.session?.id ?? "NIL") \n consumerAccountId=\(session.user.consumerAccountId)")
-            case .failure:
-                strongSelf.logger.logError("getSession failed!")
-            }
-            completion(result.error)
-        }
-    }
-
-    private func setupChatSubscription() {
-        chatSubscription = apiManager.ambClient.subscribe(chatChannel) { [weak self] (result, subscription) in
-            guard let strongSelf = self else { return }
-            
-            switch result {
-            case .success:
-                // when AMB gives us a message we dispatch to the current handler
-                if let messageHandler = self?.messageHandler,
-                    let message = result.value {
-                    strongSelf.logger.logDebug(message.jsonDataString)
-                    messageHandler(message.jsonDataString)
-                } else {
-                    strongSelf.logger.logError("No handler set in Chatterbox setupChatSubscription!")
-                }
-            case .failure:
-                strongSelf.logger.logError("AMB message parser error")
-            }
-        }
-    }
-    
-    private func performChatHandshake(_ completion: @escaping (ContextualActionMessage?) -> Void) {
-        handshakeCompletedHandler = completion
-        messageHandler = handshakeHandler
-        
-        setupChatSubscription()
-
-        if let sessionId = session?.id {
-            apiManager.ambClient.sendMessage(SystemTopicPickerMessage(forSession: sessionId), toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
-        }
-    }
-    
-    private func handshakeHandler(_ message: String) {
-        let event = ChatDataFactory.actionFromJSON(message)
-        guard event.eventType == .channelInit, let initEvent = event as? InitMessage  else {
-            return
-        }
-        
-        switch initEvent.data.actionMessage.loginStage {
-        case .loginStart:
-            logger.logDebug("Handshake START message received")
-            startUserSession(withInitEvent: initEvent)
-        case .loginFinish:
-            logger.logDebug("Handshake FINISH message received: conversationID=\(initEvent.data.conversationId ?? "nil")")
-            
-            conversationContext.systemConversationId = initEvent.data.conversationId
-            conversationContext.sessionId = initEvent.data.sessionId
-            
-            self.messageHandler = self.topicSelectionHandler
-        default:
-            logger.logError("Unexpected loginStage: \(initEvent.data.actionMessage.loginStage)")
-        }
-    }
-    
-    private func topicSelectionHandler(_ message: String) {
-        let choices: ControlData = ChatDataFactory.controlFromJSON(message)
-        
-        if choices.controlType == .contextualAction {
-            if let completion = handshakeCompletedHandler {
-                let topicChoices = choices as? ContextualActionMessage
-                completion(topicChoices)
-            } else {
-                logger.logFatal("Could not call user session completion handler: invalid message or no handler provided")
-            }
-        }
-    }
-    
-    private func startUserSession(withInitEvent initEvent: InitMessage) {
-        let initUserEvent = userSessionInitMessage(fromInitEvent: initEvent)
-        apiManager.ambClient.sendMessage(initUserEvent, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
-    }
-    
-    private func userSessionInitMessage(fromInitEvent initEvent: InitMessage) -> InitMessage {
-        var initUserEvent = initEvent
-        
-        initUserEvent.data.direction = .fromClient
-        initUserEvent.data.sendTime = Date()
-        initUserEvent.data.actionMessage.loginStage = .loginUserSession
-        initUserEvent.data.actionMessage.contextHandshake.vendorId = vendor?.vendorId
-        initUserEvent.data.actionMessage.contextHandshake.deviceId = deviceIdentifier()
-        initUserEvent.data.actionMessage.consumerAcctId = session?.user.consumerAccountId
-
-        if let request = initUserEvent.data.actionMessage.contextHandshake.serverContextRequest {
-            initUserEvent.data.actionMessage.contextHandshake.serverContextResponse = serverContextResponse(fromRequest: request)
-        }
-        
-        return initUserEvent
-    }
-    
-    private func serverContextResponse(fromRequest request: [String: ContextItem]) -> [String: Bool] {
-        var response: [String: Bool] = [:]
-        
-        request.forEach { item in
-            // say YES to all requests (for now)
-            response[item.key] = true
-        }
-        return response
-    }
-
-    // MARK: - User Topic Methods
-    
-    private func startTopicHandler(_ message: String) {
-        //logger.logDebug("startTopicHandler received: \(message)")
-        
-        let picker: ControlData = ChatDataFactory.controlFromJSON(message)
-        
-        if picker.controlType == .topicPicker {
-            if let topicPicker = picker as? UserTopicPickerMessage {
-                if topicPicker.data.direction == .fromServer {
-                    var outgoingMessage = topicPicker
-                    outgoingMessage.type = "consumerTextMessage"
-                    outgoingMessage.data.direction = .fromClient
-                    outgoingMessage.data.richControl?.model = ControlModel(type:"field", name: "Topic")
-                    outgoingMessage.data.richControl?.value = conversationContext.topicName
-                    
-                    messageHandler = startUserTopicHandshakeHandler
-                    apiManager.ambClient.sendMessage(outgoingMessage, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
-                }
-            }
-        }
-    }
-    
-    private func cancelTopicHandler(_ message: String) {
-        let control = ChatDataFactory.actionFromJSON(message)
-        
-        if var cancelTopic = control as? CancelUserTopicMessage {
-           if cancelTopic.data.direction == .fromServer {
-                cancelTopic.data.actionMessage.ready = true
-                cancelTopic.data.direction = .fromClient
-                cancelTopic.data.sendTime = Date()
-                apiManager.ambClient.sendMessage(cancelTopic, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
-
-                // switch back to userTopicMessageHandler for the final topic completion handling
-                messageHandler = userTopicMessageHandler
-            }
-        }
-    }
-    
-    private func startUserTopicHandshakeHandler(_ message: String) {
-        //logger.logDebug("startUserTopicHandshake received: \(message)")
-        
-        let actionMessage = ChatDataFactory.actionFromJSON(message)
-        
-        if actionMessage.eventType == .startUserTopic {
-            if let startUserTopic = actionMessage as? StartUserTopicMessage {
-                
-                // client and server messages are the same, so only look at server responses!
-                if startUserTopic.data.direction == .fromServer {
-                    let startUserTopicReadyMessage = createStartTopicReadyMessage(startUserTopic: startUserTopic)
-                    apiManager.ambClient.sendMessage(startUserTopicReadyMessage, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
-                }
-            }
-        } else if actionMessage.eventType == .startedUserTopic {
-            if let startUserTopicMessage = actionMessage as? StartedUserTopicMessage {
-                
-                let actionMessage = startUserTopicMessage.data.actionMessage
-        
-                logger.logInfo("User Topic Started: \(actionMessage.topicName) - \(actionMessage.topicId) - \(actionMessage.ready ? "Ready" : "Not Ready")")
-                
-                startUserTopic(topicInfo: TopicInfo(topicId: actionMessage.topicId, conversationId: actionMessage.vendorTopicId))
-            }
-        }
-    }
-    
-    private func beginConversation(topicInfo: TopicInfo) {
-        conversationContext.conversationId = topicInfo.conversationId
-        installTopicMessageHandler()
-    }
-
-    private func startUserTopic(topicInfo: TopicInfo) {
-        beginConversation(topicInfo: topicInfo)
-        chatEventListener?.chatterbox(self, didStartTopic: topicInfo, forChat: chatId)        
-    }
-    
-    private func resumeUserTopic(topicInfo: TopicInfo) {
-        if conversationContext.conversationId != topicInfo.conversationId {
-            beginConversation(topicInfo: topicInfo)
-        }
-        chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: chatId)
-    }
-    
-    private func createStartTopicReadyMessage(startUserTopic: StartUserTopicMessage) -> StartUserTopicMessage {
-        var startUserTopicReady = startUserTopic
-        startUserTopicReady.data.messageId = ChatUtil.uuidString()
-        startUserTopicReady.data.sendTime = Date()
-        startUserTopicReady.data.direction = .fromClient
-        startUserTopicReady.data.actionMessage.ready = true
-        return startUserTopicReady
-    }
-    
-    // MARK: User Topic Message Handler Methods
-    
-    private func installTopicMessageHandler() {
-        clearMessageHandlers()
-        
-        messageHandler = userTopicMessageHandler
-    }
-    
-    private func userTopicMessageHandler(_ message: String) {
-        logger.logDebug("userTopicMessage received: \(message)")
-        
-        if handleEventMessage(message) != true {
-            let control = ChatDataFactory.controlFromJSON(message)
-            handleControlMessage(control)
-        }
-    }
-    
-    internal func finishTopic(_ conversationId: String) {
-        let topicInfo = TopicInfo(topicId: "TOPIC_ID", conversationId: conversationId)
-        self.chatEventListener?.chatterbox(self, didFinishTopic: topicInfo, forChat: self.chatId)
     }
     
     // MARK: - Incoming messages (Controls from service)
     
-    fileprivate func handleEventMessage(_ message: String) -> Bool {
+    internal func processEventMessage(_ message: String) -> Bool {
         let action = ChatDataFactory.actionFromJSON(message)
         
         switch action.eventType {
-        case ChatterboxActionType.finishedUserTopic:
-            handleTopicFinishedAction(action)
+        case .finishedUserTopic:
+            didReceiveTopicFinishedAction(action)
+        case .supportQueueSubscribe:
+            if let subscribeMessage = action as? SubscribeToSupportQueueMessage {
+                didReceiveSubscribeToSupportAction(subscribeMessage)
+            }
         default:
             logger.logInfo("Unhandled event message: \(action.eventType)")
             return false
@@ -459,32 +133,47 @@ class Chatterbox {
         return true
     }
     
-    fileprivate func handleIncomingControlMessage(_ control: ControlData, forConversation conversationId: String) {
+    fileprivate func processIncomingControlMessage(_ control: ControlData, forConversation conversationId: String) {
         chatStore.storeControlData(control, forConversation: conversationId, fromChat: self)
         chatDataListener?.chatterbox(self, didReceiveControlMessage: control, forChat: chatId)
     }
     
-    fileprivate func handleResponseControlMessage(_ control: ControlData, forConversation conversationId: String) {
+    fileprivate func processResponseControlMessage(_ control: ControlData, forConversation conversationId: String) {
         if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last, !lastExchange.isComplete {
             if let updatedExchange = chatStore.storeResponseData(control, forConversation: conversationId) {
                 chatDataListener?.chatterbox(self, didCompleteMessageExchange: updatedExchange, forChat: conversationId)
             }
+        } else {
+            // our own reply message from an agent chat
+            processIncomingControlMessage(control, forConversation: conversationId)
         }
     }
     
-    fileprivate func handleControlMessage(_ control: ControlData) {
-        if let conversationId = control.conversationId {
-            switch control.direction {
-            case .fromClient:
-                handleResponseControlMessage(control, forConversation: conversationId)
-            case .fromServer:
-                handleIncomingControlMessage(control, forConversation: conversationId)
+    internal func processControlMessage(_ control: ControlData) {
+        switch control.direction {
+        
+        case .fromClient:
+            if let conversationId = conversationContext.conversationId {
+                processResponseControlMessage(control, forConversation: conversationId)
+            }
+        
+        case .fromServer:
+            updateContextIfNeeded(control)
+
+            if control.controlType == .contextualAction, let contextualActionControl = control as? ContextualActionMessage {
+                updateContextualActions(contextualActionControl)
+                return
+            }
+            
+            if let conversationId = conversationContext.conversationId {
+                processIncomingControlMessage(control, forConversation: conversationId)
             }
         }
     }
     
-    fileprivate func handleUnknownControl(_ control: ControlData) {
-        logger.logError("*** Ignoring unrecognized control type \(control.controlType) ***")
+    fileprivate func updateContextualActions(_ newContextualActions: ContextualActionMessage) {
+        logger.logInfo("Updating ContextualActions: \(newContextualActions.data.richControl?.uiMetadata?.inputControls ?? [])")
+        contextualActions = newContextualActions
     }
     
     fileprivate func handleTopicFinishedAction(_ action: ActionData) {
@@ -493,8 +182,59 @@ class Chatterbox {
             
             saveDataToPersistence()
             
-            let topicInfo = TopicInfo(topicId: "TOPIC_ID", conversationId: topicFinishedMessage.data.conversationId ?? "CONVERSATION_ID")
+            let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, taskId: nil, conversationId: topicFinishedMessage.data.conversationId ?? "CONVERSATION_ID")
             chatEventListener?.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
+        }
+    }
+
+    fileprivate func updateContextIfNeeded(_ control: ControlData) {
+        if let taskId = control.taskId,
+            let conversationId = control.conversationId {
+            // keep our taskId and conversationId's updated with the latest from the server
+            // NOTE: this MUST be done for agent messages, but should be fine for chatbot messages too
+            conversationContext.taskId = taskId
+            conversationContext.conversationId = conversationId
+        }
+    }
+    
+    internal func didReceiveSystemError(_ message: String) {
+        switch state {
+        case .userConversation:
+            transferToLiveAgent()
+        default:
+            logger.logFatal("*** System Error encountered outside of User Conversation! ***")
+            // TODO: how to signal a system error??
+        }
+    }
+    
+    internal func didReceiveTopicFinishedAction(_ action: ActionData) {
+        if let topicFinishedMessage = action as? TopicFinishedMessage {
+            
+            cancelPendingExchangeIfNeeded()
+                
+            conversationContext.conversationId = nil
+            
+            saveDataToPersistence()
+            
+            let topicInfo = TopicInfo(topicId: nil,
+                                      topicName: nil,
+                                      taskId: nil,
+                                      conversationId: topicFinishedMessage.data.conversationId ?? "NIL_CONVERSATION_ID")
+            chatEventListener?.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
+        }
+    }
+
+    internal func didReceiveSubscribeToSupportAction(_ subscribeMessage: SubscribeToSupportQueueMessage) {
+        supportQueueInfo = subscribeMessage.data.actionMessage.supportQueue
+        subscribeToSupportQueue(subscribeMessage)
+    }
+    
+    internal func cancelPendingExchangeIfNeeded() {
+        if let conversationId = conversationContext.conversationId,
+            let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last, !lastExchange.isComplete {
+            
+            chatStore.cancelPendingExchange(forConversation: conversationId)
+            chatDataListener?.chatterbox(self, didCompleteMessageExchange: lastExchange, forChat: conversationId)
         }
     }
     
@@ -516,6 +256,9 @@ class Chatterbox {
             updateMultiPartControl(control)
         case .dateTime, .date, .time:
             updateDateTimeControl(control)
+        case .agentText:
+            // NOTE: only used for live agent mode
+            updateTextControl(control)
         case .inputImage:
             updateInputImageControl(control)
         default:
@@ -532,7 +275,7 @@ class Chatterbox {
     }
     
     fileprivate func publishControlUpdate<T: ControlData>(_ message: T, forConversation conversationId: String) {
-        apiManager.ambClient.sendMessage(message, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)
+        publishMessage(message)
     }
     
     fileprivate func updateBooleanControl(_ control: ControlData) {
@@ -577,12 +320,20 @@ class Chatterbox {
         }
     }
     
+    fileprivate func updateTextControl(_ control: ControlData) {
+        if let textControl = control as? AgentTextControlMessage, let conversationId = textControl.conversationId {
+            publishControlUpdate(textControl, forConversation: conversationId)
+        }
+    }
+    
     fileprivate func updateInputImageControl(_ control: ControlData) {
         if var inputImageControl = control as? InputImageControlMessage, let conversationId = inputImageControl.data.conversationId {
             inputImageControl.data = updateRichControlData(inputImageControl.data)
             publishControlUpdate(inputImageControl, forConversation: conversationId)
         }
     }
+    
+    // MARK: - Conversation Access
     
     func currentConversationHasControlData(forId messageId: String) -> Bool {
         guard let conversationId = conversationContext.conversationId else { return false }
@@ -598,285 +349,20 @@ class Chatterbox {
         return chatStore.conversation(forId: conversationId)
     }
     
-    // MARK: - Cleanup
-    
-    private func clearMessageHandlers() {
+    internal func clearMessageHandlers() {
         messageHandler = nil
         handshakeCompletedHandler = nil
     }
-}
-
-extension Chatterbox {
-
-    // MARK: - Sync Current Conversation
     
-    fileprivate func syncConversationState(_ conversation: Conversation) {
-        let conversationId = conversation.conversationId
+    // MARK: Structures and Types
+    
+    internal struct ConversationContext {
+        var topicName: String?
+        var sessionId: String?
         
-        switch conversation.state {
-        case .inProgress,
-             .chatProgress:
-            logger.logInfo("Conversation \(conversationId) is in progress")
-            let topicInfo = TopicInfo(topicId: conversation.topicId, conversationId: conversationId)
-            resumeUserTopic(topicInfo: topicInfo)
-        case .completed,
-             .canceled,
-             .error:
-            logger.logInfo("Conversation is no longer in progress - ending current conversations")
-            finishTopic(conversationId)
-        case .unknown:
-            logger.logError("Unknown conversation state in syncConversation!")
-        }
-    }
-    
-    fileprivate func syncNoConversationsReturned() {
-        // if no messages were returned, then we have the latest messages, just need to update the input mode
-        logger.logDebug("Sync with NO conversation returned - nothing to do!")
-    }
-    
-    fileprivate func syncCurrentConversation(_ receivedConversation: Conversation, _ newestExchange: MessageExchange) {
-        guard let firstReceivedExchange = receivedConversation.messageExchanges().first,
-              let receivedResponseId = firstReceivedExchange.response?.messageId,
-              let ourResponseId = newestExchange.response?.messageId,
-              receivedResponseId == ourResponseId  else {
-                // responses do not match!
-                return
-        }
+        var taskId: String?
         
-        // our last response matches the info we received, we are in sync!
-        logger.logInfo("Conversation messages in sync!")
-        syncConversationState(receivedConversation)
-    }
-    
-    func syncConversation(_ completion: @escaping (Int) -> Void) {
-        // get the newest message and see if there are any messages newer than that for this consumer
-        //
-        guard let consumerAccountId = session?.user.consumerAccountId else {
-            logger.logError("No consumerAccountId in syncConversation!")
-            return
-        }
-        guard let conversationId = conversationContext.conversationId,
-              let conversation = chatStore.conversation(forId: conversationId),
-              let newestExchange = conversation.newestExchange() else {
-            logger.logError("Could not determine last message ID")
-            completion(0)
-            return
-        }
-        
-        let newestMessage = newestExchange.message
-                
-        apiManager.fetchNewerConversations(forConsumer: consumerAccountId, afterMessage: newestMessage.messageId, completionHandler: { [weak self] conversationsFromService in
-            guard let strongSelf = self else { return }
-
-            // HACK: service is returning user and system conversations, so we remove all system topics here
-            //       remove this when the service is fixed
-            let conversations = strongSelf.filterSystemTopics(conversationsFromService)
-            
-            if conversations.count == 0 {
-                strongSelf.syncNoConversationsReturned()
-                completion(0)
-                
-            } else if conversations.count == 1 && conversations.first?.conversationId == conversationId {
-                // we got back something for the current conversation; make sure it matches the response we have
-                guard let receivedConversation = conversations.first else { return }
-                strongSelf.syncCurrentConversation(receivedConversation, newestExchange)
-                completion(1)
-                
-            } else {
-                // if we are here we have to reload everything
-                strongSelf.clearAndReloadFromPersistence(completionHandler: { (error) in
-                    let count = strongSelf.chatStore.conversations.count
-                    completion(count)
-                })
-            }
-        })
-    }
-
-    internal func flattenMessageExchanges(_ exchanges: [MessageExchange]) -> [ControlData] {
-        var messages = [ControlData]()
-        
-        exchanges.forEach({ exchange in
-            messages.append(exchange.message)
-            if let response = exchange.response {
-                messages.append(response)
-            }
-        })
-        
-        return messages
-    }
-    
-    internal func addExchanges(_ messageExchanges: [MessageExchange], newerThan subjectExchange: MessageExchange?, forConversation conversationId: String) {
-        var newerExchanges: [MessageExchange]
-        
-        if let subjectExchange = subjectExchange {
-            newerExchanges = messageExchanges.filter { exchange -> Bool in
-                return exchange.message.messageTime.timeIntervalSince(subjectExchange.message.messageTime) > 0
-            }
-        } else {
-            // nothing to compare to, so use them all
-            newerExchanges = messageExchanges
-        }
-        
-        guard newerExchanges.count > 0 else {
-            logger.logDebug("no messages newer than what we have: already in sync")
-            return
-        }
-        
-        newerExchanges.forEach { exchange in
-            self.storeHistoryAndPublish(exchange, forConversation: conversationId)
-        }
-    }
-}
-
-extension Chatterbox {
-    
-    // MARK: - Persistence Methods
-    
-    internal func saveDataToPersistence() {
-        do {
-            try chatStore.save()
-        } catch let error {
-            logger.logError("Exception storing chatStore: \(error)")
-        }
-    }
-    
-    internal func clearAndReloadFromPersistence(completionHandler: @escaping (Error?) -> Void) {
-        chatStore.reset()
-        loadDataFromPersistence(completionHandler: completionHandler)
-    }
-    
-    internal func loadDataFromPersistence(completionHandler: @escaping (Error?) -> Void) {
-        // TODO: load locally stored history and synchronize with the server
-        //       for now we just pull from server, no local store
-        /*
-        do {
-            let conversations = try chatStore.load()
-        } catch let error {
-            logger.logError("Exception loading chatStore: \(error)")
-        }
-        */
-        
-        refreshConversations(completionHandler: completionHandler)
-    }
-    
-    internal func refreshConversations(completionHandler: @escaping (Error?) -> Void) {
-        
-        if let consumerId = session?.user.consumerAccountId {
-            logger.logDebug("--> Loading conversations for \(consumerId)")
-            
-            self.chatDataListener?.chatterbox(self, willLoadConversationsForConsumerAccount: consumerId, forChat: self.chatId)
-
-            apiManager.fetchConversations(forConsumer: consumerId, completionHandler: { (conversationsFromService) in
-                
-                // HACK: service is returning user and system conversations, so we remove all system topics here
-                //       remove this when the service is fixed
-                let conversations = self.filterSystemTopics(conversationsFromService)
-                self.logger.logDebug(" --> loaded \(conversationsFromService.count) conversations, \(conversations.count) are for user")
-
-                let lastConversation = conversations.last
-                
-                conversations.forEach { conversation in
-                    var conversation = conversation
-                    
-                    let conversationId = conversation.conversationId
-                    let isInProgress = conversation.conversationId == lastConversation?.conversationId && conversation.state == .inProgress
-                    conversation.state = isInProgress ? .inProgress : .completed
-                    
-                    self.logger.logDebug("--> Conversation \(conversationId) refreshed: \(conversation.topicTypeName) (\(conversation.state)")
-                    
-                    self.chatDataListener?.chatterbox(self, willLoadConversation: conversationId, forChat: self.chatId)
-                    self.storeConversationAndPublish(conversation)
-                    self.chatDataListener?.chatterbox(self, didLoadConversation: conversationId, forChat: self.chatId)
-                    
-                    if conversation.conversationId == lastConversation?.conversationId {
-                        self.syncConversationState(conversation)
-                    }
-                }
-                
-                self.chatDataListener?.chatterbox(self, didLoadConversationsForConsumerAccount: consumerId, forChat: self.chatId)
-                
-                completionHandler(nil)
-            })
-        } else {
-            logger.logError("No consumer Account ID, cannot load data from service")
-            completionHandler(ChatterboxError.invalidParameter(details: "No ConsumerAccountId set in refreshConversations"))
-        }
-    }
-    
-    internal func filterSystemTopics(_ conversations: [Conversation]) -> [Conversation] {
-        return conversations.filter({ conversation -> Bool in
-            return conversation.isForSystemTopic() == false
-        })
-    }
-    
-    internal func storeHistoryAndPublish(_ exchange: MessageExchange, forConversation conversationId: String) {
-        chatStore.storeHistory(exchange, forConversation: conversationId)
-        chatDataListener?.chatterbox(self, didReceiveHistory: exchange, forChat: chatId)
-    }
-    
-    internal func storeConversationAndPublish(_ conversation: Conversation) {
-        chatStore.storeConversation(conversation)
-        
-        conversation.messageExchanges().forEach { exchange in
-            let outputOnlyMessage = exchange.message.isOutputOnly
-            let inputPending = conversation.state == .inProgress && !exchange.isComplete
-            
-            if outputOnlyMessage || inputPending {
-                notifyMessage(exchange.message)
-            } else {
-                notifyMessageExchange(exchange)
-            }
-        }
-    }
-    
-    internal func notifyMessage(_ message: ControlData) {
-        guard let chatDataListener = chatDataListener else {
-            logger.logError("No ChatDataListener in NotifyControlReceived")
-            return
-        }
-        
-        chatDataListener.chatterbox(self, didReceiveControlMessage: message, forChat: chatId)
-    }
-    
-    internal func notifyMessageExchange(_ exchange: MessageExchange) {
-        logger.logDebug("--> Notifying MessageExchange: message=\(exchange.message.controlType) | response=\(exchange.response?.controlType ?? .unknown)")
-        
-        guard let chatDataListener = chatDataListener else {
-            logger.logError("No ChatDataListener in notifyResponseReceived")
-            return
-        }
-        
-        chatDataListener.chatterbox(self, didCompleteMessageExchange: exchange, forChat: chatId)
-    }
-}
-
-extension Chatterbox: TransportStatusListener {
-    
-    // MARK: - handle transport notifications
-    
-    func apiManagerTransportDidBecomeUnavailable(_ apiManager: APIManager) {
-        logger.logInfo("Network unavailable....")
-
-        chatEventListener?.chatterbox(self, didReceiveTransportStatus: .unreachable, forChat: chatId)
-    }
-    
-    private static var alreadySynchronizing = false
-    
-    func apiManagerTransportDidBecomeAvailable(_ apiManager: APIManager) {
-        chatEventListener?.chatterbox(self, didReceiveTransportStatus: .reachable, forChat: chatId)
-
-        guard !Chatterbox.alreadySynchronizing, conversationContext.conversationId != nil else { return }
-        
-        logger.logInfo("Synchronizing conversations due to transport becoming available")
-        Chatterbox.alreadySynchronizing = true
-        syncConversation { count in
-            Chatterbox.alreadySynchronizing = false
-        }
-    }
-    
-    func apiManagerAuthenticationDidBecomeInvalid(_ apiManager: APIManager) {
-        logger.logInfo("Authorization failed!")
-        
-        chatAuthListener?.chatterboxAuthenticationDidBecomeInvalid(self)
+        var conversationId: String?
+        var systemConversationId: String?
     }
 }

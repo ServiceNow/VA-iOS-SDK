@@ -28,7 +28,8 @@ struct ChatSession: Codable {
     var user: ChatUser
     var sessionState: SessionState = .closed
     var welcomeMessage: String?
-
+    var settings: ChatSessionSettings?
+    
     var contextId: String { return "context" }
         // NOTE: unknown what this should be - reference impl had it hard-coded and commented as 'what?'
 
@@ -42,10 +43,12 @@ struct ChatSession: Codable {
     private enum CodingKeys: String, CodingKey {
         case id
         case user
+        case sessionState
         case welcomeMessage
+        case settings
     }
     
-    enum SessionState {
+    enum SessionState: String, Codable {
         case closed
         case opened
         case error
@@ -74,6 +77,9 @@ enum ChatterboxActionType: String, Codable, CodingKey {
     case cancelUserTopic = "CancelTopic"
     case startedUserTopic = "StartedVendorTopic"
     case finishedUserTopic = "TopicFinished"
+    
+    case startAgentChat = "StartChat"
+    case supportQueueSubscribe = "SubscribeToSupportQueue"
     
     case unknown = "unknownAction"
 }
@@ -107,6 +113,8 @@ enum ChatterboxControlType: String, Codable {
     case outputHtml = "OutputHtml"
     case inputImage = "Picture"
     
+    case agentText = "AgentText"
+    
     case contextualAction = "ContextualAction"
     case systemError = "SystemError"
     
@@ -119,6 +127,7 @@ protocol ControlData: Storable, Codable {
     var controlType: ChatterboxControlType { get }
     var messageId: String { get }
     var conversationId: String? { get }
+    var taskId: String? { get }
     
     var direction: MessageDirection { get }
     var messageTime: Date { get }
@@ -130,6 +139,10 @@ extension ControlData {
     var isOutputOnly: Bool {
         return false
     }
+    
+    var taskId: String? {
+        return nil
+    }
 }
 
 struct ControlDataUnknown: ControlData {
@@ -138,6 +151,7 @@ struct ControlDataUnknown: ControlData {
     let controlType: ChatterboxControlType = .unknown
     let messageId: String = "UNKNOWN_MESSAGE_ID"
     let conversationId: String? = "UNKNOWN_CONVERSATION_ID"
+    let taskId: String? = nil
     let messageTime: Date = Date()
     let direction: MessageDirection = .fromServer
     var label: String?

@@ -7,38 +7,26 @@
 //
 
 import AlamofireImage
+import WebKit
 
-protocol ControlResourceProvider {
-    var imageProvider: ImageDownloader { get }
+protocol ControlResourceProvider: ControlWebResourceProvider {
+    var imageDownloader: ImageDownloader { get }
     
     var avatarURL: URL { get }
 }
 
+protocol ControlWebResourceProvider {
+    func authorizedRequest(with url: URL) -> URLRequest
+    var webViewConfiguration: WKWebViewConfiguration { get }
+}
+
 extension APIManager: ControlResourceProvider {
-    var imageProvider: ImageDownloader {
-        return imageDownloader
-    }
     
     var avatarURL: URL {
-        // TODO: temporary for demo purposes and until we have actual enpoint to fetch the image from.
-        return instance.instanceURL.appendingPathComponent("/images/default_virtual_agent_avatar.png")
-    }
-    
-    func uploadImage(data: Data, withName name: String, taskId: String, completion: @escaping (_ result: String?) -> Void) {
-        let url = apiURLWithPath("cs/media/\(taskId)")
-        sessionManager.upload(multipartFormData: { multipartData in
-            multipartData.append(data, withName: name, fileName: name, mimeType: "image/jpeg")
-        }, to: url, encodingCompletion: { encodingResult in
-            switch encodingResult {
-            case .success(request: let upload, streamingFromDisk: _, streamFileURL: _):
-                upload.responseJSON(completionHandler: { response in
-                    let dictionary = response.result.value as? [String : Any] ?? [:]
-                    let result = dictionary["result"] as? String
-                    completion(result)
-                })
-            case .failure(let error):
-                print("Error: \(error)")
-            }
-        })
+        if let avatarUrl = instance.avatarUrl {
+            return avatarUrl
+        } else {
+            return instance.instanceURL.appendingPathComponent("/images/default_virtual_agent_avatar.png")
+        }
     }
 }

@@ -33,6 +33,10 @@ struct OutputImageControlMessage: Codable, ControlData {
         return data.sendTime
     }
     
+    var taskId: String? {
+        return data.taskId
+    }
+
     var isOutputOnly: Bool {
         return true
     }

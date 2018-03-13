@@ -35,7 +35,7 @@ enum ControlType {
     case typingIndicator
     
     case button
-    
+
     //swiftlint:disable:next cyclomatic_complexity
     func description() -> String {
         switch self {
@@ -81,8 +81,6 @@ protocol ControlDelegate: AnyObject {
 // MARK: Control Protocol
 
 protocol ControlProtocol: AnyObject {
-    
-    init(model: ControlViewModel)
     
     // representation of ui control state
     var model: ControlViewModel { get set }

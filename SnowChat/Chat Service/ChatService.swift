@@ -13,7 +13,7 @@ public enum ChatServiceError: Error {
     case noSession(Error?)
 }
 
-public class ChatService {
+public final class ChatService {
     
     public weak var delegate: ChatServiceDelegate?
     
@@ -28,9 +28,10 @@ public class ChatService {
     // FIXME: What is the vendor ID for? Who defines this?
     private let vendor = ChatVendor(name: "ServiceNow", vendorId: "c2f0b8f187033200246ddd4c97cb0bb9")
     
-    public init(instance: ServerInstance, delegate: ChatServiceDelegate?) {
-        self.delegate = delegate
+    public init(instanceURL: URL, delegate: ChatServiceDelegate?) {
+        let instance = ServerInstance(instanceURL: instanceURL)
         self.chatterbox = Chatterbox(instance: instance)
+        self.delegate = delegate
         self.chatterbox.chatEventListener = self
         self.chatterbox.chatAuthListener = self
         
@@ -52,14 +53,14 @@ public class ChatService {
         return viewController
     }
     
-    public func establishUserSession(token: OAuthToken, completion: @escaping (ChatServiceError?) -> Void) {
+    public func establishUserSession(token: OAuthToken, userContextData contextData: Codable? = nil, completion: @escaping (ChatServiceError?) -> Void) {
         if isInitializing {
             fatalError("Only one initialization can be performed at a time.")
         }
         
         isInitializing = true
         
-        chatterbox.establishUserSession(vendor: vendor, token: token) { (result) in
+        chatterbox.establishUserSession(vendor: vendor, token: token, userContextData: contextData) { (result) in
             
             self.isInitializing = false
             
@@ -88,6 +89,23 @@ public class ChatService {
 
 // TODO: Chatterbox should support multiple event listeners instead of proxying
 extension ChatService: ChatEventListener {
+    
+    func chatterbox(_ chatterbox: Chatterbox, willStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        viewController?.chatterbox(chatterbox, willStartAgentChat: agentInfo, forChat: chatId)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        viewController?.chatterbox(chatterbox, didStartAgentChat: agentInfo, forChat: chatId)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didResumeAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        viewController?.chatterbox(chatterbox, didResumeAgentChat: agentInfo, forChat: chatId)
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didFinishAgentChat agentInfo: AgentInfo, forChat chatId: String) {
+        viewController?.chatterbox(chatterbox, didFinishAgentChat: agentInfo, forChat: chatId)
+    }
+    
     func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {
         Logger.default.logDebug("Transport Status Changed: \(transportStatus)")
         viewController?.chatterbox(chatterbox, didReceiveTransportStatus: transportStatus, forChat: chatId)
