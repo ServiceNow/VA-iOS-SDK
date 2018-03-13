@@ -76,6 +76,8 @@ enum ControlType {
 protocol ControlDelegate: AnyObject {
     
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel)
+    
+    func controlDidFinishLoading(_ control: ControlProtocol)
 }
 
 // MARK: Control Protocol
@@ -100,7 +102,9 @@ protocol ControlProtocol: AnyObject {
     func prepareForReuse()
     
     // If provided - control will be limited to that size
-    var maxContentSize: CGSize? { get }
+    var preferredContentSize: CGSize? { get }
+    
+    var isReusable: Bool { get }
 }
 
 // Code for self-removable control, just like UIView or UIViewController
@@ -113,8 +117,12 @@ extension ControlProtocol {
     func prepareForReuse() {
     }
     
-    var maxContentSize: CGSize? {
+    var preferredContentSize: CGSize? {
         return nil
+    }
+    
+    var isReusable: Bool {
+        return true
     }
     
     func removeFromParent() {

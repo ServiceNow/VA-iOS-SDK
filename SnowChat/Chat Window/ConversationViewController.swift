@@ -32,6 +32,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     private var canFetchOlderMessages = false
     private var timeLastHistoryFetch: Date = Date()
     private var isLoading = false
+    private var defaultMessageHeight: CGFloat?
     
     override var tableView: UITableView {
         // swiftlint:disable:next force_unwrapping
@@ -79,6 +80,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     override func viewWillLayoutSubviews() {
         // not calling super to override slack's behavior
         adjustContentInset()
+        defaultMessageHeight = tableView.bounds.height * 0.3
     }
     
     private func adjustContentInset() {
@@ -426,6 +428,7 @@ extension ConversationViewController {
     private func configureConversationCell(_ cell: ConversationViewCell, messageModel model: ChatMessageModel, at indexPath: IndexPath) {
         let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
         cell.messageViewController = messageViewController
+        adjustModelSizeIfNeeded(model)
         messageViewController.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self, resourceProvider: chatterbox.apiManager)
         messageViewController.didMove(toParentViewController: self)
     }
@@ -436,6 +439,17 @@ extension ConversationViewController {
         } else {
             return nil
         }
+    }
+    
+    // MARK: - Special case for OutputHtmlViewModel..
+    private func adjustModelSizeIfNeeded(_ messageModel: ChatMessageModel) {
+        guard let outputHtmlModel = messageModel.controlModel as? OutputHtmlControlViewModel,
+            let messageHeight = defaultMessageHeight,
+            outputHtmlModel.size == nil else {
+                return
+        }
+        
+        outputHtmlModel.size = CGSize(width: CGFloat.nan, height: messageHeight)
     }
     
     // MARK: - ChatMessageViewController reuse
@@ -546,7 +560,7 @@ extension ConversationViewController: ChatEventListener {
     }
 }
 
-extension ConversationViewController: ControlDelegate, OutputImageControlDelegate {
+extension ConversationViewController: ControlDelegate {
     
     // MARK: - ControlDelegate
     
@@ -555,7 +569,7 @@ extension ConversationViewController: ControlDelegate, OutputImageControlDelegat
         dataController.updateControlData(model, isSkipped: false)
     }
     
-    func controlDidFinishImageDownload(_ control: OutputImageControl) {
+    func controlDidFinishLoading(_ control: ControlProtocol) {
         tableView.beginUpdates()
         tableView.endUpdates()
     }
@@ -566,10 +580,11 @@ extension ConversationViewController: ControlDelegate, OutputImageControlDelegat
                 return 2
             }
             
-            if let imageViewModel = chatModel.controlModel as? OutputImageViewModel, let size = imageViewModel.imageSize {
+            if let viewModel = chatModel.controlModel as? Resizable, let size = viewModel.size {
                 return size.height
             }
         }
+        
         return 200
     }
 }

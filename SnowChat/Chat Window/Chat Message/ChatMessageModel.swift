@@ -261,8 +261,16 @@ extension ChatMessageModel {
         }
         
         let direction = message.data.direction
-        
         let outputHtmlModel = OutputHtmlControlViewModel(id: message.messageId, value: value)
+        var size = CGSize()
+        if let width = message.data.richControl?.uiMetadata?.width {
+            size.width = CGFloat(width)
+        }
+        if let height = message.data.richControl?.uiMetadata?.height {
+            size.height = CGFloat(height)
+        }
+        outputHtmlModel.size = size
+        
         let snowViewModel = ChatMessageModel(model: outputHtmlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }

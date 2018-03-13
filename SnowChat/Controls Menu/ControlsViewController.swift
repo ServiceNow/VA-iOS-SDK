@@ -108,6 +108,10 @@ class ControlsViewController: UIViewController, UITableViewDelegate, UITableView
         // ¯\_(ツ)_/¯
     }
     
+    func controlDidFinishLoading(_ control: ControlProtocol) {
+        // ¯\_(ツ)_/¯
+    }
+    
     // Copy-pasted from Marc's code - needs to be removed
     
     fileprivate func newControlData() -> RichControlData<ControlWrapper<Bool?, UIMetadata>> {

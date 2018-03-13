@@ -13,7 +13,7 @@ class FullSizeScrollViewContainerView: UIView {
     // Only when scrollView is UITableView type
     var maxVisibleItemCount: Int?
     
-    var observer: NSKeyValueObservation?
+    private var observer: NSKeyValueObservation?
     
     var scrollView: UIScrollView? {
         didSet {
