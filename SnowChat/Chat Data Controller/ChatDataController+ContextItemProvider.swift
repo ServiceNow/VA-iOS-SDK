@@ -24,7 +24,7 @@ extension ChatDataController: ContextItemProvider {
     fileprivate func newConversationMenuItem() -> ContextMenuItem {
         let menuItem = ContextMenuItem(withTitle: NSLocalizedString("New Conversation", comment: "Context Menu Item Title")) { viewController, sender in
             self.logger.logDebug("New Conversation menu selected")
-            self.chatterbox.cancelUserConversation()
+            self.chatterbox.cancelConversation()
         }
         return menuItem
     }

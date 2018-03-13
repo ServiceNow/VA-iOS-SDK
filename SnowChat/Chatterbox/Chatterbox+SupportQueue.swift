@@ -11,7 +11,10 @@ import Foundation
 extension Chatterbox {
     
     func subscribeToSupportQueue(_ message: SubscribeToSupportQueueMessage) {
-        let channel = message.channel
+        guard let channel = message.channel else {
+            logger.logError("SubscribeToSupportQueue message with no channel - ignoring!")
+            return
+        }
         
         // unsubscribe existing subscription if it is set
         supportQueueSubscription?.unsubscribe()
