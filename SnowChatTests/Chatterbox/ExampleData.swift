@@ -90,7 +90,7 @@ class ExampleData {
               "uiType" : "Picker",
               "uiMetadata" : {
                 "multiSelect" : false,
-                "style" : "regular",
+                "style" : "list",
                 "openByDefault" : true,
                 "label" : "What is the urgency: low, medium or high?",
                 "options" : [
