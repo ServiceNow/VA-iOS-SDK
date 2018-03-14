@@ -236,7 +236,6 @@ class ChatterboxDataTests: XCTestCase {
         XCTAssert(initObj != nil)
         XCTAssert(initObj?.data.actionMessage.systemActionName == "init")
         XCTAssert(initObj?.data.actionMessage.loginStage == .loginStart)
-        XCTAssert(initObj?.data.actionMessage.contextHandshake.serverContextRequest?.count == 7)
     }
     
     func testActionMessage() {
