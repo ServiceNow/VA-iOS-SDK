@@ -277,7 +277,7 @@ extension ChatMessageModel {
     
     static func model(withMessage message: SystemErrorControlMessage) -> ChatMessageModel? {
         guard let value = message.data.richControl?.uiMetadata?.error.message,
-              let instruction = message.data.richControl?.uiMetadata?.error.handler.instruction else {
+            let instruction = message.data.richControl?.uiMetadata?.error.handler?.instruction else {
             return nil
         }
         
