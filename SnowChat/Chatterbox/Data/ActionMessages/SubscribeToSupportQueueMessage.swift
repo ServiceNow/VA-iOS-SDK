@@ -10,11 +10,11 @@ import Foundation
 
 struct SupportQueue: Codable {
     var active: Bool
-    var queueAmbChannel: String
+    var queueAmbChannel: String?
     var averageWaitTime:  String
     var sysId: String
     
-    var channel: String {
+    var channel: String? {
         return queueAmbChannel
     }
 }
@@ -36,7 +36,7 @@ struct SubscribeToSupportQueueMessage: Codable, ActionData {
         case data
     }
     
-    var channel: String {
+    var channel: String? {
         return data.actionMessage.supportQueue.channel
     }
     

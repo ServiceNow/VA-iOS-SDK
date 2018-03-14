@@ -27,11 +27,48 @@ extension Chatterbox {
         }
     }
     
-    func endUserConversation() {
-        let sessionId = conversationContext.sessionId ?? "UNKNOWN_SESSION_ID"
-        let conversationId = conversationContext.conversationId ?? "UNKNOWN_CONVERSATION_ID"
+    internal func cancelUserConversation() {
+        guard conversationContext.conversationId != nil else {
+            logger.logError("endConversation with no conversation current - skipping")
+            return
+        }
+
+        guard let cancelTopic = cancelTopicMessageFromContextualActions() else { return }
         
-        didReceiveTopicFinishedAction(TopicFinishedMessage(withSessionId: sessionId, withConversationId: conversationId))
+        messageHandler = { message in
+            self.logger.logDebug("CancelTopic handler: \(message)")
+            
+            if let cancelTopic = ChatDataFactory.actionFromJSON(message) as? CancelUserTopicMessage,
+                cancelTopic.data.direction == .fromServer {
+                var cancelTopicReply = cancelTopic
+                cancelTopicReply.data.messageId = ChatUtil.uuidString()
+                cancelTopicReply.data.direction = .fromClient
+                cancelTopicReply.data.sendTime = Date()
+                cancelTopicReply.data.actionMessage.ready = true
+
+                self.publishMessage(cancelTopicReply)
+            } else if let topicFinished = ChatDataFactory.actionFromJSON(message) as? TopicFinishedMessage {
+
+                self.didReceiveTopicFinishedAction(topicFinished)
+            }
+        }
+        
+        publishMessage(cancelTopic)
+    }
+    
+    private func cancelTopicMessageFromContextualActions() -> ContextualActionMessage? {
+        guard var cancelTopic = contextualActions,
+            let sessionId = conversationContext.sessionId,
+            let conversationId = conversationContext.systemConversationId else { return nil }
+        
+        cancelTopic.type = "consumerTextMessage"
+        cancelTopic.data.sessionId = sessionId
+        cancelTopic.data.conversationId = conversationId
+        cancelTopic.data.richControl?.value = CancelTopicControlMessage.value
+        cancelTopic.data.direction = .fromClient
+        cancelTopic.data.sendTime = Date()
+        
+        return cancelTopic
     }
     
     internal func finishTopic(_ conversationId: String) {

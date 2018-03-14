@@ -167,6 +167,15 @@ class ChatterboxDataTests: XCTestCase {
         XCTAssertTrue(message.data.actionMessage.supportQueue.sysId.lengthOfBytes(using: String.Encoding.utf8) > 0)
     }
     
+    func testEndAgentChatExample() {
+        let message = ExampleData.exampleEndAgentChatMessage()
+        XCTAssertEqual(ChatterboxActionType.endAgentChat, message.eventType)
+        XCTAssertEqual("actionMessage", message.type)
+        XCTAssertEqual("endChat", message.data.actionMessage.systemActionName)
+        XCTAssertEqual("EndChat", message.data.actionMessage.type)
+        XCTAssertTrue(message.data.actionMessage.topicId.lengthOfBytes(using: .utf8) > 0)
+    }
+    
     let jsonInitStart = """
         {
           "type" : "actionMessage",
@@ -236,7 +245,6 @@ class ChatterboxDataTests: XCTestCase {
         XCTAssert(initObj != nil)
         XCTAssert(initObj?.data.actionMessage.systemActionName == "init")
         XCTAssert(initObj?.data.actionMessage.loginStage == .loginStart)
-        XCTAssert(initObj?.data.actionMessage.contextHandshake.serverContextRequest?.count == 7)
     }
     
     func testActionMessage() {
