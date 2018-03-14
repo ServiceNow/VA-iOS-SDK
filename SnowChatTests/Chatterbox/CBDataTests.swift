@@ -164,7 +164,24 @@ class ChatterboxDataTests: XCTestCase {
         XCTAssertEqual("SubscribeToSupportQueue", message.data.actionMessage.type)
         XCTAssertEqual(true, message.active)
         XCTAssertEqual("30 Seconds", message.waitTimeDisplayString)
-        XCTAssertTrue(message.data.actionMessage.supportQueue.sysId.lengthOfBytes(using: String.Encoding.utf8) > 0)
+        XCTAssertTrue(message.data.actionMessage.supportQueue.sysId!.lengthOfBytes(using: String.Encoding.utf8) > 0)
+    }
+
+    func testSupportQueueUpdateExample() {
+        let message = ExampleData.exampleSupportQueueUpdateMessage()!
+        XCTAssertEqual(nil, message.channel)
+        XCTAssertEqual(true, message.active)
+        XCTAssertEqual("30 Seconds", message.averageWaitTime)
+        XCTAssertNil(message.sysId)
+    }
+
+    func testEndAgentChatExample() {
+        let message = ExampleData.exampleEndAgentChatMessage()
+        XCTAssertEqual(ChatterboxActionType.endAgentChat, message.eventType)
+        XCTAssertEqual("actionMessage", message.type)
+        XCTAssertEqual("endChat", message.data.actionMessage.systemActionName)
+        XCTAssertEqual("EndChat", message.data.actionMessage.type)
+        XCTAssertTrue(message.data.actionMessage.topicId.lengthOfBytes(using: .utf8) > 0)
     }
     
     let jsonInitStart = """
@@ -236,7 +253,6 @@ class ChatterboxDataTests: XCTestCase {
         XCTAssert(initObj != nil)
         XCTAssert(initObj?.data.actionMessage.systemActionName == "init")
         XCTAssert(initObj?.data.actionMessage.loginStage == .loginStart)
-        XCTAssert(initObj?.data.actionMessage.contextHandshake.serverContextRequest?.count == 7)
     }
     
     func testActionMessage() {

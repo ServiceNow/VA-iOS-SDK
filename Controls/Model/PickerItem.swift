@@ -6,7 +6,8 @@
 //  Copyright © 2017 ServiceNow. All rights reserved.
 //
 
-// class for picker item model
+// Used in all picker types but carousel
+
 class PickerItem {
     
     enum ItemType {

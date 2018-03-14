@@ -320,7 +320,7 @@ extension ChatDataController: ChatDataListener {
         return (message: questionViewModel, response: answerViewModel)
     }
     
-    func controlsForPicker(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel?)? {
+    func controlsForPicker(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: ControlViewModel?)? {
         guard let message = messageExchange.message as? PickerControlMessage,
             let label = message.data.richControl?.uiMetadata?.label else {
                 logger.logError("MessageExchange is not valid in pickerControlsFromMessageExchange method - skipping!")
@@ -328,7 +328,7 @@ extension ChatDataController: ChatDataListener {
         }
         let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
         
-        let answerViewModel: TextControlViewModel?
+        let answerViewModel: ControlViewModel?
         
         // a completed picker exchange results in two text messages: the picker's label, and the value of the picker response
         
@@ -337,7 +337,15 @@ extension ChatDataController: ChatDataListener {
             let selectedOption = response.data.richControl?.uiMetadata?.options.first(where: { option -> Bool in
                 option.value == value
             })
-            answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: selectedOption?.label ?? value)
+            
+            // If the message is of carousel style we want to show output image, not text
+            if response.data.richControl?.uiMetadata?.style == .carousel,
+                let attachmentString = selectedOption?.attachment,
+                let url = URL(string: attachmentString) {
+                answerViewModel = OutputImageViewModel(id: ChatUtil.uuidString(), label: selectedOption?.label, value: url)
+            } else {
+                answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: selectedOption?.label ?? value)
+            }
         } else {
             answerViewModel = nil
         }
