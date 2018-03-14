@@ -15,6 +15,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     var imageDownloader: ImageDownloader?
     
     private var collectionView: UICollectionView?
+    private var gradientOverlayView = GradientView()
     private var model: CarouselControlViewModel
     private let fullSizeContainer = FullSizeScrollViewContainerView()
     
@@ -39,6 +40,17 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCollectionView()
+        setupGradientOverlay()
+    }
+    
+    private func setupGradientOverlay() {
+        guard let collectionView = collectionView else { return }
+        gradientOverlayView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.addSubview(gradientOverlayView)
+        NSLayoutConstraint.activate([gradientOverlayView.leadingAnchor.constraint(equalTo: collectionView.leadingAnchor),
+                                     gradientOverlayView.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor),
+                                     gradientOverlayView.topAnchor.constraint(equalTo: collectionView.topAnchor),
+                                     gradientOverlayView.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor)])
     }
     
     private func setupCollectionView() {
