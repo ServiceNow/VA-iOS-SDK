@@ -13,7 +13,7 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
     private(set) var focusedIndexPath = IndexPath(item: 0, section: 0)
     
     private var nextIndexPath: IndexPath {
-        let nextItem = min(focusedIndexPath.item + 1, itemCount)
+        let nextItem = min(focusedIndexPath.item + 1, itemCount - 1)
         let indexPath = IndexPath(item: nextItem, section: 0)
         focusedIndexPath = indexPath
         return indexPath
@@ -111,12 +111,15 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
     }
     
     override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+        guard let collectionView = self.collectionView else { return CGPoint.zero }
         // Find next indexPath for proposed contentOffset. Check for boundary conditions
         let nextIndexPathToFocus: IndexPath
-        if lastContentOffset.x < proposedContentOffset.x {
+        if lastContentOffset.x < collectionView.contentOffset.x {
             nextIndexPathToFocus = nextIndexPath
-        } else {
+        } else if lastContentOffset.x > collectionView.contentOffset.x {
             nextIndexPathToFocus = previousIndexPath
+        } else {
+            nextIndexPathToFocus = focusedIndexPath
         }
         
         return targetContentOffset(for: nextIndexPathToFocus)
