@@ -110,8 +110,16 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        model.selectItem(at: indexPath.row)
-        delegate?.pickerViewController(self, didFinishWithModel: model)
+        let comparisonResult = carouselControlViewLayout.focusedIndexPath.compare(indexPath)
+        switch comparisonResult {
+        case .orderedSame:
+            model.selectItem(at: indexPath.row)
+            delegate?.pickerViewController(self, didFinishWithModel: model)
+        case .orderedAscending:
+            carouselControlViewLayout.selectNextItem()
+        case .orderedDescending:
+            carouselControlViewLayout.selectPreviousItem()
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {

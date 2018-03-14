@@ -11,6 +11,21 @@ import UIKit
 class CarouselControlViewLayout: UICollectionViewFlowLayout {
     
     private(set) var focusedIndexPath = IndexPath(item: 0, section: 0)
+    
+    private var nextIndexPath: IndexPath {
+        let nextItem = min(focusedIndexPath.item + 1, itemCount)
+        let indexPath = IndexPath(item: nextItem, section: 0)
+        focusedIndexPath = indexPath
+        return indexPath
+    }
+    
+    private var previousIndexPath: IndexPath {
+        let nextItem = max(focusedIndexPath.item - 1, 0)
+        let indexPath = IndexPath(item: nextItem, section: 0)
+        focusedIndexPath = indexPath
+        return indexPath
+    }
+    
     private var lastContentOffset = CGPoint.zero
     private var itemCount: Int = 0
     private let verticalInset: CGFloat = 20
@@ -99,35 +114,37 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
     }
     
     override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
-        guard let collectionView = self.collectionView else {
-            return super.targetContentOffset(forProposedContentOffset: proposedContentOffset)
-        }
-
         // Find next indexPath for proposed contentOffset. Check for boundary conditions
-        let nextIndexPath: IndexPath
+        let nextIndexPathToFocus: IndexPath
         if lastContentOffset.x < proposedContentOffset.x {
-            let nextItem = min(focusedIndexPath.item + 1, itemCount)
-            nextIndexPath = IndexPath(item: nextItem, section: 0)
+            nextIndexPathToFocus = nextIndexPath
         } else {
-            let nextItem = max(focusedIndexPath.item - 1, 0)
-            nextIndexPath = IndexPath(item: nextItem, section: 0)
+            nextIndexPathToFocus = previousIndexPath
         }
         
-        guard let cell = collectionView.cellForItem(at: nextIndexPath) else {
-            Logger.default.logError("Couldn't find collection cell!")
-            return CGPoint(x: collectionView.contentInset.left, y: proposedContentOffset.y)
-        }
-        
-        focusedIndexPath = nextIndexPath
-        let cellMinX = cell.frame.minX
-        return CGPoint(x: cellMinX - collectionView.contentInset.left, y: proposedContentOffset.y)
+        return targetContentOffset(for: nextIndexPathToFocus)
     }
     
     func selectNextItem() {
-        
+        let nextIndexPathToFocus = nextIndexPath
+        let contentOffset = targetContentOffset(for: nextIndexPathToFocus)
+        collectionView?.setContentOffset(contentOffset, animated: true)
     }
     
     func selectPreviousItem() {
+        let nextIndexPathToFocus = previousIndexPath
+        let contentOffset = targetContentOffset(for: nextIndexPathToFocus)
+        collectionView?.setContentOffset(contentOffset, animated: true)
+    }
+    
+    private func targetContentOffset(for indexPath: IndexPath) -> CGPoint {
+        guard let collectionView = self.collectionView else { return CGPoint.zero }
+        guard let cell = collectionView.cellForItem(at: indexPath) else {
+            Logger.default.logError("Couldn't find collection cell!")
+            return CGPoint(x: collectionView.contentInset.left, y: collectionView.contentOffset.y)
+        }
         
+        let cellMinX = cell.frame.minX
+        return CGPoint(x: cellMinX - collectionView.contentInset.left, y: collectionView.contentOffset.y)
     }
 }
