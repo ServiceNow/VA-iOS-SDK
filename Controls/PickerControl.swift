@@ -9,7 +9,7 @@
 enum PickerControlStyle: Int {
     
     // can be embedded anywhere in parent view
-    case regular
+    case list
     
     case carousel
 }
@@ -58,7 +58,7 @@ extension PickerControlProtocol {
         }
         
         switch style {
-        case .regular:
+        case .list:
             let tableViewController = PickerViewController(model: model)
             tableViewController.delegate = self
             return tableViewController
