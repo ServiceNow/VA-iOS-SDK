@@ -100,6 +100,7 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
             return translatedAttributeFrame.contains(collectionViewCenter)
         })
         
+        // TODO: Add nice animation here
         centerAttribute?.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
         centerAttribute?.zIndex = 100
         return attributes
