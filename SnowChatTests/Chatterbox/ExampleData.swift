@@ -417,6 +417,21 @@ class ExampleData {
         """
         return ChatDataFactory.actionFromJSON(jsonMessage) as! SubscribeToSupportQueueMessage
     }
+
+    static func exampleSupportQueueUpdateMessage() -> SupportQueue? {
+        let jsonMessage = """
+        {
+            "active": true,
+            "averageWaitTime": "30 Seconds"
+        }
+        """
+        let data = jsonMessage.data(using: .utf8)
+        do {
+            return try ChatUtil.jsonDecoder.decode(SupportQueue.self, from: data!)
+        } catch {
+            return nil
+        }
+    }
     
     static func exampleEndAgentChatMessage() -> EndAgentChatMessage {
         let json = """
