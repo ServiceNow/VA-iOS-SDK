@@ -131,6 +131,8 @@ class Chatterbox {
     internal func processEventMessage(_ message: String) -> Bool {
         let action = ChatDataFactory.actionFromJSON(message)
         
+        guard action.eventType != .unknown else { return false }
+        
         switch action.eventType {
         case .finishedUserTopic:
             didReceiveTopicFinishedAction(action)
@@ -138,11 +140,8 @@ class Chatterbox {
             if let subscribeMessage = action as? SubscribeToSupportQueueMessage {
                 didReceiveSubscribeToSupportAction(subscribeMessage)
             }
-        case .endAgentChat:
-            break
         default:
             logger.logInfo("Unhandled event message: \(action.eventType)")
-            return false
         }
         return true
     }
