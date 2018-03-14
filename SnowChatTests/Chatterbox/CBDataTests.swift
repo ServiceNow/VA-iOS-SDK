@@ -90,7 +90,7 @@ class ChatterboxDataTests: XCTestCase {
         XCTAssert(obj.data.richControl?.uiMetadata?.label == "What is the urgency: low, medium or high?")
         XCTAssert(obj.data.richControl?.uiMetadata?.required == true)
         XCTAssert(obj.data.richControl?.uiMetadata?.itemType == "ID")
-        XCTAssert(obj.data.richControl?.uiMetadata?.style == "list")
+        XCTAssert(obj.data.richControl?.uiMetadata?.style == .list)
         XCTAssert(obj.data.richControl?.uiMetadata?.multiSelect == false)
     }
     
