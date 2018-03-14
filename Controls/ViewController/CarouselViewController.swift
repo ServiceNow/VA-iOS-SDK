@@ -44,13 +44,17 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     }
     
     private func setupGradientOverlay() {
-        guard let collectionView = collectionView else { return }
+        guard let collectionViewLayout = collectionView?.collectionViewLayout as? CarouselControlViewLayout else { return }
+        gradientOverlayView.colors = [.white, .clear, .clear, .white]
+        gradientOverlayView.locations = [0, 0.15, 0.85, 1]
+        gradientOverlayView.isUserInteractionEnabled = false
         gradientOverlayView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.addSubview(gradientOverlayView)
-        NSLayoutConstraint.activate([gradientOverlayView.leadingAnchor.constraint(equalTo: collectionView.leadingAnchor),
-                                     gradientOverlayView.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor),
-                                     gradientOverlayView.topAnchor.constraint(equalTo: collectionView.topAnchor),
-                                     gradientOverlayView.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor)])
+        view.addSubview(gradientOverlayView)
+        NSLayoutConstraint.activate([gradientOverlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                                     gradientOverlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                                     gradientOverlayView.topAnchor.constraint(equalTo: view.topAnchor, constant: CGFloat(collectionViewLayout.headerHeight)),
+                                     gradientOverlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
+        view.bringSubview(toFront: gradientOverlayView)
     }
     
     private func setupCollectionView() {

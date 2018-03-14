@@ -13,6 +13,7 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
     private var lastIndexPath = IndexPath(item: 0, section: 0)
     private var lastContentOffset = CGPoint.zero
     private var itemCount: Int = 0
+    let headerHeight = 40
     
     override init() {
         super.init()
@@ -33,7 +34,7 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         
         let leftContentInset = collectionView.frame.width * 0.5 - itemSize.width * 0.5
         collectionView.contentInset = UIEdgeInsets(top: 20, left: leftContentInset, bottom: 0, right: leftContentInset)
-        headerReferenceSize = CGSize(width: 1, height: 40)
+        headerReferenceSize = CGSize(width: 1, height: headerHeight)
         collectionView.decelerationRate = UIScrollViewDecelerationRateFast
         itemCount = collectionView.numberOfItems(inSection: 0)
     }

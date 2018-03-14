@@ -10,6 +10,18 @@ import UIKit
 
 class GradientView: UIView {
     
+    var locations: [NSNumber]? {
+        didSet {
+            (layer.mask as? CAGradientLayer)?.locations = locations
+        }
+    }
+    
+    var colors: [UIColor]? {
+        didSet {
+            (layer.mask as? CAGradientLayer)?.colors = colors?.map({ $0.cgColor })
+        }
+    }
+    
     convenience init() {
         self.init(frame: CGRect.zero)
     }
@@ -25,9 +37,14 @@ class GradientView: UIView {
     
     private func setupMaskLayer() {
         let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [UIColor.white.cgColor, UIColor.clear.cgColor, UIColor.white.cgColor]
-        gradientLayer.transform = CATransform3DMakeRotation(CGFloat.pi / 2, 0, 0, 1)
+        
+        // Some default values
+        gradientLayer.colors = [UIColor.white.cgColor, UIColor.clear.cgColor, UIColor.clear.cgColor, UIColor.white.cgColor]
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0.5)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 0.5)
+        gradientLayer.locations = [0, 0.2, 0.8, 1]
         layer.mask = gradientLayer
+        layer.backgroundColor = UIColor.white.cgColor
     }
     
     override func layoutSublayers(of layer: CALayer) {
