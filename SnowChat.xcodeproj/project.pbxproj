@@ -190,6 +190,8 @@
 		C43479EC1FE460700091806D /* TopicSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43479EB1FE460700091806D /* TopicSelection.swift */; };
 		C43479EE1FE850D20091806D /* AutoCompleteHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */; };
 		C44FD9CB200010900079E107 /* ChatDataControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44FD9CA200010900079E107 /* ChatDataControllerTests.swift */; };
+		C4562FFF2059859F00B79688 /* UIColor+HexValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4562FFE2059859F00B79688 /* UIColor+HexValue.swift */; };
+		C456300120599D2400B79688 /* ChatSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C456300020599D2400B79688 /* ChatSessionTests.swift */; };
 		C4562FFD2058905B00B79688 /* EndAgentChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4562FFC2058905B00B79688 /* EndAgentChatMessage.swift */; };
 		C4666DC82056F7E000DABD1B /* menu.png in Resources */ = {isa = PBXBuildFile; fileRef = C4666DC72056F7DF00DABD1B /* menu.png */; };
 		C4694A54203E3C18006A3C23 /* AgentTextControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4694A53203E3C18006A3C23 /* AgentTextControlMessage.swift */; };
@@ -399,6 +401,8 @@
 		C43479EB1FE460700091806D /* TopicSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicSelection.swift; sourceTree = "<group>"; };
 		C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoCompleteHandler.swift; sourceTree = "<group>"; };
 		C44FD9CA200010900079E107 /* ChatDataControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataControllerTests.swift; sourceTree = "<group>"; };
+		C4562FFE2059859F00B79688 /* UIColor+HexValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+HexValue.swift"; sourceTree = "<group>"; };
+		C456300020599D2400B79688 /* ChatSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSessionTests.swift; sourceTree = "<group>"; };
 		C4562FFC2058905B00B79688 /* EndAgentChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndAgentChatMessage.swift; sourceTree = "<group>"; };
 		C4666DC72056F7DF00DABD1B /* menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu.png; sourceTree = "<group>"; };
 		C4694A53203E3C18006A3C23 /* AgentTextControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentTextControlMessage.swift; sourceTree = "<group>"; };
@@ -956,6 +960,7 @@
 				C44FD9CA200010900079E107 /* ChatDataControllerTests.swift */,
 				C4FFCD4B20091B8D00B835C6 /* APIManagerChatSessionTests.swift */,
 				C483C17E2017DAD300C28E46 /* ExampleData.swift */,
+				C456300020599D2400B79688 /* ChatSessionTests.swift */,
 			);
 			path = Chatterbox;
 			sourceTree = "<group>";
@@ -964,6 +969,7 @@
 			isa = PBXGroup;
 			children = (
 				C4F3AF311FD601FE00B27B0D /* Util.swift */,
+				C4562FFE2059859F00B79688 /* UIColor+HexValue.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -1409,6 +1415,7 @@
 				5728D8F12048D74A0071EF9E /* UserDataManager.swift in Sources */,
 				57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */,
 				C47B36412048C57A00559410 /* Chatterbox+SupportQueue.swift in Sources */,
+				C4562FFF2059859F00B79688 /* UIColor+HexValue.swift in Sources */,
 				572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */,
 				5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */,
 				5728D8E820478C000071EF9E /* CarouselControlHeaderView.swift in Sources */,
@@ -1421,6 +1428,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C456300120599D2400B79688 /* ChatSessionTests.swift in Sources */,
 				C4FFCD4C20091B8D00B835C6 /* APIManagerChatSessionTests.swift in Sources */,
 				BE3F1AB61FEC480D00DCC21B /* APIManagerChatTopicsTest.swift in Sources */,
 				C483C17F2017DAD300C28E46 /* ExampleData.swift in Sources */,
