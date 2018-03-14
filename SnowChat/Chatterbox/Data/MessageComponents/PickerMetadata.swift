@@ -10,7 +10,7 @@
 
 enum PickerStyle: String, Codable {
     case carousel
-    case regular
+    case list
 }
 
 struct CarouselLabeledValue: Codable {

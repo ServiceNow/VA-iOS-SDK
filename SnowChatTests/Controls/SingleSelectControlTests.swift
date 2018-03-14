@@ -22,7 +22,7 @@ class SingleSelectControlTests: XCTestCase {
     func testSingleSelectVCDefaultPresentationStyle() {
         let model = SingleSelectControlViewModel(id: "123", label: "?", required: true, items: singleSelectItems!)
         let singleSelect = SingleSelectControl(model: model)
-        XCTAssert(singleSelect.style == .regular)
+        XCTAssert(singleSelect.style == .list)
     }
     
     func testSingleSelectValueItemsWithRequiredTrue() {
