@@ -16,6 +16,11 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     private var collectionView: UICollectionView?
     private var gradientOverlayView = GradientView()
+    
+    private var carouselControlViewLayout: CarouselControlViewLayout {
+        return collectionView?.collectionViewLayout as! CarouselControlViewLayout
+    }
+    
     var model: CarouselControlViewModel {
         didSet {
             collectionView?.reloadData()
@@ -57,7 +62,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         view.addSubview(gradientOverlayView)
         NSLayoutConstraint.activate([gradientOverlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                                      gradientOverlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     gradientOverlayView.topAnchor.constraint(equalTo: view.topAnchor, constant: CGFloat(collectionViewLayout.headerHeight)),
+                                     gradientOverlayView.topAnchor.constraint(equalTo: view.topAnchor, constant: collectionViewLayout.headerHeight),
                                      gradientOverlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
         view.bringSubview(toFront: gradientOverlayView)
     }

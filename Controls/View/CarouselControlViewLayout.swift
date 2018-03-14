@@ -10,16 +10,17 @@ import UIKit
 
 class CarouselControlViewLayout: UICollectionViewFlowLayout {
     
-    private var lastIndexPath = IndexPath(item: 0, section: 0)
+    private(set) var focusedIndexPath = IndexPath(item: 0, section: 0)
     private var lastContentOffset = CGPoint.zero
     private var itemCount: Int = 0
-    let headerHeight = 40
+    private let verticalInset: CGFloat = 20
+    let headerHeight: CGFloat = 50
     
     override init() {
         super.init()
         scrollDirection = .horizontal
         itemSize = CGSize(width: 150, height: 160)
-        minimumLineSpacing = 20
+        minimumLineSpacing = 10
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -33,7 +34,7 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         }
         
         let leftContentInset = collectionView.frame.width * 0.5 - itemSize.width * 0.5
-        collectionView.contentInset = UIEdgeInsets(top: 20, left: leftContentInset, bottom: 0, right: leftContentInset)
+        collectionView.contentInset = UIEdgeInsets(top: headerHeight + verticalInset, left: leftContentInset, bottom: verticalInset, right: leftContentInset)
         headerReferenceSize = CGSize(width: 1, height: headerHeight)
         collectionView.decelerationRate = UIScrollViewDecelerationRateFast
         itemCount = collectionView.numberOfItems(inSection: 0)
@@ -84,6 +85,7 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         })
         
         centerAttribute?.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+        centerAttribute?.zIndex = 100
         return attributes
     }
     
@@ -104,10 +106,10 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         // Find next indexPath for proposed contentOffset. Check for boundary conditions
         let nextIndexPath: IndexPath
         if lastContentOffset.x < proposedContentOffset.x {
-            let nextItem = min(lastIndexPath.item + 1, itemCount)
+            let nextItem = min(focusedIndexPath.item + 1, itemCount)
             nextIndexPath = IndexPath(item: nextItem, section: 0)
         } else {
-            let nextItem = max(lastIndexPath.item - 1, 0)
+            let nextItem = max(focusedIndexPath.item - 1, 0)
             nextIndexPath = IndexPath(item: nextItem, section: 0)
         }
         
@@ -116,8 +118,16 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
             return CGPoint(x: collectionView.contentInset.left, y: proposedContentOffset.y)
         }
         
-        lastIndexPath = nextIndexPath
+        focusedIndexPath = nextIndexPath
         let cellMinX = cell.frame.minX
         return CGPoint(x: cellMinX - collectionView.contentInset.left, y: proposedContentOffset.y)
+    }
+    
+    func selectNextItem() {
+        
+    }
+    
+    func selectPreviousItem() {
+        
     }
 }
