@@ -108,6 +108,8 @@ class ChatDataFactory {
                     return try ChatUtil.jsonDecoder.decode(SystemTopicPickerMessage.self, from: jsonData)
                 case .startAgentChat:
                     return try ChatUtil.jsonDecoder.decode(StartAgentChatMessage.self, from: jsonData)
+                case .endAgentChat:
+                    return try ChatUtil.jsonDecoder.decode(EndAgentChatMessage.self, from: jsonData)
                 case .supportQueueSubscribe:
                     return try ChatUtil.jsonDecoder.decode(SubscribeToSupportQueueMessage.self, from: jsonData)
                 case .showTopic:

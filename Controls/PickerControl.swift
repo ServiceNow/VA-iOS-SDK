@@ -9,13 +9,9 @@
 enum PickerControlStyle: Int {
     
     // can be embedded anywhere in parent view
-    case inline
+    case regular
     
-    // is presented at the bottom of the screen
-//    case bottom
-    
-    // classic actionSheet
-//    case actionSheet
+    case carousel
 }
 
 struct PickerConstants {
@@ -28,10 +24,10 @@ struct PickerConstants {
 protocol PickerViewControllerDelegate: AnyObject {
     
     // pickerTable:didSelectItemWithModel: is called when touch comes down on an item
-    func pickerViewController(_ viewController: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel)
+    func pickerViewController(_ viewController: UIViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel)
     
     // pickerTable:didFinishWithModel: is called when touch comes down on Done button if one exists
-    func pickerViewController(_ viewController: PickerViewController, didFinishWithModel model: PickerControlViewModel)
+    func pickerViewController(_ viewController: UIViewController, didFinishWithModel model: PickerControlViewModel)
 }
 
 // MARK: - PickerControlProtocol
@@ -62,16 +58,21 @@ extension PickerControlProtocol {
         }
         
         switch style {
-        case .inline:
+        case .regular:
             let tableViewController = PickerViewController(model: model)
             tableViewController.delegate = self
             return tableViewController
+        case .carousel:
+            let carouselViewController = CarouselViewController(model: model)
+            // TODO: introduce protocol for Picker style view controllers
+            carouselViewController.delegate = self
+            return carouselViewController
         }
     }
     
     // MARK: - PickerTableDelegate
     
-    func pickerViewController(_ viewController: PickerViewController, didFinishWithModel model: PickerControlViewModel) {
+    func pickerViewController(_ viewController: UIViewController, didFinishWithModel model: PickerControlViewModel) {
         delegate?.control(self, didFinishWithModel: model)
     }
     

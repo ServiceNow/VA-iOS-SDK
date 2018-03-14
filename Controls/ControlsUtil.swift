@@ -31,6 +31,10 @@ class ControlsUtil {
             return BooleanControl(model: model)
         case .singleSelect:
             return SingleSelectControl(model: model)
+        case .carousel:
+            let carousel = CarouselControl(model: model)
+            carousel.imageDownloader = provider.imageDownloader
+            return carousel
         case .typingIndicator:
             return TypingIndicatorControl()
         case .button:

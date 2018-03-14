@@ -8,12 +8,24 @@
 
 // Used by MultiSelect and Picker messages
 
+enum PickerStyle: String, Codable {
+    case carousel
+    case regular
+}
+
+struct CarouselLabeledValue: Codable {
+    // TODO: Use LabeledValue here for label and value
+    let label: String
+    let value: String
+    var attachment: String?
+}
+
 struct PickerMetadata: Codable {
     let multiSelect: Bool
-    let style: String?
+    let style: PickerStyle
     let openByDefault: Bool
     let required: Bool?
     let itemType: String?
     let label: String
-    let options: [LabeledValue]
+    let options: [CarouselLabeledValue]
 }

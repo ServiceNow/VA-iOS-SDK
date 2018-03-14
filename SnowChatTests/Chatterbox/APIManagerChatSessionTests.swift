@@ -230,7 +230,7 @@ class APIManagerChatSessionTest: XCTestCase {
                             "uiMetadata": {
                                 "label": "What is the urgency: low, medium or high?",
                                 "itemType": "ID",
-                                "style": "list",
+                                "style": "regular",
                                 "options": [
                                     {
                                         "label": "High",
@@ -273,7 +273,7 @@ class APIManagerChatSessionTest: XCTestCase {
                             "uiMetadata": {
                                 "label": "What is the urgency: low, medium or high?",
                                 "itemType": "ID",
-                                "style": "list",
+                                "style": "regular",
                                 "options": [
                                     {
                                         "label": "High",
@@ -457,7 +457,7 @@ class APIManagerChatSessionTest: XCTestCase {
                 "uiMetadata": {
                   "label": "What is the urgency: low, medium or high?",
                   "itemType": "ID",
-                  "style": "list",
+                  "style": "regular",
                   "options": [
                     {
                       "label": "High",
@@ -498,7 +498,7 @@ class APIManagerChatSessionTest: XCTestCase {
                 "uiMetadata": {
                   "label": "What is the urgency: low, medium or high?",
                   "itemType": "ID",
-                  "style": "list",
+                  "style": "regular",
                   "options": [
                     {
                       "label": "High",

@@ -23,7 +23,7 @@ class MultiSelectControlTests: XCTestCase {
         let model = MultiSelectControlViewModel(id: "123", label: "Choice", required: true, items: multiSelectItems!)
         let multiSelectPicker = MultiSelectControl(model: model)
     
-        XCTAssert(multiSelectPicker.style == .inline)
+        XCTAssert(multiSelectPicker.style == .regular)
     }
 
     func testMultiSelectSelectionWithRequiredTrue() {

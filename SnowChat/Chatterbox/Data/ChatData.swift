@@ -80,6 +80,8 @@ enum ChatterboxActionType: String, Codable, CodingKey {
     case showTopic = "ShowTopic"
     
     case startAgentChat = "StartChat"
+    case endAgentChat = "EndChat"
+    
     case supportQueueSubscribe = "SubscribeToSupportQueue"
     
     case unknown = "unknownAction"

@@ -99,6 +99,8 @@ class Chatterbox {
     internal var userContextData: Codable?
     internal let appContextManager = AppContextManager()
     
+    // MARK: - Methods
+    
     init(instance: ServerInstance, dataListener: ChatDataListener? = nil, eventListener: ChatEventListener? = nil) {
         self.instance = instance
         chatDataListener = dataListener
@@ -114,10 +116,22 @@ class Chatterbox {
         return chatStore.lastPendingMessage(forConversation: conversationId) as? ControlData
     }
     
+    internal func cancelConversation() {
+        switch state {
+        case .userConversation:
+            cancelUserConversation()
+        case .agentConversation:
+            endAgentConversation()
+        default:
+            break
+        }
+    }
     // MARK: - Incoming messages (Controls from service)
     
     internal func processEventMessage(_ message: String) -> Bool {
         let action = ChatDataFactory.actionFromJSON(message)
+        
+        guard action.eventType != .unknown else { return false }
         
         switch action.eventType {
         case .finishedUserTopic:
@@ -128,7 +142,6 @@ class Chatterbox {
             }
         default:
             logger.logInfo("Unhandled event message: \(action.eventType)")
-            return false
         }
         return true
     }

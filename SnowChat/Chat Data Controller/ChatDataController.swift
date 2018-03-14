@@ -275,13 +275,16 @@ class ChatDataController {
     }
     
     fileprivate func updatePickerData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
-        if let pickerViewModel = data as? SingleSelectControlViewModel,
-            var pickerMessage = lastPendingMessage as? PickerControlMessage {
-            
-            pickerMessage.id = ChatUtil.uuidString()
+        guard var pickerMessage = lastPendingMessage as? PickerControlMessage else { return }
+        pickerMessage.id = ChatUtil.uuidString()
+        
+        if let carouselViewModel = data as? CarouselControlViewModel {
+            pickerMessage.data.richControl?.value = carouselViewModel.resultValue
+        } else if let pickerViewModel = data as? SingleSelectControlViewModel {
             pickerMessage.data.richControl?.value = pickerViewModel.resultValue
-            chatterbox.update(control: pickerMessage)
         }
+        
+        chatterbox.update(control: pickerMessage)
     }
     
     fileprivate func updateMultiSelectData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {

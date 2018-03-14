@@ -38,6 +38,17 @@ extension Chatterbox {
         }
     }
     
+    internal func endAgentConversation() {
+        guard let sessionId = conversationContext.sessionId,
+            let systemConversationId = conversationContext.systemConversationId,
+            let topicId = conversationContext.conversationId else {
+                return
+        }
+        
+        let endChatMessage = EndAgentChatMessage(withTopicId: topicId, systemConversationId: systemConversationId, sessionId: sessionId)        
+        publishMessage(endChatMessage)
+    }
+    
     internal func resumeLiveAgentTopic(conversation: Conversation) {
         showTopic {
             guard var taskId = self.conversationContext.taskId,

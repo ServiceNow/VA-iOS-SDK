@@ -90,7 +90,7 @@ class ChatterboxDataTests: XCTestCase {
         XCTAssert(obj.data.richControl?.uiMetadata?.label == "What is the urgency: low, medium or high?")
         XCTAssert(obj.data.richControl?.uiMetadata?.required == true)
         XCTAssert(obj.data.richControl?.uiMetadata?.itemType == "ID")
-        XCTAssert(obj.data.richControl?.uiMetadata?.style == "list")
+        XCTAssert(obj.data.richControl?.uiMetadata?.style == PickerStyle.regular)
         XCTAssert(obj.data.richControl?.uiMetadata?.multiSelect == false)
     }
     
@@ -164,7 +164,24 @@ class ChatterboxDataTests: XCTestCase {
         XCTAssertEqual("SubscribeToSupportQueue", message.data.actionMessage.type)
         XCTAssertEqual(true, message.active)
         XCTAssertEqual("30 Seconds", message.waitTimeDisplayString)
-        XCTAssertTrue(message.data.actionMessage.supportQueue.sysId.lengthOfBytes(using: String.Encoding.utf8) > 0)
+        XCTAssertTrue(message.data.actionMessage.supportQueue.sysId!.lengthOfBytes(using: String.Encoding.utf8) > 0)
+    }
+
+    func testSupportQueueUpdateExample() {
+        let message = ExampleData.exampleSupportQueueUpdateMessage()!
+        XCTAssertEqual(nil, message.channel)
+        XCTAssertEqual(true, message.active)
+        XCTAssertEqual("30 Seconds", message.averageWaitTime)
+        XCTAssertNil(message.sysId)
+    }
+
+    func testEndAgentChatExample() {
+        let message = ExampleData.exampleEndAgentChatMessage()
+        XCTAssertEqual(ChatterboxActionType.endAgentChat, message.eventType)
+        XCTAssertEqual("actionMessage", message.type)
+        XCTAssertEqual("endChat", message.data.actionMessage.systemActionName)
+        XCTAssertEqual("EndChat", message.data.actionMessage.type)
+        XCTAssertTrue(message.data.actionMessage.topicId.lengthOfBytes(using: .utf8) > 0)
     }
     
     func testShowTopicMessage() {
