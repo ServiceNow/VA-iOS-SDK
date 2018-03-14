@@ -27,7 +27,7 @@ extension ChatMessageModel {
         
         let direction = message.direction
         
-        let dateTimeViewModel: DateTimePickerControlViewModel
+        let dateTimeViewModel: BaseDateTimePickerControlViewModel
         switch message.controlType {
         case .dateTime:
             dateTimeViewModel = DateTimePickerControlViewModel(id: message.messageId, label: title, required: required)

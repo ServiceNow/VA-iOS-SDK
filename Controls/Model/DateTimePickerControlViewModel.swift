@@ -6,26 +6,50 @@
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-class DateTimePickerControlViewModel: ControlViewModel, ValueRepresentable {
+/**
+ > date: `yyyy-MM-dd` (always assumed local date, so even if the user's timezone changes, the date will never change.)
+ 
+ > date time: no change – still sent and received in unix time, displayed in local time on clients.
+ 
+ > time: `HH:mm:ss` (always assumed local time, so even if the user's timezone changes, the time will never change.)
+ 
+ Additional Notes:
+ - Date matches platform behavior.
+ 
+ - Date Time will need to display with the user session's timezone preference on the desktop to match the platform. Mobile clients will display local device time zone.
+ 
+ - Time does not match `GlideTime` field's platform behavior. We need a local "floating" time to handle our use case (like an alarm clock that's always 6am no matter where you are, for example). The platform does not currently have a concept of a "local" / "floating" time field.
+ */
+
+class BaseDateTimePickerControlViewModel: ControlViewModel {
     
-    let label: String?
+    var label: String?
     
-    let isRequired: Bool
+    var isRequired: Bool
     
-    let id: String
+    var id: String
     
     var type: ControlType {
         return .dateTime
     }
     
+    var dateFormatter: DateFormatter {
+        return DateFormatter.dateTimeFormatter
+    }
+    
+    init(id: String, label: String? = nil, required: Bool) {
+        self.label = label
+        self.id = id
+        self.isRequired = required
+    }
+}
+
+class DateTimePickerControlViewModel: BaseDateTimePickerControlViewModel, ValueRepresentable {
+    
     var value: Date?
     
     var resultValue: Date? {
         return value
-    }
-    
-    var dateFormatter: DateFormatter {
-        return DateFormatter.dateTimeFormatter
     }
     
     var displayValue: String? {
@@ -34,14 +58,23 @@ class DateTimePickerControlViewModel: ControlViewModel, ValueRepresentable {
     }
     
     init(id: String, label: String? = nil, required: Bool, resultValue: Date? = nil) {
-        self.label = label
+        super.init(id: id, label: label, required: required)
         self.value = resultValue
-        self.id = id
-        self.isRequired = required
     }
 }
 
-class DatePickerControlViewModel: DateTimePickerControlViewModel {
+class DatePickerControlViewModel: BaseDateTimePickerControlViewModel, ValueRepresentable {
+    
+    var value: String?
+    
+    var resultValue: String? {
+        return ""
+    }
+    
+    var displayValue: String? {
+        return value
+    }
+    
     override var type: ControlType {
         return .date
     }
@@ -49,14 +82,35 @@ class DatePickerControlViewModel: DateTimePickerControlViewModel {
     override var dateFormatter: DateFormatter {
         return DateFormatter.dateOnlyFormatter
     }
+    
+    init(id: String, label: String? = nil, required: Bool, resultValue: String? = nil) {
+        super.init(id: id, label: label, required: required)
+        self.value = resultValue
+    }
 }
 
-class TimePickerControlViewModel: DateTimePickerControlViewModel {
+class TimePickerControlViewModel: BaseDateTimePickerControlViewModel, ValueRepresentable {
+    
+    var value: String?
+    
+    var resultValue: String? {
+        return ""
+    }
+    
+    var displayValue: String? {
+        return value
+    }
+    
     override var type: ControlType {
         return .time
     }
     
     override var dateFormatter: DateFormatter {
         return DateFormatter.timeOnlyFormatter
+    }
+    
+    init(id: String, label: String? = nil, required: Bool, resultValue: String? = nil) {
+        super.init(id: id, label: label, required: required)
+        self.value = resultValue
     }
 }
