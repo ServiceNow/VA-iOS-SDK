@@ -17,17 +17,13 @@ class CarouselControl: PickerControlProtocol {
         return vc
     }()
     
-    private var carouselViewController: CarouselViewController {
-        return self.viewController as! CarouselViewController
-    }
-    
-    var isReusable: Bool {
-        return false
+    var model: ControlViewModel {
+        didSet {
+            updateViewController(withModel: model)
+        }
     }
     
     var style: PickerControlStyle
-    
-    var model: ControlViewModel
     
     var imageDownloader: ImageDownloader? {
         didSet {
@@ -37,9 +33,23 @@ class CarouselControl: PickerControlProtocol {
     
     weak var delegate: ControlDelegate?
     
+    // MARK: - Convenience properties
+    
+    private var carouselViewController: CarouselViewController {
+        return viewController as! CarouselViewController
+    }
+    
+    private var carouselViewModel: CarouselControlViewModel {
+        return model as! CarouselControlViewModel
+    }
+    
     required init(model: ControlViewModel) {
         self.model = model
         self.style = .carousel
+    }
+    
+    func updateViewController(withModel model: ControlViewModel) {
+        carouselViewController.model = carouselViewModel
     }
     
     func pickerViewController(_ viewController: UIViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {

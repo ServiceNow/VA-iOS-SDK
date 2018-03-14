@@ -16,7 +16,12 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     private var collectionView: UICollectionView?
     private var gradientOverlayView = GradientView()
-    private var model: CarouselControlViewModel
+    var model: CarouselControlViewModel {
+        didSet {
+            collectionView?.reloadData()
+        }
+    }
+    
     private let fullSizeContainer = FullSizeScrollViewContainerView()
     
     // MARK: - Initialization
