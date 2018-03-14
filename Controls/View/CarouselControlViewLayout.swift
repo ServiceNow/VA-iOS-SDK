@@ -33,13 +33,17 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
     
     override init() {
         super.init()
+        minimumLineSpacing = 10
         scrollDirection = .horizontal
         itemSize = CGSize(width: 150, height: 160)
-        minimumLineSpacing = 10
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
+        return true
     }
     
     override func prepare() {
@@ -48,11 +52,12 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
             return
         }
         
-        let leftContentInset = collectionView.frame.width * 0.5 - itemSize.width * 0.5
-        collectionView.contentInset = UIEdgeInsets(top: headerHeight + verticalInset, left: leftContentInset, bottom: verticalInset, right: leftContentInset)
+        itemCount = collectionView.numberOfItems(inSection: 0)
         headerReferenceSize = CGSize(width: 1, height: headerHeight)
         collectionView.decelerationRate = UIScrollViewDecelerationRateFast
-        itemCount = collectionView.numberOfItems(inSection: 0)
+        
+        let horizontalContentInset = collectionView.frame.width * 0.5 - itemSize.width * 0.5
+        collectionView.contentInset = UIEdgeInsets(top: headerHeight + verticalInset, left: horizontalContentInset, bottom: verticalInset, right: horizontalContentInset)
     }
     
     override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
@@ -69,10 +74,6 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         frame.size.width = collectionView.frame.width
         attributes.frame = frame
         return attributes
-    }
-    
-    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
-        return true
     }
     
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
@@ -105,10 +106,6 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
     }
     
     override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint, withScrollingVelocity velocity: CGPoint) -> CGPoint {
-        guard self.collectionView != nil else {
-            return super.targetContentOffset(forProposedContentOffset: proposedContentOffset, withScrollingVelocity: velocity)
-        }
-        
         lastContentOffset = targetContentOffset(forProposedContentOffset: proposedContentOffset)
         return lastContentOffset
     }

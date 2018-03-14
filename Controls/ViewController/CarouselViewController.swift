@@ -23,6 +23,8 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     var model: CarouselControlViewModel {
         didSet {
+            let layout = CarouselControlViewLayout()
+            collectionView?.collectionViewLayout = layout
             collectionView?.reloadData()
         }
     }
@@ -72,6 +74,13 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         collectionView.delegate = self
         collectionView.dataSource = self
+        
+        // Scroll view inside scroll view is...pretty ugly. Especially when adjustment is on!
+        if #available(iOS 11.0, *) {
+            collectionView.contentInsetAdjustmentBehavior = .never
+        } else {
+            automaticallyAdjustsScrollViewInsets = false
+        }
         
         let bundle = Bundle(for: CarouselCollectionViewCell.self)
         collectionView.register(UINib(nibName: "CarouselCollectionViewCell", bundle: bundle), forCellWithReuseIdentifier: CarouselCollectionViewCell.cellIdentifier)
