@@ -100,6 +100,7 @@
 		5796E4481FD0B3E0009D2035 /* CGPath+Bubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5796E4471FD0B3E0009D2035 /* CGPath+Bubble.swift */; };
 		579A48F220125039007CF338 /* PickerMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579A48F120125039007CF338 /* PickerMetadata.swift */; };
 		57ADE6A1205A0C7200F5D57C /* zoom@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 57ADE6A0205A0C7200F5D57C /* zoom@3x.png */; };
+		57ADE6A3205AB1BD00F5D57C /* ImageBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57ADE6A2205AB1BD00F5D57C /* ImageBrowserViewController.swift */; };
 		57B0861020465E0200F009D2 /* CarouselControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0860F20465E0200F009D2 /* CarouselControl.swift */; };
 		57B0861220465F0F00F009D2 /* CarouselViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0861120465F0F00F009D2 /* CarouselViewController.swift */; };
 		57B0861420465FE400F009D2 /* CarouselControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0861320465FE400F009D2 /* CarouselControlViewModel.swift */; };
@@ -310,6 +311,7 @@
 		5796E4471FD0B3E0009D2035 /* CGPath+Bubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPath+Bubble.swift"; sourceTree = "<group>"; };
 		579A48F120125039007CF338 /* PickerMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerMetadata.swift; sourceTree = "<group>"; };
 		57ADE6A0205A0C7200F5D57C /* zoom@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zoom@3x.png"; sourceTree = "<group>"; };
+		57ADE6A2205AB1BD00F5D57C /* ImageBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserViewController.swift; sourceTree = "<group>"; };
 		57B0860F20465E0200F009D2 /* CarouselControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselControl.swift; sourceTree = "<group>"; };
 		57B0861120465F0F00F009D2 /* CarouselViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselViewController.swift; sourceTree = "<group>"; };
 		57B0861320465FE400F009D2 /* CarouselControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselControlViewModel.swift; sourceTree = "<group>"; };
@@ -583,6 +585,7 @@
 				57D1DB781FEC88D200082F78 /* OutputImageViewController.swift */,
 				57DF7C33202C1066008D013A /* ControlWebViewController.swift */,
 				57B0861120465F0F00F009D2 /* CarouselViewController.swift */,
+				57ADE6A2205AB1BD00F5D57C /* ImageBrowserViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -1364,6 +1367,7 @@
 				C41EF5D21FDB0F2500707F45 /* ChatDataListener.swift in Sources */,
 				575566A9200FAF1D000953F7 /* PickerHeaderFooterView.swift in Sources */,
 				C4CAFEA31FBCF2F8007007F5 /* ChatData.swift in Sources */,
+				57ADE6A3205AB1BD00F5D57C /* ImageBrowserViewController.swift in Sources */,
 				C4AF7793200E7B0B0029598A /* ViewDataChangeListener.swift in Sources */,
 				8B0A1F67204080D400DE4D4C /* APIManager+ImageUpload.swift in Sources */,
 				C47B3643204DB38200559410 /* ChatSessionSettings.swift in Sources */,
