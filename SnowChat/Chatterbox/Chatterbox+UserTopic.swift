@@ -47,9 +47,18 @@ extension Chatterbox {
                 cancelTopicReply.data.actionMessage.ready = true
 
                 self.publishMessage(cancelTopicReply)
+                
             } else if let topicFinished = ChatDataFactory.actionFromJSON(message) as? TopicFinishedMessage {
 
                 self.didReceiveTopicFinishedAction(topicFinished)
+                
+            } else if let systemError = ChatDataFactory.controlFromJSON(message) as? SystemErrorControlMessage {
+                self.logger.logError("System Error canceling conversation: \(systemError)")
+                
+                guard let sessionId = self.conversationContext.sessionId,
+                    let conversationId = self.conversationContext.conversationId else { return }
+                
+                self.didReceiveTopicFinishedAction(TopicFinishedMessage(withSessionId: sessionId, withConversationId: conversationId))
             }
         }
         

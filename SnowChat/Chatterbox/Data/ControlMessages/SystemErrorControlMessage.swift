@@ -53,7 +53,7 @@ struct SystemErrorControlMessage: Codable, ControlData {
     }
     
     struct SystemErrorMetadataData: Codable {
-        let handler: ErrorHandler
+        let handler: ErrorHandler?
         let message: String
         let code: String
     }
