@@ -24,8 +24,8 @@ struct PickerMetadata: Codable {
     let multiSelect: Bool
     let style: PickerStyle
     let openByDefault: Bool
-    let required: Bool
-    let itemType: String
+    let required: Bool?
+    let itemType: String?
     let label: String
     let options: [CarouselLabeledValue]
 }

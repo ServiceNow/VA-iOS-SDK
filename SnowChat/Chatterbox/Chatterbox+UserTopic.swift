@@ -86,14 +86,13 @@ extension Chatterbox {
     }
     
     internal func resumeUserTopic(topicInfo: TopicInfo) {
-        // TODO: notify server that we are resuming the topic (showTopic)
-        if conversationContext.conversationId != topicInfo.conversationId {
-            state = .userConversation
-            setupForConversation(topicInfo: topicInfo)
+        showTopic {
+            self.state = .userConversation
+            self.setupForConversation(topicInfo: topicInfo)
+            self.chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: self.chatId)
         }
-        chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: chatId)
     }
-
+    
     internal func installTopicSelectionMessageHandler() {
         state = .topicSelection
         messageHandler = topicSelectionMessageHandler
@@ -118,7 +117,7 @@ extension Chatterbox {
         switch controlMessage.controlType {
         case .topicPicker:
             if let topicPicker = controlMessage as? UserTopicPickerMessage {
-                if topicPicker.data.direction == .fromServer {
+                if topicPicker.direction == .fromServer {
                     var outgoingMessage = topicPicker
                     outgoingMessage.type = "consumerTextMessage"
                     outgoingMessage.data.direction = .fromClient
@@ -143,7 +142,7 @@ extension Chatterbox {
             if let startUserTopic = actionMessage as? StartUserTopicMessage {
                 
                 // client and server messages are the same, so only look at server responses!
-                if startUserTopic.data.direction == .fromServer {
+                if startUserTopic.direction == .fromServer {
                     let startUserTopicReadyMessage = createStartTopicReadyMessage(fromMessage: startUserTopic)
                     publishMessage(startUserTopicReadyMessage)
                 }
