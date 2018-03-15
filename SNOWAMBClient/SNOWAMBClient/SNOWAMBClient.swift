@@ -65,7 +65,7 @@ public protocol SNOWAMBClientDelegate: AnyObject {
     func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromchannel channel: String)
     func ambClient(_ client: SNOWAMBClient, didReceiveMessage: SNOWAMBMessage, fromChannel channel: String)
     func ambClient(_ client: SNOWAMBClient, didChangeClientStatus status: SNOWAMBClientStatus)
-    func ambClient(_ client: SNOWAMBClient, didChangeGlideStatus status: SNOWAMBGlideStatus)
+    func ambClient(_ client: SNOWAMBClient, didReceiveGlideStatus status: SNOWAMBGlideStatus)
     func ambClient(_ client: SNOWAMBClient, didFailWithError error: SNOWAMBError)
 }
 
@@ -156,9 +156,7 @@ public class SNOWAMBClient {
     
     public var glideStatus: SNOWAMBGlideStatus = SNOWAMBGlideStatus(ambActive: false, sessionStatus: nil) {
         didSet {
-            if oldValue != glideStatus {
-                delegate?.ambClient(self, didChangeGlideStatus: glideStatus)
-            }
+            delegate?.ambClient(self, didReceiveGlideStatus: glideStatus)
         }
     }
     

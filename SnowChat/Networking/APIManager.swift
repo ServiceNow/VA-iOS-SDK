@@ -262,9 +262,6 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
                 
                 guard let strongSelf = self else { return }
                 
-                // FIXME: Hack to force new handshake. remove.
-                strongSelf.ambClient.clientId = UUID().uuidString
-                
                 strongSelf.removeAMBPauseReason(.repairingSession)
                 
                 // Any error here invalidates authentication
@@ -289,7 +286,7 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
     func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromchannel channel: String) {}
     func ambClient(_ client: SNOWAMBClient, didReceiveMessage: SNOWAMBMessage, fromChannel channel: String) {}
     
-    func ambClient(_ client: SNOWAMBClient, didChangeGlideStatus status: SNOWAMBGlideStatus) {
+    func ambClient(_ client: SNOWAMBClient, didReceiveGlideStatus status: SNOWAMBGlideStatus) {
         guard let sessionStatus = status.sessionStatus, sessionStatus == .loggedOut else {
             return
         }
