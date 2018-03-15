@@ -45,6 +45,7 @@
 /* Begin PBXBuildFile section */
 		4635789A2040CCE900947541 /* APIManager+AMB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 463578992040CCE900947541 /* APIManager+AMB.swift */; };
 		46BC5778202EE97000FDDB43 /* SNOWAMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46BC5779202EE97000FDDB43 /* SNOWAMBClient.framework */; };
+		46E113B6205B00A700D66D9E /* AMBTransportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E113B5205B00A700D66D9E /* AMBTransportTests.swift */; };
 		5704EA321FEAAD46001020E6 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5704EA311FEAAD46001020E6 /* TypingIndicatorView.swift */; };
 		5704EA341FEAAE4B001020E6 /* TypingIndicatorControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5704EA331FEAAE4B001020E6 /* TypingIndicatorControl.swift */; };
 		57067C8D1FE62EE900812266 /* FakeChatViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57067C8C1FE62EE900812266 /* FakeChatViewCell.swift */; };
@@ -233,6 +234,7 @@
 /* Begin PBXFileReference section */
 		463578992040CCE900947541 /* APIManager+AMB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIManager+AMB.swift"; sourceTree = "<group>"; };
 		46BC5779202EE97000FDDB43 /* SNOWAMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SNOWAMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		46E113B5205B00A700D66D9E /* AMBTransportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBTransportTests.swift; sourceTree = "<group>"; };
 		5704EA311FEAAD46001020E6 /* TypingIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorView.swift; sourceTree = "<group>"; };
 		5704EA331FEAAE4B001020E6 /* TypingIndicatorControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorControl.swift; sourceTree = "<group>"; };
 		57067C8C1FE62EE900812266 /* FakeChatViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeChatViewCell.swift; sourceTree = "<group>"; };
@@ -437,6 +439,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		46E113B4205AFF3B00D66D9E /* APIManager */ = {
+			isa = PBXGroup;
+			children = (
+				46E113B5205B00A700D66D9E /* AMBTransportTests.swift */,
+			);
+			path = APIManager;
+			sourceTree = "<group>";
+		};
 		573F78FB202288860008391D /* Supporting Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -766,6 +776,7 @@
 		BEB6C8641FB92CD700B1D497 /* SnowChatTests */ = {
 			isa = PBXGroup;
 			children = (
+				46E113B4205AFF3B00D66D9E /* APIManager */,
 				5778CF961FDEE6A6004F77D8 /* Controls */,
 				C4CAFEA41FBCF485007007F5 /* Chatterbox */,
 				C420ED7E1FC5F488002476C0 /* LoggerTests.swift */,
@@ -1336,6 +1347,7 @@
 				575566A7200F963C000953F7 /* ControlCacheTests.swift in Sources */,
 				C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */,
 				5778CFA01FE07764004F77D8 /* SingleSelectControlTests.swift in Sources */,
+				46E113B6205B00A700D66D9E /* AMBTransportTests.swift in Sources */,
 				5778CF981FDEE767004F77D8 /* BooleanControlTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

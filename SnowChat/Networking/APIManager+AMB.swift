@@ -4,9 +4,8 @@ import SNOWAMBClient
 
 extension APIManager {
     
-    func sendMessage(_ message: [String: Any], toChannel channel: String) {
-        ambClient.publishMessage(message, toChannel: channel, withExtension:[:],
-                                 completion: { (result) in
+    func sendMessage(_ message: [String: Any], toChannel channel: String, completion: @escaping (SNOWAMBResult<[SNOWAMBMessage]>) -> Void = {_ in } ) {
+        ambClient.publishMessage(message, toChannel: channel, withExtension:[:]) { (result) in
                                     switch result {
                                     case .success:
                                         Logger.default.logInfo("published message successfully")
@@ -15,7 +14,8 @@ extension APIManager {
                                         Logger.default.logInfo("failed to publish message")
                                         //TODO: same
                                     }
-        })
+                                    completion(result)
+        }
     }
     
     func sendMessage<T>(_ message: T, toChannel channel: String, encoder: JSONEncoder) where T: Encodable {
