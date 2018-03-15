@@ -123,10 +123,10 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         guard let point = self.collectionView?.convert(sender.center, from: sender.superview),
             let selectedIndexPath = collectionView?.indexPathForItem(at: point) else { return }
         
-        zoomIn(forItemAt: selectedIndexPath)
+        zoomIn(itemAt: selectedIndexPath)
     }
     
-    private func zoomIn(forItemAt indexPath: IndexPath) {
+    private func zoomIn(itemAt indexPath: IndexPath) {
         
     }
     
