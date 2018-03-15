@@ -11,6 +11,8 @@ import Foundation
 struct SystemTopicPickerMessage: Codable, ActionData {
     var eventType: ChatterboxActionType = .topicPicker
     
+    var direction: MessageDirection { return data.direction }
+
     let type: String
     let data: RichControlData<ControlWrapper>
     

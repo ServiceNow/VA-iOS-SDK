@@ -11,6 +11,8 @@ import Foundation
 struct TopicFinishedMessage: Codable, ActionData {
     var eventType: ChatterboxActionType = .finishedUserTopic
     
+    var direction: MessageDirection { return data.direction }
+
     let type: String
     var data: ActionMessageData<TopicFinishMessageDetails>
     

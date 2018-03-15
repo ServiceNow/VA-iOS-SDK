@@ -88,10 +88,12 @@ enum ChatterboxActionType: String, Codable, CodingKey {
 
 protocol ActionData: Codable {
     var eventType: ChatterboxActionType { get }
+    var direction: MessageDirection { get }
 }
 
 struct ActionDataUnknown: ActionData {
     let eventType: ChatterboxActionType = .unknown
+    var direction: MessageDirection { return .fromClient }
 }
 
 // MARK: - Control Data

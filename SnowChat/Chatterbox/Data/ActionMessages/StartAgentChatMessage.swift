@@ -11,6 +11,8 @@ import Foundation
 struct StartAgentChatMessage: Codable, ActionData {
     var eventType: ChatterboxActionType = .startAgentChat
     
+    var direction: MessageDirection { return data.direction }
+
     let type: String
     var data: ActionMessageData<AgentChatMessageDetails>
     
