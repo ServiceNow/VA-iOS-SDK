@@ -59,7 +59,7 @@ class ButtonControl: ControlProtocol {
         let button = UIButton(type: .custom)
         button.titleLabel?.font = .preferredFont(forTextStyle: .body)
         button.layer.cornerRadius = 4
-        button.layer.borderColor = UIColor.agentBubbleBackgroundColor.cgColor
+        button.layer.borderColor = UIColor.defaultBotBubbleBackgroundColor.cgColor
         button.layer.borderWidth = 1
         button.setTitle(multiPartModel.label, for: .normal)
         button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 15, bottom: 10, right: 15)

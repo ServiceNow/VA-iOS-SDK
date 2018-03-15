@@ -133,7 +133,7 @@
 		57E65F4F202BA4640087E5DE /* OutputLinkControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E65F4E202BA4640087E5DE /* OutputLinkControl.swift */; };
 		57E65F51202BA5240087E5DE /* OutputLinkControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E65F50202BA5240087E5DE /* OutputLinkControlViewModel.swift */; };
 		57E65F53202BA5AD0087E5DE /* OutputLinkControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E65F52202BA5AD0087E5DE /* OutputLinkControlMessage.swift */; };
-		57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */; };
+		57EDCEA41FD5DA7A009A9A35 /* UIColor+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EDCEA31FD5DA7A009A9A35 /* UIColor+Theme.swift */; };
 		57EE77DF1FFEC2B1001F689A /* ChatMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */; };
 		57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F7B2531FE17823006D917C /* TextControlViewModel.swift */; };
 		8B0A1F67204080D400DE4D4C /* APIManager+ImageUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0A1F66204080D400DE4D4C /* APIManager+ImageUpload.swift */; };
@@ -343,7 +343,7 @@
 		57E65F4E202BA4640087E5DE /* OutputLinkControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputLinkControl.swift; sourceTree = "<group>"; };
 		57E65F50202BA5240087E5DE /* OutputLinkControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputLinkControlViewModel.swift; sourceTree = "<group>"; };
 		57E65F52202BA5AD0087E5DE /* OutputLinkControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputLinkControlMessage.swift; sourceTree = "<group>"; };
-		57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Utils.swift"; sourceTree = "<group>"; };
+		57EDCEA31FD5DA7A009A9A35 /* UIColor+Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Theme.swift"; sourceTree = "<group>"; };
 		57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageModel.swift; sourceTree = "<group>"; };
 		57F7B2531FE17823006D917C /* TextControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControlViewModel.swift; sourceTree = "<group>"; };
 		8B0A1F66204080D400DE4D4C /* APIManager+ImageUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIManager+ImageUpload.swift"; sourceTree = "<group>"; };
@@ -640,7 +640,7 @@
 				5760B91E1FD5C8C100591C06 /* UIImageUtils.swift */,
 				57E1EA321FC33D1C009FC76D /* RoundedView.swift */,
 				572A4E3B1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift */,
-				57EDCEA31FD5DA7A009A9A35 /* UIColor+Utils.swift */,
+				57EDCEA31FD5DA7A009A9A35 /* UIColor+Theme.swift */,
 				5704EA311FEAAD46001020E6 /* TypingIndicatorView.swift */,
 				57CD18582059512D00D5104E /* GradientView.swift */,
 			);
@@ -1425,7 +1425,7 @@
 				C4CBF2C92045D90C0038F120 /* Chatterbox+History.swift in Sources */,
 				57D33BFB2049D37200CB606D /* AppContextManager.swift in Sources */,
 				5728D8F12048D74A0071EF9E /* UserDataManager.swift in Sources */,
-				57EDCEA41FD5DA7A009A9A35 /* UIColor+Utils.swift in Sources */,
+				57EDCEA41FD5DA7A009A9A35 /* UIColor+Theme.swift in Sources */,
 				C47B36412048C57A00559410 /* Chatterbox+SupportQueue.swift in Sources */,
 				C4562FFF2059859F00B79688 /* UIColor+HexValue.swift in Sources */,
 				572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */,

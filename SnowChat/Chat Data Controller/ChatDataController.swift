@@ -52,9 +52,14 @@ class ChatDataController {
     internal var changeSet = [ModelChangeType]()
     
     internal let logger = Logger.logger(for: "ChatDataController")
+    private(set) var theme: Theme
 
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
+        
+        let brandingSettingsDictionary = chatterbox.session?.settings?.brandingSettings?.settings
+        theme = Theme(dictionary: brandingSettingsDictionary)
+        
         self.chatterbox.chatDataListener = self
         self.changeListener = changeListener
     }

@@ -142,6 +142,8 @@ struct BrandingSettings: Codable {
     var virtualAgentLogo: String?
     var virtualAgentProfileId: String?
     
+    var settings = [String : Any]()
+    
     private enum CodingKeys: String, CodingKey {
         case supportEmailLabel
         case supportEmail
@@ -168,14 +170,8 @@ struct BrandingSettings: Codable {
         virtualAgentLogo = dictionary["va_logo"] as? String
         virtualAgentProfileId = dictionary["va_profile"] as? String
         
-        initColors(dictionary)
-    }
-    
-    private mutating func initColors(_ dictionary: NSDictionary) {
-        colorPropertiesMap.keys.forEach { key in
-            if let value = dictionary.object(forKey: key) as? String {
-                colorPropertiesMap[key] = UIColor(hexValue: value)
-            }
+        if let map = dictionary as? [String : Any] {
+            settings = map
         }
     }
 }

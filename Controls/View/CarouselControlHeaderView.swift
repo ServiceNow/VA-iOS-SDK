@@ -37,7 +37,7 @@ class CarouselControlHeaderView: UICollectionReusableView {
                                      dividerView.trailingAnchor.constraint(equalTo: trailingAnchor),
                                      dividerView.bottomAnchor.constraint(equalTo: bottomAnchor),
                                      dividerView.heightAnchor.constraint(equalToConstant: 1)])
-        dividerView.backgroundColor = .agentBubbleBackgroundColor
+        dividerView.backgroundColor = UIColor.defaultBotBubbleBackgroundColor
         bringSubview(toFront: dividerView)
     }
     

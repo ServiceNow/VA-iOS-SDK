@@ -170,16 +170,16 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     // MARK: Update colors
     
     private func updateBubble(forControl control: ControlProtocol, andLocation location: BubbleLocation) {
-        bubbleView.borderColor = UIColor.agentBubbleBackgroundColor
+        bubbleView.borderColor = UIColor.defaultBotBubbleBackgroundColor
         
         if control.model.type == .text {
             let textViewController = control.viewController as! TextControl.TextViewController
-            textViewController.textLabel.textColor = (location == .right) ? UIColor.userBubbleTextColor : UIColor.agentBubbleTextColor
-            textViewController.textLabel.backgroundColor = (location == .right) ? UIColor.userBubbleBackgroundColor : UIColor.agentBubbleBackgroundColor
+            textViewController.textLabel.textColor = (location == .right) ? UIColor.defaultBubbleFontColor : UIColor.defaultBotBubbleFontColor
+            textViewController.textLabel.backgroundColor = (location == .right) ? UIColor.defaultBubbleBackgroundColor : UIColor.defaultAgentBubbleBackgroundColor
         }
         
-        control.viewController.view.backgroundColor = (location == .right) ? UIColor.userBubbleBackgroundColor : UIColor.agentBubbleBackgroundColor
-        bubbleView.backgroundColor = (location == .right) ? UIColor.userBubbleBackgroundColor : UIColor.agentBubbleBackgroundColor
+        control.viewController.view.backgroundColor = (location == .right) ? UIColor.defaultBubbleBackgroundColor : UIColor.defaultAgentBubbleBackgroundColor
+        bubbleView.backgroundColor = (location == .right) ? UIColor.defaultBubbleBackgroundColor : UIColor.defaultAgentBubbleBackgroundColor
         
         // Make sure that a little tail in the bubble gets colored like picker background. now it is hardcoded to white but will need to get theme color
         if control.viewController is PickerViewController {
