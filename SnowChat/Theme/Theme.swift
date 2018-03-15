@@ -8,6 +8,29 @@
 
 import Foundation
 
+struct ColorSettings {
+    static let categoryFontColor = "category_font_color"
+    static let linkColor = "link_color"
+    static let timestampColor = "timestamp_color"
+    static let inputBackgroundColor = "input_bg_color"
+    static let bubbleFontColor = "bubble_font_color"
+    static let bubbleBackgroundColor = "bubble_bg_color"
+    static let agentBubbleFontColor = "agent_bubble_font_color"
+    static let agentBubbleBackgroundColor = "agent_bubble_bg_color"
+    static let botBubbleFontColor = "bot_bubble_font_color"
+    static let botBubbleBackgroundColor = "bot_bubble_bg_color"
+    static let backgroundColor = "bg_color"
+    static let loadingAnimationColor = "load_animation_color"
+    static let separatorColor = "seperator_color"
+    static var categoryBackgroundColor = "category_bg_color"
+    static let buttonBackgroundColor = "button_bg_color"
+    static let disabledLinkColor = "disabled_link_color"
+    static let headerBackgroundColor = "header_bg_color"
+    static let menuIconColor = "menu_icon_color"
+    static let systemMessageColor = "system_message_color"
+    static let headerFontColor = "header_font_color"
+}
+
 class Theme {
     
     private var colorPropertiesMap = [String : UIColor]()
@@ -21,7 +44,7 @@ class Theme {
     }
     
     var categoryFontColor: UIColor {
-        guard let color = colorPropertiesMap["category_font_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.categoryFontColor] else {
             return UIColor.categoryFontColor
         }
         
@@ -29,7 +52,7 @@ class Theme {
     }
     
     var linkColor: UIColor {
-        guard let color = colorPropertiesMap["link_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.linkColor] else {
             return UIColor.defaultLinkColor
         }
         
@@ -37,7 +60,7 @@ class Theme {
     }
     
     var timestampColor: UIColor {
-        guard let color = colorPropertiesMap["timestamp_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.timestampColor] else {
             return UIColor.defaultTimestampColor
         }
         
@@ -45,7 +68,7 @@ class Theme {
     }
     
     var inputBackgroundColor: UIColor {
-        guard let color = colorPropertiesMap["input_bg_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.inputBackgroundColor] else {
             return UIColor.defaultInputBackgroundColor
         }
         
@@ -53,7 +76,7 @@ class Theme {
     }
     
     var bubbleFontColor: UIColor {
-        guard let color = colorPropertiesMap["bubble_font_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.bubbleFontColor] else {
             return UIColor.defaultBubbleFontColor
         }
         
@@ -61,14 +84,14 @@ class Theme {
     }
     
     var bubbleBackgroundColor: UIColor {
-        guard let color = colorPropertiesMap["bubble_bg_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.bubbleBackgroundColor] else {
             return UIColor.defaultBubbleBackgroundColor
         }
         return color
     }
     
     var agentBubbleFontColor: UIColor {
-        guard let color = colorPropertiesMap["agent_bubble_font_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.agentBubbleFontColor] else {
             return UIColor.defaultBubbleFontColor
         }
         
@@ -76,7 +99,7 @@ class Theme {
     }
     
     var agentBubbleBackgroundColor: UIColor {
-        guard let color = colorPropertiesMap["agent_bubble_bg_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.agentBubbleBackgroundColor] else {
             return UIColor.defaultAgentBubbleBackgroundColor
         }
         
@@ -84,7 +107,7 @@ class Theme {
     }
     
     var botBubbleFontColor: UIColor {
-        guard let color = colorPropertiesMap["bot_bubble_font_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.botBubbleFontColor] else {
             return UIColor.defaultBotBubbleFontColor
         }
         
@@ -92,7 +115,7 @@ class Theme {
     }
     
     var botBubbleBackgroundColor: UIColor {
-        guard let color = colorPropertiesMap["bot_bubble_bg_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.botBubbleBackgroundColor] else {
             return UIColor.defaultBotBubbleBackgroundColor
         }
         
@@ -100,7 +123,7 @@ class Theme {
     }
     
     var backgroundColor: UIColor {
-        guard let color = colorPropertiesMap["bg_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.backgroundColor] else {
             return UIColor.defaultBackgroundColor
         }
         
@@ -108,7 +131,7 @@ class Theme {
     }
     
     var loadingAnimationColor: UIColor {
-        guard let color = colorPropertiesMap["load_animation_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.loadingAnimationColor] else {
             return UIColor.defaultLoadingAnimationColor
         }
         
@@ -116,7 +139,7 @@ class Theme {
     }
     
     var separatorColor: UIColor {
-        guard let color = colorPropertiesMap["seperator_color"] else { // NOTE misspelling of key!
+        guard let color = colorPropertiesMap[ColorSettings.separatorColor] else {
             return UIColor.defaultSeparatorColor
         }
         
@@ -124,7 +147,7 @@ class Theme {
     }
     
     var categoryBackgroundColor: UIColor {
-        guard let color = colorPropertiesMap["category_bg_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.categoryBackgroundColor] else {
             return UIColor.defaultCategoryBackgroundColor
         }
         
@@ -132,7 +155,7 @@ class Theme {
     }
     
     var buttonBackgroundColor: UIColor {
-        guard let color = colorPropertiesMap["button_bg_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.buttonBackgroundColor] else {
             return UIColor.defaultButtonBackgroundColor
         }
         
@@ -140,7 +163,7 @@ class Theme {
     }
     
     var disabledLinkColor: UIColor {
-        guard let color = colorPropertiesMap["disabled_link_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.disabledLinkColor] else {
             return UIColor.defaultDisabledLinkColor
         }
         
@@ -148,7 +171,7 @@ class Theme {
     }
     
     var headerBackgroundColor: UIColor {
-        guard let color = colorPropertiesMap["header_bg_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.headerBackgroundColor] else {
             return UIColor.defaultHeaderBackgroundColor
         }
         
@@ -156,7 +179,7 @@ class Theme {
     }
     
     var menuIconColor: UIColor {
-        guard let color = colorPropertiesMap["menu_icon_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.menuIconColor] else {
             return UIColor.defaultMenuIconColor
         }
         
@@ -164,7 +187,7 @@ class Theme {
     }
     
     var systemMessageColor: UIColor {
-        guard let color = colorPropertiesMap["system_message_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.systemMessageColor] else {
             return UIColor.defaultSystemMessageColor
         }
         
@@ -172,7 +195,7 @@ class Theme {
     }
     
     var headerFontColor: UIColor {
-        guard let color = colorPropertiesMap["header_font_color"] else {
+        guard let color = colorPropertiesMap[ColorSettings.headerFontColor] else {
             return UIColor.defaultHeaderFontColor
         }
         
