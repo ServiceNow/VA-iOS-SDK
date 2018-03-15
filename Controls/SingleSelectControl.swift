@@ -29,10 +29,10 @@ class SingleSelectControl: PickerControlProtocol {
     
     required init(model: ControlViewModel) {
         self.model = model
-        self.style = .inline
+        self.style = .list
     }
     
-    func pickerViewController(_ viewController: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
+    func pickerViewController(_ viewController: UIViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
 
     }
 }

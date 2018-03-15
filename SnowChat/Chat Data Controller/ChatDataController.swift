@@ -275,13 +275,16 @@ class ChatDataController {
     }
     
     fileprivate func updatePickerData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
-        if let pickerViewModel = data as? SingleSelectControlViewModel,
-            var pickerMessage = lastPendingMessage as? PickerControlMessage {
-            
-            pickerMessage.id = ChatUtil.uuidString()
+        guard var pickerMessage = lastPendingMessage as? PickerControlMessage else { return }
+        pickerMessage.id = ChatUtil.uuidString()
+        
+        if let carouselViewModel = data as? CarouselControlViewModel {
+            pickerMessage.data.richControl?.value = carouselViewModel.resultValue
+        } else if let pickerViewModel = data as? SingleSelectControlViewModel {
             pickerMessage.data.richControl?.value = pickerViewModel.resultValue
-            chatterbox.update(control: pickerMessage)
         }
+        
+        chatterbox.update(control: pickerMessage)
     }
     
     fileprivate func updateMultiSelectData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
@@ -394,7 +397,7 @@ class ChatDataController {
     }
 
     func presentWelcomeMessage() {
-        let message = chatterbox.session?.welcomeMessage ?? "Welcome! What can we help you with?"
+        let message = chatterbox.session?.welcomeMessage ?? NSLocalizedString("Welcome! What can we help you with?", comment: "Default welcome message")
         let welcomeTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         
         // NOTE: we do not buffer the welcome message currently - this is intentional

@@ -24,7 +24,7 @@ extension ChatDataController: ContextItemProvider {
     fileprivate func newConversationMenuItem() -> ContextMenuItem {
         let menuItem = ContextMenuItem(withTitle: NSLocalizedString("New Conversation", comment: "Context Menu Item Title")) { viewController, sender in
             self.logger.logDebug("New Conversation menu selected")
-            self.chatterbox.endUserConversation()
+            self.chatterbox.cancelConversation()
         }
         return menuItem
     }
@@ -52,9 +52,11 @@ extension ChatDataController: ContextItemProvider {
     // MARK: Support Actions
     
     fileprivate func emailSupportAction() -> UIAlertAction? {
-        guard let emailAddress = chatterbox.session?.settings?.generalSettings?.supportEmail else { return nil }
+        guard let brandingSettings = chatterbox.session?.settings?.brandingSettings,
+              let emailAddress = brandingSettings.supportEmail else { return nil }
         
-        let actionItem = UIAlertAction(title: NSLocalizedString("Send Email to Customer Support", comment: "Support Menu item: email support"), style: .default) { action in
+        let label = brandingSettings.supportEmailLabel ?? NSLocalizedString("Send Email to Customer Support", comment: "Support Menu item: email support")
+        let actionItem = UIAlertAction(title: label, style: .default) { action in
             if let emailUrl = URL(string: "mailto://\(emailAddress)") {
                 UIApplication.shared.open(emailUrl, options: [:])
             }
@@ -63,14 +65,17 @@ extension ChatDataController: ContextItemProvider {
     }
     
     fileprivate func agentChatAction() -> UIAlertAction? {
-        guard let supportQueueInfo = chatterbox.supportQueueInfo  else { return nil }
+        guard let brandingSettings = chatterbox.session?.settings?.brandingSettings,
+              let supportQueueInfo = chatterbox.supportQueueInfo else { return nil }
         
-        var messageToUser = NSLocalizedString("No Chat Agents Currently Available", comment: "Support Menu item: chat with agent when chat is unavailable")
+        var messageToUser: String
         
         if supportQueueInfo.active == true {
-            messageToUser = NSLocalizedString("Chat with an Agent", comment: "Support Menu item: chat with agent")
+            messageToUser = brandingSettings.supportHoursLabel ?? NSLocalizedString("Chat with an Agent", comment: "Support Menu item: default agent chat menu item text")
             let waitTime = supportQueueInfo.averageWaitTime
             messageToUser += ": \(waitTime) wait"
+        } else {
+            messageToUser = NSLocalizedString("No Chat Agents Currently Available", comment: "Support Menu item: chat with agent when chat is unavailable")
         }
         
         let actionItem = UIAlertAction(title: messageToUser, style: .default) { action in
@@ -82,18 +87,16 @@ extension ChatDataController: ContextItemProvider {
     }
     
     fileprivate func callSupportAction() -> UIAlertAction? {
-        guard let generalSettings = chatterbox.session?.settings?.generalSettings else { return nil }
+        guard let brandingSettings = chatterbox.session?.settings?.brandingSettings,
+              let phoneNumber = brandingSettings.supportPhone,
+              let phoneUrl = URL(string: "tel://\(phoneNumber)")else { return nil }
         
-        var message = NSLocalizedString("Call Support: ", comment: "Support Menu item: call support")
-        if let hours = generalSettings.supportHours {
-            message += hours
-        }
+        let message = brandingSettings.supportPhoneLabel ?? NSLocalizedString("Call Support", comment: "Support Menu item: call support default menu item text")
         
         let actionItem = UIAlertAction(title: message, style: .default) { action in
-            if let phoneNumber = generalSettings.supportPhone, let phoneUrl = URL(string: "tel://\(phoneNumber)") {
-                UIApplication.shared.open(phoneUrl, options: [:])
-            }
+            UIApplication.shared.open(phoneUrl, options: [:])
         }
+        
         return actionItem
     }
     
@@ -101,11 +104,6 @@ extension ChatDataController: ContextItemProvider {
         let alertController = UIAlertController(title: NSLocalizedString("Support Options", comment: "Title for support options popover"),
                                                 message: nil,
                                                 preferredStyle: .actionSheet)
-        
-        if let email = emailSupportAction() {
-            alertController.addAction(email)
-        }
-        
         if let agent = agentChatAction() {
             alertController.addAction(agent)
         }
@@ -114,14 +112,16 @@ extension ChatDataController: ContextItemProvider {
             alertController.addAction(call)
         }
         
-        let count = alertController.actions.count
+        if let email = emailSupportAction() {
+            alertController.addAction(email)
+        }
         
-        let cancel = UIAlertAction(title: count > 0 ?
+        let cancelText = alertController.actions.count > 0 ?
             NSLocalizedString("Cancel", comment: "Cancel Support Menu item") :
-            NSLocalizedString("No Support Options Available", comment: "No Support Available Menu item"),
-                                   style: .cancel)
-        alertController.addAction(cancel)
+            NSLocalizedString("No support options are currently available", comment: "No Support Available Menu item")
+        let cancel = UIAlertAction(title: cancelText, style: .cancel)
         
+        alertController.addAction(cancel)
         alertController.popoverPresentationController?.barButtonItem = sender
         presentingController.present(alertController, animated: true, completion: nil)
     }

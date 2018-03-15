@@ -68,7 +68,8 @@ public class ChatViewController: UIViewController {
     }
     
     private func setupContextMenu() {
-        let contextMenu = UIBarButtonItem(title: "...", style: .plain, target: self, action: #selector(contextMenuTapped(_:)))
+        let image = UIImage(named: "menu", in: Bundle(for: type(of: self)), compatibleWith: nil)
+        let contextMenu = UIBarButtonItem(image: image, style: UIBarButtonItemStyle.plain, target: self, action: #selector(contextMenuTapped(_:)))
         navigationItem.rightBarButtonItem = contextMenu
     }
     

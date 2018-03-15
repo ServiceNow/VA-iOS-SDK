@@ -28,3 +28,8 @@ protocol ControlViewModel {
     
     var type: ControlType { get }
 }
+
+protocol Resizable {
+    
+    var size: CGSize? { get set }
+}

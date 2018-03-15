@@ -19,6 +19,8 @@ extension Chatterbox {
             return
         }
         
+        cancelPendingExchangeIfNeeded()
+        
         if let sessionId = session?.id, let conversationId = conversationContext.systemConversationId {
             state = .agentConversation
             messageHandler = startLiveAgentHandshakeHandler
@@ -36,17 +38,36 @@ extension Chatterbox {
         }
     }
     
+    internal func endAgentConversation() {
+        guard let sessionId = conversationContext.sessionId,
+            let systemConversationId = conversationContext.systemConversationId,
+            let topicId = conversationContext.conversationId else {
+                return
+        }
+        
+        let endChatMessage = EndAgentChatMessage(withTopicId: topicId, systemConversationId: systemConversationId, sessionId: sessionId)        
+        publishMessage(endChatMessage)
+    }
+    
     internal func resumeLiveAgentTopic(conversation: Conversation) {
-        // TODO: notify server that we are resuming the topic (showTopic)
+        showTopic {
+            guard var taskId = self.conversationContext.taskId,
+                let conversationId = self.conversationContext.conversationId else {
+                    self.logger.logError("No ConversationId or taskId from ShowTopic: cannot resume agent chat!")
+                    self.endAgentTopic()
+                    return
+            }
+            // FIXME: have to get the taskId from the last message in history, since the server is sending the incorrect
+            //        taskId in the showTopic response. Remove when server fixes this!
+            if let correctTaskId = conversation.messageExchanges().last?.message.taskId {
+                self.logger.logDebug("*** Resume LiveAgent conversation: original taskId=\(correctTaskId) - incoming taskId=\(taskId) ***")
 
-        // have to reset the taskId to the last live agent message's taskId
-        if let taskId = conversation.messageExchanges().last?.message.taskId {
-            let topicInfo = TopicInfo(topicId: Chatterbox.liveAgentTopicId, topicName: nil, taskId: taskId, conversationId: conversation.conversationId)
-            conversationContext.taskId = taskId
-            startAgentTopic(topicInfo: topicInfo)
-        } else {
-            // cannot resume the live-agent chat without a taskId, so end it
-            endAgentTopic()
+                self.conversationContext.taskId = correctTaskId
+                taskId = correctTaskId
+            }
+            
+            let topicInfo = TopicInfo(topicId: Chatterbox.liveAgentTopicId, topicName: nil, taskId: taskId, conversationId: conversationId)
+            self.startAgentTopic(topicInfo: topicInfo)
         }
     }
 
@@ -67,7 +88,7 @@ extension Chatterbox {
             let startAgentChatMessage = actionMessage as? StartAgentChatMessage,
             startAgentChatMessage.data.actionMessage.chatStage == "ConnectToAgent" {
             
-            if startAgentChatMessage.data.direction == .fromServer {
+            if startAgentChatMessage.direction == .fromServer {
                 logger.logDebug("*** ConnectToAgent Message from server: conversationId=\(startAgentChatMessage.data.conversationId ?? "NIL") topicId=\(startAgentChatMessage.data.actionMessage.topicId) taskId=\(startAgentChatMessage.data.taskId ?? "NIL")")
                 
                 let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
@@ -133,13 +154,12 @@ extension Chatterbox {
     }
     
     private func showLiveAgentUnavailableMessage() {
-        if let email = session?.settings?.generalSettings?.supportEmail,
-            let phone = session?.settings?.generalSettings?.supportPhone,
-            let hours = session?.settings?.generalSettings?.supportHours,
+        if let email = session?.settings?.brandingSettings?.supportEmail,
+            let phone = session?.settings?.brandingSettings?.supportPhone,
             let conversationId = conversationContext.conversationId,
             let sessionId = conversationContext.sessionId {
                 let taskId = conversationContext.taskId
-                let message = NSLocalizedString("I'm sorry, no agents are currently available. Please call us at \(phone) (\(hours)), email us at \(email), or try again later.",
+                let message = NSLocalizedString("I'm sorry, no agents are currently available. Please call us at \(phone), email us at \(email), or try again later.",
                     comment: "Message when no agents available during live agent transfer")
                 let textControl = OutputTextControlMessage(withValue: message, sessionId: sessionId, conversationId: conversationId, taskId: taskId, direction: MessageDirection.fromServer)
                 chatDataListener?.chatterbox(self, didReceiveControlMessage: textControl, forChat: chatId)

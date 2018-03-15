@@ -27,11 +27,57 @@ extension Chatterbox {
         }
     }
     
-    func endUserConversation() {
-        let sessionId = conversationContext.sessionId ?? "UNKNOWN_SESSION_ID"
-        let conversationId = conversationContext.conversationId ?? "UNKNOWN_CONVERSATION_ID"
+    internal func cancelUserConversation() {
+        guard conversationContext.conversationId != nil else {
+            logger.logError("endConversation with no conversation current - skipping")
+            return
+        }
+
+        guard let cancelTopic = cancelTopicMessageFromContextualActions() else { return }
         
-        didReceiveTopicFinishedAction(TopicFinishedMessage(withSessionId: sessionId, withConversationId: conversationId))
+        messageHandler = { message in
+            self.logger.logDebug("CancelTopic handler: \(message)")
+            
+            if let cancelTopic = ChatDataFactory.actionFromJSON(message) as? CancelUserTopicMessage,
+                cancelTopic.data.direction == .fromServer {
+                var cancelTopicReply = cancelTopic
+                cancelTopicReply.data.messageId = ChatUtil.uuidString()
+                cancelTopicReply.data.direction = .fromClient
+                cancelTopicReply.data.sendTime = Date()
+                cancelTopicReply.data.actionMessage.ready = true
+
+                self.publishMessage(cancelTopicReply)
+                
+            } else if let topicFinished = ChatDataFactory.actionFromJSON(message) as? TopicFinishedMessage {
+
+                self.didReceiveTopicFinishedAction(topicFinished)
+                
+            } else if let systemError = ChatDataFactory.controlFromJSON(message) as? SystemErrorControlMessage {
+                self.logger.logError("System Error canceling conversation: \(systemError)")
+                
+                guard let sessionId = self.conversationContext.sessionId,
+                    let conversationId = self.conversationContext.conversationId else { return }
+                
+                self.didReceiveTopicFinishedAction(TopicFinishedMessage(withSessionId: sessionId, withConversationId: conversationId))
+            }
+        }
+        
+        publishMessage(cancelTopic)
+    }
+    
+    private func cancelTopicMessageFromContextualActions() -> ContextualActionMessage? {
+        guard var cancelTopic = contextualActions,
+            let sessionId = conversationContext.sessionId,
+            let conversationId = conversationContext.systemConversationId else { return nil }
+        
+        cancelTopic.type = "consumerTextMessage"
+        cancelTopic.data.sessionId = sessionId
+        cancelTopic.data.conversationId = conversationId
+        cancelTopic.data.richControl?.value = CancelTopicControlMessage.value
+        cancelTopic.data.direction = .fromClient
+        cancelTopic.data.sendTime = Date()
+        
+        return cancelTopic
     }
     
     internal func finishTopic(_ conversationId: String) {
@@ -40,14 +86,13 @@ extension Chatterbox {
     }
     
     internal func resumeUserTopic(topicInfo: TopicInfo) {
-        // TODO: notify server that we are resuming the topic (showTopic)
-        if conversationContext.conversationId != topicInfo.conversationId {
-            state = .userConversation
-            setupForConversation(topicInfo: topicInfo)
+        showTopic {
+            self.state = .userConversation
+            self.setupForConversation(topicInfo: topicInfo)
+            self.chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: self.chatId)
         }
-        chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: chatId)
     }
-
+    
     internal func installTopicSelectionMessageHandler() {
         state = .topicSelection
         messageHandler = topicSelectionMessageHandler
@@ -72,7 +117,7 @@ extension Chatterbox {
         switch controlMessage.controlType {
         case .topicPicker:
             if let topicPicker = controlMessage as? UserTopicPickerMessage {
-                if topicPicker.data.direction == .fromServer {
+                if topicPicker.direction == .fromServer {
                     var outgoingMessage = topicPicker
                     outgoingMessage.type = "consumerTextMessage"
                     outgoingMessage.data.direction = .fromClient
@@ -97,7 +142,7 @@ extension Chatterbox {
             if let startUserTopic = actionMessage as? StartUserTopicMessage {
                 
                 // client and server messages are the same, so only look at server responses!
-                if startUserTopic.data.direction == .fromServer {
+                if startUserTopic.direction == .fromServer {
                     let startUserTopicReadyMessage = createStartTopicReadyMessage(fromMessage: startUserTopic)
                     publishMessage(startUserTopicReadyMessage)
                 }
