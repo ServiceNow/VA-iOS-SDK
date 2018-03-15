@@ -22,7 +22,7 @@ struct CarouselLabeledValue: Codable {
 
 struct PickerMetadata: Codable {
     let multiSelect: Bool
-    let style: PickerStyle
+    let style: PickerStyle?
     let openByDefault: Bool
     let required: Bool?
     let itemType: String?
