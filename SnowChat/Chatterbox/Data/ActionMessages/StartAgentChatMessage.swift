@@ -9,8 +9,7 @@
 import Foundation
 
 struct StartAgentChatMessage: Codable, ActionData {
-    var eventType: ChatterboxActionType = .startAgentChat
-    
+    var eventType: ChatterboxActionType { return .startAgentChat }    
     var direction: MessageDirection { return data.direction }
 
     let type: String

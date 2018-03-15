@@ -9,8 +9,7 @@
 import Foundation
 
 struct SystemTopicPickerMessage: Codable, ActionData {
-    var eventType: ChatterboxActionType = .topicPicker
-    
+    var eventType: ChatterboxActionType { return .topicPicker }    
     var direction: MessageDirection { return data.direction }
 
     let type: String

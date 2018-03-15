@@ -195,7 +195,7 @@ extension ChatMessageModel {
             return nil
         }
         
-        let direction = message.data.direction
+        let direction = message.direction
         let textModel = TextControlViewModel(id: message.messageId, value: value)
         let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
@@ -203,7 +203,7 @@ extension ChatMessageModel {
     
     static func model(withMessage message: AgentTextControlMessage) -> ChatMessageModel? {
         let value = message.data.text
-        let direction = message.data.direction
+        let direction = message.direction
         let textModel = TextControlViewModel(id: message.messageId, value: value)
         let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
 
@@ -247,7 +247,7 @@ extension ChatMessageModel {
             return nil
         }
         
-        let direction = message.data.direction
+        let direction = message.direction
         
         guard let url = URL(string: value.action) else { return nil }
         let outputLinkModel = OutputLinkControlViewModel(id: message.messageId, value: url)
@@ -260,7 +260,7 @@ extension ChatMessageModel {
             return nil
         }
         
-        let direction = message.data.direction
+        let direction = message.direction
         let outputHtmlModel = OutputHtmlControlViewModel(id: message.messageId, value: value)
         var size = CGSize()
         if let width = message.data.richControl?.uiMetadata?.width {

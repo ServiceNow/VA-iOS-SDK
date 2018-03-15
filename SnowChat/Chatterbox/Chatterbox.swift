@@ -347,6 +347,74 @@ class Chatterbox {
         }
     }
     
+    // MARK: Chatbot and Agent shared functionality
+    
+    internal func showTopic(completion: @escaping () -> Void) {
+        guard let sessionId = session?.id,
+            let conversationId = conversationContext.systemConversationId,
+            let uiMetadata = contextualActions?.data.richControl?.uiMetadata else {
+                logger.logError("Could not perform showTopic handshake: no conversationID or contextualActions")
+                completion()
+                return
+        }
+        
+        var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId, uiMetadata: uiMetadata)
+        startTopic.data.richControl?.value = "showTopic"
+        startTopic.data.direction = .fromClient
+        startTopic.data.taskId = conversationContext.taskId
+        
+        installShowTopicHandler {
+            completion()
+        }
+        
+        publishMessage(startTopic)
+    }
+    
+    internal func installShowTopicHandler(completion:  @escaping () -> Void) {
+        let previousHandler = messageHandler
+        
+        messageHandler = { [weak self] message in
+            guard let strongSelf = self else { return }
+            
+            // expect a topicPicker back, resend it with the FIRST option picked, and get back a ShowTopic confirmation
+            // NOTE: we always resume the LAST topic, which is the first in the picker-list. Eventually we
+            //       may show a menu of choices and let the user pick which topic to resume...
+            
+            let controlMessage = ChatDataFactory.controlFromJSON(message)
+            
+            if let pickerMessage = controlMessage as? PickerControlMessage {
+                guard pickerMessage.direction == .fromServer,
+                    let count = pickerMessage.data.richControl?.uiMetadata?.options.count, count > 0 else { return }
+                
+                let topicToResume = pickerMessage.data.richControl?.uiMetadata?.options[0].value
+                var responseMessage = pickerMessage
+                responseMessage.data.richControl?.value = topicToResume
+                responseMessage.data.sendTime = Date()
+                responseMessage.data.direction = MessageDirection.fromClient
+                strongSelf.publishMessage(responseMessage)
+                
+            } else {
+                let actionMessage = ChatDataFactory.actionFromJSON(message)
+                
+                guard actionMessage.direction == .fromServer,
+                    let showTopicMessage = actionMessage as? ShowTopicMessage else { return }
+                
+                let sessionId = showTopicMessage.data.sessionId
+                let topicId = showTopicMessage.data.actionMessage.topicId
+                let taskId = showTopicMessage.data.taskId
+                
+                strongSelf.conversationContext.conversationId = topicId
+                strongSelf.conversationContext.sessionId = sessionId
+                strongSelf.conversationContext.taskId = taskId
+                
+                strongSelf.logger.logDebug("Topic resumed: topicId=\(topicId)")
+                strongSelf.messageHandler = previousHandler
+                
+                completion()
+            }
+        }
+    }
+    
     // MARK: - Conversation Access
     
     func currentConversationHasControlData(forId messageId: String) -> Bool {

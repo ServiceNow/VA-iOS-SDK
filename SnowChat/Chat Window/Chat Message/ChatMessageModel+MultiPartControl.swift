@@ -55,7 +55,7 @@ extension ChatMessageModel {
         }
         
         let buttonModel = ButtonControlViewModel(id: message.messageId, label: title, value: index)
-        let direction = message.data.direction
+        let direction = message.direction
         let buttonChatModel = ChatMessageModel(model: buttonModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         buttonChatModel.isAuxiliary = true
         return buttonChatModel

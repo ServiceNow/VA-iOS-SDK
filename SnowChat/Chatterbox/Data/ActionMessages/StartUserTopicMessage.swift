@@ -9,8 +9,7 @@
 import Foundation
 
 struct StartUserTopicMessage: Codable, ActionData {
-    var eventType: ChatterboxActionType = .startUserTopic
-    
+    var eventType: ChatterboxActionType { return .startUserTopic }    
     var direction: MessageDirection { return data.direction }
 
     let type: String

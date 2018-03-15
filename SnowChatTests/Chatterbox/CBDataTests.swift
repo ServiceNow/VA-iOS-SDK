@@ -184,6 +184,11 @@ class ChatterboxDataTests: XCTestCase {
         XCTAssertTrue(message.data.actionMessage.topicId.lengthOfBytes(using: .utf8) > 0)
     }
     
+    func testShowTopicMessage() {
+        let message = ExampleData.exampleShowTopicResponseMessage()
+        XCTAssertEqual(ChatterboxActionType.showTopic, message.eventType)
+    }
+    
     let jsonInitStart = """
         {
           "type" : "actionMessage",
