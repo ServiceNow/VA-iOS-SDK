@@ -57,7 +57,7 @@ extension APIManager: SNOWAMBClientDelegate {
     func ambClientDidConnect(_ client: SNOWAMBClient) {}
     func ambClientDidDisconnect(_ client: SNOWAMBClient) {}
     func ambClient(_ client: SNOWAMBClient, didSubscribeToChannel channel: String) {}
-    func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromchannel channel: String) {}
+    func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromChannel channel: String) {}
     func ambClient(_ client: SNOWAMBClient, didReceiveMessage: SNOWAMBMessage, fromChannel channel: String) {}
     func ambClient(_ client: SNOWAMBClient, didChangeGlideStatus status: SNOWAMBGlideStatus) {}
     
