@@ -15,6 +15,7 @@ class CarouselCollectionViewCell: UICollectionViewCell {
     private var requestReceipt: RequestReceipt?
     private var imageDownloader: ImageDownloader?
     @IBOutlet private weak var imageView: UIImageView?
+    @IBOutlet weak var zoomButton: UIButton?
     
     func configure(withCarouselItem item: CarouselItem, imageDownloader: ImageDownloader) {
         if let attachmentURL = item.attachment {

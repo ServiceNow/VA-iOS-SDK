@@ -110,12 +110,24 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CarouselCollectionViewCell.cellIdentifier, for: indexPath) as! CarouselCollectionViewCell
         cell.contentView.backgroundColor = .clear
+        cell.zoomButton?.addTarget(self, action: #selector(zoomButtonTapped(_:)), for: .touchUpInside)
         let item = model.items[indexPath.row] as! CarouselItem
         if let imageDownloader = imageDownloader {
             cell.configure(withCarouselItem: item, imageDownloader: imageDownloader)
         }
         
         return cell
+    }
+    
+    @objc func zoomButtonTapped(_ sender: UIButton) {
+        guard let point = self.collectionView?.convert(sender.center, from: sender.superview),
+            let selectedIndexPath = collectionView?.indexPathForItem(at: point) else { return }
+        
+        zoomIn(forItemAt: selectedIndexPath)
+    }
+    
+    private func zoomIn(forItemAt indexPath: IndexPath) {
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
