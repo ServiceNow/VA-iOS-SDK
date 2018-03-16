@@ -209,12 +209,10 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
     
     @objc internal func applicationDidEnterBackground(_ notification: Notification) {
         addAMBPauseReason(.appBackgrounded)
-        debugPrint("BACKGROUND")
     }
     
     @objc internal func applicationWillEnterForeground(_ notification: Notification) {
         removeAMBPauseReason(.appBackgrounded)
-        debugPrint("FOREGROUND")
     }
     
     // MARK: - AMB Pausing
