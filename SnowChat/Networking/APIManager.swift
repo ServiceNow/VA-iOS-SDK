@@ -15,6 +15,7 @@ import WebKit
 enum APIManagerError: Error {
     case loginError(message: String)
     case invalidToken(message: String)
+    case invalidUser(message: String)
 }
 
 class APIManager: NSObject, SNOWAMBClientDelegate {
@@ -119,7 +120,12 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
                 let userDictionary = dictionary["result"] as? [String : Any] ?? [:]
                 
                 guard let user = User(dictionary: userDictionary) else {
-                    completion(.failure(APIManagerError.loginError(message: "Invalid User")))
+                    completion(.failure(APIManagerError.invalidUser(message: "Invalid user information.")))
+                    return
+                }
+                
+                guard currentUser == nil || user.sysId == currentUser?.sysId else {
+                    completion(.failure(APIManagerError.invalidUser(message: "Attempted to reauthenticate as a different user.")))
                     return
                 }
                 
@@ -203,8 +209,8 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
     }
     
     private func subscribeToAppStateChanges() {
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: Notification.Name.UIApplicationDidEnterBackground, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground(_:)), name: Notification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: .UIApplicationDidEnterBackground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground(_:)), name: .UIApplicationWillEnterForeground, object: nil)
     }
     
     @objc internal func applicationDidEnterBackground(_ notification: Notification) {
