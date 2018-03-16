@@ -203,16 +203,18 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
     }
     
     private func subscribeToAppStateChanges() {
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActiveNotification(_:)), name: Notification.Name.UIApplicationDidBecomeActive, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActiveNotification(_:)), name: Notification.Name.UIApplicationWillResignActive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: Notification.Name.UIApplicationDidEnterBackground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground(_:)), name: Notification.Name.UIApplicationWillEnterForeground, object: nil)
     }
     
-    @objc internal func applicationWillResignActiveNotification(_ notification: Notification) {
+    @objc internal func applicationDidEnterBackground(_ notification: Notification) {
         addAMBPauseReason(.appBackgrounded)
+        debugPrint("BACKGROUND")
     }
     
-    @objc internal func applicationDidBecomeActiveNotification(_ notification: Notification) {
+    @objc internal func applicationWillEnterForeground(_ notification: Notification) {
         removeAMBPauseReason(.appBackgrounded)
+        debugPrint("FOREGROUND")
     }
     
     // MARK: - AMB Pausing
