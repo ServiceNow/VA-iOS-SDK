@@ -98,12 +98,7 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
         sessionManager.adapter = authInterceptor
         sessionManager.retrier = authInterceptor
         
-        // FIXME: Don't use mobile app APIs. Need to move to this API when it's ready: ui/user/current_user
-        sessionManager.request(apiURLWithPath("mobile/app_bootstrap/post_auth"),
-                               method: .get,
-                               parameters: nil,
-                               encoding: JSONEncoding.default,
-                               headers: nil)
+        sessionManager.request(apiURLWithPath("ui/user/current_user"), method: .get)
             .validate()
             .responseJSON { [weak self] response in
                 guard let strongSelf = self else { return }
@@ -121,9 +116,7 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
                 
                 // TODO: Need a better solution for response parsing. Custom mappings?
                 let dictionary = response.result.value as? [String : Any] ?? [:]
-                let result = dictionary["result"] as? [String : Any] ?? [:]
-                let resources = result["resources"] as? [String : Any] ?? [:]
-                let userDictionary = resources["current_user"] as? [String : Any] ?? [:]
+                let userDictionary = dictionary["result"] as? [String : Any] ?? [:]
                 
                 guard let user = User(dictionary: userDictionary) else {
                     completion(.failure(APIManagerError.loginError(message: "Invalid User")))
