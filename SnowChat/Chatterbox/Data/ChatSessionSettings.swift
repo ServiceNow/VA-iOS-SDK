@@ -147,9 +147,7 @@ struct BrandingSettings: Codable {
         virtualAgentLogo = dictionary["va_logo"] as? String
         virtualAgentProfileId = dictionary["va_profile"] as? String
         
-        if let map = dictionary as? [String : Any] {
-            settings = map
-        }
+        settings = dictionary
     }
 }
 
