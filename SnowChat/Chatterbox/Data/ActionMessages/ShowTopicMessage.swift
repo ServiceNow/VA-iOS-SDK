@@ -9,11 +9,8 @@
 import Foundation
 
 struct ShowTopicMessage: Codable, ActionData {
-    var eventType: ChatterboxActionType = .showTopic
-    
-    var direction: MessageDirection {
-        return data.direction
-    }
+    var eventType: ChatterboxActionType { return .showTopic }
+    var direction: MessageDirection { return data.direction }
 
     let type: String
     var data: ActionMessageData<ShowTopicMessageDetails>

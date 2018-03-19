@@ -9,11 +9,8 @@
 import Foundation
 
 struct InitMessage: Codable, ActionData {
-    var eventType: ChatterboxActionType = .channelInit
-    
-    var direction: MessageDirection {
-        return data.direction
-    }
+    var eventType: ChatterboxActionType { return .channelInit }
+    var direction: MessageDirection { return data.direction }
 
     let type: String
     var data: ActionMessageData<InitMessageDetails>

@@ -165,7 +165,7 @@ extension Chatterbox {
             conversationContext.systemConversationId = initEvent.data.conversationId
             conversationContext.sessionId = initEvent.data.sessionId
             
-            installTopicSelectionMessageHandler()
+            installPostHandshakeMessageHandler()
         default:
             break
         }

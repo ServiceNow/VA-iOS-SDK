@@ -448,11 +448,12 @@ extension ConversationViewController {
     private func adjustModelSizeIfNeeded(_ messageModel: ChatMessageModel) {
         guard let outputHtmlModel = messageModel.controlModel as? OutputHtmlControlViewModel,
             let messageHeight = defaultMessageHeight,
-            outputHtmlModel.size == nil else {
+            let size = outputHtmlModel.size,
+            size.height == UIViewNoIntrinsicMetric else {
                 return
         }
         
-        outputHtmlModel.size = CGSize(width: CGFloat.nan, height: messageHeight)
+        outputHtmlModel.size = CGSize(width: UIViewNoIntrinsicMetric, height: messageHeight)
     }
     
     // MARK: - ChatMessageViewController reuse
