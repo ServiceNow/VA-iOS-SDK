@@ -88,7 +88,9 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
     private func load(_ request: Request) {
         switch request {
         case let .html(html):
-            webView.loadHTMLString(html, baseURL: nil)
+            let viewportDirective = "<meta name=\"viewport\" content=\"width=device-width\" />"
+            let scaledHTML = viewportDirective + html
+            webView.loadHTMLString(scaledHTML, baseURL: nil)
         case let .url(url):
             let request = resourceProvider.authorizedRequest(with: url)
             webView.load(request)
