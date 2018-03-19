@@ -112,6 +112,8 @@ class ChatDataFactory {
                     return try ChatUtil.jsonDecoder.decode(EndAgentChatMessage.self, from: jsonData)
                 case .supportQueueSubscribe:
                     return try ChatUtil.jsonDecoder.decode(SubscribeToSupportQueueMessage.self, from: jsonData)
+                case .showTopic:
+                    return try ChatUtil.jsonDecoder.decode(ShowTopicMessage.self, from: jsonData)
                 case .unknown:
                     return ActionDataUnknown()
                 }

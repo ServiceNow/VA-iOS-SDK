@@ -33,7 +33,7 @@ class MultiSelectControl: PickerControlProtocol {
         }
 
         self.model = multiSelectModel
-        style = .regular
+        style = .list
     }
     
     // MARK: - PickerViewControllerDelegate

@@ -21,20 +21,20 @@ struct ChatSessionSettings: Codable {
         case liveAgentSettings
     }
     
-    init(fromDictionary dictionary: NSDictionary) {
-        if let general = dictionary["generalSettings"] as? NSDictionary {
+    init(fromDictionary dictionary: [String: Any]) {
+        if let general = dictionary["generalSettings"] as? [String: Any] {
             generalSettings = GeneralSettings(fromDictionary: general)
         }
         
-        if let branding = dictionary["brandingSettings"] as? NSDictionary {
+        if let branding = dictionary["brandingSettings"] as?  [String: Any] {
             brandingSettings = BrandingSettings(fromDictionary: branding)
         }
         
-        if let virtualAgent = dictionary["virtualAgentProfile"] as? NSDictionary {
+        if let virtualAgent = dictionary["virtualAgentProfile"] as?  [String: Any] {
             virtualAgentSettings = VirtualAgentSettings(fromDictionary: virtualAgent)
         }
         
-        if let liveAgent = dictionary["liveAgentSetup"] as? NSDictionary {
+        if let liveAgent = dictionary["liveAgentSetup"] as?  [String: Any] {
             liveAgentSettings = LiveAgentSettings(fromDictionary: liveAgent)
         }
 
@@ -51,7 +51,7 @@ struct GeneralSettings: Codable {
     var liveAgentHandoffMessage: String
     var genericErrorMessage: String
 
-    init(fromDictionary dictionary: NSDictionary) {
+    init(fromDictionary dictionary: [String: Any]) {
         botName = dictionary["bot_name"] as? String ?? "ChatBot"
         vendorName = dictionary["vendor_name"] as? String ?? "Vendor"
         
@@ -135,7 +135,7 @@ struct BrandingSettings: Codable {
         // NOTE: not including color map for now - would need a custom decoder for UIColor
     }
     
-    init(fromDictionary dictionary: NSDictionary) {
+    init(fromDictionary dictionary: [String: Any]) {
         supportEmailLabel = dictionary["support_email_label"] as? String
         supportEmail = dictionary["support_email"] as? String
         supportPhoneLabel = dictionary["support_phone_label"] as? String
@@ -157,13 +157,13 @@ struct VirtualAgentSettings: Codable {
     var avatar: String?
     var name: String?
     
-    init(fromDictionary dictionary: NSDictionary) {
+    init(fromDictionary dictionary:  [String: Any]) {
         avatar = dictionary["avatar"] as? String
         name = dictionary["name"] as? String
     }
 }
 
 struct LiveAgentSettings: Codable {
-    init(fromDictionary dictionary: NSDictionary) {
+    init(fromDictionary dictionary:  [String: Any]) {
     }
 }

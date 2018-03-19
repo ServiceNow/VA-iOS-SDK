@@ -53,24 +53,28 @@ platform :ios do
   end
 
   desc "Ensures all profiles and certificates are up to date"
-  lane :ensure_certificates do
-    match(type: "adhoc", team_id: "AS2BZHDV7Q", force_for_new_devices: true)
-    match(type: "development", team_id: "AS2BZHDV7Q", force_for_new_devices: true)
+  lane :ensure_certificates do |options|
+    force = options.fetch(:force, false)
 
-    match(type: "appstore", team_id: "AS2BZHDV7Q")
+    match(type: "adhoc", team_id: "AS2BZHDV7Q", force_for_new_devices: true, force: force)
+    match(type: "development", team_id: "AS2BZHDV7Q", force_for_new_devices: true, force: force)
+
+    match(type: "appstore", team_id: "AS2BZHDV7Q", force: force)
 
     match(
       app_identifier: "com.servicenow.kangaroo-internal",
       git_branch: "enterprise",
       team_id: "NV85HZ2543",
-      type: "enterprise"
+      type: "enterprise", 
+      force: force
     )
 
     match(
       app_identifier: "com.servicenow.kangaroo-internal",
       git_branch: "enterprise",
       team_id: "NV85HZ2543",
-      type: "development"
+      type: "development", 
+      force: force
     )
   end
 

@@ -312,8 +312,11 @@ extension ConversationViewController {
         case .inConversation:
             // TODO: validate the text against the input type when we have such a notion...
             break
+        case .inAgentConversation:
+            // TODO: validate?
+            break
         default:
-            Logger.default.logDebug("Text updated: state=\(inputState)")
+            break
         }
     }
     
@@ -455,11 +458,12 @@ extension ConversationViewController {
     private func adjustModelSizeIfNeeded(_ messageModel: ChatMessageModel) {
         guard let outputHtmlModel = messageModel.controlModel as? OutputHtmlControlViewModel,
             let messageHeight = defaultMessageHeight,
-            outputHtmlModel.size == nil else {
+            let size = outputHtmlModel.size,
+            size.height == UIViewNoIntrinsicMetric else {
                 return
         }
         
-        outputHtmlModel.size = CGSize(width: CGFloat.nan, height: messageHeight)
+        outputHtmlModel.size = CGSize(width: UIViewNoIntrinsicMetric, height: messageHeight)
     }
     
     // MARK: - ChatMessageViewController reuse

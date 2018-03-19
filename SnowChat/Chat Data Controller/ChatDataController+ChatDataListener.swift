@@ -106,8 +106,7 @@ extension ChatDataController: ChatDataListener {
     
     private func didCompleteInputExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForInput(from: messageExchange), let response = viewModels.response {
-            let message = viewModels.message
-            presentControlData(ChatMessageModel(model: message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
+            // message is already shown
             presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
         }
     }

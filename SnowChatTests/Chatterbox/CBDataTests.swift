@@ -90,7 +90,7 @@ class ChatterboxDataTests: XCTestCase {
         XCTAssert(obj.data.richControl?.uiMetadata?.label == "What is the urgency: low, medium or high?")
         XCTAssert(obj.data.richControl?.uiMetadata?.required == true)
         XCTAssert(obj.data.richControl?.uiMetadata?.itemType == "ID")
-        XCTAssert(obj.data.richControl?.uiMetadata?.style == "list")
+        XCTAssert(obj.data.richControl?.uiMetadata?.style == .list)
         XCTAssert(obj.data.richControl?.uiMetadata?.multiSelect == false)
     }
     
@@ -122,8 +122,8 @@ class ChatterboxDataTests: XCTestCase {
         XCTAssertEqual(systemError.controlType, .systemError)
         XCTAssertEqual(systemError.data.richControl?.uiType, "SystemError")
         XCTAssertEqual(systemError.data.richControl?.uiMetadata?.error.message, "An unrecoverable error has occurred.")
-        XCTAssertEqual(systemError.data.richControl?.uiMetadata?.error.handler.type, "Hmode")
-        XCTAssertEqual(systemError.data.richControl?.uiMetadata?.error.handler.instruction, "This conversation has been transferred to the Live Agent queue, and someone will be with you momentarily.")
+        XCTAssertEqual(systemError.data.richControl?.uiMetadata?.error.handler?.type, "Hmode")
+        XCTAssertEqual(systemError.data.richControl?.uiMetadata?.error.handler?.instruction, "This conversation has been transferred to the Live Agent queue, and someone will be with you momentarily.")
     }
     
     func testAgentTextExample() {
@@ -182,6 +182,11 @@ class ChatterboxDataTests: XCTestCase {
         XCTAssertEqual("endChat", message.data.actionMessage.systemActionName)
         XCTAssertEqual("EndChat", message.data.actionMessage.type)
         XCTAssertTrue(message.data.actionMessage.topicId.lengthOfBytes(using: .utf8) > 0)
+    }
+    
+    func testShowTopicMessage() {
+        let message = ExampleData.exampleShowTopicResponseMessage()
+        XCTAssertEqual(ChatterboxActionType.showTopic, message.eventType)
     }
     
     let jsonInitStart = """

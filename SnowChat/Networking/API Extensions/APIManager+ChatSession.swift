@@ -33,9 +33,9 @@ extension APIManager {
                 }
                 
                 if let value = response.result.value,
-                    let data = value as? NSDictionary,
-                    let sessionData = data.object(forKey: "session") as? NSDictionary,
-                    let chatSession = self.initializeChatSession(sessionData, welcomeMessage: data.object(forKey: "welcomeMessage") as? String) {
+                let data = value as? [String: Any],
+                    let sessionData = data["session"] as? [String: Any],
+                    let chatSession = self.initializeChatSession(sessionData, welcomeMessage: data["welcomeMessage"] as? String) {
                     
                     completion(.success(chatSession))
                 } else {
@@ -45,10 +45,10 @@ extension APIManager {
         }
     }
 
-    private func initializeChatSession(_ sessionData: NSDictionary, welcomeMessage: String?) -> ChatSession? {
-        if let consumerId = sessionData.object(forKey: "consumerId") as? String,
-            let consumerAccountId = sessionData.object(forKey: "consumerAccountId") as? String,
-            let sessionId = sessionData.object(forKey: "sessionId") as? String {
+    private func initializeChatSession(_ sessionData: [String: Any], welcomeMessage: String?) -> ChatSession? {
+        if let consumerId = sessionData["consumerId"] as? String,
+            let consumerAccountId = sessionData["consumerAccountId"] as? String,
+            let sessionId = sessionData["sessionId"] as? String {
             
             let user = ChatUser(consumerId: consumerId, consumerAccountId: consumerAccountId)
             var chatSession = ChatSession(id: sessionId, user: user)
@@ -56,7 +56,7 @@ extension APIManager {
             chatSession.welcomeMessage = welcomeMessage
             chatSession.sessionState = .opened
             
-            if let settings = sessionData["settings"] as? NSDictionary {
+            if let settings = sessionData["settings"] as? [String: Any] {
                 chatSession.settings = ChatSessionSettings(fromDictionary: settings)
             }
             return chatSession
@@ -73,8 +73,9 @@ extension APIManager {
                 var conversation: Conversation?
                 
                 if response.error == nil {
-                    if let result = response.result.value as? NSDictionary,
+                    if let result = response.result.value as? [String: Any],
                         let conversationDictionary = result["conversation"] {
+                        
                         let conversationsArray = [conversationDictionary]
                         let conversations = APIManager.conversationsFromResult(conversationsArray)
                         conversation = conversations.first
@@ -116,7 +117,7 @@ extension APIManager {
             
             var conversations = [Conversation]()
             if response.error == nil {
-                if let result = response.result.value as? NSDictionary,
+                if let result = response.result.value as? [String: Any],
                     let conversationsArray = result["conversations"] {
                     
                     conversations = APIManager.conversationsFromResult(conversationsArray)
@@ -129,10 +130,10 @@ extension APIManager {
     // MARK: - Response Parsing
     
     internal static func conversationsFromResult(_ result: Any, assumeMessagesReversed: Bool = true) -> [Conversation] {
-        guard let conversationArray = result as? [NSDictionary] else { return [] }
+        guard let conversationArray = result as? [[String: Any]] else { return [] }
         
         let conversations: [Conversation] = conversationArray.flatMap { (conversationDictionary) -> Conversation? in
-            if let messagesDictionary = conversationDictionary["messages"] as? [NSDictionary],
+            if let messagesDictionary = conversationDictionary["messages"] as? [[String: Any]],
                messagesDictionary.count > 0,
                let conversationId = conversationDictionary["topicId"] as? String {
         
@@ -159,7 +160,7 @@ extension APIManager {
     }
     
     internal static func messagesFromResult(_ result: Any, assumeMessagesReversed: Bool = true) -> [ControlData] {
-        guard let messageArray = result as? [NSDictionary] else { return [] }
+        guard let messageArray = result as? [[String: Any]] else { return [] }
         
         let messages: [ControlData] = messageArray.flatMap { message in
             // message is a dictionary, so we have to make it JSON, then convert back to ControlData
