@@ -114,12 +114,12 @@ extension Chatterbox {
         if let topicPicker = controlMessage as? UserTopicPickerMessage {
             messageHandler = startUserTopicHandshakeHandler
             
-            let outgoingMessage = topicPickerFromTopicPicker(topicPicker)
+            let outgoingMessage = selectedTopicPickerMessage(from: topicPicker)
             publishMessage(outgoingMessage)
         }
     }
     
-    private func topicPickerFromTopicPicker(_ topicPicker: UserTopicPickerMessage) -> UserTopicPickerMessage {
+    private func selectedTopicPickerMessage(from topicPicker: UserTopicPickerMessage) -> UserTopicPickerMessage {
         var outgoingMessage = topicPicker
         outgoingMessage.type = "consumerTextMessage"
         outgoingMessage.data.direction = .fromClient
@@ -135,7 +135,7 @@ extension Chatterbox {
         
         if actionMessage.eventType == .startUserTopic {
             if let startUserTopic = actionMessage as? StartUserTopicMessage {
-                let startUserTopicReadyMessage = createStartTopicReadyMessage(fromMessage: startUserTopic)
+                let startUserTopicReadyMessage = startTopicReadyMessage(from: startUserTopic)
                 publishMessage(startUserTopicReadyMessage)
             }
         } else if actionMessage.eventType == .startedUserTopic {
@@ -149,7 +149,7 @@ extension Chatterbox {
         }
     }
     
-    private func createStartTopicReadyMessage(fromMessage message: StartUserTopicMessage) -> StartUserTopicMessage {
+    private func startTopicReadyMessage(from message: StartUserTopicMessage) -> StartUserTopicMessage {
         var startUserTopicReady = message
         startUserTopicReady.data.messageId = ChatUtil.uuidString()
         startUserTopicReady.data.sendTime = Date()
