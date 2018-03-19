@@ -215,9 +215,13 @@ class Chatterbox {
         switch state {
         case .userConversation:
             transferToLiveAgent()
+        case .agentConversation:
+            // signal an end of conversation so the user can try a new conversation
+            guard let sessionId = self.conversationContext.sessionId,
+                let conversationId = self.conversationContext.conversationId else { return }
+            self.didReceiveTopicFinishedAction(TopicFinishedMessage(withSessionId: sessionId, withConversationId: conversationId))
         default:
             logger.logFatal("*** System Error encountered outside of User Conversation! ***")
-            // TODO: how to signal a system error??
         }
     }
     
