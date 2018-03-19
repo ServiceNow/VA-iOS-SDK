@@ -645,6 +645,7 @@ private extension SNOWAMBClient {
         postBayeuxMessage(bayeuxMessage, completion: handler)
     }
     
+    //swiftlint:disable:next function_body_length
     @discardableResult func postBayeuxMessage(_ message: [String : Any],
                                               timeout: TimeInterval = 0.0,
                                               completion handler: SNOWAMBPublishMessageHandler? = nil) -> URLSessionDataTask? {
