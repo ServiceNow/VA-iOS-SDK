@@ -86,7 +86,7 @@ extension ChatDataController: ChatDataListener {
     }
     
     private func replaceOrPresentControlData(_ model: ControlViewModel, messageId: String) {
-        let messageModel = ChatMessageModel(model: model, messageId: messageId, bubbleLocation: .left)
+        let messageModel = ChatMessageModel(model: model, messageId: messageId, bubbleLocation: .left, theme: theme)
         
         // if buffering, we replace the last control with the new one, otherwise we just present the control
         if isBufferingEnabled {
@@ -99,7 +99,7 @@ extension ChatDataController: ChatDataListener {
         if let viewModels = controlsForBoolean(from: messageExchange) {
             replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
             if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
+                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
             }
         }
     }
@@ -107,7 +107,7 @@ extension ChatDataController: ChatDataListener {
     private func didCompleteInputExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForInput(from: messageExchange), let response = viewModels.response {
             // message is already shown
-            presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
+            presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
         }
     }
     
@@ -115,7 +115,7 @@ extension ChatDataController: ChatDataListener {
         if let viewModels = controlsForPicker(from: messageExchange) {
             replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
             if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
+                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
             }
         }
     }
@@ -125,7 +125,7 @@ extension ChatDataController: ChatDataListener {
         if let viewModels = controlsForMultiSelect(from: messageExchange) {
             replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
             if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
+                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
             }
         }
     }
@@ -143,13 +143,13 @@ extension ChatDataController: ChatDataListener {
             // THIS is different from other didComplete methods, where we show just one control per message. In those cases we want to replace control with question and insert an answer.
             // `shouldReplaceResponse` flag is set to `true` to indicate that we want to only replace last message (dateTimePicker in this case)
             if lastMessage.messageId != messageExchange.message.messageId {
-                replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
+                replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme))
                 shouldReplaceLastControlWithResponse = false
             }
             
             guard let response = viewModels.response else { return }
             
-            let answer = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right)
+            let answer = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme)
             if shouldReplaceLastControlWithResponse {
                 replaceLastControl(with: answer)
             } else {
@@ -159,15 +159,15 @@ extension ChatDataController: ChatDataListener {
     }
     
     private func didCompleteMultiPartExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        let typingIndicatorModel = ChatMessageModel(model: typingIndicator, bubbleLocation: BubbleLocation.left)
+        let typingIndicatorModel = ChatMessageModel(model: typingIndicator, bubbleLocation: .left, theme: theme)
         replaceLastControl(with: typingIndicatorModel)
     }
     
     private func didCompleteInputImageExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForInputImage(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
+            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme))
             if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right))
+                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
             }
         }
     }

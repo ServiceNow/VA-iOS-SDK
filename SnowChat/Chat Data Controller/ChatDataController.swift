@@ -163,13 +163,13 @@ class ChatDataController {
     func addHistoryToCollection(_ viewModels: (message: ControlViewModel, response: ControlViewModel?)) {
         // add response, then message, to the tail-end of the control data
         if let response = viewModels.response {
-            controlData.append(ChatMessageModel(model: response, messageId: response.id, bubbleLocation: BubbleLocation.right))
+            controlData.append(ChatMessageModel(model: response, messageId: response.id, bubbleLocation: .right, theme: theme))
         }
-        controlData.append(ChatMessageModel(model: viewModels.message, messageId: viewModels.message.id, bubbleLocation: BubbleLocation.left))
+        controlData.append(ChatMessageModel(model: viewModels.message, messageId: viewModels.message.id, bubbleLocation: .left, theme: theme))
     }
     
     func addHistoryToCollection(_ viewModel: ControlViewModel, location: BubbleLocation = .left) {
-        addHistoryToCollection(ChatMessageModel(model: viewModel, messageId: viewModel.id, bubbleLocation: location))
+        addHistoryToCollection(ChatMessageModel(model: viewModel, messageId: viewModel.id, bubbleLocation: location, theme: theme))
     }
 
     func addHistoryToCollection(_ chatModel: ChatMessageModel) {
@@ -187,7 +187,7 @@ class ChatDataController {
     }
     
     func presentAuxiliaryDataIfNeeded(forMessage message: ControlData) {
-        guard let auxiliaryModel = ChatMessageModel.auxiliaryModel(withMessage: message) else { return }
+        guard let auxiliaryModel = ChatMessageModel.auxiliaryModel(withMessage: message, theme: theme) else { return }
         bufferControlMessage(auxiliaryModel)
     }
     
@@ -196,7 +196,7 @@ class ChatDataController {
             return
         }
         
-        let model = ChatMessageModel(model: typingIndicator, bubbleLocation: BubbleLocation.left)
+        let model = ChatMessageModel(model: typingIndicator, bubbleLocation: .left, theme: theme)
         addControlToCollection(model)
         
         addModelChange(.insert(index: 0, model: model))
@@ -349,7 +349,7 @@ class ChatDataController {
             return model
         }
         
-        if var messageModel = ChatMessageModel.model(withMessage: message) {
+        if var messageModel = ChatMessageModel.model(withMessage: message, theme: theme) {
             messageModel = modelWithUpdatedAvatarURL(model: messageModel, withInstance: chatterbox.serverInstance)
             return messageModel
         }
@@ -388,7 +388,7 @@ class ChatDataController {
     func agentTopicDidStart(agentInfo: AgentInfo) {
         let message = NSLocalizedString("An agent is now taking your case.", comment: "Default agent responded message to show to user")
         let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
-        bufferControlMessage(ChatMessageModel(model: completionTextControl, bubbleLocation: .left))
+        bufferControlMessage(ChatMessageModel(model: completionTextControl, bubbleLocation: .left, theme: theme))
     }
     
     func agentTopicDidFinish() {
@@ -398,7 +398,7 @@ class ChatDataController {
     func presentCompletionMessage() {
         let message = NSLocalizedString("Thanks for visiting. If you need anything else, just ask!", comment: "Default end of topic message to show to user")
         let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
-        bufferControlMessage(ChatMessageModel(model: completionTextControl, bubbleLocation: .left))
+        bufferControlMessage(ChatMessageModel(model: completionTextControl, bubbleLocation: .left, theme: theme))
     }
 
     func presentWelcomeMessage() {
@@ -406,7 +406,7 @@ class ChatDataController {
         let welcomeTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         
         // NOTE: we do not buffer the welcome message currently - this is intentional
-        presentControlData(ChatMessageModel(model: welcomeTextControl, bubbleLocation: .left))
+        presentControlData(ChatMessageModel(model: welcomeTextControl, bubbleLocation: .left, theme: theme))
     }
     
     func pushTopicStartDivider(_ topicInfo: TopicInfo) {
@@ -414,7 +414,7 @@ class ChatDataController {
         popTypingIndicator()
         
         // NOTE: we do not buffer the divider currently - this is intentional
-        presentControlData(ChatMessageModel(type: .topicDivider))
+        presentControlData(ChatMessageModel(type: .topicDivider, theme: theme))
     }
     
     func pushTopicTitle(topicInfo: TopicInfo) {
@@ -424,18 +424,18 @@ class ChatDataController {
         let titleTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         
         // NOTE: we do not buffer the welcome message currently - this is intentional
-        presentControlData(ChatMessageModel(model: titleTextControl, bubbleLocation: .right))
+        presentControlData(ChatMessageModel(model: titleTextControl, bubbleLocation: .right, theme: theme))
     }
     
     func appendTopicTitle(_ topicInfo: TopicInfo) {
         guard let message = topicInfo.topicName else { return }
         let titleTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         
-        addHistoryToCollection(ChatMessageModel(model: titleTextControl, bubbleLocation: .right))
+        addHistoryToCollection(ChatMessageModel(model: titleTextControl, bubbleLocation: .right, theme: theme))
     }
     
     func appendTopicStartDivider(_ topicInfo: TopicInfo) {
-        addHistoryToCollection(ChatMessageModel(type: .topicDivider))
+        addHistoryToCollection(ChatMessageModel(type: .topicDivider, theme: theme))
     }
     
     // MARK: - Control Buffer

@@ -53,10 +53,9 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
                    controlCache cache: ControlCache,
                    controlDelegate delegate: ControlDelegate,
                    resourceProvider provider: ControlResourceProvider,
-                   theme: Theme,
                    isInAgentConversation: Bool) {
         isAgentMessage = (isInAgentConversation == true && model.bubbleLocation == .left)
-        self.theme = theme
+        self.theme = model.theme
         self.controlCache = cache
         self.resourceProvider = provider
         self.model = model
