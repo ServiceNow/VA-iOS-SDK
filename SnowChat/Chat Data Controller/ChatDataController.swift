@@ -177,6 +177,8 @@ class ChatDataController {
     }
     
     func presentControlData(_ data: ChatMessageModel) {
+        // feed in theme object before notifying VC about changes
+        data.theme = theme
         if isShowingTypingIndicator() {
             replaceLastControl(with: data)
         } else {

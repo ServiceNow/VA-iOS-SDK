@@ -30,6 +30,7 @@ class ChatMessageModel {
     let controlModel: ControlViewModel?
     let requiresInput: Bool
     var messageId: String?
+    var theme: Theme?
     
     var isAuxiliary: Bool = false
     var bubbleLocation: BubbleLocation?
