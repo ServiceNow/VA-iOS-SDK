@@ -90,7 +90,9 @@ protocol ControlProtocol: AnyObject {
     // UIViewController of ui control
     var viewController: UIViewController { get }
     
-    weak var delegate: ControlDelegate? { get set }
+    // ControlDelegate to send control messages to
+    // NOTE: should be weak in implementing class
+    var delegate: ControlDelegate? { get set }
     
     // removes viewController and view of the control from the hierarchy
     func removeFromParent()
