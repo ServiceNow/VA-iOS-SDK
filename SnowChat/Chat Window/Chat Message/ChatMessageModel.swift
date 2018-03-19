@@ -262,7 +262,7 @@ extension ChatMessageModel {
         
         let direction = message.direction
         let outputHtmlModel = OutputHtmlControlViewModel(id: message.messageId, value: value)
-        var size = CGSize()
+        var size = CGSize(width: UIViewNoIntrinsicMetric, height: UIViewNoIntrinsicMetric)
         if let width = message.data.richControl?.uiMetadata?.width {
             size.width = CGFloat(width)
         }
