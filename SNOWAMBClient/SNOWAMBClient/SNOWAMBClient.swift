@@ -123,13 +123,14 @@ public class SNOWAMBClient {
     private var queuedSubscriptionChannels = Set<String>()
     private var longPollingInterval: TimeInterval = 0.0
     private var longPollingTimeout: TimeInterval = 0.0
-    private let retryInterval: TimeInterval = 1.0
+    private let retryInterval: TimeInterval = 10.0
     private var retryAttempt = 0
     private var reopenChannelsAfterSuccessfulConnectMessages = true
     private var dataTasks = [URLSessionDataTask]()
     
     private var scheduledConnectTask: DispatchWorkItem?
     private var connectDataTask: URLSessionDataTask?
+    private var connectDataTaskTime: Date?
     private var messageId = 0
     
     public var clientStatus = SNOWAMBClientStatus.disconnected {
@@ -169,7 +170,15 @@ public class SNOWAMBClient {
                     // TODO: Keep testing this!
 //                    cancelAllDataTasks()
                 } else {
-                    self.clientStatus = .retrying
+                    let currentTime = Date()
+                    if let connectDataTaskTime = self.connectDataTaskTime {
+                        let timeDiff = Double(Int(currentTime.timeIntervalSince1970 - connectDataTaskTime.timeIntervalSince1970))
+                        if longPollingTimeout > 0 && timeDiff > longPollingTimeout / 1000 {
+                            self.clientStatus = .disconnected
+                            connect()
+                            return
+                        }
+                    }
                     startConnectRequest()
                 }
             }
@@ -190,6 +199,7 @@ public class SNOWAMBClient {
     // MARK: public methods
     
     public func connect() {
+        connectDataTaskTime = nil
         sendBayeuxHandshakeMessage()
     }
     
@@ -688,6 +698,7 @@ private extension SNOWAMBClient {
 
         if let task = task {
             if channel == AMBChannel.connect.name {
+                connectDataTaskTime = Date()
                 connectDataTask = task
             }
             dataTasks.append(task)
