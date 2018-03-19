@@ -174,6 +174,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
                                               controlCache: uiControlCache,
                                               controlDelegate: self,
                                               resourceProvider: chatterbox.apiManager,
+                                              theme: dataController.theme,
                                               isInAgentConversation: inputState == .inAgentConversation)
         UIView.animate(withDuration: 0.3, animations: {
             self.tableView.beginUpdates()
@@ -437,6 +438,7 @@ extension ConversationViewController {
                                         controlCache: uiControlCache,
                                         controlDelegate: self,
                                         resourceProvider: chatterbox.apiManager,
+                                        theme: dataController.theme,
                                         isInAgentConversation: inputState == .inAgentConversation)
         messageViewController.didMove(toParentViewController: self)
     }

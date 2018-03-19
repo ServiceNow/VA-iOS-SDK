@@ -111,6 +111,7 @@
 		57B7E2CD1FBA3C8400196BA9 /* UIView+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2CB1FBA3C8400196BA9 /* UIView+Additions.swift */; };
 		57B7E2D01FBA6DA500196BA9 /* BooleanControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2CF1FBA6DA500196BA9 /* BooleanControlViewModel.swift */; };
 		57B7E2D21FBA75B100196BA9 /* PickerControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */; };
+		57BF5CA120602C5C0037294F /* ControlTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57BF5CA020602C5C0037294F /* ControlTheme.swift */; };
 		57C1054D205035880007740C /* LocationContextHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C1054C205035880007740C /* LocationContextHandler.swift */; };
 		57CBFE021FE8D921006396E8 /* UILayoutPriority+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57CBFE011FE8D921006396E8 /* UILayoutPriority+Additions.swift */; };
 		57CD18592059512D00D5104E /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57CD18582059512D00D5104E /* GradientView.swift */; };
@@ -321,6 +322,7 @@
 		57B7E2CB1FBA3C8400196BA9 /* UIView+Additions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Additions.swift"; sourceTree = "<group>"; };
 		57B7E2CF1FBA6DA500196BA9 /* BooleanControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooleanControlViewModel.swift; sourceTree = "<group>"; };
 		57B7E2D11FBA75B100196BA9 /* PickerControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControlViewModel.swift; sourceTree = "<group>"; };
+		57BF5CA020602C5C0037294F /* ControlTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlTheme.swift; sourceTree = "<group>"; };
 		57C1054C205035880007740C /* LocationContextHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationContextHandler.swift; sourceTree = "<group>"; };
 		57CBFE011FE8D921006396E8 /* UILayoutPriority+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILayoutPriority+Additions.swift"; sourceTree = "<group>"; };
 		57CD18582059512D00D5104E /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
@@ -560,6 +562,7 @@
 				5728D8F02048D74A0071EF9E /* UserDataManager.swift */,
 				5706C5781FE43FB3008D70D1 /* ControlsUtil.swift */,
 				578632151FBB9E0300FA0282 /* ControlProtocol.swift */,
+				57BF5CA020602C5C0037294F /* ControlTheme.swift */,
 				57532BAC1FD777FA001D674C /* TextControl.swift */,
 				57E65F4E202BA4640087E5DE /* OutputLinkControl.swift */,
 				57DF7C37202CC1D6008D013A /* DateTimePickerControl.swift */,
@@ -1317,6 +1320,7 @@
 				57B0861220465F0F00F009D2 /* CarouselViewController.swift in Sources */,
 				8BBAAA8F20324C0C00D50F66 /* OAuthToken.swift in Sources */,
 				573F78F7202275000008391D /* ButtonControl.swift in Sources */,
+				57BF5CA120602C5C0037294F /* ControlTheme.swift in Sources */,
 				BE9E8BAB1FBF828E00499960 /* ServerInstance.swift in Sources */,
 				57D1DB6B1FEAC94A00082F78 /* ConversationViewCell.swift in Sources */,
 				BE29E0CF1FDF06C20029D1F0 /* ChatDataController.swift in Sources */,

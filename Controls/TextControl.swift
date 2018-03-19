@@ -47,6 +47,10 @@ class TextControl: ControlProtocol {
     
     weak var delegate: ControlDelegate?
     
+    private var textViewController: TextViewController {
+        return viewController as! TextViewController
+    }
+    
     required init(model: ControlViewModel) {
         guard let textModel = model as? TextControlViewModel else {
             fatalError("Wrong model class")
@@ -56,5 +60,10 @@ class TextControl: ControlProtocol {
         let textViewController = TextViewController()
         textViewController.textLabel.text = textModel.value
         self.viewController = textViewController
+    }
+    
+    func applyTheme(_ theme: ControlTheme) {
+        textViewController.textLabel.textColor = theme.fontColor
+        textViewController.textLabel.backgroundColor = theme.backgroundColor
     }
 }
