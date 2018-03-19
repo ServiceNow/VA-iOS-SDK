@@ -9,12 +9,9 @@
 import Foundation
 
 struct EndAgentChatMessage: Codable, ActionData {
-    var eventType: ChatterboxActionType = .endAgentChat
+    var eventType: ChatterboxActionType { return .endAgentChat }
+    var direction: MessageDirection { return data.direction }
 
-    var direction: MessageDirection {
-        return data.direction
-    }
-    
     var type: String
     var data: ActionMessageData<EndChatMessageDetails>
     

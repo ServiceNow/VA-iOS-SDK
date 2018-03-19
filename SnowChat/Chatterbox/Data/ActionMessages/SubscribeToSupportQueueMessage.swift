@@ -20,11 +20,8 @@ struct SupportQueue: Codable {
 }
 
 struct SubscribeToSupportQueueMessage: Codable, ActionData {
-    var eventType: ChatterboxActionType = .supportQueueSubscribe
-
-    var direction: MessageDirection {
-        return data.direction
-    }
+    var eventType: ChatterboxActionType { return .supportQueueSubscribe }
+    var direction: MessageDirection { return data.direction }
 
     let type: String = "actionMessage"
     let data: ActionMessageData<ActionMessageDetails>
