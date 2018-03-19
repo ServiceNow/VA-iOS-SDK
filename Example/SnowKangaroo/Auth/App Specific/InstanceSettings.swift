@@ -19,7 +19,7 @@ class InstanceSettings {
     
     private static let instanceURLKey = "InstanceSettingsInstanceURL"
     private static let credentialKey = "InstanceSettingsCredential"
-    private static let authProviderKey = "InstanceSettingsAuthProviderStringMapped"
+    private static let authProviderKey = "InstanceSettingsAuthProviderWrapped"
     
     private let defaults = UserDefaults.standard
     
@@ -43,12 +43,22 @@ class InstanceSettings {
         }
     }
     
+    // Apparently you can't directly persist a string backed enum via codable
+    // Need to wrap or otherwise we get an encoding error:
+    // "Top-level Optional<AuthProvider> encoded as string property list fragment"
+    // TODO: Investigate alternatives
+    private struct WrappedAuthProvider: Codable {
+        var authProvider: AuthProvider?
+    }
+    
     var authProvider: AuthProvider? {
         get {
-            return defaults.decodable(forKey: InstanceSettings.authProviderKey, type: AuthProvider.self)
+            let wrapped = defaults.decodable(forKey: InstanceSettings.authProviderKey, type: WrappedAuthProvider.self)
+            return wrapped?.authProvider
         }
         set {
-            defaults.setCodable(newValue, forKey: InstanceSettings.authProviderKey)
+            let wrapped = WrappedAuthProvider(authProvider: newValue)
+            defaults.setCodable(wrapped, forKey: InstanceSettings.authProviderKey)
             defaults.synchronize()
         }
     }
