@@ -170,7 +170,11 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             return
         }
         
-        cell.messageViewController?.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self, resourceProvider: chatterbox.apiManager)
+        cell.messageViewController?.configure(withChatMessageModel: model,
+                                              controlCache: uiControlCache,
+                                              controlDelegate: self,
+                                              resourceProvider: chatterbox.apiManager,
+                                              isInAgentConversation: inputState == .inAgentConversation)
         UIView.animate(withDuration: 0.3, animations: {
             self.tableView.beginUpdates()
             self.tableView.endUpdates()
@@ -429,7 +433,11 @@ extension ConversationViewController {
         let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
         cell.messageViewController = messageViewController
         adjustModelSizeIfNeeded(model)
-        messageViewController.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self, resourceProvider: chatterbox.apiManager)
+        messageViewController.configure(withChatMessageModel: model,
+                                        controlCache: uiControlCache,
+                                        controlDelegate: self,
+                                        resourceProvider: chatterbox.apiManager,
+                                        isInAgentConversation: inputState == .inAgentConversation)
         messageViewController.didMove(toParentViewController: self)
     }
     

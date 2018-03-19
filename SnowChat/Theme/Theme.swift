@@ -32,7 +32,6 @@ struct ColorSettings {
 }
 
 class Theme {
-    
     private var colorPropertiesMap = [String : UIColor]()
     
     init(dictionary: [String : Any]?) {

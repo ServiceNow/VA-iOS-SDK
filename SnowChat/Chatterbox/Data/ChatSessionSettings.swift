@@ -106,29 +106,6 @@ struct BrandingSettings: Codable {
      - key : support_email
      - key : support_hours (obsolete)
      */
-
-    var colorPropertiesMap: [String : UIColor?] = [
-        "category_font_color" : nil,
-        "link_color" : nil,
-        "timestamp_color" : nil,
-        "input_bg_color" : nil,
-        "bubble_font_color" : nil,
-        "bubble_bg_color" : nil,
-        "agent_bubble_font_color" : nil,
-        "agent_bubble_bg_color" : nil,
-        "bot_bubble_font_color" : nil,
-        "bot_bubble_bg_color" : nil,
-        "bg_color" : nil,
-        "load_animation_color" : nil,
-        "seperator_color" : nil,
-        "category_bg_color" : nil,
-        "button_bg_color" : nil,
-        "disabled_link_color" : nil,
-        "header_bg_color" : nil,
-        "menu_icon_color" : nil,
-        "system_message_color" : nil,
-        "header_font_color" : nil
-    ]
     
     var supportEmailLabel: String?
     var supportEmail: String?
