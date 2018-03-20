@@ -198,7 +198,7 @@ class Theme {
         return color
     }
     
-    init(dictionary: [String : Any]?) {
+    init(dictionary: [String : Any]? = nil) {
         dictionary?.keys.forEach { [weak self] key in
             if let value = dictionary?[key] as? String {
                 self?.colorPropertiesMap[key] = UIColor(hexValue: value)

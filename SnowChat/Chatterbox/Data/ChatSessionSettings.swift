@@ -118,8 +118,7 @@ struct BrandingSettings: Codable {
     
     var virtualAgentLogo: String?
     var virtualAgentProfileId: String?
-    
-    var settings = [String : Any]()
+    var theme = Theme() // Codable requires default value :/
     
     private enum CodingKeys: String, CodingKey {
         case supportEmailLabel
@@ -147,7 +146,7 @@ struct BrandingSettings: Codable {
         virtualAgentLogo = dictionary["va_logo"] as? String
         virtualAgentProfileId = dictionary["va_profile"] as? String
         
-        settings = dictionary
+        theme = Theme(dictionary: dictionary)
     }
 }
 

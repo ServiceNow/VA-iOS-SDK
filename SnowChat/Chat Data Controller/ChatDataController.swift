@@ -56,10 +56,7 @@ class ChatDataController {
 
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
-        
-        let brandingSettingsDictionary = chatterbox.session?.settings?.brandingSettings?.settings
-        theme = Theme(dictionary: brandingSettingsDictionary)
-        
+        theme = chatterbox.session?.settings?.brandingSettings?.theme ?? Theme()
         self.chatterbox.chatDataListener = self
         self.changeListener = changeListener
     }
