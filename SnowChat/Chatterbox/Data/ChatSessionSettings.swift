@@ -106,29 +106,6 @@ struct BrandingSettings: Codable {
      - key : support_email
      - key : support_hours (obsolete)
      */
-
-    var colorPropertiesMap: [String : UIColor?] = [
-        "category_font_color" : nil,
-        "link_color" : nil,
-        "timestamp_color" : nil,
-        "input_bg_color" : nil,
-        "bubble_font_color" : nil,
-        "bubble_bg_color" : nil,
-        "agent_bubble_font_color" : nil,
-        "agent_bubble_bg_color" : nil,
-        "bot_bubble_font_color" : nil,
-        "bot_bubble_bg_color" : nil,
-        "bg_color" : nil,
-        "load_animation_color" : nil,
-        "seperator_color" : nil,
-        "category_bg_color" : nil,
-        "button_bg_color" : nil,
-        "disabled_link_color" : nil,
-        "header_bg_color" : nil,
-        "menu_icon_color" : nil,
-        "system_message_color" : nil,
-        "header_font_color" : nil
-    ]
     
     var supportEmailLabel: String?
     var supportEmail: String?
@@ -141,6 +118,7 @@ struct BrandingSettings: Codable {
     
     var virtualAgentLogo: String?
     var virtualAgentProfileId: String?
+    var theme = Theme() // Codable requires default value :/
     
     private enum CodingKeys: String, CodingKey {
         case supportEmailLabel
@@ -156,106 +134,6 @@ struct BrandingSettings: Codable {
         // NOTE: not including color map for now - would need a custom decoder for UIColor
     }
     
-    var categoryFontColor: UIColor? {
-        guard let color = colorPropertiesMap["category_font_color"] else { return nil }
-        return color
-    }
-    
-    var linkColor: UIColor? {
-        guard let color = colorPropertiesMap["link_color"] else { return nil }
-        return color
-    }
-    
-    var timestampColor: UIColor? {
-        guard let color = colorPropertiesMap["timestamp_color"] else { return nil }
-        return color
-    }
-    
-    var inputBackgroundColor: UIColor? {
-        guard let color = colorPropertiesMap["input_bg_color"] else { return nil }
-        return color
-    }
-    
-    var bubbleFontColor: UIColor? {
-        guard let color = colorPropertiesMap["bubble_font_color"] else { return nil }
-        return color
-    }
-    
-    var bubbleBackgroundColor: UIColor? {
-        guard let color = colorPropertiesMap["bubble_bg_color"] else { return nil }
-        return color
-    }
-    
-    var agentBubbleFontColor: UIColor? {
-        guard let color = colorPropertiesMap["agent_bubble_font_color"] else { return nil }
-        return color
-    }
-    
-    var agentBubbleBackgroundColor: UIColor? {
-        guard let color = colorPropertiesMap["agent_bubble_bg_color"] else { return nil }
-        return color
-    }
-    
-    var botBubbleFontColor: UIColor? {
-        guard let color = colorPropertiesMap["bot_bubble_font_color"] else { return nil }
-        return color
-    }
-    
-    var botBubbleBackgroundColor: UIColor? {
-        guard let color = colorPropertiesMap["bot_bubble_bg_color"] else { return nil }
-        return color
-    }
-    
-    var backgroundColor: UIColor? {
-        guard let color = colorPropertiesMap["bg_color"] else { return nil }
-        return color
-    }
-    
-    var loadingAnimationColor: UIColor? {
-        guard let color = colorPropertiesMap["load_animation_color"] else { return nil }
-        return color
-    }
-    
-    var separatorColor: UIColor? {
-        guard let color = colorPropertiesMap["seperator_color"] else { return nil } // NOTE misspelling of key!
-        return color
-    }
-    
-    var categoryBackgroundColor: UIColor? {
-        guard let color = colorPropertiesMap["category_bg_color"] else { return nil }
-        return color
-    }
-    
-    var buttonBackgroundColor: UIColor? {
-        guard let color = colorPropertiesMap["button_bg_color"] else { return nil }
-        return color
-    }
-    
-    var disabledLinkColor: UIColor? {
-        guard let color = colorPropertiesMap["disabled_link_color"] else { return nil }
-        return color
-    }
-    
-    var headerBackgroundColor: UIColor? {
-        guard let color = colorPropertiesMap["header_bg_color"] else { return nil }
-        return color
-    }
-    
-    var menuIconColor: UIColor? {
-        guard let color = colorPropertiesMap["menu_icon_color"] else { return nil }
-        return color
-    }
-    
-    var systemMessageColor: UIColor? {
-        guard let color = colorPropertiesMap["system_message_color"] else { return nil }
-        return color
-    }
-    
-    var headerFontColor: UIColor? {
-        guard let color = colorPropertiesMap["header_font_color"] else { return nil }
-        return color
-    }
-    
     init(fromDictionary dictionary: [String: Any]) {
         supportEmailLabel = dictionary["support_email_label"] as? String
         supportEmail = dictionary["support_email"] as? String
@@ -268,15 +146,7 @@ struct BrandingSettings: Codable {
         virtualAgentLogo = dictionary["va_logo"] as? String
         virtualAgentProfileId = dictionary["va_profile"] as? String
         
-        initColors(dictionary)
-    }
-    
-    private mutating func initColors(_ dictionary: [String: Any]) {
-        colorPropertiesMap.keys.forEach { key in
-            if let value = dictionary[key] as? String {
-                colorPropertiesMap[key] = UIColor(hexValue: value)
-            }
-        }
+        theme = Theme(dictionary: dictionary)
     }
 }
 

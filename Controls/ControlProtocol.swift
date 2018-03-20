@@ -71,7 +71,7 @@ enum ControlType {
     }
 }
 
-// MARK: ControlDelegate
+// MARK: - ControlDelegate
 
 protocol ControlDelegate: AnyObject {
     
@@ -80,9 +80,9 @@ protocol ControlDelegate: AnyObject {
     func controlDidFinishLoading(_ control: ControlProtocol)
 }
 
-// MARK: Control Protocol
+// MARK: - Control Protocol
 
-protocol ControlProtocol: AnyObject {
+protocol ControlProtocol: AnyObject, ThemeableControl {
     
     // representation of ui control state
     var model: ControlViewModel { get set }
@@ -94,6 +94,11 @@ protocol ControlProtocol: AnyObject {
     // NOTE: should be weak in implementing class
     var delegate: ControlDelegate? { get set }
     
+    // If provided - control will be limited to that size
+    var preferredContentSize: CGSize? { get }
+    
+    var isReusable: Bool { get }
+    
     // removes viewController and view of the control from the hierarchy
     func removeFromParent()
     
@@ -102,11 +107,6 @@ protocol ControlProtocol: AnyObject {
     
     // cleans up all necessary vars so they are ready for reuse. Default implementation does nothing.
     func prepareForReuse()
-    
-    // If provided - control will be limited to that size
-    var preferredContentSize: CGSize? { get }
-    
-    var isReusable: Bool { get }
 }
 
 // Code for self-removable control, just like UIView or UIViewController

@@ -19,14 +19,10 @@ class PickerHeaderView: UITableViewHeaderFooterView {
     }
     
     private func setupTitleLabel() {
-        contentView.backgroundColor = UIColor.controlHeaderBackgroundColor
         let titleLabel = UILabel()
         titleLabel.font = .preferredFont(forTextStyle: .body)
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.numberOfLines = 0
-        
-        titleLabel.textColor = .controlHeaderTextColor
-        titleLabel.backgroundColor = .controlHeaderBackgroundColor
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(titleLabel)
         NSLayoutConstraint.activate([titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
@@ -56,14 +52,11 @@ class PickerFooterView: UITableViewHeaderFooterView {
     }
     
     private func setupDoneButton() {
-        contentView.backgroundColor = UIColor.controlHeaderBackgroundColor
         let doneButton = UIButton(type: .custom)
         let localizedTitle = NSLocalizedString("Done", comment: "Button title for multiselect control done.")
         doneButton.setTitle(localizedTitle, for: .normal)
         doneButton.titleLabel?.font = .preferredFont(forTextStyle: .body)
-        doneButton.setTitleColor(.controlHeaderTextColor, for: .normal)
         doneButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        doneButton.backgroundColor = .controlHeaderBackgroundColor
         doneButton.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(doneButton)
         NSLayoutConstraint.activate([doneButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),

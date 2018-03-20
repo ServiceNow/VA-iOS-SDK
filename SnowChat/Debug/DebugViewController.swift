@@ -43,8 +43,7 @@ public class DebugViewController: UITableViewController {
     // MARK: - Navigation
     
     private func pushControlsViewController() {
-        let controller = ControlsViewController(nibName: nil, bundle: Bundle(for: ControlsViewController.self))
-        navigationController?.pushViewController(controller, animated: true)
+        // removed this fake controller
     }
     
 }
