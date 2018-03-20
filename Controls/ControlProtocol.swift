@@ -90,7 +90,9 @@ protocol ControlProtocol: AnyObject, ControlThemeable {
     // UIViewController of ui control
     var viewController: UIViewController { get }
     
-    weak var delegate: ControlDelegate? { get set }
+    // ControlDelegate to send control messages to
+    // NOTE: should be weak in implementing class
+    var delegate: ControlDelegate? { get set }
     
     // If provided - control will be limited to that size
     var preferredContentSize: CGSize? { get }
