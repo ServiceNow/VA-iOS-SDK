@@ -62,8 +62,8 @@ class TextControl: ControlProtocol {
         self.viewController = textViewController
     }
     
-    func applyTheme(_ theme: ControlTheme) {
-        textViewController.textLabel.textColor = theme.fontColor
-        textViewController.textLabel.backgroundColor = theme.backgroundColor
+    func applyTheme(_ theme: ControlTheme?) {
+        textViewController.textLabel.textColor = theme?.fontColor
+        textViewController.textLabel.backgroundColor = theme?.backgroundColor
     }
 }
