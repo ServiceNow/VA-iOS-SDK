@@ -9,9 +9,6 @@
 import UIKit
 
 class SelectableViewCell: UITableViewCell, ConfigurablePickerCell {
-    
-    let itemTextColor = UIColor(red: 72 / 255, green: 159 / 255, blue: 250 / 255, alpha: 1)
-
     static let cellIdentifier = "SelectableViewCellIdentifier"
     
     private var selectableView: SelectableView!
@@ -47,7 +44,12 @@ class SelectableViewCell: UITableViewCell, ConfigurablePickerCell {
     func configure(withModel model: PickerItem) {
         selectionStyle = .none
         selectableView.titleLabel.text = model.label
-        selectableView.titleLabel.textColor = itemTextColor
         selectableView.isSelected = model.isSelected
+    }
+    
+    // MARK: - ControlThemeable
+    
+    func applyTheme(_ theme: ControlTheme) {
+        selectableView.titleLabel.textColor = theme.fontColor
     }
 }

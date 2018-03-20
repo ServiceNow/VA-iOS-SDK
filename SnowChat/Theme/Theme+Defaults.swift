@@ -1,16 +1,13 @@
 //
-//  UIColor+Theme.swift
+//  Theme+Defaults.swift
 //  SnowChat
 //
-//  Created by Michael Borowiec on 12/4/17.
-//  Copyright © 2017 ServiceNow. All rights reserved.
+//  Created by Michael Borowiec on 3/20/18.
+//  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-import UIKit
-
-extension UIColor {
-    
-    class var categoryFontColor: UIColor {
+extension Theme {
+    class var defaultCategoryFontColor: UIColor {
         return UIColor.red
     }
     

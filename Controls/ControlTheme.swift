@@ -12,6 +12,7 @@ import UIKit
 
 protocol ControlTheme {
     var backgroundColor: UIColor { get }
+    var selectedBackgroundColor: UIColor { get }
     var borderColor: UIColor { get }
     var fontColor: UIColor { get }
     

@@ -11,15 +11,11 @@
 
 class ControlVisualTheme: ControlTheme {
     var backgroundColor: UIColor
-    
+    var selectedBackgroundColor: UIColor
     var borderColor: UIColor
-    
     var fontColor: UIColor
-    
     var headerBackgroundColor: UIColor
-    
     var headerFontColor: UIColor
-    
     var dividerColor: UIColor
     
     init(backgroundColor: UIColor, borderColor: UIColor, fontColor: UIColor, headerBackgroundColor: UIColor, headerFontColor: UIColor) {
@@ -28,7 +24,8 @@ class ControlVisualTheme: ControlTheme {
         self.fontColor = fontColor
         self.headerBackgroundColor = headerBackgroundColor
         self.headerFontColor = headerFontColor
-        self.dividerColor = .dividerColor
+        self.dividerColor = Theme.dividerColor
+        self.selectedBackgroundColor = Theme.controlSelectedBackgroundColor
     }
 }
 

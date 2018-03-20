@@ -611,7 +611,7 @@ extension ConversationViewController {
     // MARK: - Activity Indicator
     
     fileprivate func setupActivityIndicator() {
-        activityIndicator.color = UIColor.controlTextColor
+        activityIndicator.color = Theme.controlTextColor
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(activityIndicator)
         

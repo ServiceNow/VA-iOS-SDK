@@ -41,7 +41,7 @@ class Theme {
     
     var categoryFontColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.categoryFontColor] else {
-            return UIColor.categoryFontColor
+            return Theme.defaultCategoryFontColor
         }
         
         return color
@@ -49,7 +49,7 @@ class Theme {
     
     var linkColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.linkColor] else {
-            return UIColor.defaultLinkColor
+            return Theme.defaultLinkColor
         }
         
         return color
@@ -57,7 +57,7 @@ class Theme {
     
     var timestampColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.timestampColor] else {
-            return UIColor.defaultTimestampColor
+            return Theme.defaultTimestampColor
         }
         
         return color
@@ -65,7 +65,7 @@ class Theme {
     
     var inputBackgroundColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.inputBackgroundColor] else {
-            return UIColor.defaultInputBackgroundColor
+            return Theme.defaultInputBackgroundColor
         }
         
         return color
@@ -73,7 +73,7 @@ class Theme {
     
     var bubbleFontColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.bubbleFontColor] else {
-            return UIColor.defaultBubbleFontColor
+            return Theme.defaultBubbleFontColor
         }
         
         return color
@@ -81,14 +81,14 @@ class Theme {
     
     var bubbleBackgroundColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.bubbleBackgroundColor] else {
-            return UIColor.defaultBubbleBackgroundColor
+            return Theme.defaultBubbleBackgroundColor
         }
         return color
     }
     
     var agentBubbleFontColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.agentBubbleFontColor] else {
-            return UIColor.defaultBubbleFontColor
+            return Theme.defaultBubbleFontColor
         }
         
         return color
@@ -96,7 +96,7 @@ class Theme {
     
     var agentBubbleBackgroundColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.agentBubbleBackgroundColor] else {
-            return UIColor.defaultAgentBubbleBackgroundColor
+            return Theme.defaultAgentBubbleBackgroundColor
         }
         
         return color
@@ -104,7 +104,7 @@ class Theme {
     
     var botBubbleFontColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.botBubbleFontColor] else {
-            return UIColor.defaultBotBubbleFontColor
+            return Theme.defaultBotBubbleFontColor
         }
         
         return color
@@ -112,7 +112,7 @@ class Theme {
     
     var botBubbleBackgroundColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.botBubbleBackgroundColor] else {
-            return UIColor.defaultBotBubbleBackgroundColor
+            return Theme.defaultBotBubbleBackgroundColor
         }
         
         return color
@@ -120,7 +120,7 @@ class Theme {
     
     var backgroundColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.backgroundColor] else {
-            return UIColor.defaultBackgroundColor
+            return Theme.defaultBackgroundColor
         }
         
         return color
@@ -128,7 +128,7 @@ class Theme {
     
     var loadingAnimationColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.loadingAnimationColor] else {
-            return UIColor.defaultLoadingAnimationColor
+            return Theme.defaultLoadingAnimationColor
         }
         
         return color
@@ -136,7 +136,7 @@ class Theme {
     
     var separatorColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.separatorColor] else {
-            return UIColor.defaultSeparatorColor
+            return Theme.defaultSeparatorColor
         }
         
         return color
@@ -144,7 +144,7 @@ class Theme {
     
     var categoryBackgroundColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.categoryBackgroundColor] else {
-            return UIColor.defaultCategoryBackgroundColor
+            return Theme.defaultCategoryBackgroundColor
         }
         
         return color
@@ -152,7 +152,7 @@ class Theme {
     
     var buttonBackgroundColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.buttonBackgroundColor] else {
-            return UIColor.defaultButtonBackgroundColor
+            return Theme.defaultButtonBackgroundColor
         }
         
         return color
@@ -160,7 +160,7 @@ class Theme {
     
     var disabledLinkColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.disabledLinkColor] else {
-            return UIColor.defaultDisabledLinkColor
+            return Theme.defaultDisabledLinkColor
         }
         
         return color
@@ -168,7 +168,7 @@ class Theme {
     
     var headerBackgroundColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.headerBackgroundColor] else {
-            return UIColor.defaultHeaderBackgroundColor
+            return Theme.defaultHeaderBackgroundColor
         }
         
         return color
@@ -176,7 +176,7 @@ class Theme {
     
     var menuIconColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.menuIconColor] else {
-            return UIColor.defaultMenuIconColor
+            return Theme.defaultMenuIconColor
         }
         
         return color
@@ -184,7 +184,7 @@ class Theme {
     
     var systemMessageColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.systemMessageColor] else {
-            return UIColor.defaultSystemMessageColor
+            return Theme.defaultSystemMessageColor
         }
         
         return color
@@ -192,7 +192,7 @@ class Theme {
     
     var headerFontColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.headerFontColor] else {
-            return UIColor.defaultHeaderFontColor
+            return Theme.defaultHeaderFontColor
         }
         
         return color
