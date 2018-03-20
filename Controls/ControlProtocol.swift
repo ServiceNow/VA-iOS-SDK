@@ -82,7 +82,7 @@ protocol ControlDelegate: AnyObject {
 
 // MARK: - Control Protocol
 
-protocol ControlProtocol: AnyObject, ControlThemeable {
+protocol ControlProtocol: AnyObject, ThemeableControl {
     
     // representation of ui control state
     var model: ControlViewModel { get set }

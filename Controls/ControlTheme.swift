@@ -26,17 +26,17 @@ protocol ControlTheme {
 // discussion: originally it was Themeable but Chatbot application also should have protocol for theming and I thought Themeable would be more appropriate to use there
 // If we ever decide to create actual framework out of Controls, we could revert it to Themeable name
 
-protocol ControlThemeable {
+protocol ThemeableControl {
     func applyTheme(_ theme: ControlTheme?)
 }
 
-extension ControlThemeable where Self: ControlProtocol {
+extension ThemeableControl where Self: ControlProtocol {
     func applyTheme(_ theme: ControlTheme?) {
         viewController.view.backgroundColor = theme?.backgroundColor
     }
 }
 
-extension ControlThemeable where Self: PickerControlProtocol {
+extension ThemeableControl where Self: PickerControlProtocol {
     func applyTheme(_ theme: ControlTheme?) {
         viewController.view.backgroundColor = theme?.backgroundColor
     }

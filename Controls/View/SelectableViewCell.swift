@@ -47,7 +47,7 @@ class SelectableViewCell: UITableViewCell, ConfigurablePickerCell {
         selectableView.isSelected = model.isSelected
     }
     
-    // MARK: - ControlThemeable
+    // MARK: - ThemeableControl
     
     func applyTheme(_ theme: ControlTheme?) {
         selectableView.titleLabel.textColor = theme?.fontColor

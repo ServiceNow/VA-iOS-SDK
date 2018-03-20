@@ -9,7 +9,7 @@
 import UIKit
 import AlamofireImage
 
-class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ControlThemeable {
+class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ThemeableControl {
     
     weak var delegate: PickerViewControllerDelegate?
     var imageDownloader: ImageDownloader?
@@ -141,7 +141,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         return headerView
     }
     
-    // MARK: - ControlThemeable
+    // MARK: - ThemeableControl
     
     func applyTheme(_ theme: ControlTheme?) {
         self.theme = theme
