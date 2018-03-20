@@ -29,8 +29,8 @@ class PickerTableViewCell: UITableViewCell, ConfigurablePickerCell {
     
     // MARK: - ControlThemeable
     
-    func applyTheme(_ theme: ControlTheme) {
-        titleLabel.textColor = theme.fontColor
-        backgroundView?.backgroundColor = theme.selectedBackgroundColor
+    func applyTheme(_ theme: ControlTheme?) {
+        titleLabel.textColor = theme?.fontColor
+        backgroundView?.backgroundColor = theme?.selectedBackgroundColor
     }
 }

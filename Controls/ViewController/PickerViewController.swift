@@ -117,10 +117,10 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         let identifier = model.isMultiSelect ? SelectableViewCell.cellIdentifier : PickerTableViewCell.cellIdentifier
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
         cell.contentView.backgroundColor = UIColor.white
-        guard let configurableCell: ConfigurablePickerCell = cell as? ConfigurablePickerCell else {
+        guard let configurableCell = cell as? ConfigurablePickerCell else {
             return cell
         }
-        
+        configurableCell.applyTheme(theme)
         let itemModel = model.items[indexPath.row]
         configurableCell.configure(withModel: itemModel)
         return cell
@@ -175,17 +175,17 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
     
     // MARK: - Theme
     
-    func applyTheme(_ theme: ControlTheme) {
+    func applyTheme(_ theme: ControlTheme?) {
         self.theme = theme
-        tableView.backgroundColor = theme.backgroundColor
+        tableView.backgroundColor = theme?.backgroundColor
         let headerView = tableView.headerView(forSection: 0) as? PickerHeaderView
-        headerView?.backgroundColor = theme.headerBackgroundColor
-        headerView?.titleLabel?.textColor = theme.headerFontColor
-        headerView?.titleLabel?.backgroundColor = theme.headerBackgroundColor
+        headerView?.backgroundColor = theme?.headerBackgroundColor
+        headerView?.titleLabel?.textColor = theme?.headerFontColor
+        headerView?.titleLabel?.backgroundColor = theme?.headerBackgroundColor
         
         let footerView = tableView.footerView(forSection: 0) as? PickerFooterView
-        footerView?.backgroundColor = theme.headerBackgroundColor
-        footerView?.doneButton?.backgroundColor = theme.headerBackgroundColor
-        footerView?.doneButton?.setTitleColor(theme.headerBackgroundColor, for: .normal)
+        footerView?.backgroundColor = theme?.headerBackgroundColor
+        footerView?.doneButton?.backgroundColor = theme?.headerBackgroundColor
+        footerView?.doneButton?.setTitleColor(theme?.headerBackgroundColor, for: .normal)
     }
 }

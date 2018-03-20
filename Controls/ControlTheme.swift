@@ -27,17 +27,17 @@ protocol ControlTheme {
 // If we ever decide to create actual framework out of Controls, we could revert it to Themeable name
 
 protocol ControlThemeable {
-    func applyTheme(_ theme: ControlTheme)
+    func applyTheme(_ theme: ControlTheme?)
 }
 
 extension ControlThemeable where Self: ControlProtocol {
-    func applyTheme(_ theme: ControlTheme) {
-        viewController.view.backgroundColor = theme.backgroundColor
+    func applyTheme(_ theme: ControlTheme?) {
+        viewController.view.backgroundColor = theme?.backgroundColor
     }
 }
 
 extension ControlThemeable where Self: PickerControlProtocol {
-    func applyTheme(_ theme: ControlTheme) {
-        viewController.view.backgroundColor = theme.backgroundColor
+    func applyTheme(_ theme: ControlTheme?) {
+        viewController.view.backgroundColor = theme?.backgroundColor
     }
 }

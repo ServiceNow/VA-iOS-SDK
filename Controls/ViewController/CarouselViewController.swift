@@ -143,7 +143,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     // MARK: - ControlThemeable
     
-    func applyTheme(_ theme: ControlTheme) {
+    func applyTheme(_ theme: ControlTheme?) {
         self.theme = theme
     }
 }

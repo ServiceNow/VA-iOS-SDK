@@ -49,7 +49,7 @@ class SelectableViewCell: UITableViewCell, ConfigurablePickerCell {
     
     // MARK: - ControlThemeable
     
-    func applyTheme(_ theme: ControlTheme) {
-        selectableView.titleLabel.textColor = theme.fontColor
+    func applyTheme(_ theme: ControlTheme?) {
+        selectableView.titleLabel.textColor = theme?.fontColor
     }
 }
