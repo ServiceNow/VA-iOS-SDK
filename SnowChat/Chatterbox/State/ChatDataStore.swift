@@ -106,6 +106,12 @@ class ChatDataStore {
         }
     }
     
+    func updateConversation(_ conversation: Conversation) {
+        guard let index = conversations.index(where: { $0.conversationId == conversation.conversationId })  else { return }
+        
+        conversations[index].appendMessageExchanges(conversation.messageExchanges())
+    }
+    
     func storeHistory(_ exchange: MessageExchange, forConversation conversationId: String) {
         if let index = conversations.index(where: { $0.conversationId == conversationId }) {
             conversations[index].prepend(exchange)
@@ -201,6 +207,12 @@ struct Conversation: Storable, Codable {
     
     func newestExchange() -> MessageExchange? {
         return exchanges.last
+    }
+    
+    mutating func appendMessageExchanges(_ newExchanges: [MessageExchange]) {
+        newExchanges.forEach { exchange in
+            exchanges.append(exchange)
+        }
     }
     
     enum ConversationState: String, Codable {

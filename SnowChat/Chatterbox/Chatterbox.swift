@@ -213,7 +213,7 @@ class Chatterbox {
     
     internal func didReceiveSystemError(_ message: String) {
         switch state {
-        case .userConversation:
+        case .userConversation, .topicSelection:
             transferToLiveAgent()
         default:
             logger.logFatal("*** System Error encountered outside of User Conversation! ***")

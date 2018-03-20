@@ -79,12 +79,16 @@ extension Chatterbox {
     }
     
     fileprivate func syncCurrentConversation(_ receivedConversation: Conversation, _ newestExchange: MessageExchange) {
-        guard let firstReceivedExchange = receivedConversation.messageExchanges().first,
-            let receivedResponseId = firstReceivedExchange.response?.messageId,
-            let ourResponseId = newestExchange.response?.messageId,
-            receivedResponseId == ourResponseId  else {
-                // responses do not match!
-                return
+        var conversation = receivedConversation
+        
+        if newestExchange.isComplete {
+            // process incoming messageExchanges
+            storeConversationMessagesAndPublish(conversation)
+        } else {
+            // we were waiting for a response, but then got more messages back
+            //  this is an error state so we end this conversation
+            logger.logError("Received more messages while waiting for user-input: conversation is invalid!")
+            conversation.state = .error
         }
         
         // our last response matches the info we received, we are in sync!
@@ -295,6 +299,15 @@ extension Chatterbox {
         
         self.chatDataListener?.chatterbox(self, willLoadConversation: conversation.conversationId, forChat: self.chatId)
         
+        notifyMessagesFor(conversation)
+    }
+    
+    internal func storeConversationMessagesAndPublish(_ conversation: Conversation) {
+        chatStore.updateConversation(conversation)
+        notifyMessagesFor(conversation)
+    }    
+
+    private func notifyMessagesFor(_ conversation: Conversation) {
         conversation.messageExchanges().forEach { exchange in
             let outputOnlyMessage = exchange.message.isOutputOnly || exchange.message.controlType == .multiPart
             let inputPending = exchange.isComplete == false && conversation.state.isInProgress
@@ -305,8 +318,6 @@ extension Chatterbox {
                 notifyMessageExchange(exchange)
             }
         }
-        
-        self.chatDataListener?.chatterbox(self, didLoadConversation: conversation.conversationId, forChat: self.chatId)
     }
     
     internal func notifyMessage(_ message: ControlData) {
