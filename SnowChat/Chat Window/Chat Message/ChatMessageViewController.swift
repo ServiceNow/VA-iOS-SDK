@@ -20,7 +20,8 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     private var controlHeightConstraint: NSLayoutConstraint?
     private var controlWidthConstraint: NSLayoutConstraint?
-    private var isAgentMessage: Bool = false
+    
+    private var isAgentMessage: Bool!
     private var theme: Theme!
     
     var controlCache: ControlCache?
@@ -52,9 +53,8 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     func configure(withChatMessageModel model: ChatMessageModel,
                    controlCache cache: ControlCache,
                    controlDelegate delegate: ControlDelegate,
-                   resourceProvider provider: ControlResourceProvider,
-                   isInAgentConversation: Bool) {
-        isAgentMessage = (isInAgentConversation == true && model.bubbleLocation == .left)
+                   resourceProvider provider: ControlResourceProvider) {
+        isAgentMessage = (model.isLiveAgentConversation == true && model.bubbleLocation == .left)
         self.theme = model.theme
         self.controlCache = cache
         self.resourceProvider = provider

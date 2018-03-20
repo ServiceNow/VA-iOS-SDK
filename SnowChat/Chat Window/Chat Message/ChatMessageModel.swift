@@ -32,17 +32,19 @@ class ChatMessageModel {
     var messageId: String?
     var theme: Theme
     
-    var isAuxiliary: Bool = false
-    var bubbleLocation: BubbleLocation?
     var avatarURL: URL?
+    var bubbleLocation: BubbleLocation?
+    var isLiveAgentConversation: Bool
+    var isAuxiliary = false
     
-    init(model: ControlViewModel, messageId: String? = nil, bubbleLocation: BubbleLocation, requiresInput: Bool = false, theme: Theme) {
+    init(model: ControlViewModel, messageId: String? = nil, bubbleLocation: BubbleLocation, requiresInput: Bool = false, theme: Theme, isAgentMessage: Bool = false) {
         self.type = .control
         self.controlModel = model
         self.bubbleLocation = bubbleLocation
         self.requiresInput = requiresInput
         self.messageId = messageId
         self.theme = theme
+        self.isLiveAgentConversation = isAgentMessage
     }
     
     init(type: ChatMessageType, theme: Theme) {
@@ -51,6 +53,7 @@ class ChatMessageModel {
         self.controlModel = nil
         self.requiresInput = false
         self.theme = theme
+        self.isLiveAgentConversation = false
     }
 }
 
@@ -208,7 +211,7 @@ extension ChatMessageModel {
         let value = message.data.text
         let direction = message.direction
         let textModel = TextControlViewModel(id: message.messageId, value: value)
-        let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
+        let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme, isAgentMessage: true)
 
         if let avatarPath = message.data.sender?.avatarPath {
             snowViewModel.avatarURL = URL(string: avatarPath)
