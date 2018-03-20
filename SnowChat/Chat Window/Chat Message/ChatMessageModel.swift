@@ -73,8 +73,11 @@ extension ChatMessageModel {
         case .multiPart:
             guard let controlMessage = message as? MultiPartControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage)
-        case .dateTime, .date, .time:
+        case .dateTime:
             guard let controlMessage = message as? DateTimePickerControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage)
+        case .date, .time:
+            guard let controlMessage = message as? DateOrTimePickerControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage)
         case .outputImage:
             guard let controlMessage = message as? OutputImageControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
@@ -181,6 +184,18 @@ extension ChatMessageModel {
     static func model(withMessage message: DateTimePickerControlMessage) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label else {
                 return nil
+        }
+        
+        let direction = message.direction
+        
+        let textViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: title)
+        let snowViewModel = ChatMessageModel(model: textViewModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
+        return snowViewModel
+    }
+    
+    static func model(withMessage message: DateOrTimePickerControlMessage) -> ChatMessageModel? {
+        guard let title = message.data.richControl?.uiMetadata?.label else {
+            return nil
         }
         
         let direction = message.direction

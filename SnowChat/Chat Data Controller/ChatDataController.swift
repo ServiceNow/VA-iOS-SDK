@@ -225,6 +225,7 @@ class ChatDataController {
         }
     }
     
+    //swiftlint:disable:next cyclomatic_complexity
     fileprivate func updateChatterbox(_ data: ControlViewModel) {
         guard let conversationId = self.conversationId else {
             logger.logError("No ConversationID in updateChatterbox!")
@@ -241,8 +242,10 @@ class ChatDataController {
                 updatePickerData(data, lastPendingMessage)
             case .multiSelect:
                 updateMultiSelectData(data, lastPendingMessage)
-            case .dateTime, .date, .time:
+            case .dateTime:
                 updateDateTimeData(data, lastPendingMessage)
+            case .date, .time:
+                updateDateOrTimeData(data, lastPendingMessage)
             case .multiPart:
                 updateMultiPartData(data, lastPendingMessage)
             case .inputImage:
@@ -300,6 +303,17 @@ class ChatDataController {
     fileprivate func updateDateTimeData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         if let dateTimeViewModel = data as? DateTimePickerControlViewModel,
             var dateTimeMessage = lastPendingMessage as? DateTimePickerControlMessage {
+            
+            dateTimeMessage.id = dateTimeViewModel.id
+            dateTimeMessage.data.richControl?.value = dateTimeViewModel.resultValue
+            chatterbox.update(control: dateTimeMessage)
+        }
+    }
+    
+    fileprivate func updateDateOrTimeData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
+        // TODO: Add DatePickerControlViewModel
+        if let dateTimeViewModel = data as? TimePickerControlViewModel,
+            var dateTimeMessage = lastPendingMessage as? DateOrTimePickerControlMessage {
             
             dateTimeMessage.id = dateTimeViewModel.id
             dateTimeMessage.data.richControl?.value = dateTimeViewModel.resultValue

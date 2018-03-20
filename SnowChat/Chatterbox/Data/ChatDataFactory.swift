@@ -55,10 +55,11 @@ class ChatDataFactory {
                 return try ChatUtil.jsonDecoder.decode(OutputTextControlMessage.self, from: jsonData)
             case .multiPart:
                 return try ChatUtil.jsonDecoder.decode(MultiPartControlMessage.self, from: jsonData)
-            case .dateTime, .time, .date:
-                var dateTimeControl = try ChatUtil.jsonDecoder.decode(DateTimePickerControlMessage.self, from: jsonData)
+            case .dateTime:
+                return try ChatUtil.jsonDecoder.decode(DateTimePickerControlMessage.self, from: jsonData)
+            case .time, .date:
+                var dateTimeControl = try ChatUtil.jsonDecoder.decode(DateOrTimePickerControlMessage.self, from: jsonData)
                 dateTimeControl.controlType = controlType
-                return dateTimeControl
             case .outputImage:
                 return try ChatUtil.jsonDecoder.decode(OutputImageControlMessage.self, from: jsonData)
             case .outputLink:
@@ -144,8 +145,10 @@ class ChatDataFactory {
             data = try ChatUtil.jsonEncoder.encode(message as? OutputTextControlMessage)
         case .multiPart:
             data = try ChatUtil.jsonEncoder.encode(message as? MultiPartControlMessage)
-        case .dateTime, .date, .time:
+        case .dateTime:
             data = try ChatUtil.jsonEncoder.encode(message as? DateTimePickerControlMessage)
+        case .date, .time:
+            data = try ChatUtil.jsonEncoder.encode(message as? DateOrTimePickerControlMessage)
         case .outputImage:
             data = try ChatUtil.jsonEncoder.encode(message as? OutputImageControlMessage)
         case .outputLink:

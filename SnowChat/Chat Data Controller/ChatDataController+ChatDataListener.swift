@@ -60,9 +60,12 @@ extension ChatDataController: ChatDataListener {
         case .multiSelect:
             guard messageExchange.message is MultiSelectControlMessage else { fatalError("Could not view message as MultiSelectControlMessage in ChatDataListener") }
             self.didCompleteMultiSelectExchange(messageExchange, forChat: chatId)
-        case .dateTime, .date, .time:
+        case .dateTime:
             guard messageExchange.message is DateTimePickerControlMessage else { fatalError("Could not view message as DateTimePickerControlMessage in ChatDataListener") }
             self.didCompleteDateTimeExchange(messageExchange, forChat: chatId)
+        case .date, .time:
+            guard messageExchange.message is DateOrTimePickerControlMessage else { fatalError("Could not view message as DateTimePickerControlMessage in ChatDataListener") }
+            self.didCompleteDateOrTimeExchange(messageExchange, forChat: chatId)
         case .multiPart:
             guard messageExchange.message is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
             self.didCompleteMultiPartExchange(messageExchange, forChat: chatId)
@@ -142,6 +145,26 @@ extension ChatDataController: ChatDataListener {
             // In case when user selected a date during topic flow - we are presenting already question and dateTime picker in the chat (2 controls from one message). Hence we don't want to show question again. And that's what below `if` statement does.
             // THIS is different from other didComplete methods, where we show just one control per message. In those cases we want to replace control with question and insert an answer.
             // `shouldReplaceResponse` flag is set to `true` to indicate that we want to only replace last message (dateTimePicker in this case)
+            if lastMessage.messageId != messageExchange.message.messageId {
+                replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
+                shouldReplaceLastControlWithResponse = false
+            }
+            
+            guard let response = viewModels.response else { return }
+            
+            let answer = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right)
+            if shouldReplaceLastControlWithResponse {
+                replaceLastControl(with: answer)
+            } else {
+                presentControlData(answer)
+            }
+        }
+    }
+    
+    private func didCompleteDateOrTimeExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
+        if let viewModels = controlsForDateOrTimePicker(from: messageExchange) {
+            let lastMessage = controlData[0]
+            var shouldReplaceLastControlWithResponse = true
             if lastMessage.messageId != messageExchange.message.messageId {
                 replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
                 shouldReplaceLastControlWithResponse = false
@@ -247,8 +270,12 @@ extension ChatDataController: ChatDataListener {
             if let viewModels = controlsForMultiSelect(from: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
-        case .dateTime, .date, .time:
+        case .dateTime:
             if let viewModels = controlsForDateTimePicker(from: historyExchange) {
+                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+            }
+        case .date, .time:
+            if let viewModels = controlsForDateOrTimePicker(from: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
         case .input:
@@ -406,6 +433,24 @@ extension ChatDataController: ChatDataListener {
         let dateFormatter = DateFormatter.formatterForChatterboxControlType(response.controlType)
         let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
         let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: dateFormatter.string(from: value))
+        
+        return (message: questionModel, response: answerModel)
+    }
+    
+    func controlsForDateOrTimePicker(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel?)? {
+        guard messageExchange.isComplete,
+            let response = messageExchange.response as? DateOrTimePickerControlMessage,
+            let message = messageExchange.message as? DateOrTimePickerControlMessage,
+            let label = message.data.richControl?.uiMetadata?.label,
+            let value = response.data.richControl?.value ?? "" else {
+                logger.logError("MessageExchange is not valid in dateOrTimePickerControlsFromMessageExchange method - skipping!")
+                return nil
+        }
+        
+//        let dateFormatter = DateFormatter.formatterForChatterboxControlType(response.controlType)
+        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        // TODO: temporary
+        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: value)
         
         return (message: questionModel, response: answerModel)
     }
