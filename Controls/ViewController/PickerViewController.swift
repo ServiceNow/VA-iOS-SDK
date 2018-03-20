@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PickerViewController: UIViewController, Themeable {
+class PickerViewController: UIViewController, ControlThemeable {
     
     private let headerViewIdentifier = "HeaderView"
     private let footerViewIdentifier = "FooterView"

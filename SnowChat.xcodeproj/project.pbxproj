@@ -66,6 +66,7 @@
 		572C6BC1200C33BC00F142E2 /* ControlCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C6BC0200C33BC00F142E2 /* ControlCache.swift */; };
 		572FAC181FC47A9C00B0B956 /* MultiSelectControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */; };
 		572FAC1A1FC47B5600B0B956 /* MultiSelectControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC191FC47B5600B0B956 /* MultiSelectControlViewModel.swift */; };
+		573BDA8A20614F0000AC6C2D /* Theme+Controls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BDA8920614F0000AC6C2D /* Theme+Controls.swift */; };
 		573F78F7202275000008391D /* ButtonControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573F78F6202275000008391D /* ButtonControl.swift */; };
 		573F78FD202288F40008391D /* ControlViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573F78FC202288F40008391D /* ControlViewCell.swift */; };
 		5740F431202269E90060B349 /* MultiPartControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5740F430202269E90060B349 /* MultiPartControlMessage.swift */; };
@@ -274,6 +275,7 @@
 		572C6BC0200C33BC00F142E2 /* ControlCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlCache.swift; sourceTree = "<group>"; };
 		572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectControl.swift; sourceTree = "<group>"; };
 		572FAC191FC47B5600B0B956 /* MultiSelectControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectControlViewModel.swift; sourceTree = "<group>"; };
+		573BDA8920614F0000AC6C2D /* Theme+Controls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+Controls.swift"; sourceTree = "<group>"; };
 		573F78F6202275000008391D /* ButtonControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonControl.swift; sourceTree = "<group>"; };
 		573F78FC202288F40008391D /* ControlViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlViewCell.swift; sourceTree = "<group>"; };
 		5740F430202269E90060B349 /* MultiPartControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPartControlMessage.swift; sourceTree = "<group>"; };
@@ -546,6 +548,7 @@
 			isa = PBXGroup;
 			children = (
 				57ADE69E2059F7DC00F5D57C /* Theme.swift */,
+				573BDA8920614F0000AC6C2D /* Theme+Controls.swift */,
 			);
 			path = Theme;
 			sourceTree = "<group>";
@@ -1351,6 +1354,7 @@
 				BE782DB81FEB205200F848F5 /* APIManager+ChatSession.swift in Sources */,
 				579479322031E44900C4C5C5 /* DateTimePickerControlMessage.swift in Sources */,
 				C4CBF2C72045D8EE0038F120 /* Chatterbox+AgentTopic.swift in Sources */,
+				573BDA8A20614F0000AC6C2D /* Theme+Controls.swift in Sources */,
 				C47B363F2048BFFE00559410 /* SubscribeToSupportQueueMessage.swift in Sources */,
 				C41EF5D21FDB0F2500707F45 /* ChatDataListener.swift in Sources */,
 				575566A9200FAF1D000953F7 /* PickerHeaderFooterView.swift in Sources */,

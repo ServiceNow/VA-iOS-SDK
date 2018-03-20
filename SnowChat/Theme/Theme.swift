@@ -8,39 +8,36 @@
 
 import Foundation
 
-struct ColorSettings {
-    static let categoryFontColor = "category_font_color"
-    static let linkColor = "link_color"
-    static let timestampColor = "timestamp_color"
-    static let inputBackgroundColor = "input_bg_color"
-    static let bubbleFontColor = "bubble_font_color"
-    static let bubbleBackgroundColor = "bubble_bg_color"
-    static let agentBubbleFontColor = "agent_bubble_font_color"
-    static let agentBubbleBackgroundColor = "agent_bubble_bg_color"
-    static let botBubbleFontColor = "bot_bubble_font_color"
-    static let botBubbleBackgroundColor = "bot_bubble_bg_color"
-    static let backgroundColor = "bg_color"
-    static let loadingAnimationColor = "load_animation_color"
-    static let separatorColor = "seperator_color"
-    static var categoryBackgroundColor = "category_bg_color"
-    static let buttonBackgroundColor = "button_bg_color"
-    static let disabledLinkColor = "disabled_link_color"
-    static let headerBackgroundColor = "header_bg_color"
-    static let menuIconColor = "menu_icon_color"
-    static let systemMessageColor = "system_message_color"
-    static let headerFontColor = "header_font_color"
+protocol Themeable {
+    func applyTheme(_ theme: Theme)
 }
 
 class Theme {
-    private var colorPropertiesMap = [String : UIColor]()
     
-    init(dictionary: [String : Any]?) {
-        dictionary?.keys.forEach { [weak self] key in
-            if let value = dictionary?[key] as? String {
-                self?.colorPropertiesMap[key] = UIColor(hexValue: value)
-            }
-        }
+    struct ColorSettings {
+        static let categoryFontColor = "category_font_color"
+        static let linkColor = "link_color"
+        static let timestampColor = "timestamp_color"
+        static let inputBackgroundColor = "input_bg_color"
+        static let bubbleFontColor = "bubble_font_color"
+        static let bubbleBackgroundColor = "bubble_bg_color"
+        static let agentBubbleFontColor = "agent_bubble_font_color"
+        static let agentBubbleBackgroundColor = "agent_bubble_bg_color"
+        static let botBubbleFontColor = "bot_bubble_font_color"
+        static let botBubbleBackgroundColor = "bot_bubble_bg_color"
+        static let backgroundColor = "bg_color"
+        static let loadingAnimationColor = "load_animation_color"
+        static let separatorColor = "seperator_color"
+        static var categoryBackgroundColor = "category_bg_color"
+        static let buttonBackgroundColor = "button_bg_color"
+        static let disabledLinkColor = "disabled_link_color"
+        static let headerBackgroundColor = "header_bg_color"
+        static let menuIconColor = "menu_icon_color"
+        static let systemMessageColor = "system_message_color"
+        static let headerFontColor = "header_font_color"
     }
+    
+    private var colorPropertiesMap = [String : UIColor]()
     
     var categoryFontColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.categoryFontColor] else {
@@ -200,55 +197,12 @@ class Theme {
         
         return color
     }
-}
-
-// MARK: - Controls theme
-// Helper object/adapter that conforms to Controls theme protocol
-
-class ControlVisualTheme: ControlTheme {
-    var backgroundColor: UIColor
     
-    var borderColor: UIColor
-    
-    var fontColor: UIColor
-    
-    var headerBackgroundColor: UIColor
-    
-    var headerFontColor: UIColor
-    
-    init(backgroundColor: UIColor, borderColor: UIColor, fontColor: UIColor, headerBackgroundColor: UIColor, headerFontColor: UIColor) {
-        self.backgroundColor = backgroundColor
-        self.borderColor = borderColor
-        self.fontColor = fontColor
-        self.headerBackgroundColor = headerBackgroundColor
-        self.headerFontColor = headerFontColor
-    }
-}
-
-// MARK: - ControlTheme utils
-
-extension Theme {
-    func controlThemeForAgent() -> ControlTheme {
-        return ControlVisualTheme(backgroundColor: agentBubbleBackgroundColor,
-                                  borderColor: agentBubbleBackgroundColor,
-                                  fontColor: agentBubbleFontColor,
-                                  headerBackgroundColor: headerBackgroundColor,
-                                  headerFontColor: headerFontColor)
-    }
-    
-    func controlThemeForBot() -> ControlTheme {
-        return ControlVisualTheme(backgroundColor: botBubbleBackgroundColor,
-                                  borderColor: botBubbleBackgroundColor,
-                                  fontColor: botBubbleFontColor,
-                                  headerBackgroundColor: headerBackgroundColor,
-                                  headerFontColor: headerFontColor)
-    }
-    
-    func controlTheme() -> ControlTheme {
-        return ControlVisualTheme(backgroundColor: bubbleBackgroundColor,
-                                  borderColor: bubbleBackgroundColor,
-                                  fontColor: bubbleFontColor,
-                                  headerBackgroundColor: headerBackgroundColor,
-                                  headerFontColor: headerFontColor)
+    init(dictionary: [String : Any]?) {
+        dictionary?.keys.forEach { [weak self] key in
+            if let value = dictionary?[key] as? String {
+                self?.colorPropertiesMap[key] = UIColor(hexValue: value)
+            }
+        }
     }
 }
