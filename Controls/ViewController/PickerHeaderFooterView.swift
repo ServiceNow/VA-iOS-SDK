@@ -56,7 +56,6 @@ class PickerFooterView: UITableViewHeaderFooterView {
         let localizedTitle = NSLocalizedString("Done", comment: "Button title for multiselect control done.")
         doneButton.setTitle(localizedTitle, for: .normal)
         doneButton.titleLabel?.font = .preferredFont(forTextStyle: .body)
-        doneButton.setTitleColor(.black, for: .normal)
         doneButton.titleLabel?.adjustsFontSizeToFitWidth = true
         doneButton.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(doneButton)
