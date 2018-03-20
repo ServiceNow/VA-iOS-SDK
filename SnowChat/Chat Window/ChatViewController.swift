@@ -68,11 +68,8 @@ public class ChatViewController: UIViewController {
     }
     
     private func setupContextMenu() {
-        let button: UIButton = UIButton(type: UIButtonType.custom)
         let image = UIImage(named: "menu", in: Bundle(for: type(of: self)), compatibleWith: nil)
-        button.setImage(image, for: .normal)
-        button.addTarget(self, action: #selector(contextMenuTapped(_:)), for: .touchUpInside)
-        let contextMenu = UIBarButtonItem(customView: button)
+        let contextMenu = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(contextMenuTapped(_:)))
         navigationItem.rightBarButtonItem = contextMenu
     }
     
@@ -81,7 +78,8 @@ public class ChatViewController: UIViewController {
         
         let contextItems = conversationViewController?.contextMenuItems()
         contextItems?.forEach({ item in
-            let style = (item.style == ContextMenuItem.Style.cancel) ? UIAlertActionStyle.cancel : UIAlertActionStyle.default
+            let isCancel = item.style == .cancel
+            let style: UIAlertActionStyle = isCancel ? .cancel : .default
             alertController.addAction(UIAlertAction(title: item.title, style: style) { action in
                 item.handler(self, sender)
             })

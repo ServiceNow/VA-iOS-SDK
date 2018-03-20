@@ -345,7 +345,7 @@ class ChatDataController {
         }
         
         if var messageModel = ChatMessageModel.model(withMessage: message) {
-            messageModel = modelWithUpdatedAvatarURL(model: messageModel, withInstance: chatterbox.instance)
+            messageModel = modelWithUpdatedAvatarURL(model: messageModel, withInstance: chatterbox.serverInstance)
             return messageModel
         }
         return nil

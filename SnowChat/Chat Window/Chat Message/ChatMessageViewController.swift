@@ -111,13 +111,13 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         
         // Adjust width and height of the control if needed
         if let preferredControlSize = control.preferredContentSize {
-            if !preferredControlSize.width.isNaN {
+            if preferredControlSize.width != UIViewNoIntrinsicMetric {
                 controlWidthConstraint = controlView.widthAnchor.constraint(equalToConstant: preferredControlSize.width)
                 controlWidthConstraint?.priority = .defaultLow
                 controlWidthConstraint?.isActive = true
             }
             
-            if !preferredControlSize.height.isNaN {
+            if preferredControlSize.height != UIViewNoIntrinsicMetric {
                 controlHeightConstraint = controlView.heightAnchor.constraint(equalToConstant: preferredControlSize.height)
                 controlHeightConstraint?.isActive = true
             }

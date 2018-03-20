@@ -77,6 +77,7 @@ enum ChatterboxActionType: String, Codable, CodingKey {
     case cancelUserTopic = "CancelTopic"
     case startedUserTopic = "StartedVendorTopic"
     case finishedUserTopic = "TopicFinished"
+    case showTopic = "ShowTopic"
     
     case startAgentChat = "StartChat"
     case endAgentChat = "EndChat"
@@ -88,10 +89,12 @@ enum ChatterboxActionType: String, Codable, CodingKey {
 
 protocol ActionData: Codable {
     var eventType: ChatterboxActionType { get }
+    var direction: MessageDirection { get }
 }
 
 struct ActionDataUnknown: ActionData {
     let eventType: ChatterboxActionType = .unknown
+    var direction: MessageDirection { return .fromClient }
 }
 
 // MARK: - Control Data

@@ -10,7 +10,7 @@
 
 enum PickerStyle: String, Codable {
     case carousel
-    case regular
+    case list
 }
 
 struct CarouselLabeledValue: Codable {
@@ -22,10 +22,10 @@ struct CarouselLabeledValue: Codable {
 
 struct PickerMetadata: Codable {
     let multiSelect: Bool
-    let style: PickerStyle
+    let style: PickerStyle?
     let openByDefault: Bool
-    let required: Bool
-    let itemType: String
+    let required: Bool?
+    let itemType: String?
     let label: String
     let options: [CarouselLabeledValue]
 }

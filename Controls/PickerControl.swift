@@ -9,7 +9,7 @@
 enum PickerControlStyle: Int {
     
     // can be embedded anywhere in parent view
-    case regular
+    case list
     
     case carousel
 }
@@ -48,7 +48,7 @@ protocol PickerControlProtocol: ControlProtocol, PickerViewControllerDelegate {
 extension PickerControlProtocol {
     
     var preferredContentSize: CGSize? {
-        return CGSize(width: 250, height: CGFloat.nan)
+        return CGSize(width: 250, height: UIViewNoIntrinsicMetric)
     }
     
     // default implementation of protocol method. returns viewController based on provided style of the picker
@@ -58,7 +58,7 @@ extension PickerControlProtocol {
         }
         
         switch style {
-        case .regular:
+        case .list:
             let tableViewController = PickerViewController(model: model)
             tableViewController.delegate = self
             return tableViewController
