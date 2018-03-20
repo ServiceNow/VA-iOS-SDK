@@ -63,6 +63,15 @@ class ChatDataStore {
         return conversations.first(where: { $0.conversationId == conversationId })?.lastPendingMessage()
     }
     
+    func cancelPendingExchange(forConversation conversationId: String) {
+        guard lastPendingMessage(forConversation: conversationId) != nil,
+            let index = conversations.index(where: { $0.conversationId == conversationId }) else {
+            Logger.default.logError("No conversation found for \(conversationId) in storeResponseData")
+            return
+        }
+        return conversations[index].cancelPendingExchange()
+    }
+    
     func oldestMessage() -> ControlData? {
         var oldest: MessageExchange?
         
@@ -164,6 +173,13 @@ struct Conversation: Storable, Codable {
         return false
     }
     
+    mutating func cancelPendingExchange() {
+        guard exchanges.count > 0 else { return }
+        
+        let index = exchanges.count - 1
+        exchanges[index].isCancelled = true
+    }
+    
     func lastPendingMessage() -> Storable? {
         guard let pending = lastPendingExchange() else { return nil }
         return pending.message
@@ -194,6 +210,15 @@ struct Conversation: Storable, Codable {
         case canceled =     "CANCELED"
         case error =        "ERROR"
         case unknown =      "UKNONWN"
+        
+        var isInProgress: Bool {
+            switch self {
+            case .inProgress, .chatProgress:
+                return true
+            default :
+                return false
+            }
+        }
     }
 }
 
@@ -201,10 +226,11 @@ struct MessageExchange: Codable {
     
     let message: ControlData
     var response: ControlData?
+    var isCancelled: Bool = false
     
     var isComplete: Bool {
-        // Exchange is complete if there is a response, or if the message type needs no response
-        if !needsResponse() {
+        // Exchange is complete if there is a response, if it was cancelled, or if the message type needs no response
+        if !needsResponse() || isCancelled {
             return true
         } else {
             return response != nil

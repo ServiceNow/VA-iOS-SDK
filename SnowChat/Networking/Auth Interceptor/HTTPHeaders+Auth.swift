@@ -17,8 +17,11 @@ enum HTTPHeaderField {
     static let authorizeByCookieFirst = "X-AuthorizeByCookieFirst"
     static let isLoggedIn = "X-Is-Logged-In"
     
+    static let requireLoggedIn = "X-Require-Logged-In"
+    
     static let authorization = "Authorization"
     
     static let endUser = "X-End-User"
+    static let userActivity = "X-User-Activity"
     
 }

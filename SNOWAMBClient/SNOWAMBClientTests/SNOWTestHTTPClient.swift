@@ -22,13 +22,14 @@ class SNOWTestHTTPClient: SNOWHTTPSessionClientProtocol {
             let postData = try JSONSerialization.data(withJSONObject: JSONParameters, options: .prettyPrinted)
             let strPostData = String(data: postData, encoding: String.Encoding.utf8) ?? "{}"
             print(strPostData)
-            let url = URL(string: URLString, relativeTo: baseURL)
-            httpRequest(url: url!, data: postData) { result in
-                switch result {
-                case .success:
-                    success(result.value)
-                case .failure:
-                    failure(result.error)
+            if let url = URL(string: URLString, relativeTo: baseURL) {
+                httpRequest(url: url, data: postData) { result in
+                    switch result {
+                    case .success:
+                        success(result.value)
+                    case .failure:
+                        failure(result.error)
+                    }
                 }
             }
         } catch {
@@ -37,7 +38,7 @@ class SNOWTestHTTPClient: SNOWHTTPSessionClientProtocol {
         
         return nil
     }
-    private func httpRequest(url: URL, data: Data, completion handler: @escaping (SNOWAMBResult<[Any]>) -> Void) -> Void {
+    private func httpRequest(url: URL, data: Data, completion handler: @escaping (SNOWAMBResult<[Any]>) -> Void) {
         
         func toJSON(_ data: Data?) -> [Any] {
             do {

@@ -8,10 +8,6 @@
 
 import AlamofireImage
 
-protocol OutputImageControlDelegate: ControlDelegate {
-    func controlDidFinishImageDownload(_ control: OutputImageControl)
-}
-
 class OutputImageControl: ControlProtocol {
     
     weak var delegate: ControlDelegate?
@@ -24,10 +20,6 @@ class OutputImageControl: ControlProtocol {
         return viewController as! OutputImageViewController
     }
     
-    private weak var outputImageDelegate: OutputImageControlDelegate? {
-        return delegate as? OutputImageControlDelegate
-    }
-    
     private var imageModel: OutputImageViewModel {
         return model as! OutputImageViewModel
     }
@@ -36,7 +28,7 @@ class OutputImageControl: ControlProtocol {
     
     var model: ControlViewModel {
         didSet {
-            if let size = imageModel.imageSize {
+            if let size = imageModel.size {
                 imageViewController.prepareViewForImageWithSize(size)
             }
         }
@@ -75,12 +67,12 @@ class OutputImageControl: ControlProtocol {
             
             // If we already fetched image before we don't need to call beginUpdate/endUpdate on tableView
             // Which is called in didFinishImageDownload
-            let needsLayoutUpdate = strongSelf.imageModel.imageSize == nil
+            let needsLayoutUpdate = strongSelf.imageModel.size == nil
             strongSelf.imageViewController.image = image
-            strongSelf.imageModel.imageSize = strongSelf.imageViewController.imageSize
+            strongSelf.imageModel.size = strongSelf.imageViewController.imageSize
             
             if needsLayoutUpdate {
-                strongSelf.outputImageDelegate?.controlDidFinishImageDownload(strongSelf)
+                strongSelf.delegate?.controlDidFinishLoading(strongSelf)
             }
         }
     }

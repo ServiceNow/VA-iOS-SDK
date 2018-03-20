@@ -11,6 +11,10 @@ import Foundation
 struct CancelUserTopicMessage: Codable, ActionData {
     var eventType: ChatterboxActionType = .cancelUserTopic
     
+    var direction: MessageDirection {
+        return data.direction
+    }
+
     var type: String
     var data: ActionMessageData<UserTopicMessageDetails>
     

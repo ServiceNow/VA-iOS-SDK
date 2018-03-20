@@ -31,12 +31,8 @@ extension Chatterbox {
         
         let newestMessage = newestExchange.message
         
-        apiManager.fetchNewerConversations(forConsumer: consumerAccountId, afterMessage: newestMessage.messageId, completionHandler: { [weak self] conversationsFromService in
+        apiManager.fetchNewerConversations(forConsumer: consumerAccountId, afterMessage: newestMessage.messageId, completionHandler: { [weak self] conversations in
             guard let strongSelf = self else { return }
-            
-            // HACK: service is returning user and system conversations, so we remove all system topics here
-            //       remove this when the service is fixed
-            let conversations = strongSelf.filterSystemTopics(conversationsFromService)
             
             if conversations.count == 0 {
                 strongSelf.syncNoConversationsReturned()
@@ -69,7 +65,6 @@ extension Chatterbox {
         case .chatProgress:
             logger.logInfo("Live Agent session \(conversationId) is in progress")
             resumeLiveAgentTopic(conversation: conversation)
-        // TODO: how to resume a live agent chat session??
         case .completed, .error, .canceled:
             logger.logInfo("Conversation is no longer in progress - ending current conversations")
             finishTopic(conversationId)
@@ -146,7 +141,7 @@ extension Chatterbox {
                 return
         }
         
-        apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { [weak self] conversationsFromService in
+        apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { [weak self] conversations in
             guard let strongSelf = self else {
                 completion(0)
                 return
@@ -156,12 +151,13 @@ extension Chatterbox {
             
             strongSelf.chatDataListener?.chatterbox(strongSelf, willLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
             
-            // TODO: remove this filter when the service stops returning system messages
-            let conversations = strongSelf.filterSystemTopics(conversationsFromService)
-            
             conversations.forEach({ [weak self] conversation in
                 guard let strongSelf = self else { return }
-                
+                guard !conversation.isForSystemTopic() else {
+                    strongSelf.logger.logError("Unexpected SystemTopic conversation in fetchOlderMessages!!! skipping...")
+                    return
+                }
+
                 let conversationId = conversation.conversationId
                 let conversationName = conversation.topicTypeName
                 _ = strongSelf.chatStore.findOrCreateConversation(conversationId, withName: conversationName, withState: conversation.state)
@@ -223,6 +219,15 @@ extension Chatterbox {
         refreshConversations(completionHandler: completionHandler)
     }
     
+    // refreshConversations - pull all conversations from the service for the current consumerAccountId
+    // for each retrieved conversation, store it and notify listener of new conversations to display
+    // The state of the conversation is very specific: only the LAST conversation can be 'inProgress'.
+    // All others are marked as 'completed' regardless of the server's notion of the state
+    //
+    // If the last conversation is in-progress, we have to process it like a live conversation, not
+    // one loaded from history, to ensure that the controls are displayed as they need to be for an
+    // active convresation. We also have to resume the conversation by sending the showTopic message
+    // to ensure that the server knows it was resumed by our current session
     internal func refreshConversations(completionHandler: @escaping (Error?) -> Void) {
         
         if let consumerId = session?.user.consumerAccountId {
@@ -230,44 +235,54 @@ extension Chatterbox {
             
             self.chatDataListener?.chatterbox(self, willLoadConversationsForConsumerAccount: consumerId, forChat: self.chatId)
             
-            apiManager.fetchConversations(forConsumer: consumerId, completionHandler: { (conversationsFromService) in
+            apiManager.fetchConversations(forConsumer: consumerId, completionHandler: { [weak self] conversations in
+                guard let strongSelf = self else { return }
                 
-                // HACK: service is returning user and system conversations, so we remove all system topics here
-                //       remove this when the service is fixed
-                let conversations = self.filterSystemTopics(conversationsFromService)
-                self.logger.logDebug(" --> loaded \(conversationsFromService.count) conversations, \(conversations.count) are for user")
-                
-                let lastConversation = conversations.last
+                guard let lastConversation = conversations.last else {
+                    // no messages - signal we are finished
+                    strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
+                    completionHandler(nil)
+                    return
+                }
                 
                 conversations.forEach { conversation in
-                    var conversation = conversation
+                    guard !conversation.isForSystemTopic() else {
+                        strongSelf.logger.logError("Unexpected SystemTopic conversation in refreshConversation!!!")
+                        return
+                    }
                     
-                    let isInProgress = conversation.conversationId == lastConversation?.conversationId && conversation.state != .completed
-                    if !isInProgress {
+                    var conversation = conversation
+                    let isLastConversation = conversation.conversationId == lastConversation.conversationId
+                    let isInProgress = isLastConversation && conversation.state.isInProgress
+                    
+                    if isInProgress {
+                        guard isLastConversation else { fatalError("inProgress conversation MUST be the last conversation!") }
+                        
+                        // if we are on an in-progress conversation, then signal that history loading is done and process
+                        // the in-progress conversation as a live-one, not a historical one
+                        strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
+                    } else {
+                        // normalize the completion state (error, canceled, completed all become completed)
                         conversation.state = .completed
                     }
                     
-                    self.storeConversationAndPublish(conversation)
+                    strongSelf.storeConversationAndPublish(conversation)
                     
-                    if conversation.conversationId == lastConversation?.conversationId {
-                        self.syncConversationState(conversation)
+                    if isLastConversation {
+                        // notify that load is complete, unless we already did (for the in-progress conversation)
+                        if !isInProgress {
+                            strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
+                        }
+                        
+                        strongSelf.syncConversationState(conversation)
                     }
                 }
-                
-                self.chatDataListener?.chatterbox(self, didLoadConversationsForConsumerAccount: consumerId, forChat: self.chatId)
-                
                 completionHandler(nil)
             })
         } else {
             logger.logError("No consumer Account ID, cannot load data from service")
             completionHandler(ChatterboxError.invalidParameter(details: "No ConsumerAccountId set in refreshConversations"))
         }
-    }
-    
-    internal func filterSystemTopics(_ conversations: [Conversation]) -> [Conversation] {
-        return conversations.filter({ conversation -> Bool in
-            return conversation.isForSystemTopic() == false
-        })
     }
     
     internal func storeHistoryAndPublish(_ exchange: MessageExchange, forConversation conversationId: String) {
@@ -282,7 +297,7 @@ extension Chatterbox {
         
         conversation.messageExchanges().forEach { exchange in
             let outputOnlyMessage = exchange.message.isOutputOnly || exchange.message.controlType == .multiPart
-            let inputPending = conversation.state == .inProgress && !exchange.isComplete
+            let inputPending = exchange.isComplete == false && conversation.state.isInProgress
             
             if outputOnlyMessage || inputPending {
                 notifyMessage(exchange.message)

@@ -23,8 +23,10 @@ protocol ControlWebResourceProvider {
 extension APIManager: ControlResourceProvider {
     
     var avatarURL: URL {
-        // TODO: temporary for demo purposes and until we have actual enpoint to fetch the image from.
-        return instance.instanceURL.appendingPathComponent("/images/default_virtual_agent_avatar.png")
+        if let avatarUrl = instance.avatarUrl {
+            return avatarUrl
+        } else {
+            return instance.instanceURL.appendingPathComponent("/images/default_virtual_agent_avatar.png")
+        }
     }
-    
 }

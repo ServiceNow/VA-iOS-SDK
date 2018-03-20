@@ -15,13 +15,21 @@ import WebKit
 enum APIManagerError: Error {
     case loginError(message: String)
     case invalidToken(message: String)
+    case invalidUser(message: String)
 }
 
-class APIManager: NSObject {
+class APIManager: NSObject, SNOWAMBClientDelegate {
     
     private enum AuthStatus {
         case loggedIn(User)
         case loggedOut(User?)
+    }
+    
+    private enum AMBPauseReason {
+        case reachability
+        case appBackgrounded
+        case repairingSession
+        case loggedOut
     }
     
     internal let instance: ServerInstance
@@ -41,6 +49,8 @@ class APIManager: NSObject {
     }()
     
     internal let ambClient: SNOWAMBClient
+    private var ambPauseReasons = Set<AMBPauseReason>()
+    private var ambTransportAvailable: Bool = false
     
     private let webViewProcessPool = WKProcessPool()
     private let webViewDataStorage = WKWebsiteDataStore.nonPersistent()
@@ -76,6 +86,12 @@ class APIManager: NSObject {
     // MARK: - Log In
     
     func prepareUserSession(token: OAuthToken, completion: @escaping (Result<User>) -> Void) {
+        guard case let .loggedOut(currentUser) = authStatus else {
+            fatalError("Attempted to prepare a user session while the API Manager is already logged in. This is not allowed.")
+        }
+        
+        let isFirstLogIn = (currentUser == nil)
+        
         // TODO: Should we only clear some session cookies instead of all?
         clearAllCookies()
         
@@ -83,12 +99,7 @@ class APIManager: NSObject {
         sessionManager.adapter = authInterceptor
         sessionManager.retrier = authInterceptor
         
-        // FIXME: Don't use mobile app APIs. Need to move to this API when it's ready: ui/user/current_user
-        sessionManager.request(apiURLWithPath("mobile/app_bootstrap/post_auth"),
-                               method: .get,
-                               parameters: nil,
-                               encoding: JSONEncoding.default,
-                               headers: nil)
+        sessionManager.request(apiURLWithPath("ui/user/current_user"), method: .get)
             .validate()
             .responseJSON { [weak self] response in
                 guard let strongSelf = self else { return }
@@ -106,17 +117,25 @@ class APIManager: NSObject {
                 
                 // TODO: Need a better solution for response parsing. Custom mappings?
                 let dictionary = response.result.value as? [String : Any] ?? [:]
-                let result = dictionary["result"] as? [String : Any] ?? [:]
-                let resources = result["resources"] as? [String : Any] ?? [:]
-                let userDictionary = resources["current_user"] as? [String : Any] ?? [:]
+                let userDictionary = dictionary["result"] as? [String : Any] ?? [:]
                 
                 guard let user = User(dictionary: userDictionary) else {
-                    completion(.failure(APIManagerError.loginError(message: "Invalid User")))
+                    completion(.failure(APIManagerError.invalidUser(message: "Invalid user information.")))
+                    return
+                }
+                
+                guard currentUser == nil || user.sysId == currentUser?.sysId else {
+                    completion(.failure(APIManagerError.invalidUser(message: "Attempted to reauthenticate as a different user.")))
                     return
                 }
                 
                 strongSelf.authStatus = .loggedIn(user)
-                strongSelf.ambClient.connect()
+                
+                if isFirstLogIn {
+                    strongSelf.ambClient.connect()
+                } else {
+                    strongSelf.removeAMBPauseReason(.loggedOut)
+                }
                 
                 completion(.success(user))
         }
@@ -152,10 +171,26 @@ class APIManager: NSObject {
         
         authStatus = .loggedOut(user)
         
-        transportListener?.apiManagerAuthenticationDidBecomeInvalid(self)
+        addAMBPauseReason(.loggedOut)
     }
     
     // MARK: - Transport Listener
+    
+    private func updateAMBTransportAvailabilityIfNeeded() {
+        let available = (!ambClient.isPaused) && (ambClient.clientStatus == .connected)
+        
+        guard available != ambTransportAvailable else { return }
+        
+        ambTransportAvailable = available
+        
+        if available {
+            transportListener?.apiManagerTransportDidBecomeAvailable(self)
+        } else {
+            transportListener?.apiManagerTransportDidBecomeUnavailable(self)
+        }
+        
+        Logger.default.logInfo("Updated transport availability: \(available ? "available" : "unavailable")")
+    }
     
     private func listenForReachabilityChanges() {
         guard let reachabilityManager = reachabilityManager else { return }
@@ -164,31 +199,109 @@ class APIManager: NSObject {
         
         reachabilityManager.listener = { [weak self] status in
             guard let strongSelf = self else { return }
+            
             if reachabilityManager.isReachable {
-                strongSelf.ambClient.isPaused = false
-                
-                // FIXME: should only send this from AMB notification, but it is not working quite right
-                strongSelf.transportListener?.apiManagerTransportDidBecomeAvailable(strongSelf)
+                strongSelf.removeAMBPauseReason(.reachability)
             } else {
-                strongSelf.ambClient.isPaused = true
-                
-                // FIXME: should only send this from AMB notification, but it is not working quite right
-                strongSelf.transportListener?.apiManagerTransportDidBecomeUnavailable(strongSelf)
+                strongSelf.addAMBPauseReason(.reachability)
             }
         }
     }
     
     private func subscribeToAppStateChanges() {
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActiveNotification(_:)), name: Notification.Name.UIApplicationDidBecomeActive, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActiveNotification(_:)), name: Notification.Name.UIApplicationWillResignActive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: .UIApplicationDidEnterBackground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground(_:)), name: .UIApplicationWillEnterForeground, object: nil)
     }
     
-    @objc internal func applicationWillResignActiveNotification(_ notification: Notification) {
-        ambClient.isPaused = true
+    @objc internal func applicationDidEnterBackground(_ notification: Notification) {
+        addAMBPauseReason(.appBackgrounded)
     }
     
-    @objc internal func applicationDidBecomeActiveNotification(_ notification: Notification) {
-        ambClient.isPaused = false
+    @objc internal func applicationWillEnterForeground(_ notification: Notification) {
+        removeAMBPauseReason(.appBackgrounded)
+    }
+    
+    // MARK: - AMB Pausing
+    
+    @discardableResult private func addAMBPauseReason(_ reason: AMBPauseReason) -> Bool {
+        Logger.default.logInfo("Adding AMB pause reason: \(reason)")
+        let inserted = ambPauseReasons.insert(reason).inserted
+        if !ambClient.isPaused {
+            Logger.default.logInfo("Pausing AMB")
+            ambClient.isPaused = true
+            updateAMBTransportAvailabilityIfNeeded()
+        }
+        return inserted
+    }
+    
+    @discardableResult private func removeAMBPauseReason(_ reason: AMBPauseReason) -> Bool {
+        Logger.default.logInfo("Removing AMB pause reason: \(reason)")
+        let removedReason = ambPauseReasons.remove(reason)
+        if ambPauseReasons.isEmpty && ambClient.isPaused {
+            Logger.default.logInfo("Unpausing AMB")
+            ambClient.isPaused = false
+            updateAMBTransportAvailabilityIfNeeded()
+        }
+        return removedReason != nil
+    }
+    
+    // MARK: - AMB Timeout
+    
+    private func handleAMBSessionTimeout() {
+        guard case AuthStatus.loggedIn = authStatus else { return }
+        
+        guard addAMBPauseReason(.repairingSession) else { return }
+        
+        Logger.default.logInfo("Attempting to repair session for AMB")
+        
+        // Use any REST API to try and renew our session cookies
+        sessionManager.request(apiURLWithPath("ui/user/current_user"), method: .get)
+            .validate()
+            .responseJSON { [weak self] response in
+                
+                guard let strongSelf = self else { return }
+                
+                strongSelf.removeAMBPauseReason(.repairingSession)
+                
+                // Any error here invalidates authentication
+                // This is overly aggressive, but it reduces complexity
+                // Note that if we get a 401, the task handler will have already triggered auth invalidation
+                // This is just a catch all – without it, I'm not sure what our "next step" should be to try and recover AMB
+                // Consider revisiting this approach in the future if we think it's too aggressive
+                if response.error != nil {
+                    strongSelf.invalidateAuthentication()
+                    Logger.default.logInfo("Failed to repair auth session for AMB")
+                } else {
+                    Logger.default.logInfo("Successfully repaired auth session for AMB")
+                }
+        }
+    }
+    
+    // MARK: - AMB Listener
+    
+    func ambClientDidConnect(_ client: SNOWAMBClient) {}
+    func ambClientDidDisconnect(_ client: SNOWAMBClient) {}
+    func ambClient(_ client: SNOWAMBClient, didSubscribeToChannel channel: String) {}
+    func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromChannel channel: String) {}
+    func ambClient(_ client: SNOWAMBClient, didReceiveMessage: SNOWAMBMessage, fromChannel channel: String) {}
+    
+    func ambClient(_ client: SNOWAMBClient, didReceiveGlideStatus status: SNOWAMBGlideStatus) {
+        guard let sessionStatus = status.sessionStatus, sessionStatus == .loggedOut else {
+            return
+        }
+        
+        Logger.default.logInfo("Received AMB logged out session status")
+        
+        handleAMBSessionTimeout()
+    }
+    
+    func ambClient(_ client: SNOWAMBClient, didFailWithError error: SNOWAMBError) {
+        Logger.default.logInfo("AMB client error: \(error.localizedDescription)")
+    }
+    
+    func ambClient(_ client: SNOWAMBClient, didChangeClientStatus status: SNOWAMBClientStatus) {
+        updateAMBTransportAvailabilityIfNeeded()
+        Logger.default.logInfo("AMB connection notification: \(status)")
     }
     
 }

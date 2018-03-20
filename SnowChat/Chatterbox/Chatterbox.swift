@@ -51,20 +51,18 @@ class Chatterbox {
     weak var chatEventListener: ChatEventListener?
     weak var chatAuthListener: ChatAuthListener?
     
-    internal struct ConversationContext {
-        var topicName: String?
-        var sessionId: String?
-
-        var taskId: String?
-        
-        var conversationId: String?
-        var systemConversationId: String?
-    }
     internal var conversationContext = ConversationContext()
     internal var contextualActions: ContextualActionMessage?
     
     internal let chatStore = ChatDataStore(storeId: "ChatterboxDataStore")
-    internal var session: ChatSession?
+    
+    internal var session: ChatSession? {
+        didSet {
+            if let settings = session?.settings?.virtualAgentSettings {
+                apiManager.instance.avatar = settings.avatar
+            }
+        }
+    }
     
     internal var chatChannel: String {
         return "/cs/messages/\(chatId)"
@@ -98,6 +96,11 @@ class Chatterbox {
     
     internal let logger = Logger.logger(for: "Chatterbox")
     
+    internal var userContextData: Codable?
+    internal let appContextManager = AppContextManager()
+    
+    // MARK: - Methods
+    
     init(instance: ServerInstance, dataListener: ChatDataListener? = nil, eventListener: ChatEventListener? = nil) {
         self.instance = instance
         chatDataListener = dataListener
@@ -113,10 +116,22 @@ class Chatterbox {
         return chatStore.lastPendingMessage(forConversation: conversationId) as? ControlData
     }
     
+    internal func cancelConversation() {
+        switch state {
+        case .userConversation:
+            cancelUserConversation()
+        case .agentConversation:
+            endAgentConversation()
+        default:
+            break
+        }
+    }
     // MARK: - Incoming messages (Controls from service)
     
     internal func processEventMessage(_ message: String) -> Bool {
         let action = ChatDataFactory.actionFromJSON(message)
+        
+        guard action.eventType != .unknown else { return false }
         
         switch action.eventType {
         case .finishedUserTopic:
@@ -127,7 +142,6 @@ class Chatterbox {
             }
         default:
             logger.logInfo("Unhandled event message: \(action.eventType)")
-            return false
         }
         return true
     }
@@ -208,6 +222,9 @@ class Chatterbox {
     
     internal func didReceiveTopicFinishedAction(_ action: ActionData) {
         if let topicFinishedMessage = action as? TopicFinishedMessage {
+            
+            cancelPendingExchangeIfNeeded()
+                
             conversationContext.conversationId = nil
             
             saveDataToPersistence()
@@ -223,6 +240,15 @@ class Chatterbox {
     internal func didReceiveSubscribeToSupportAction(_ subscribeMessage: SubscribeToSupportQueueMessage) {
         supportQueueInfo = subscribeMessage.data.actionMessage.supportQueue
         subscribeToSupportQueue(subscribeMessage)
+    }
+    
+    internal func cancelPendingExchangeIfNeeded() {
+        if let conversationId = conversationContext.conversationId,
+            let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last, !lastExchange.isComplete {
+            
+            chatStore.cancelPendingExchange(forConversation: conversationId)
+            chatDataListener?.chatterbox(self, didCompleteMessageExchange: lastExchange, forChat: conversationId)
+        }
     }
     
     // MARK: - Update Controls (outgoing from user)
@@ -320,6 +346,74 @@ class Chatterbox {
         }
     }
     
+    // MARK: Chatbot and Agent shared functionality
+    
+    internal func showTopic(completion: @escaping () -> Void) {
+        guard let sessionId = session?.id,
+            let conversationId = conversationContext.systemConversationId,
+            let uiMetadata = contextualActions?.data.richControl?.uiMetadata else {
+                logger.logError("Could not perform showTopic handshake: no conversationID or contextualActions")
+                completion()
+                return
+        }
+        
+        var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId, uiMetadata: uiMetadata)
+        startTopic.data.richControl?.value = "showTopic"
+        startTopic.data.direction = .fromClient
+        startTopic.data.taskId = conversationContext.taskId
+        
+        installShowTopicHandler {
+            completion()
+        }
+        
+        publishMessage(startTopic)
+    }
+    
+    internal func installShowTopicHandler(completion:  @escaping () -> Void) {
+        let previousHandler = messageHandler
+        
+        messageHandler = { [weak self] message in
+            guard let strongSelf = self else { return }
+            
+            // expect a topicPicker back, resend it with the FIRST option picked, and get back a ShowTopic confirmation
+            // NOTE: we always resume the LAST topic, which is the first in the picker-list. Eventually we
+            //       may show a menu of choices and let the user pick which topic to resume...
+            
+            let controlMessage = ChatDataFactory.controlFromJSON(message)
+            
+            if let pickerMessage = controlMessage as? PickerControlMessage {
+                guard pickerMessage.direction == .fromServer,
+                    let count = pickerMessage.data.richControl?.uiMetadata?.options.count, count > 0 else { return }
+                
+                let topicToResume = pickerMessage.data.richControl?.uiMetadata?.options[0].value
+                var responseMessage = pickerMessage
+                responseMessage.data.richControl?.value = topicToResume
+                responseMessage.data.sendTime = Date()
+                responseMessage.data.direction = MessageDirection.fromClient
+                strongSelf.publishMessage(responseMessage)
+                
+            } else {
+                let actionMessage = ChatDataFactory.actionFromJSON(message)
+                
+                guard actionMessage.direction == .fromServer,
+                    let showTopicMessage = actionMessage as? ShowTopicMessage else { return }
+                
+                let sessionId = showTopicMessage.data.sessionId
+                let topicId = showTopicMessage.data.actionMessage.topicId
+                let taskId = showTopicMessage.data.taskId
+                
+                strongSelf.conversationContext.conversationId = topicId
+                strongSelf.conversationContext.sessionId = sessionId
+                strongSelf.conversationContext.taskId = taskId
+                
+                strongSelf.logger.logDebug("Topic resumed: topicId=\(topicId)")
+                strongSelf.messageHandler = previousHandler
+                
+                completion()
+            }
+        }
+    }
+    
     // MARK: - Conversation Access
     
     func currentConversationHasControlData(forId messageId: String) -> Bool {
@@ -336,10 +430,20 @@ class Chatterbox {
         return chatStore.conversation(forId: conversationId)
     }
     
-    // MARK: - Cleanup
-    
     internal func clearMessageHandlers() {
         messageHandler = nil
         handshakeCompletedHandler = nil
+    }
+    
+    // MARK: Structures and Types
+    
+    internal struct ConversationContext {
+        var topicName: String?
+        var sessionId: String?
+        
+        var taskId: String?
+        
+        var conversationId: String?
+        var systemConversationId: String?
     }
 }

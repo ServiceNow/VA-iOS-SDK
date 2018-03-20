@@ -31,6 +31,7 @@ class DateTimePickerViewController: UIViewController {
     
     private var displayMode: DisplayMode = .dateTime {
         didSet {
+            updateSelectedDateLabelWithDate(datePicker.date)
             updateDateTitleLabel()
             updatePickerMode()
         }
@@ -40,6 +41,7 @@ class DateTimePickerViewController: UIViewController {
         super.viewDidLoad()
         datePicker.backgroundColor = UIColor.white
         datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
+        updatePickerDate()
         updateSelectedDateLabelWithDate(datePicker.date)
         updateDateTitleLabel()
         updateDisplayMode()
@@ -51,15 +53,33 @@ class DateTimePickerViewController: UIViewController {
         switch model.type {
         case .dateTime:
             displayMode = .dateTime
+            datePicker.date = Date()
         case .time:
             displayMode = .time
+            datePicker.date = Date(timeIntervalSince1970: 0)
         case .date:
             displayMode = .date
+            datePicker.date = Date()
         default:
             fatalError("Wrong model assigned")
         }
         
         updatePickerMode()
+    }
+    
+    private func updatePickerDate() {
+        guard let model = model else { return }
+        
+        switch model.type {
+        case .dateTime:
+            datePicker.date = Date()
+        case .time:
+            datePicker.date = Date(timeIntervalSince1970: 0)
+        case .date:
+            datePicker.date = Date()
+        default:
+            fatalError("Wrong model assigned")
+        }
     }
     
     private func updateDateTitleLabel() {
@@ -111,23 +131,8 @@ class DateTimePickerViewController: UIViewController {
             }
             
             return adjustedDate
-        case .dateTime:
+        case .dateTime, .time:
             return date
-        case .time:
-            var adjustedComponents = DateComponents()
-            let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: date)
-            adjustedComponents.setValue(timeComponents.hour, for: .hour)
-            adjustedComponents.setValue(timeComponents.minute, for: .minute)
-            adjustedComponents.setValue(timeComponents.second, for: .second)
-            
-            adjustedComponents.setValue(1, for: .day)
-            adjustedComponents.setValue(1, for: .month)
-            adjustedComponents.setValue(1970, for: .year)
-            guard let adjustedDate = calendar.date(from: adjustedComponents) else {
-                fatalError("Error during date adjustment")
-            }
-            
-            return adjustedDate
         }
     }
 }

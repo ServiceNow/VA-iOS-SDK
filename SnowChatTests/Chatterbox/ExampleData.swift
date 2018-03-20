@@ -417,4 +417,72 @@ class ExampleData {
         """
         return ChatDataFactory.actionFromJSON(jsonMessage) as! SubscribeToSupportQueueMessage
     }
+
+    static func exampleSupportQueueUpdateMessage() -> SupportQueue? {
+        let jsonMessage = """
+        {
+            "active": true,
+            "averageWaitTime": "30 Seconds"
+        }
+        """
+        let data = jsonMessage.data(using: .utf8)
+        do {
+            return try ChatUtil.jsonDecoder.decode(SupportQueue.self, from: data!)
+        } catch {
+            return nil
+        }
+    }
+    
+    static func exampleEndAgentChatMessage() -> EndAgentChatMessage {
+        let json = """
+        {
+          "type" : "actionMessage",
+          "data" : {
+            "actionMessage" : {
+              "topicId" : "b2225d7573b41300d63a566a4cf6a7cf",
+              "systemActionName" : "endChat",
+              "type" : "EndChat"
+            },
+            "@class" : ".ActionMessageDto",
+            "messageId" : "3796d9b573b41300d63a566a4cf6a73c",
+            "sendTime" : 0,
+            "conversationId" : "b996d1b573b41300d63a566a4cf6a703",
+            "receiveTime" : 0,
+            "sessionId" : "fd9691b573b41300d63a566a4cf6a7e7",
+            "direction" : "outbound"
+          },
+          "source" : "server"
+        }
+        """
+        return ChatDataFactory.actionFromJSON(json) as! EndAgentChatMessage
+    }
+    
+    static func exampleShowTopicResponseMessage() -> ShowTopicMessage {
+        let json = """
+        {
+          "type" : "actionMessage",
+          "data" : {
+            "actionMessage" : {
+              "topicId" : "b2225d7573b41300d63a566a4cf6a7cf",
+              "systemActionName" : "showVendorTopic",
+              "type" : "ShowTopic"
+            },
+            "@class" : ".ActionMessageDto",
+            "messageId" : "3796d9b573b41300d63a566a4cf6a73c",
+            "sendTime" : 0,
+            "conversationId" : "b996d1b573b41300d63a566a4cf6a703",
+            "receiveTime" : 0,
+            "links" : [
+            ],
+            "sessionId" : "fd9691b573b41300d63a566a4cf6a7e7",
+            "taskId" : "3596d1b573b41300d63a566a4cf6a704",
+            "sequence" : "1621c3a242a0000001",
+            "isAgent" : false,
+            "direction" : "outbound"
+          },
+          "source" : "server"
+        }
+        """
+        return ChatDataFactory.actionFromJSON(json) as! ShowTopicMessage
+    }
 }

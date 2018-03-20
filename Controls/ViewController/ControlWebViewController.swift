@@ -16,11 +16,14 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
         case html(String)
     }
     
+    var hasNavigated: Bool {
+        // Did user navigated within the web view?
+        return webView.backForwardList.backItem != nil
+    }
+    
+    private(set) var webView: WKWebView!
     private let initialRequest: Request
     private let resourceProvider: ControlWebResourceProvider
-    
-    private var webView: WKWebView!
-    private let fullSizeContainer = FullSizeScrollViewContainerView()
     
     // MARK: - Initialization
     
@@ -44,10 +47,6 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
     
     // MARK: - View Life Cycle
     
-    override func loadView() {
-        self.view = fullSizeContainer
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -59,24 +58,35 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
     
     private func setupWebView() {
         let webView = WKWebView(frame: CGRect.zero, configuration: resourceProvider.webViewConfiguration)
+        webView.navigationDelegate = self
         
-        fullSizeContainer.maxHeight = 400
-        fullSizeContainer.scrollView = webView.scrollView
+        // Scroll view inside scroll view is...pretty ugly. Especially when adjustment is on!
+        if #available(iOS 11.0, *) {
+            webView.scrollView.contentInsetAdjustmentBehavior = .never
+        } else {
+            automaticallyAdjustsScrollViewInsets = false
+        }
         
         webView.translatesAutoresizingMaskIntoConstraints = false
-        fullSizeContainer.addSubview(webView)
-        NSLayoutConstraint.activate([webView.leadingAnchor.constraint(equalTo: fullSizeContainer.leadingAnchor),
-                                     webView.trailingAnchor.constraint(equalTo: fullSizeContainer.trailingAnchor),
-                                     webView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
-                                     webView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor)])
-
+        view.addSubview(webView)
+        NSLayoutConstraint.activate([webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 5),
+                                     webView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5),
+                                     webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 5),
+                                     webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -5)])
+        
         self.webView = webView
     }
     
-    // MARK: - Request Loading
+    func load(_ url: URL) {
+        load(.url(url))
+    }
     
-    private func loadInitialRequest() {
-        switch self.initialRequest {
+    func load(_ htmlString: String) {
+        load(.html(htmlString))
+    }
+    
+    private func load(_ request: Request) {
+        switch request {
         case let .html(html):
             webView.loadHTMLString(html, baseURL: nil)
         case let .url(url):
@@ -85,4 +95,15 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
         }
     }
     
+    // MARK: - Request Loading
+    
+    private func loadInitialRequest() {
+        load(initialRequest)
+    }
+    
+    // MARK: - WKNavigationDelegate
+    
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        decisionHandler(.allow)
+    }
 }

@@ -139,8 +139,26 @@ extension ChatMessageModel {
         let direction = message.direction
         
         let options = message.data.richControl?.uiMetadata?.options ?? []
-        let items = options.map { PickerItem(label: $0.label, value: $0.value) }
-        let pickerModel = SingleSelectControlViewModel(id: message.messageId, label: title, required: required, items: items)
+        
+        let pickerModel: PickerControlViewModel
+        if message.data.richControl?.uiMetadata?.style == .carousel {
+            
+            // TODO: Is there a nicer way to create CarouselItems?
+            let items = options.map { (labeledValue: CarouselLabeledValue) -> CarouselItem in
+                var url: URL?
+                if let attachment = labeledValue.attachment {
+                    url = URL(string: attachment)
+                }
+                
+                return CarouselItem(label: labeledValue.label, value: labeledValue.value, attachment: url)
+            }
+            
+            pickerModel = CarouselControlViewModel(id: message.messageId, label: title, required: required, items: items)
+        } else {
+            let items = options.map { PickerItem(label: $0.label, value: $0.value) }
+            pickerModel = SingleSelectControlViewModel(id: message.messageId, label: title, required: required, items: items)
+        }
+        
         let snowViewModel = ChatMessageModel(model: pickerModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
@@ -177,7 +195,7 @@ extension ChatMessageModel {
             return nil
         }
         
-        let direction = message.data.direction
+        let direction = message.direction
         let textModel = TextControlViewModel(id: message.messageId, value: value)
         let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
@@ -185,7 +203,7 @@ extension ChatMessageModel {
     
     static func model(withMessage message: AgentTextControlMessage) -> ChatMessageModel? {
         let value = message.data.text
-        let direction = message.data.direction
+        let direction = message.direction
         let textModel = TextControlViewModel(id: message.messageId, value: value)
         let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
 
@@ -229,9 +247,10 @@ extension ChatMessageModel {
             return nil
         }
         
-        let direction = message.data.direction
+        let direction = message.direction
         
-        let outputLinkModel = OutputLinkControlViewModel(id: message.messageId, value: URL(fileURLWithPath: value))
+        guard let url = URL(string: value.action) else { return nil }
+        let outputLinkModel = OutputLinkControlViewModel(id: message.messageId, value: url)
         let snowViewModel = ChatMessageModel(model: outputLinkModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
@@ -241,16 +260,24 @@ extension ChatMessageModel {
             return nil
         }
         
-        let direction = message.data.direction
-        
+        let direction = message.direction
         let outputHtmlModel = OutputHtmlControlViewModel(id: message.messageId, value: value)
+        var size = CGSize()
+        if let width = message.data.richControl?.uiMetadata?.width {
+            size.width = CGFloat(width)
+        }
+        if let height = message.data.richControl?.uiMetadata?.height {
+            size.height = CGFloat(height)
+        }
+        outputHtmlModel.size = size
+        
         let snowViewModel = ChatMessageModel(model: outputHtmlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
         return snowViewModel
     }
     
     static func model(withMessage message: SystemErrorControlMessage) -> ChatMessageModel? {
         guard let value = message.data.richControl?.uiMetadata?.error.message,
-              let instruction = message.data.richControl?.uiMetadata?.error.handler.instruction else {
+            let instruction = message.data.richControl?.uiMetadata?.error.handler?.instruction else {
             return nil
         }
         
