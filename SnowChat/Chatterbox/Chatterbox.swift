@@ -64,19 +64,19 @@ class Chatterbox {
         }
     }
     
+    internal let chatId = ChatUtil.uuidString()
     internal var chatChannel: String {
         return "/cs/messages/\(chatId)"
     }
-    
-    internal let chatId = ChatUtil.uuidString()
     internal var chatSubscription: SNOWAMBSubscription?
+    
     internal var supportQueueSubscription: SNOWAMBSubscription?
     internal var supportQueueInfo: SupportQueue?
     
-    internal let instance: ServerInstance
+    internal let serverInstance: ServerInstance
     
     private(set) internal lazy var apiManager: APIManager = {
-        return APIManager(instance: instance, transportListener: self)
+        return APIManager(instance: serverInstance, transportListener: self)
     }()
 
     internal enum ChatState {
@@ -85,6 +85,7 @@ class Chatterbox {
         case userConversation
         case agentConversation
     }
+    
     internal var state = ChatState.uninitialized {
         didSet {
             logger.logDebug("Chatterbox State set to: \(state) from \(oldValue)")
@@ -102,7 +103,7 @@ class Chatterbox {
     // MARK: - Methods
     
     init(instance: ServerInstance, dataListener: ChatDataListener? = nil, eventListener: ChatEventListener? = nil) {
-        self.instance = instance
+        self.serverInstance = instance
         chatDataListener = dataListener
         chatEventListener = eventListener
     }
@@ -214,9 +215,13 @@ class Chatterbox {
         switch state {
         case .userConversation:
             transferToLiveAgent()
+        case .agentConversation:
+            // signal an end of conversation so the user can try a new conversation
+            guard let sessionId = self.conversationContext.sessionId,
+                let conversationId = self.conversationContext.conversationId else { return }
+            self.didReceiveTopicFinishedAction(TopicFinishedMessage(withSessionId: sessionId, withConversationId: conversationId))
         default:
             logger.logFatal("*** System Error encountered outside of User Conversation! ***")
-            // TODO: how to signal a system error??
         }
     }
     

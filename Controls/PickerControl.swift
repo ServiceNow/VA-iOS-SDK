@@ -48,7 +48,7 @@ protocol PickerControlProtocol: ControlProtocol, PickerViewControllerDelegate {
 extension PickerControlProtocol {
     
     var preferredContentSize: CGSize? {
-        return CGSize(width: 250, height: CGFloat.nan)
+        return CGSize(width: 250, height: UIViewNoIntrinsicMetric)
     }
     
     // default implementation of protocol method. returns viewController based on provided style of the picker
@@ -68,6 +68,11 @@ extension PickerControlProtocol {
             carouselViewController.delegate = self
             return carouselViewController
         }
+    }
+    
+    func applyTheme(_ theme: ControlTheme?) {
+        let vc = viewController as? PickerViewController
+        vc?.applyTheme(theme)
     }
     
     // MARK: - PickerTableDelegate

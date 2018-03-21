@@ -170,7 +170,10 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             return
         }
         
-        cell.messageViewController?.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self, resourceProvider: chatterbox.apiManager)
+        cell.messageViewController?.configure(withChatMessageModel: model,
+                                              controlCache: uiControlCache,
+                                              controlDelegate: self,
+                                              resourceProvider: chatterbox.apiManager)
         UIView.animate(withDuration: 0.3, animations: {
             self.tableView.beginUpdates()
             self.tableView.endUpdates()
@@ -432,7 +435,10 @@ extension ConversationViewController {
         let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
         cell.messageViewController = messageViewController
         adjustModelSizeIfNeeded(model)
-        messageViewController.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self, resourceProvider: chatterbox.apiManager)
+        messageViewController.configure(withChatMessageModel: model,
+                                        controlCache: uiControlCache,
+                                        controlDelegate: self,
+                                        resourceProvider: chatterbox.apiManager)
         messageViewController.didMove(toParentViewController: self)
     }
     
@@ -448,11 +454,12 @@ extension ConversationViewController {
     private func adjustModelSizeIfNeeded(_ messageModel: ChatMessageModel) {
         guard let outputHtmlModel = messageModel.controlModel as? OutputHtmlControlViewModel,
             let messageHeight = defaultMessageHeight,
-            outputHtmlModel.size == nil else {
+            let size = outputHtmlModel.size,
+            size.height == UIViewNoIntrinsicMetric else {
                 return
         }
         
-        outputHtmlModel.size = CGSize(width: CGFloat.nan, height: messageHeight)
+        outputHtmlModel.size = CGSize(width: UIViewNoIntrinsicMetric, height: messageHeight)
     }
     
     // MARK: - ChatMessageViewController reuse
@@ -604,7 +611,7 @@ extension ConversationViewController {
     // MARK: - Activity Indicator
     
     fileprivate func setupActivityIndicator() {
-        activityIndicator.color = UIColor.controlTextColor
+        activityIndicator.color = Theme.controlTextColor
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(activityIndicator)
         

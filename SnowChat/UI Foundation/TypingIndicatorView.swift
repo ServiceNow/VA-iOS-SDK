@@ -29,7 +29,7 @@ class TypingIndicatorView: UIView {
         }
     }
     
-    @IBInspectable var color: UIColor = UIColor.userBubbleTextColor {
+    @IBInspectable var color: UIColor = Theme.defaultBubbleFontColor {
         didSet {
             layer.sublayers?.forEach({ ($0 as? CAShapeLayer)?.fillColor = color.cgColor })
         }
