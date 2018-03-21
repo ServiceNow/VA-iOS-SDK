@@ -170,7 +170,10 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             return
         }
         
-        cell.messageViewController?.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self, resourceProvider: chatterbox.apiManager)
+        cell.messageViewController?.configure(withChatMessageModel: model,
+                                              controlCache: uiControlCache,
+                                              controlDelegate: self,
+                                              resourceProvider: chatterbox.apiManager)
         UIView.animate(withDuration: 0.3, animations: {
             self.tableView.beginUpdates()
             self.tableView.endUpdates()
@@ -432,7 +435,10 @@ extension ConversationViewController {
         let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
         cell.messageViewController = messageViewController
         adjustModelSizeIfNeeded(model)
-        messageViewController.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self, resourceProvider: chatterbox.apiManager)
+        messageViewController.configure(withChatMessageModel: model,
+                                        controlCache: uiControlCache,
+                                        controlDelegate: self,
+                                        resourceProvider: chatterbox.apiManager)
         messageViewController.didMove(toParentViewController: self)
     }
     
@@ -605,7 +611,7 @@ extension ConversationViewController {
     // MARK: - Activity Indicator
     
     fileprivate func setupActivityIndicator() {
-        activityIndicator.color = UIColor.controlTextColor
+        activityIndicator.color = Theme.controlTextColor
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(activityIndicator)
         

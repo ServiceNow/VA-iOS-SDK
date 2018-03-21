@@ -11,8 +11,8 @@ import UIKit
 class CarouselControlHeaderView: UICollectionReusableView {
     
     static let headerIdentifier = "CarouselControlHeaderViewIdentifier"
-    private var titleLabel = UILabel()
-    private let dividerView = UIView()
+    let titleLabel = UILabel()
+    let dividerView = UIView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -27,7 +27,6 @@ class CarouselControlHeaderView: UICollectionReusableView {
                                      titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
                                      titleLabel.topAnchor.constraint(equalTo: topAnchor),
                                      titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor)])
-        titleLabel.backgroundColor = .controlHeaderBackgroundColor
     }
     
     private func setupDivider() {
@@ -37,7 +36,6 @@ class CarouselControlHeaderView: UICollectionReusableView {
                                      dividerView.trailingAnchor.constraint(equalTo: trailingAnchor),
                                      dividerView.bottomAnchor.constraint(equalTo: bottomAnchor),
                                      dividerView.heightAnchor.constraint(equalToConstant: 1)])
-        dividerView.backgroundColor = .agentBubbleBackgroundColor
         bringSubview(toFront: dividerView)
     }
     

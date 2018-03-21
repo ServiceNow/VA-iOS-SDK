@@ -70,6 +70,11 @@ extension PickerControlProtocol {
         }
     }
     
+    func applyTheme(_ theme: ControlTheme?) {
+        let vc = viewController as? PickerViewController
+        vc?.applyTheme(theme)
+    }
+    
     // MARK: - PickerTableDelegate
     
     func pickerViewController(_ viewController: UIViewController, didFinishWithModel model: PickerControlViewModel) {

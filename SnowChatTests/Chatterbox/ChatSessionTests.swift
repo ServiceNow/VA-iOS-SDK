@@ -83,27 +83,6 @@ class ChatSessionTests: XCTestCase {
         XCTAssertEqual(settings.brandingSettings?.supportEmailLabel, brandingDictionary["support_email_label"] as? String)
         XCTAssertEqual(settings.brandingSettings?.supportHoursLabel, brandingDictionary["support_hours_label"] as? String)
         XCTAssertEqual(settings.brandingSettings?.supportPhoneLabel, brandingDictionary["support_phone_label"] as? String)
-        
-        XCTAssertEqual(settings.brandingSettings?.headerBackgroundColor, UIColor(hexValue: brandingDictionary["header_bg_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.loadingAnimationColor, UIColor(hexValue: brandingDictionary["load_animation_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.categoryFontColor, UIColor(hexValue: brandingDictionary["category_font_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.bubbleBackgroundColor, UIColor(hexValue: brandingDictionary["bubble_bg_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.botBubbleBackgroundColor, UIColor(hexValue: brandingDictionary["bot_bubble_bg_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.disabledLinkColor, UIColor(hexValue: brandingDictionary["disabled_link_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.agentBubbleBackgroundColor, UIColor(hexValue: brandingDictionary["agent_bubble_bg_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.menuIconColor, UIColor(hexValue: brandingDictionary["menu_icon_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.separatorColor, UIColor(hexValue: brandingDictionary["seperator_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.linkColor, UIColor(hexValue: brandingDictionary["link_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.bubbleFontColor, UIColor(hexValue: brandingDictionary["bubble_font_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.agentBubbleFontColor, UIColor(hexValue: brandingDictionary["agent_bubble_font_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.headerFontColor, UIColor(hexValue: brandingDictionary["header_font_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.botBubbleFontColor, UIColor(hexValue: brandingDictionary["bot_bubble_font_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.categoryBackgroundColor, UIColor(hexValue: brandingDictionary["category_bg_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.systemMessageColor, UIColor(hexValue: brandingDictionary["system_message_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.timestampColor, UIColor(hexValue: brandingDictionary["timestamp_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.backgroundColor, UIColor(hexValue: brandingDictionary["bg_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.buttonBackgroundColor, UIColor(hexValue: brandingDictionary["button_bg_color"] as! String))
-        XCTAssertEqual(settings.brandingSettings?.inputBackgroundColor, UIColor(hexValue: brandingDictionary["input_bg_color"] as! String))
     }
 
     let settingsJSON = """
