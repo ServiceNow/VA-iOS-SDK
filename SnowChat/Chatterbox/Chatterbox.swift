@@ -47,7 +47,11 @@ class Chatterbox {
     }
     var vendor: ChatVendor?
     
-    weak var chatDataListener: ChatDataListener?
+    weak var chatDataListener: ChatDataListener? {
+        didSet {
+            logger.logDebug("ChatDataListener property set: \(String(describing: chatDataListener))")
+        }
+    }
     weak var chatEventListener: ChatEventListener?
     weak var chatAuthListener: ChatAuthListener?
     
