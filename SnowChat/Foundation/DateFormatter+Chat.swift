@@ -18,13 +18,6 @@ extension DateFormatter {
     static let glideLocalTimeOnlyFormatter = chatGlideLocalTimeFormatter()
     static let glideLocalDateOnlyFormatter = chatGlideLocalDateOnlyFormatter()
     
-    // MARK: - Formatters in GMT time zone
-    
-    static let glideTimeOnlyFormatter = chatGlideTimeOnlyFormatter()
-    static let glideDateOnlyFormatter = chatGlideDateOnlyFormatter()
-    static let glideDisplayTimeOnlyFormatter = chatGlideDisplayTimeOnlyFormatter()
-    static let glideDisplayDateOnlyFormatter = chatGlideDisplayDateOnlyFormatter()
-    
     // MARK: - Static helper functions
     // Used in ViewController to display dateTime in local timezone.
     
@@ -69,84 +62,20 @@ extension DateFormatter {
         return formatter
     }
     
-    // Used to create Date object out of Time string coming from the server. Must be in GMT.
-    
-    static func chatGlideTimeOnlyFormatter() -> DateFormatter {
-        let formatter = DateFormatter()
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        formatter.dateFormat = "HH:mm:ss"
-        return formatter
-    }
-    
-    // Used to create Date object out of Date-only string coming from the server. Must be in GMT.
-    
-    static func chatGlideDateOnlyFormatter() -> DateFormatter {
-        let formatter = DateFormatter()
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter
-    }
-    
-    // Used to output Time from the Date objec that came from the server. GMT
-    
-    static func chatGlideDisplayTimeOnlyFormatter() -> DateFormatter {
-        let formatter = DateFormatter()
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        formatter.dateStyle = .none
-        formatter.timeStyle = .short
-        return formatter
-    }
-    
-    // Used to output Date-only from the Date objec that came from the server. GMT
-    
-    static func chatGlideDisplayDateOnlyFormatter() -> DateFormatter {
-        let formatter = DateFormatter()
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
-        return formatter
-    }
-    
     // MARK: - Helper function
     // Turns string coming from the server into displayable version of this string (takes locale into account)
     // timeOrDateString: "HH:mm:ss" for time, or "yyyy-MM-dd" for date only type
     
     static func glideDisplayString(for timeOrDateString: String, for chatterboxControlType: ChatterboxControlType) -> String {
-        
-        // Used to turn string into Date
-        let glideDateFormatter = DateFormatter.glideFormatter(for: chatterboxControlType)
-        
-        // Used to turn Date into localized string
-        let glideDisplayDateFormatter = DateFormatter.glideDisplayFormatter(for: chatterboxControlType)
-        
-        guard let date = glideDateFormatter.date(from: timeOrDateString) else {
+        if chatterboxControlType == .time,
+            let dateComponents = DateComponents.timeComponents(from: timeOrDateString),
+            let date = Calendar.current.date(byAdding: dateComponents, to: Date(timeIntervalSince1970: 0)) {
+            
+            return localDisplayTimeOnlyFormatter.string(from: date)
+        } else if chatterboxControlType == .date, let date = glideLocalDateOnlyFormatter.date(from: timeOrDateString) {
+            return localDisplayDateOnlyFormatter.string(from: date)
+        } else {
             return ""
-        }
-        
-        return glideDisplayDateFormatter.string(from: date)
-    }
-    
-    // MARK: Glide formatters (GMT)
-    
-    static func glideFormatter(for chatterboxControlType: ChatterboxControlType) -> DateFormatter {
-        switch chatterboxControlType {
-        case .date:
-            return DateFormatter.glideDateOnlyFormatter
-        case .time:
-            return DateFormatter.glideTimeOnlyFormatter
-        default:
-            fatalError("This control type should not be using dateFormatter: \(chatterboxControlType))")
-        }
-    }
-    
-    static func glideDisplayFormatter(for chatterboxControlType: ChatterboxControlType) -> DateFormatter {
-        switch chatterboxControlType {
-        case .date:
-            return DateFormatter.glideDisplayDateOnlyFormatter
-        case .time:
-            return DateFormatter.glideDisplayTimeOnlyFormatter
-        default:
-            fatalError("This control type should not be using dateFormatter: \(chatterboxControlType))")
         }
     }
     
@@ -176,5 +105,18 @@ extension DateFormatter {
         default:
             fatalError("This control type should not be using dateFormatter: \(controlType))")
         }
+    }
+}
+
+extension DateComponents {
+    static func timeComponents(from glideTimeString: String) -> DateComponents? {
+        let stringComponents = glideTimeString.components(separatedBy: ":")
+        guard stringComponents.count == 3 else { return nil }
+        
+        var timeComponents = DateComponents()
+        timeComponents.hour = Int(stringComponents[0])
+        timeComponents.minute = Int(stringComponents[1])
+        timeComponents.second = Int(stringComponents[2])
+        return timeComponents
     }
 }
