@@ -165,13 +165,13 @@ extension ChatDataController: ChatDataListener {
             let lastMessage = controlData[0]
             var shouldReplaceLastControlWithResponse = true
             if lastMessage.messageId != messageExchange.message.messageId {
-                replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left))
+                replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme))
                 shouldReplaceLastControlWithResponse = false
             }
             
             guard let response = viewModels.response else { return }
             
-            let answer = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right)
+            let answer = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme)
             if shouldReplaceLastControlWithResponse {
                 replaceLastControl(with: answer)
             } else {

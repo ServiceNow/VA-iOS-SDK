@@ -29,12 +29,12 @@ extension ChatMessageModel {
         
         let direction = message.direction
         let dateTimeViewModel = DateTimePickerControlViewModel(id: message.messageId, label: title, required: required)
-        let snowViewModel = ChatMessageModel(model: dateTimeViewModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: dateTimeViewModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         snowViewModel.isAuxiliary = true
         return snowViewModel
     }
     
-    static func auxiliaryModel(withMessage message: DateOrTimePickerControlMessage) -> ChatMessageModel? {
+    static func auxiliaryModel(withMessage message: DateOrTimePickerControlMessage, theme: Theme) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
             let required = message.data.richControl?.uiMetadata?.required else {
                 return nil
