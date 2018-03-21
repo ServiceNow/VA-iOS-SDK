@@ -68,9 +68,7 @@ extension DateFormatter {
     
     static func glideDisplayString(for timeOrDateString: String, for chatterboxControlType: ChatterboxControlType) -> String {
         if chatterboxControlType == .time,
-            let dateComponents = DateComponents.timeComponents(from: timeOrDateString),
-            let date = Calendar.current.date(byAdding: dateComponents, to: Date(timeIntervalSince1970: 0)) {
-            
+            let date = Calendar.current.timeOnlyDate(from: timeOrDateString) {
             return localDisplayTimeOnlyFormatter.string(from: date)
         } else if chatterboxControlType == .date, let date = glideLocalDateOnlyFormatter.date(from: timeOrDateString) {
             return localDisplayDateOnlyFormatter.string(from: date)
@@ -108,15 +106,15 @@ extension DateFormatter {
     }
 }
 
-extension DateComponents {
-    static func timeComponents(from glideTimeString: String) -> DateComponents? {
+extension Calendar {
+    func timeOnlyDate(from glideTimeString: String) -> Date? {
         let stringComponents = glideTimeString.components(separatedBy: ":")
         guard stringComponents.count == 3 else { return nil }
         
-        var timeComponents = DateComponents()
-        timeComponents.hour = Int(stringComponents[0])
-        timeComponents.minute = Int(stringComponents[1])
-        timeComponents.second = Int(stringComponents[2])
-        return timeComponents
+        guard let hour = Int(stringComponents[0]),
+            let minute = Int(stringComponents[1]),
+            let second = Int(stringComponents[2]) else { return nil }
+        
+        return date(bySettingHour: hour, minute: minute, second: second, of: Date(timeIntervalSince1970: 0))
     }
 }
