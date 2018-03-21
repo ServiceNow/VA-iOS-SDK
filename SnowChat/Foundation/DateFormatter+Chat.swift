@@ -11,6 +11,11 @@ extension DateFormatter {
     static let timeOnlyFormatter = chatTimeOnlyDateFormatter()
     static let dateTimeFormatter = chatDateTimeFormatter()
     
+    static let glideTimeFormatter = chatGlideTimeFormatter()
+    static let glideDateOnlyFormatter = chatGlideDateOnlyFormatter()
+    static let glideDisplayTimeFormatter = chatGlideDisplayTimeFormatter()
+    static let glideDisplayDateOnlyFormatter = chatGlideDisplayDateOnlyFormatter()
+    
     static func chatDateTimeFormatter() -> DateFormatter {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
@@ -29,6 +34,32 @@ extension DateFormatter {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
+        return formatter
+    }
+    
+    static func chatGlideTimeFormatter() -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss"
+        return formatter
+    }
+    
+    static func chatGlideDateOnlyFormatter() -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }
+    
+    static func chatGlideDisplayTimeFormatter() -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "HH:mm:ss"
+        return formatter
+    }
+    
+    static func chatGlideDisplayDateOnlyFormatter() -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "yyyy-MM-dd"
         return formatter
     }
     

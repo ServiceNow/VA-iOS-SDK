@@ -60,6 +60,7 @@ class ChatDataFactory {
             case .time, .date:
                 var dateTimeControl = try ChatUtil.jsonDecoder.decode(DateOrTimePickerControlMessage.self, from: jsonData)
                 dateTimeControl.controlType = controlType
+                return dateTimeControl
             case .outputImage:
                 return try ChatUtil.jsonDecoder.decode(OutputImageControlMessage.self, from: jsonData)
             case .outputLink:

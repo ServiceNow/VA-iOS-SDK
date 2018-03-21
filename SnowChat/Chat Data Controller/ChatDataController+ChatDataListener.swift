@@ -138,7 +138,6 @@ extension ChatDataController: ChatDataListener {
             
             // We need to check the last displayed control. In case of regular topic flow we will have TextControl and DateTimeControl as a seperate controls but they will represent one message coming from the server.
             let lastMessage = controlData[0]
-            
             var shouldReplaceLastControlWithResponse = true
             
             // By comparing ids we can distinguish between loading messages from the history and actual topic flow scenarios.
@@ -447,10 +446,18 @@ extension ChatDataController: ChatDataListener {
                 return nil
         }
         
-//        let dateFormatter = DateFormatter.formatterForChatterboxControlType(response.controlType)
+        let displayValue: String
+        let dateFormatter = DateFormatter.formatterForChatterboxControlType(response.controlType)
+        if response.controlType == .time, let date = DateFormatter.glideDisplayTimeFormatter.date(from: value) {
+            displayValue = dateFormatter.string(from: date)
+        } else if response.controlType == .date, let date = DateFormatter.glideDisplayDateOnlyFormatter.date(from: value) {
+            displayValue = dateFormatter.string(from: date)
+        } else {
+            displayValue = ""
+        }
+        
         let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
-        // TODO: temporary
-        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: value)
+        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue)
         
         return (message: questionModel, response: answerModel)
     }
@@ -465,8 +472,8 @@ extension ChatDataController: ChatDataListener {
                 logger.logError("MessageExchange is not valid in inputControlsFromMessageExchange method - skipping!")
                 return nil
         }
-        // a completed input exchange is two text controls, with the value of the message and the value of the response
         
+        // a completed input exchange is two text controls, with the value of the message and the value of the response
         let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: messageValue)
         let answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: responseValue)
         

@@ -43,6 +43,10 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     // MARK: - Initialization
     
+    deinit {
+        print("BARF in ConversationVC")
+    }
+    
     init(chatterbox: Chatterbox) {
         self.chatterbox = chatterbox
         self.dataController = ChatDataController(chatterbox: chatterbox)

@@ -21,13 +21,41 @@
  - Time does not match `GlideTime` field's platform behavior. We need a local "floating" time to handle our use case (like an alarm clock that's always 6am no matter where you are, for example). The platform does not currently have a concept of a "local" / "floating" time field.
  */
 
-class BaseDateTimePickerControlViewModel: ControlViewModel {
-    
+//class BaseDateTimePickerControlViewModel: ControlViewModel {
+//
+//    var label: String?
+//
+//    var isRequired: Bool
+//
+//    var id: String
+//
+//    var type: ControlType {
+//        return .dateTime
+//    }
+//
+//    var dateFormatter: DateFormatter {
+//        return DateFormatter.dateTimeFormatter
+//    }
+//
+//    init(id: String, label: String? = nil, required: Bool) {
+//        self.label = label
+//        self.id = id
+//        self.isRequired = required
+//    }
+//}
+
+class DateTimePickerControlViewModel: ControlViewModel, ValueRepresentable {
     var label: String?
-    
+
     var isRequired: Bool
-    
+
     var id: String
+    
+    var value: Date?
+    
+    var resultValue: Date? {
+        return value
+    }
     
     var type: ControlType {
         return .dateTime
@@ -37,80 +65,35 @@ class BaseDateTimePickerControlViewModel: ControlViewModel {
         return DateFormatter.dateTimeFormatter
     }
     
-    init(id: String, label: String? = nil, required: Bool) {
-        self.label = label
-        self.id = id
-        self.isRequired = required
-    }
-}
-
-class DateTimePickerControlViewModel: BaseDateTimePickerControlViewModel, ValueRepresentable {
-    
-    var value: Date?
-    
-    var resultValue: Date? {
-        return value
-    }
-    
     var displayValue: String? {
         guard let value = value else { return nil }
         return dateFormatter.string(from: value)
     }
     
     init(id: String, label: String? = nil, required: Bool, resultValue: Date? = nil) {
-        super.init(id: id, label: label, required: required)
+        self.label = label
+        self.id = id
+        self.isRequired = required
         self.value = resultValue
     }
 }
 
-class DatePickerControlViewModel: BaseDateTimePickerControlViewModel, ValueRepresentable {
-    
-    var value: String?
-    
-    var resultValue: String? {
-        return ""
-    }
-    
-    var displayValue: String? {
-        return value
-    }
-    
+class DatePickerControlViewModel: DateTimePickerControlViewModel {
     override var type: ControlType {
         return .date
     }
     
     override var dateFormatter: DateFormatter {
-        return DateFormatter.dateOnlyFormatter
-    }
-    
-    init(id: String, label: String? = nil, required: Bool, resultValue: String? = nil) {
-        super.init(id: id, label: label, required: required)
-        self.value = resultValue
+        return DateFormatter.glideDateOnlyFormatter
     }
 }
 
-class TimePickerControlViewModel: BaseDateTimePickerControlViewModel, ValueRepresentable {
-    
-    var value: String?
-    
-    var resultValue: String? {
-        return ""
-    }
-    
-    var displayValue: String? {
-        return value
-    }
-    
+class TimePickerControlViewModel: DateTimePickerControlViewModel {
     override var type: ControlType {
         return .time
     }
     
     override var dateFormatter: DateFormatter {
-        return DateFormatter.timeOnlyFormatter
-    }
-    
-    init(id: String, label: String? = nil, required: Bool, resultValue: String? = nil) {
-        super.init(id: id, label: label, required: required)
-        self.value = resultValue
+        return DateFormatter.glideTimeFormatter
     }
 }

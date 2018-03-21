@@ -52,6 +52,10 @@ class ChatDataController {
     internal var changeSet = [ModelChangeType]()
     
     internal let logger = Logger.logger(for: "ChatDataController")
+    
+    deinit {
+        print("BARF in chat data controller!")
+    }
 
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
@@ -312,11 +316,12 @@ class ChatDataController {
     
     fileprivate func updateDateOrTimeData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         // TODO: Add DatePickerControlViewModel
-        if let dateTimeViewModel = data as? TimePickerControlViewModel,
+        if let dateTimeViewModel = data as? DateTimePickerControlViewModel,
             var dateTimeMessage = lastPendingMessage as? DateOrTimePickerControlMessage {
             
             dateTimeMessage.id = dateTimeViewModel.id
-            dateTimeMessage.data.richControl?.value = dateTimeViewModel.resultValue
+            let dateTimeDisplayValue = dateTimeViewModel.displayValue
+            dateTimeMessage.data.richControl?.value = dateTimeDisplayValue
             chatterbox.update(control: dateTimeMessage)
         }
     }
