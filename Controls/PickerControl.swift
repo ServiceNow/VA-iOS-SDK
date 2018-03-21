@@ -71,7 +71,7 @@ extension PickerControlProtocol {
     }
     
     func applyTheme(_ theme: ControlTheme?) {
-        let vc = viewController as? PickerViewController
+        let vc = viewController as? ThemeableControl
         vc?.applyTheme(theme)
     }
     
