@@ -100,7 +100,6 @@
 		5796E4481FD0B3E0009D2035 /* CGPath+Bubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5796E4471FD0B3E0009D2035 /* CGPath+Bubble.swift */; };
 		579A48F220125039007CF338 /* PickerMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579A48F120125039007CF338 /* PickerMetadata.swift */; };
 		57ADE69F2059F7DC00F5D57C /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57ADE69E2059F7DC00F5D57C /* Theme.swift */; };
-		57ADE6A1205A0C7200F5D57C /* zoom@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 57ADE6A0205A0C7200F5D57C /* zoom@3x.png */; };
 		57ADE6A3205AB1BD00F5D57C /* ImageBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57ADE6A2205AB1BD00F5D57C /* ImageBrowserViewController.swift */; };
 		57B0861020465E0200F009D2 /* CarouselControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0860F20465E0200F009D2 /* CarouselControl.swift */; };
 		57B0861220465F0F00F009D2 /* CarouselViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0861120465F0F00F009D2 /* CarouselViewController.swift */; };
@@ -311,7 +310,6 @@
 		5796E4471FD0B3E0009D2035 /* CGPath+Bubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPath+Bubble.swift"; sourceTree = "<group>"; };
 		579A48F120125039007CF338 /* PickerMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerMetadata.swift; sourceTree = "<group>"; };
 		57ADE69E2059F7DC00F5D57C /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
-		57ADE6A0205A0C7200F5D57C /* zoom@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zoom@3x.png"; sourceTree = "<group>"; };
 		57ADE6A2205AB1BD00F5D57C /* ImageBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserViewController.swift; sourceTree = "<group>"; };
 		57B0860F20465E0200F009D2 /* CarouselControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselControl.swift; sourceTree = "<group>"; };
 		57B0861120465F0F00F009D2 /* CarouselViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselViewController.swift; sourceTree = "<group>"; };
@@ -822,7 +820,6 @@
 			isa = PBXGroup;
 			children = (
 				57ADE69D2059F7C400F5D57C /* Theme */,
-				57ADE6A0205A0C7200F5D57C /* zoom@3x.png */,
 				C4666DC72056F7DF00DABD1B /* menu.png */,
 				BE876FDB1FDF4F64008EEF04 /* Chat Service */,
 				BE29E0CD1FDF06990029D1F0 /* Chat Data Controller */,
@@ -1133,7 +1130,6 @@
 				57B7E2C91FBA25A200196BA9 /* SelectableView.xib in Resources */,
 				BE50E2241FB9305C00948FBC /* Cartfile in Resources */,
 				57D997AB1FE5B00000394A6D /* ChatMessageViewController.xib in Resources */,
-				57ADE6A1205A0C7200F5D57C /* zoom@3x.png in Resources */,
 				C4666DC82056F7E000DABD1B /* menu.png in Resources */,
 				5728D8E4204759740071EF9E /* CarouselCollectionViewCell.xib in Resources */,
 			);

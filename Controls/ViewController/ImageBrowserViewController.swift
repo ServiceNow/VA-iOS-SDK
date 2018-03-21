@@ -28,6 +28,7 @@ class ImageBrowserViewController: UIViewController {
     }
     
     override func viewDidLoad() {
+        super.viewDidLoad()
         setupScrollView()
     }
     
