@@ -41,10 +41,10 @@ struct OutputHtmlControlMessage: Codable, ControlData {
     }
     
     struct OutputHtmlMetadata: Codable {
-        var style: String
         var type: String
-        var width: Int
-        var height: Int
+        var style: String?
+        var width: Int?
+        var height: Int?
     }
     
     let type: String = "systemTextMessage"

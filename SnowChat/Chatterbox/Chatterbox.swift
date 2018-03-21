@@ -64,19 +64,19 @@ class Chatterbox {
         }
     }
     
+    internal let chatId = ChatUtil.uuidString()
     internal var chatChannel: String {
         return "/cs/messages/\(chatId)"
     }
-    
-    internal let chatId = ChatUtil.uuidString()
     internal var chatSubscription: SNOWAMBSubscription?
+    
     internal var supportQueueSubscription: SNOWAMBSubscription?
     internal var supportQueueInfo: SupportQueue?
     
-    internal let instance: ServerInstance
+    internal let serverInstance: ServerInstance
     
     private(set) internal lazy var apiManager: APIManager = {
-        return APIManager(instance: instance, transportListener: self)
+        return APIManager(instance: serverInstance, transportListener: self)
     }()
 
     internal enum ChatState {
@@ -85,6 +85,7 @@ class Chatterbox {
         case userConversation
         case agentConversation
     }
+    
     internal var state = ChatState.uninitialized {
         didSet {
             logger.logDebug("Chatterbox State set to: \(state) from \(oldValue)")
@@ -102,7 +103,7 @@ class Chatterbox {
     // MARK: - Methods
     
     init(instance: ServerInstance, dataListener: ChatDataListener? = nil, eventListener: ChatEventListener? = nil) {
-        self.instance = instance
+        self.serverInstance = instance
         chatDataListener = dataListener
         chatEventListener = eventListener
     }
@@ -214,9 +215,13 @@ class Chatterbox {
         switch state {
         case .userConversation:
             transferToLiveAgent()
+        case .agentConversation:
+            // signal an end of conversation so the user can try a new conversation
+            guard let sessionId = self.conversationContext.sessionId,
+                let conversationId = self.conversationContext.conversationId else { return }
+            self.didReceiveTopicFinishedAction(TopicFinishedMessage(withSessionId: sessionId, withConversationId: conversationId))
         default:
             logger.logFatal("*** System Error encountered outside of User Conversation! ***")
-            // TODO: how to signal a system error??
         }
     }
     
@@ -343,6 +348,74 @@ class Chatterbox {
         if var inputImageControl = control as? InputImageControlMessage, let conversationId = inputImageControl.data.conversationId {
             inputImageControl.data = updateRichControlData(inputImageControl.data)
             publishControlUpdate(inputImageControl, forConversation: conversationId)
+        }
+    }
+    
+    // MARK: Chatbot and Agent shared functionality
+    
+    internal func showTopic(completion: @escaping () -> Void) {
+        guard let sessionId = session?.id,
+            let conversationId = conversationContext.systemConversationId,
+            let uiMetadata = contextualActions?.data.richControl?.uiMetadata else {
+                logger.logError("Could not perform showTopic handshake: no conversationID or contextualActions")
+                completion()
+                return
+        }
+        
+        var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId, uiMetadata: uiMetadata)
+        startTopic.data.richControl?.value = "showTopic"
+        startTopic.data.direction = .fromClient
+        startTopic.data.taskId = conversationContext.taskId
+        
+        installShowTopicHandler {
+            completion()
+        }
+        
+        publishMessage(startTopic)
+    }
+    
+    internal func installShowTopicHandler(completion:  @escaping () -> Void) {
+        let previousHandler = messageHandler
+        
+        messageHandler = { [weak self] message in
+            guard let strongSelf = self else { return }
+            
+            // expect a topicPicker back, resend it with the FIRST option picked, and get back a ShowTopic confirmation
+            // NOTE: we always resume the LAST topic, which is the first in the picker-list. Eventually we
+            //       may show a menu of choices and let the user pick which topic to resume...
+            
+            let controlMessage = ChatDataFactory.controlFromJSON(message)
+            
+            if let pickerMessage = controlMessage as? PickerControlMessage {
+                guard pickerMessage.direction == .fromServer,
+                    let count = pickerMessage.data.richControl?.uiMetadata?.options.count, count > 0 else { return }
+                
+                let topicToResume = pickerMessage.data.richControl?.uiMetadata?.options[0].value
+                var responseMessage = pickerMessage
+                responseMessage.data.richControl?.value = topicToResume
+                responseMessage.data.sendTime = Date()
+                responseMessage.data.direction = MessageDirection.fromClient
+                strongSelf.publishMessage(responseMessage)
+                
+            } else {
+                let actionMessage = ChatDataFactory.actionFromJSON(message)
+                
+                guard actionMessage.direction == .fromServer,
+                    let showTopicMessage = actionMessage as? ShowTopicMessage else { return }
+                
+                let sessionId = showTopicMessage.data.sessionId
+                let topicId = showTopicMessage.data.actionMessage.topicId
+                let taskId = showTopicMessage.data.taskId
+                
+                strongSelf.conversationContext.conversationId = topicId
+                strongSelf.conversationContext.sessionId = sessionId
+                strongSelf.conversationContext.taskId = taskId
+                
+                strongSelf.logger.logDebug("Topic resumed: topicId=\(topicId)")
+                strongSelf.messageHandler = previousHandler
+                
+                completion()
+            }
         }
     }
     

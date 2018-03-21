@@ -8,8 +8,7 @@
 
 import Foundation
 
-class StartTopicDividerCell: UITableViewCell {
-   
+class StartTopicDividerCell: UITableViewCell, Themeable {
     static let cellIdentifier = "StartTopicDividerCell"
     
     var model: ChatMessageModel?
@@ -38,7 +37,6 @@ class StartTopicDividerCell: UITableViewCell {
     
     func setupViews() {
         lineView.translatesAutoresizingMaskIntoConstraints = false
-        lineView.backgroundColor = UIColor.controlHeaderBackgroundColor
         
         contentView.addSubview(lineView)
         NSLayoutConstraint.activate([lineView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5.0),
@@ -46,6 +44,11 @@ class StartTopicDividerCell: UITableViewCell {
                                      lineView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10.0),
                                      lineView.heightAnchor.constraint(equalToConstant: 2.0),
                                      contentView.bottomAnchor.constraint(equalTo: lineView.bottomAnchor, constant: 10.0)])
-//        layoutIfNeeded()
+    }
+    
+    // MARK: - Theme
+    
+    func applyTheme(_ theme: Theme) {
+        lineView.backgroundColor = theme.headerBackgroundColor
     }
 }

@@ -9,13 +9,14 @@
 import UIKit
 import AlamofireImage
 
-class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ThemeableControl {
     
     weak var delegate: PickerViewControllerDelegate?
     var imageDownloader: ImageDownloader?
     
     private var collectionView: UICollectionView?
     private var gradientOverlayView = GradientView()
+    private var theme: ControlTheme?
     
     private var carouselControlViewLayout: CarouselControlViewLayout {
         return collectionView?.collectionViewLayout as! CarouselControlViewLayout
@@ -145,8 +146,16 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CarouselControlHeaderView.headerIdentifier, for: indexPath) as! CarouselControlHeaderView
-        headerView.backgroundColor = .controlHeaderBackgroundColor
+        headerView.backgroundColor = theme?.headerBackgroundColor
+        headerView.titleLabel.backgroundColor = theme?.headerBackgroundColor
+        headerView.dividerView.backgroundColor = theme?.dividerColor
         headerView.configure(with: model)
         return headerView
+    }
+    
+    // MARK: - ThemeableControl
+    
+    func applyTheme(_ theme: ControlTheme?) {
+        self.theme = theme
     }
 }

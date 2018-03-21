@@ -45,6 +45,8 @@ class ButtonControl: ControlProtocol {
     
     weak var delegate: ControlDelegate?
     
+    private var button: UIButton!
+    
     required init(model: ControlViewModel) {
         guard let multiPartModel = model as? ButtonControlViewModel else {
             fatalError("Tried to assign wrong model type")
@@ -56,14 +58,12 @@ class ButtonControl: ControlProtocol {
     }
     
     private func setupButton() {
-        let button = UIButton(type: .custom)
+        button = UIButton(type: .custom)
         button.titleLabel?.font = .preferredFont(forTextStyle: .body)
         button.layer.cornerRadius = 4
-        button.layer.borderColor = UIColor.agentBubbleBackgroundColor.cgColor
         button.layer.borderWidth = 1
         button.setTitle(multiPartModel.label, for: .normal)
         button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 15, bottom: 10, right: 15)
-        button.setTitleColor(.controlHeaderTextColor, for: .normal)
         button.titleLabel?.adjustsFontSizeToFitWidth = true
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
@@ -77,5 +77,12 @@ class ButtonControl: ControlProtocol {
     
     @objc func buttonPressed(_ sender: UIButton) {
         delegate?.control(self, didFinishWithModel: multiPartModel)
+    }
+    
+    func applyTheme(_ theme: ControlTheme?) {
+        button.setTitleColor(theme?.headerFontColor, for: .normal)
+        
+        // TODO: Might want to introduce more custom colors for controls. Need to test with different themes first
+        button.layer.borderColor = theme?.dividerColor.cgColor
     }
 }

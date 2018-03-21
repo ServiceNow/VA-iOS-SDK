@@ -10,7 +10,7 @@ extension ChatMessageModel {
     
     // MARK: Nested models for multi part control
     
-    static func model(withMessage message: MultiPartControlMessage) -> ChatMessageModel? {
+    static func model(withMessage message: MultiPartControlMessage, theme: Theme) -> ChatMessageModel? {
         guard let nestedControlValue = message.data.richControl?.content?.value,
             let nestedControlType = message.nestedControlType else {
                 return nil
@@ -22,24 +22,24 @@ extension ChatMessageModel {
         switch nestedControlType {
         case .text:
             let controlModel = TextControlViewModel(id: message.messageId, value: nestedControlValue)
-            chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
+            chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         case .outputHtml:
             let controlModel = OutputHtmlControlViewModel(id: message.messageId, value: nestedControlValue)
-            chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
+            chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         case .outputImage:
             if let url = URL(string: nestedControlValue) {
                 let controlModel = OutputImageViewModel(id: message.messageId, value: url)
-                chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
+                chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
             }
         case .outputLink:
             if let url = URL(string: nestedControlValue) {
                 let controlModel = OutputLinkControlViewModel(id: message.messageId, value: url)
-                chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
+                chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
             }
         case .unknown:
             if let nestedControlTypeString = message.nestedControlTypeString {
                 let outputTextModel = TextControlViewModel(id: message.messageId, value: "Unsupported control: \(nestedControlTypeString)")
-                chatMessageModel = ChatMessageModel(model: outputTextModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), requiresInput: false)
+                chatMessageModel = ChatMessageModel(model: outputTextModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), requiresInput: false, theme: theme)
             }
         default:
             chatMessageModel = nil
@@ -48,15 +48,15 @@ extension ChatMessageModel {
         return chatMessageModel
     }
     
-    static func buttonModel(withMessage message: MultiPartControlMessage) -> ChatMessageModel? {
+    static func buttonModel(withMessage message: MultiPartControlMessage, theme: Theme) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.navigationBtnLabel,
             let index = message.data.richControl?.uiMetadata?.index else {
                 return nil
         }
         
         let buttonModel = ButtonControlViewModel(id: message.messageId, label: title, value: index)
-        let direction = message.data.direction
-        let buttonChatModel = ChatMessageModel(model: buttonModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
+        let direction = message.direction
+        let buttonChatModel = ChatMessageModel(model: buttonModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         buttonChatModel.isAuxiliary = true
         return buttonChatModel
     }

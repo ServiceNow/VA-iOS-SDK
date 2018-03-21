@@ -12,19 +12,16 @@ import Foundation
 
 extension Chatterbox {
     
-    internal func startTopic(withName: String) throws {
-        conversationContext.topicName = withName
-        
-        if let sessionId = session?.id, let conversationId = conversationContext.systemConversationId {
-            messageHandler = startTopicMessageHandler
-            
-            let startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
-            publishMessage(startTopic)
-            
-            // TODO: how do we signal an error?
-        } else {
+    internal func startTopic(withName topicName: String) throws {
+        guard let sessionId = session?.id, let conversationId = conversationContext.systemConversationId else {
             throw ChatterboxError.invalidParameter(details: "Session must be initialized before startTopic is called")
         }
+        
+        conversationContext.topicName = topicName
+        messageHandler = startTopicMessageHandler
+        
+        let startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
+        publishMessage(startTopic)
     }
     
     internal func cancelUserConversation() {
@@ -36,10 +33,12 @@ extension Chatterbox {
         guard let cancelTopic = cancelTopicMessageFromContextualActions() else { return }
         
         messageHandler = { message in
-            self.logger.logDebug("CancelTopic handler: \(message)")
+            let actionMessage = ChatDataFactory.actionFromJSON(message)
+            guard actionMessage.direction == .fromServer else { return }
             
-            if let cancelTopic = ChatDataFactory.actionFromJSON(message) as? CancelUserTopicMessage,
+            if let cancelTopic = actionMessage as? CancelUserTopicMessage,
                 cancelTopic.data.direction == .fromServer {
+                
                 var cancelTopicReply = cancelTopic
                 cancelTopicReply.data.messageId = ChatUtil.uuidString()
                 cancelTopicReply.data.direction = .fromClient
@@ -48,12 +47,12 @@ extension Chatterbox {
 
                 self.publishMessage(cancelTopicReply)
                 
-            } else if let topicFinished = ChatDataFactory.actionFromJSON(message) as? TopicFinishedMessage {
+            } else if let topicFinished = actionMessage as? TopicFinishedMessage {
 
                 self.didReceiveTopicFinishedAction(topicFinished)
                 
             } else if let systemError = ChatDataFactory.controlFromJSON(message) as? SystemErrorControlMessage {
-                self.logger.logError("System Error canceling conversation: \(systemError)")
+                self.logger.logError("System Error! canceling conversation: \(systemError)")
                 
                 guard let sessionId = self.conversationContext.sessionId,
                     let conversationId = self.conversationContext.conversationId else { return }
@@ -86,71 +85,61 @@ extension Chatterbox {
     }
     
     internal func resumeUserTopic(topicInfo: TopicInfo) {
-        // TODO: notify server that we are resuming the topic (showTopic)
-        if conversationContext.conversationId != topicInfo.conversationId {
-            state = .userConversation
-            setupForConversation(topicInfo: topicInfo)
+        showTopic {
+            self.state = .userConversation
+            self.setupForConversation(topicInfo: topicInfo)
+            self.chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: self.chatId)
         }
-        chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: chatId)
     }
 
-    internal func installTopicSelectionMessageHandler() {
+    internal func installPostHandshakeMessageHandler() {
         state = .topicSelection
-        messageHandler = topicSelectionMessageHandler
+        messageHandler = postHandshakeMessageHandler
     }
     
-    private func topicSelectionMessageHandler(_ message: String) {
+    private func postHandshakeMessageHandler(_ message: String) {
         
         if let subscribeMessage = ChatDataFactory.actionFromJSON(message) as? SubscribeToSupportQueueMessage {
             didReceiveSubscribeToSupportAction(subscribeMessage)
-            return
-        }
-        
-        if let topicChoices = ChatDataFactory.controlFromJSON(message) as? ContextualActionMessage {
+            
+        } else if let topicChoices = ChatDataFactory.controlFromJSON(message) as? ContextualActionMessage {
             handshakeCompletedHandler?(topicChoices)
         }
     }
     
     private func startTopicMessageHandler(_ message: String) {
-        
         let controlMessage = ChatDataFactory.controlFromJSON(message)
+        guard controlMessage.direction == .fromServer else { return }
         
-        switch controlMessage.controlType {
-        case .topicPicker:
-            if let topicPicker = controlMessage as? UserTopicPickerMessage {
-                if topicPicker.data.direction == .fromServer {
-                    var outgoingMessage = topicPicker
-                    outgoingMessage.type = "consumerTextMessage"
-                    outgoingMessage.data.direction = .fromClient
-                    outgoingMessage.data.richControl?.model = ControlModel(type:"field", name: "Topic")
-                    outgoingMessage.data.richControl?.value = conversationContext.topicName
-                    
-                    messageHandler = startUserTopicHandshakeHandler
-                    publishMessage(outgoingMessage)
-                }
-            }
-        default:
-            logger.logError("Unexpected message in StartTopic flow: \(controlMessage)")
+        if let topicPicker = controlMessage as? UserTopicPickerMessage {
+            messageHandler = startUserTopicHandshakeHandler
+            
+            let outgoingMessage = selectedTopicPickerMessage(from: topicPicker)
+            publishMessage(outgoingMessage)
         }
     }
     
-    private func startUserTopicHandshakeHandler(_ message: String) {
-        logger.logDebug("**** startUserTopicHandshake received: \(message)")
+    private func selectedTopicPickerMessage(from topicPicker: UserTopicPickerMessage) -> UserTopicPickerMessage {
+        var outgoingMessage = topicPicker
+        outgoingMessage.type = "consumerTextMessage"
+        outgoingMessage.data.direction = .fromClient
+        outgoingMessage.data.richControl?.model = ControlModel(type:"field", name: "Topic")
+        outgoingMessage.data.richControl?.value = conversationContext.topicName
         
+        return outgoingMessage
+    }
+    
+    private func startUserTopicHandshakeHandler(_ message: String) {
         let actionMessage = ChatDataFactory.actionFromJSON(message)
+        guard actionMessage.direction == .fromServer else { return }
         
         if actionMessage.eventType == .startUserTopic {
             if let startUserTopic = actionMessage as? StartUserTopicMessage {
-                
-                // client and server messages are the same, so only look at server responses!
-                if startUserTopic.data.direction == .fromServer {
-                    let startUserTopicReadyMessage = createStartTopicReadyMessage(fromMessage: startUserTopic)
-                    publishMessage(startUserTopicReadyMessage)
-                }
+                let startUserTopicReadyMessage = startTopicReadyMessage(from: startUserTopic)
+                publishMessage(startUserTopicReadyMessage)
             }
         } else if actionMessage.eventType == .startedUserTopic {
             if let startUserTopicMessage = actionMessage as? StartedUserTopicMessage {
-                
                 let actionMessage = startUserTopicMessage.data.actionMessage
                 
                 logger.logInfo("User Topic Started: \(actionMessage.topicName) - \(actionMessage.topicId) - \(actionMessage.ready ? "Ready" : "Not Ready")")
@@ -160,7 +149,7 @@ extension Chatterbox {
         }
     }
     
-    private func createStartTopicReadyMessage(fromMessage message: StartUserTopicMessage) -> StartUserTopicMessage {
+    private func startTopicReadyMessage(from message: StartUserTopicMessage) -> StartUserTopicMessage {
         var startUserTopicReady = message
         startUserTopicReady.data.messageId = ChatUtil.uuidString()
         startUserTopicReady.data.sendTime = Date()

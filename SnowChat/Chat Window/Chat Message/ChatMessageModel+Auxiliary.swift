@@ -8,18 +8,18 @@
 
 extension ChatMessageModel {
     
-    static func auxiliaryModel(withMessage message: ControlData) -> ChatMessageModel? {
+    static func auxiliaryModel(withMessage message: ControlData, theme: Theme) -> ChatMessageModel? {
         switch message.controlType {
         case .dateTime, .date, .time:
-            return ChatMessageModel.auxiliaryModel(withMessage: message as! DateTimePickerControlMessage)
+            return ChatMessageModel.auxiliaryModel(withMessage: message as! DateTimePickerControlMessage, theme: theme)
         case .multiPart:
-            return ChatMessageModel.buttonModel(withMessage: message as! MultiPartControlMessage)
+            return ChatMessageModel.buttonModel(withMessage: message as! MultiPartControlMessage, theme: theme)
         default:
             return nil
         }
     }
     
-    static func auxiliaryModel(withMessage message: DateTimePickerControlMessage) -> ChatMessageModel? {
+    static func auxiliaryModel(withMessage message: DateTimePickerControlMessage, theme: Theme) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
             let required = message.data.richControl?.uiMetadata?.required else {
                 return nil
@@ -39,7 +39,7 @@ extension ChatMessageModel {
             fatalError("Wrong type")
         }
         
-        let snowViewModel = ChatMessageModel(model: dateTimeViewModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction))
+        let snowViewModel = ChatMessageModel(model: dateTimeViewModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         snowViewModel.isAuxiliary = true
         return snowViewModel
     }

@@ -28,7 +28,7 @@ class ChatSessionTests: XCTestCase {
         }
         
         do {
-            let settingsDictionary = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! NSDictionary
+            let settingsDictionary = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: Any]
         
             let settings = ChatSessionSettings(fromDictionary: settingsDictionary)
 
@@ -42,68 +42,47 @@ class ChatSessionTests: XCTestCase {
         }
     }
 
-    fileprivate func assertVirtualAgentSettings(_ settingsDictionary: NSDictionary, _ settings: ChatSessionSettings) {
-        let virtualAgentDictionary = settingsDictionary["virtualAgentProfile"] as! NSDictionary
+    fileprivate func assertVirtualAgentSettings(_ settingsDictionary: [String: Any], _ settings: ChatSessionSettings) {
+        let virtualAgentDictionary = settingsDictionary["virtualAgentProfile"] as! [String: Any]
         XCTAssertNotNil(virtualAgentDictionary)
 
-        XCTAssertEqual(settings.virtualAgentSettings?.avatar, virtualAgentDictionary.object(forKey: "avatar") as? String)
-        XCTAssertEqual(settings.virtualAgentSettings?.name, virtualAgentDictionary.object(forKey: "name") as? String)
+        XCTAssertEqual(settings.virtualAgentSettings?.avatar, virtualAgentDictionary["avatar"] as? String)
+        XCTAssertEqual(settings.virtualAgentSettings?.name, virtualAgentDictionary["name"] as? String)
 
     }
     
-    fileprivate func assertLiveAgentSettings(_ settingsDictionary: NSDictionary, _ settings: ChatSessionSettings) {
-        let liveAgentDictionary = settingsDictionary["liveAgentSetup"] as! NSDictionary
+    fileprivate func assertLiveAgentSettings(_ settingsDictionary: [String: Any], _ settings: ChatSessionSettings) {
+        let liveAgentDictionary = settingsDictionary["liveAgentSetup"] as! [String: Any]
         XCTAssertNotNil(liveAgentDictionary)
         
         // TODO: add live agent settions and tests when needed
     }
     
-    fileprivate func assertGeneralSettings(_ settingsDictionary: NSDictionary, _ settings: ChatSessionSettings) {
-        let generalDictionary = settingsDictionary["generalSettings"] as! NSDictionary
+    fileprivate func assertGeneralSettings(_ settingsDictionary: [String: Any], _ settings: ChatSessionSettings) {
+        let generalDictionary = settingsDictionary["generalSettings"] as! [String: Any]
         XCTAssertNotNil(generalDictionary)
 
-        XCTAssertEqual(settings.generalSettings?.botName, generalDictionary.object(forKey: "bot_name") as? String)
-        XCTAssertEqual(settings.generalSettings?.liveAgentHandoffMessage, generalDictionary.object(forKey: "live_agent_handoff") as? String)
-        XCTAssertEqual(settings.generalSettings?.introMessage, generalDictionary.object(forKey: "intro_msg") as? String)
-        XCTAssertEqual(settings.generalSettings?.vendorName, generalDictionary.object(forKey: "vendor_name") as? String)
-        XCTAssertEqual(settings.generalSettings?.presenceDelay, Int((generalDictionary.object(forKey: "type_presence_delay") as? String)!))
-        XCTAssertEqual(settings.generalSettings?.genericErrorMessage, generalDictionary.object(forKey: "generic_error") as? String)
+        XCTAssertEqual(settings.generalSettings?.botName, generalDictionary["bot_name"] as? String)
+        XCTAssertEqual(settings.generalSettings?.liveAgentHandoffMessage, generalDictionary["live_agent_handoff"] as? String)
+        XCTAssertEqual(settings.generalSettings?.introMessage, generalDictionary["intro_msg"] as? String)
+        XCTAssertEqual(settings.generalSettings?.vendorName, generalDictionary["vendor_name"] as? String)
+        XCTAssertEqual(settings.generalSettings?.presenceDelay, Int((generalDictionary["type_presence_delay"] as? String)!))
+        XCTAssertEqual(settings.generalSettings?.genericErrorMessage, generalDictionary["generic_error"] as? String)
 
-        XCTAssertEqual(settings.generalSettings?.messageDelay, Int((generalDictionary.object(forKey: "msg_delay") as? String)!))
+        XCTAssertEqual(settings.generalSettings?.messageDelay, Int((generalDictionary["msg_delay"] as? String)!))
 
 
     }
     
-    fileprivate func assertBrandingSettings(_ settingsDictionary: NSDictionary, _ settings: ChatSessionSettings) {
-        let brandingDictionary = settingsDictionary["brandingSettings"] as! NSDictionary
+    fileprivate func assertBrandingSettings(_ settingsDictionary: [String: Any], _ settings: ChatSessionSettings) {
+        let brandingDictionary = settingsDictionary["brandingSettings"] as! [String: Any]
         XCTAssertNotNil(brandingDictionary)
 
-        XCTAssertEqual(settings.brandingSettings?.headerLabel, brandingDictionary.object(forKey: "header_label") as? String)
-        XCTAssertEqual(settings.brandingSettings?.supportPhone, brandingDictionary.object(forKey: "support_phone") as? String)
-        XCTAssertEqual(settings.brandingSettings?.supportEmailLabel, brandingDictionary.object(forKey: "support_email_label") as? String)
-        XCTAssertEqual(settings.brandingSettings?.supportHoursLabel, brandingDictionary.object(forKey: "support_hours_label") as? String)
-        XCTAssertEqual(settings.brandingSettings?.supportPhoneLabel, brandingDictionary.object(forKey: "support_phone_label") as? String)
-        
-        XCTAssertEqual(settings.brandingSettings?.headerBackgroundColor, UIColor(hexValue: brandingDictionary.object(forKey: "header_bg_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.loadingAnimationColor, UIColor(hexValue: brandingDictionary.object(forKey: "load_animation_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.categoryFontColor, UIColor(hexValue: brandingDictionary.object(forKey: "category_font_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.bubbleBackgroundColor, UIColor(hexValue: brandingDictionary.object(forKey: "bubble_bg_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.botBubbleBackgroundColor, UIColor(hexValue: brandingDictionary.object(forKey: "bot_bubble_bg_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.disabledLinkColor, UIColor(hexValue: brandingDictionary.object(forKey: "disabled_link_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.agentBubbleBackgroundColor, UIColor(hexValue: brandingDictionary.object(forKey: "agent_bubble_bg_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.menuIconColor, UIColor(hexValue: brandingDictionary.object(forKey: "menu_icon_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.separatorColor, UIColor(hexValue: brandingDictionary.object(forKey: "seperator_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.linkColor, UIColor(hexValue: brandingDictionary.object(forKey: "link_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.bubbleFontColor, UIColor(hexValue: brandingDictionary.object(forKey: "bubble_font_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.agentBubbleFontColor, UIColor(hexValue: brandingDictionary.object(forKey: "agent_bubble_font_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.headerFontColor, UIColor(hexValue: brandingDictionary.object(forKey: "header_font_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.botBubbleFontColor, UIColor(hexValue: brandingDictionary.object(forKey: "bot_bubble_font_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.categoryBackgroundColor, UIColor(hexValue: brandingDictionary.object(forKey: "category_bg_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.systemMessageColor, UIColor(hexValue: brandingDictionary.object(forKey: "system_message_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.timestampColor, UIColor(hexValue: brandingDictionary.object(forKey: "timestamp_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.backgroundColor, UIColor(hexValue: brandingDictionary.object(forKey: "bg_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.buttonBackgroundColor, UIColor(hexValue: brandingDictionary.object(forKey: "button_bg_color") as! String))
-        XCTAssertEqual(settings.brandingSettings?.inputBackgroundColor, UIColor(hexValue: brandingDictionary.object(forKey: "input_bg_color") as! String))
+        XCTAssertEqual(settings.brandingSettings?.headerLabel, brandingDictionary["header_label"] as? String)
+        XCTAssertEqual(settings.brandingSettings?.supportPhone, brandingDictionary["support_phone"] as? String)
+        XCTAssertEqual(settings.brandingSettings?.supportEmailLabel, brandingDictionary["support_email_label"] as? String)
+        XCTAssertEqual(settings.brandingSettings?.supportHoursLabel, brandingDictionary["support_hours_label"] as? String)
+        XCTAssertEqual(settings.brandingSettings?.supportPhoneLabel, brandingDictionary["support_phone_label"] as? String)
     }
 
     let settingsJSON = """
