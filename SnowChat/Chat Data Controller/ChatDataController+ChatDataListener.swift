@@ -446,6 +446,7 @@ extension ChatDataController: ChatDataListener {
                 return nil
         }
         
+        // Takes string date or time and returns localized string (i.e. turns "2018-03-21" into Mar 21, 2018)
         let displayValue = DateFormatter.glideDisplayString(for: value, for: response.controlType)
         let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
         let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue)
@@ -459,7 +460,6 @@ extension ChatDataController: ChatDataListener {
             let message = messageExchange.message as? InputControlMessage,
             let messageValue: String = message.data.richControl?.uiMetadata?.label,
             let responseValue: String = response.data.richControl?.value ?? "" else {
-                
                 logger.logError("MessageExchange is not valid in inputControlsFromMessageExchange method - skipping!")
                 return nil
         }

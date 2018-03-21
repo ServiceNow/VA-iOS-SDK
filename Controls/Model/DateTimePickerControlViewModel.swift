@@ -21,29 +21,6 @@
  - Time does not match `GlideTime` field's platform behavior. We need a local "floating" time to handle our use case (like an alarm clock that's always 6am no matter where you are, for example). The platform does not currently have a concept of a "local" / "floating" time field.
  */
 
-//class BaseDateTimePickerControlViewModel: ControlViewModel {
-//
-//    var label: String?
-//
-//    var isRequired: Bool
-//
-//    var id: String
-//
-//    var type: ControlType {
-//        return .dateTime
-//    }
-//
-//    var dateFormatter: DateFormatter {
-//        return DateFormatter.dateTimeFormatter
-//    }
-//
-//    init(id: String, label: String? = nil, required: Bool) {
-//        self.label = label
-//        self.id = id
-//        self.isRequired = required
-//    }
-//}
-
 class DateTimePickerControlViewModel: ControlViewModel, ValueRepresentable {
     var label: String?
 
@@ -78,6 +55,8 @@ class DateTimePickerControlViewModel: ControlViewModel, ValueRepresentable {
     }
 }
 
+// MARK: Date-only PickerViewModel
+
 class DatePickerControlViewModel: DateTimePickerControlViewModel {
     override var type: ControlType {
         return .date
@@ -87,6 +66,8 @@ class DatePickerControlViewModel: DateTimePickerControlViewModel {
         return DateFormatter.glideLocalDateOnlyFormatter
     }
 }
+
+// MARK: Time-only PickerViewModel
 
 class TimePickerControlViewModel: DateTimePickerControlViewModel {
     override var type: ControlType {
