@@ -13,13 +13,7 @@ class FullSizeScrollViewContainerView: UIView {
     // Only when scrollView is UITableView type
     var maxVisibleItemCount: Int?
     
-    var observer: NSKeyValueObservation?
-    
-    override var backgroundColor: UIColor? {
-        didSet {
-            scrollView?.backgroundColor = backgroundColor
-        }
-    }
+    private var observer: NSKeyValueObservation?
     
     var scrollView: UIScrollView? {
         didSet {

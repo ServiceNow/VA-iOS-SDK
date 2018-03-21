@@ -44,8 +44,8 @@ extension APIManager {
     // MARK: - Response Parsing
     
     static func topicsFromResult(_ result: Any) -> [ChatTopic] {
-        guard let dictionary = result as? NSDictionary,
-            let topicDictionaries = dictionary["root"] as? [NSDictionary] else { return [] }
+        guard let dictionary = result as?  [String: Any],
+            let topicDictionaries = dictionary["root"] as? [[String: Any]] else { return [] }
         
         let topics: [ChatTopic] = topicDictionaries.flatMap { topic in
             guard let title = topic["title"] as? String, let name = topic["topicName"] as? String else { return nil }

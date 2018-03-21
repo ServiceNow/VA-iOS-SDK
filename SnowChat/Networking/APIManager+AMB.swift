@@ -4,7 +4,7 @@ import SNOWAMBClient
 
 extension APIManager {
     
-    func sendMessage(_ message: [String: Any], toChannel channel: String, completion: @escaping (SNOWAMBResult<[SNOWAMBMessage]>) -> Void = {_ in } ) {
+    func sendMessage(_ message: [String: Any], toChannel channel: String, completion: @escaping (SNOWAMBResult<[SNOWAMBMessage]>) -> Void = { _ in }) {
         ambClient.publishMessage(message, toChannel: channel, withExtension:[:]) { (result) in
                                     switch result {
                                     case .success:
@@ -48,34 +48,5 @@ extension APIManager {
         })
         return subscription
     }
-    
-}
-
-// MARK: - AMB Delegate
-
-extension APIManager: SNOWAMBClientDelegate {
-    func ambClientDidConnect(_ client: SNOWAMBClient) {}
-    func ambClientDidDisconnect(_ client: SNOWAMBClient) {}
-    func ambClient(_ client: SNOWAMBClient, didSubscribeToChannel channel: String) {}
-    func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromChannel channel: String) {}
-    func ambClient(_ client: SNOWAMBClient, didReceiveMessage: SNOWAMBMessage, fromChannel channel: String) {}
-    func ambClient(_ client: SNOWAMBClient, didChangeGlideStatus status: SNOWAMBGlideStatus) {}
-    
-    func ambClient(_ client: SNOWAMBClient, didFailWithError error: SNOWAMBError) {
-        Logger.default.logInfo("AMB client error: \(error.localizedDescription)")
-    }
-    
-    func ambClient(_ client: SNOWAMBClient, didChangeClientStatus status: SNOWAMBClientStatus) {
-        if let transportListener = transportListener {
-            switch status {
-            case .connected:
-                transportListener.apiManagerTransportDidBecomeAvailable(self)
-            case .disconnected:
-                transportListener.apiManagerTransportDidBecomeUnavailable(self)
-            default:
-                Logger.default.logInfo("AMB connection notification: \(status)")
-            }
-        }
-    }
-    
+        
 }

@@ -9,18 +9,19 @@
 import Foundation
 
 struct SupportQueue: Codable {
-    var active: Bool
-    var queueAmbChannel: String
-    var averageWaitTime:  String
-    var sysId: String
-    
-    var channel: String {
+    let active: Bool
+    let averageWaitTime:  String
+    let sysId: String?
+    let queueAmbChannel: String?
+
+    var channel: String? {
         return queueAmbChannel
     }
 }
 
 struct SubscribeToSupportQueueMessage: Codable, ActionData {
-    var eventType: ChatterboxActionType = .supportQueueSubscribe
+    var eventType: ChatterboxActionType { return .supportQueueSubscribe }
+    var direction: MessageDirection { return data.direction }
 
     let type: String = "actionMessage"
     let data: ActionMessageData<ActionMessageDetails>
@@ -36,7 +37,7 @@ struct SubscribeToSupportQueueMessage: Codable, ActionData {
         case data
     }
     
-    var channel: String {
+    var channel: String? {
         return data.actionMessage.supportQueue.channel
     }
     

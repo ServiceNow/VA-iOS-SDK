@@ -13,6 +13,8 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     
     private var chatService: ChatService?
 
+    @IBOutlet private weak var statusLabel: UILabel!
+    
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
@@ -20,6 +22,7 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         
         title = "SnowKangaroo"
         
+        setupStatusLabel()
         setupNavigationBarButtons()
         setupAuthNotificationObserving()
     }
@@ -29,6 +32,12 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     private func setupNavigationBarButtons() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Log Out", comment: ""), style: .plain, target: self, action: #selector(logOutButtonTapped(_:)))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "🐞", style: .plain, target: self, action: #selector(debugButtonTapped(_:)))
+    }
+
+    private func setupStatusLabel() {
+        if let instanceURL = InstanceSettings.shared.instanceURL, let host = instanceURL.host {
+            statusLabel.text = "Instance: \(host)"
+        }
     }
     
     // MARK: - Chat
@@ -50,9 +59,9 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     private func establishChatSession(credential: OAuthCredential, logOutOnAuthFailure: Bool) {
         guard let chatService = chatService else { return }
         
+        let userDefinedContextData = UserDefinedContextData()
         let token = credential.idToken ?? credential.accessToken
-        
-        chatService.establishUserSession(token: token) { [weak self] (error) in
+        chatService.establishUserSession(token: token, userContextData: userDefinedContextData) { [weak self] (error) in
             if let error = error {
                 if case ChatServiceError.invalidCredentials = error {
                     if logOutOnAuthFailure {
@@ -129,5 +138,4 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     func chatServiceAuthenticationDidBecomeInvalid(_ chatService: ChatService) {
         postAuthenticationDidBecomeInvalidNotification()
     }
-
 }

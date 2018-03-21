@@ -48,9 +48,9 @@ struct StartTopicMessage: Codable, ControlData {
         // nothing more to add for this one
     }
     
-    init(withSessionId: String, withConversationId: String) {
+    init(withSessionId: String, withConversationId: String, uiMetadata: ContextualActionMessage.ContextualActionMetadata? = nil) {
         type = "consumerTextMessage"
-        let controlData: StartTopicWrapper = ControlWrapper(model: ControlModel(type: "task", name: nil), uiType: "ContextualAction", uiMetadata: nil, value: "startTopic", content: nil)
+        let controlData: StartTopicWrapper = ControlWrapper(model: ControlModel(type: "task", name: nil), uiType: "ContextualAction", uiMetadata: uiMetadata, value: "startTopic", content: nil)
         data = RichControlData<StartTopicWrapper>(sessionId: withSessionId, conversationId: withConversationId, direction: .fromClient, controlData: controlData)
     }
     

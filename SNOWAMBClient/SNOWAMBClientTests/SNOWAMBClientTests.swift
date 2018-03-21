@@ -26,7 +26,6 @@ class SNOWAMBClientTests: XCTestCase {
     
     let session = URLSession(configuration: .default)
     let baseURL = URL(string: "https://snowchat.service-now.com")
-//    let baseURL = URL(string: "http://localhost:8080")
     let username = "admin"
     let password = "snow2004"
     let testChannelName = "C3E4C47D16AC4B8ABB424F59B7C29FF3"
@@ -53,6 +52,7 @@ class SNOWAMBClientTests: XCTestCase {
     var authHeaders: HTTPHeaders = HTTPHeaders()
     
     private func urlWithPath(_ path: String) -> URL {
+        // swiftlint:disable:next force_unwrapping
         return baseURL!.appendingPathComponent(path)
     }
     
@@ -75,7 +75,9 @@ class SNOWAMBClientTests: XCTestCase {
         publicRESTAPI = apiURLWithPath("mobile/app_bootstrap/pre_auth")
         authHeaders = basicAuthHeaders(username: username, password: password)
         
+        // swiftlint:disable:next force_unwrapping
         ambHTTPClient = SNOWTestHTTPClient(baseURL: baseURL!)
+        // swiftlint:disable:next force_unwrapping
         ambClient = SNOWAMBClient(httpClient: ambHTTPClient!)
         
         login()
@@ -87,7 +89,7 @@ class SNOWAMBClientTests: XCTestCase {
     
     // MARK: - helpers
     
-    private func httpRequest(url: URL, headers: HTTPHeaders, completion handler: @escaping (SNOWAMBResult<Data>) -> Void) -> Void {
+    private func httpRequest(url: URL, headers: HTTPHeaders, completion handler: @escaping (SNOWAMBResult<Data>) -> Void) {
         
         func addHeaders(toRequest request: inout URLRequest) {
             for (field, value) in headers {
@@ -109,6 +111,7 @@ class SNOWAMBClientTests: XCTestCase {
                 }
             } else if let response = response as? HTTPURLResponse {
                 if response.statusCode == 200 {
+                    // swiftlint:disable:next force_unwrapping
                     handler(SNOWAMBResult.success(data!))
                 } else {
                     handler(SNOWAMBResult.failure(SNOWAMBError.httpRequestFailed(description: "http status code:\(response.statusCode)")))
@@ -119,6 +122,7 @@ class SNOWAMBClientTests: XCTestCase {
     }
     
     private func login() {
+        // swiftlint:disable:next force_unwrapping
         httpRequest(url: privateRESTAPI!, headers: authHeaders) { [weak self] result in
             XCTAssert(result.isSuccess, "login failed")
             self?.loggedInExpectation.fulfill()
@@ -133,9 +137,12 @@ class SNOWAMBClientTests: XCTestCase {
     
     func publishMessage() {
         ambClient?.publishMessage(["message": "whatever"], toChannel: testChannelName, withExtension: [:],
-                                  completion: { (result) in
+                                  completion: { [weak self] (result) in
                                     switch result {
                                     case .success:
+                                        if let expectation = self?.testExpectations[ExpectationType.published] {
+                                            expectation.fulfill()
+                                        }
                                         print("message was published successfully")
                                     case .failure:
                                         XCTFail("AMB failed to publish message")
@@ -176,7 +183,7 @@ class SNOWAMBClientTests: XCTestCase {
         ambClient?.tearDown()
     }
     
-    func testSubscribe() {
+    func testSubscribeUnubscribe() {
         waitForLogin()
         
         let handshakenExpectation = XCTestExpectation(description: "AMB handshake")
@@ -221,10 +228,9 @@ class SNOWAMBClientTests: XCTestCase {
         // publish message and wait for reply with
         print("glide status=\(String(describing: ambClient?.glideStatus))")
         publishMessage()
-        self.wait(for: [glideLoggedInExpectation], timeout: 10)
+        self.wait(for: [glideLoggedInExpectation], timeout: 100)
         print("glide status=\(String(describing: ambClient?.glideStatus))")
     }
-    
     
     func testPublishMessage() {
         waitForLogin()
@@ -290,19 +296,20 @@ extension SNOWAMBClientTests: SNOWAMBClientDelegate {
         // Anything to do here???
     }
     
-    func ambClient(_ client: SNOWAMBClient, didChangeGlideStatus status: SNOWAMBGlideStatus) {
-        if status.ambActive,
-            let expectation = testExpectations[ExpectationType.glideInitialState] {
-            expectation.fulfill()
+    func ambClient(_ client: SNOWAMBClient, didReceiveGlideStatus status: SNOWAMBGlideStatus) {
+        if status.ambActive {
+            if let expectation = testExpectations[ExpectationType.glideInitialState] {
+                expectation.fulfill()
+            }
         }
         
         if let sessionStatus = status.sessionStatus {
             switch sessionStatus {
-            case AMBGlideSessionStatus.loggedIn.rawValue:
+            case AMBGlideSessionStatus.loggedIn:
                 if let expectation = testExpectations[ExpectationType.glideLoggedIn] {
                     expectation.fulfill()
                 }
-            case AMBGlideSessionStatus.loggedOut.rawValue:
+            case AMBGlideSessionStatus.loggedOut:
                 if let expectation = testExpectations[ExpectationType.glideLoggedOut] {
                     expectation.fulfill()
                 }

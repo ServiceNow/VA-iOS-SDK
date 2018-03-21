@@ -231,11 +231,21 @@ class AMBSessionTests: BaseAuthTestCase {
         self.wait(for: [logInExpectation], timeout: 5)
     }
     
-    /// AMB does not count REST as activity and therefore AMB shows a null session status:
-    /// Authenticated REST -> Handshake -> Connect results in null glide session status
-    /// This test currently fails since it expects REST to be counted as user activity
-    // swiftlint:disable:next function_body_length
+    /// AMB does not count REST as activity by default
+    /// This test shows that you can have REST traffic opt-in to count as user activity using a header
+    /// See STRY5186037 for details
+    /// Without this header the initial session status will be null, with this header it will be logged.in
+    /// Authenticated REST -> Handshake -> Connect results in null glide session status or logged.in session status
+    func testAMBCountingRESTAsActivityWithOptInHeader() {
+        testAMBCountingRESTAsActivity(includeHeader: true)
+    }
+    
     func testAMBNotCountingRESTAsActivity() {
+        testAMBCountingRESTAsActivity(includeHeader: false)
+    }
+    
+    // swiftlint:disable:next function_body_length
+    func testAMBCountingRESTAsActivity(includeHeader: Bool) {
         let sessionManager = SessionManager(configuration: .ephemeral)
         
         let privateRESTAPI = instanceConfiguration.privateRESTAPI
@@ -247,7 +257,13 @@ class AMBSessionTests: BaseAuthTestCase {
         
         // Get session cookie via access token headers
         func logIn() {
-            sessionManager.request(privateRESTAPI, method: .get, parameters: nil, encoding: URLEncoding.default, headers: instanceConfiguration.accessTokenAuthHeaders)
+            var headers = instanceConfiguration.accessTokenAuthHeaders
+            // Add this header for this rest call to count as user activity for AMB
+            if includeHeader {
+                headers["X-User-Activity"] = "true"
+            }
+            
+            sessionManager.request(privateRESTAPI, method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers)
                 .validate()
                 .responseJSON { response in
                     XCTAssert(response.result.isSuccess)
@@ -323,8 +339,12 @@ class AMBSessionTests: BaseAuthTestCase {
                     let messages = response.result.value as? [[String : Any]] ?? []
                     messages.forEach({ (message) in
                         let ext = message["ext"] as? [String : Any]
-                        if ext?["glide.session.status"] as? NSNull != nil {
-                            XCTFail("Found null session status.")
+                        let sessionStatus = ext?["glide.session.status"]
+                        if includeHeader {
+                            let stringSessionStatus = sessionStatus as? String ?? ""
+                            XCTAssert(stringSessionStatus == "session.logged.in")
+                        } else {
+                            XCTAssert(sessionStatus is NSNull)
                         }
                     })
                     connectFinishedExpectation.fulfill()

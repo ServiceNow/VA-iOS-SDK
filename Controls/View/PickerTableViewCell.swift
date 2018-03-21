@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol ConfigurablePickerCell: class {
+protocol ConfigurablePickerCell: AnyObject, ThemeableControl {
     
     func configure(withModel model: PickerItem)
 }
@@ -23,10 +23,14 @@ class PickerTableViewCell: UITableViewCell, ConfigurablePickerCell {
     
     func configure(withModel model: PickerItem) {
         titleLabel.text = model.label
-        titleLabel.textColor = UIColor.controlTextColor
-        
         let backgroundView = UIView()
-        backgroundView.backgroundColor = UIColor.controlSelectedBackgroundColor
         selectedBackgroundView = backgroundView
+    }
+    
+    // MARK: - ThemeableControl
+    
+    func applyTheme(_ theme: ControlTheme?) {
+        titleLabel.textColor = theme?.fontColor
+        backgroundView?.backgroundColor = theme?.selectedBackgroundColor
     }
 }

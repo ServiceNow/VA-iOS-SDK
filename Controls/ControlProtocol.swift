@@ -30,6 +30,8 @@ enum ControlType {
     
     case singleSelect
     
+    case carousel
+    
     case typingIndicator
     
     case button
@@ -59,6 +61,8 @@ enum ControlType {
             return "Boolean"
         case .singleSelect:
             return "Single Select"
+        case .carousel:
+            return "Carousel"
         case .typingIndicator:
             return "Typing Indicator"
         case .button:
@@ -67,16 +71,18 @@ enum ControlType {
     }
 }
 
-// MARK: ControlDelegate
+// MARK: - ControlDelegate
 
 protocol ControlDelegate: AnyObject {
     
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel)
+    
+    func controlDidFinishLoading(_ control: ControlProtocol)
 }
 
-// MARK: Control Protocol
+// MARK: - Control Protocol
 
-protocol ControlProtocol: AnyObject {
+protocol ControlProtocol: AnyObject, ThemeableControl {
     
     // representation of ui control state
     var model: ControlViewModel { get set }
@@ -84,7 +90,14 @@ protocol ControlProtocol: AnyObject {
     // UIViewController of ui control
     var viewController: UIViewController { get }
     
-    weak var delegate: ControlDelegate? { get set }
+    // ControlDelegate to send control messages to
+    // NOTE: should be weak in implementing class
+    var delegate: ControlDelegate? { get set }
+    
+    // If provided - control will be limited to that size
+    var preferredContentSize: CGSize? { get }
+    
+    var isReusable: Bool { get }
     
     // removes viewController and view of the control from the hierarchy
     func removeFromParent()
@@ -94,9 +107,6 @@ protocol ControlProtocol: AnyObject {
     
     // cleans up all necessary vars so they are ready for reuse. Default implementation does nothing.
     func prepareForReuse()
-    
-    // If provided - control will be limited to that size
-    var maxContentSize: CGSize? { get }
 }
 
 // Code for self-removable control, just like UIView or UIViewController
@@ -109,8 +119,12 @@ extension ControlProtocol {
     func prepareForReuse() {
     }
     
-    var maxContentSize: CGSize? {
+    var preferredContentSize: CGSize? {
         return nil
+    }
+    
+    var isReusable: Bool {
+        return true
     }
     
     func removeFromParent() {

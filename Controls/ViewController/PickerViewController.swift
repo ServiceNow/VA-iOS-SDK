@@ -8,11 +8,12 @@
 
 import UIKit
 
-class PickerViewController: UIViewController {
+class PickerViewController: UIViewController, ThemeableControl {
     
     private let headerViewIdentifier = "HeaderView"
     private let footerViewIdentifier = "FooterView"
     private let fullSizeContainer = FullSizeScrollViewContainerView()
+    private var theme: ControlTheme?
     
     weak var delegate: PickerViewControllerDelegate?
     
@@ -116,10 +117,10 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         let identifier = model.isMultiSelect ? SelectableViewCell.cellIdentifier : PickerTableViewCell.cellIdentifier
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
         cell.contentView.backgroundColor = UIColor.white
-        guard let configurableCell: ConfigurablePickerCell = cell as? ConfigurablePickerCell else {
+        guard let configurableCell = cell as? ConfigurablePickerCell else {
             return cell
         }
-        
+        configurableCell.applyTheme(theme)
         let itemModel = model.items[indexPath.row]
         configurableCell.configure(withModel: itemModel)
         return cell
@@ -147,6 +148,9 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: headerViewIdentifier) as! PickerHeaderView
         headerView.titleLabel?.text = model.label
+        headerView.contentView.backgroundColor = theme?.headerBackgroundColor
+        headerView.titleLabel?.textColor = theme?.headerFontColor
+        headerView.titleLabel?.backgroundColor = theme?.headerBackgroundColor
         return headerView
     }
     
@@ -154,6 +158,9 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         guard model.isMultiSelect else { return nil }
         let footerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: footerViewIdentifier) as! PickerFooterView
         footerView.doneButton?.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
+        footerView.contentView.backgroundColor = theme?.headerBackgroundColor
+        footerView.doneButton?.backgroundColor = theme?.headerBackgroundColor
+        footerView.doneButton?.setTitleColor(theme?.headerBackgroundColor, for: .normal)
         return footerView
     }
     
@@ -164,5 +171,21 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         delegate?.pickerViewController(self, didFinishWithModel: model)
+    }
+    
+    // MARK: - Theme
+    
+    func applyTheme(_ theme: ControlTheme?) {
+        self.theme = theme
+        tableView.backgroundColor = theme?.backgroundColor
+        let headerView = tableView.headerView(forSection: 0) as? PickerHeaderView
+        headerView?.backgroundColor = theme?.headerBackgroundColor
+        headerView?.titleLabel?.textColor = theme?.headerFontColor
+        headerView?.titleLabel?.backgroundColor = theme?.headerBackgroundColor
+        
+        let footerView = tableView.footerView(forSection: 0) as? PickerFooterView
+        footerView?.backgroundColor = theme?.headerBackgroundColor
+        footerView?.doneButton?.backgroundColor = theme?.headerBackgroundColor
+        footerView?.doneButton?.setTitleColor(theme?.headerBackgroundColor, for: .normal)
     }
 }

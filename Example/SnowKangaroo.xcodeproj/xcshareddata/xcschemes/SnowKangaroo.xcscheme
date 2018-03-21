@@ -38,9 +38,14 @@
                BlueprintName = "SnowKangarooTests"
                ReferencedContainer = "container:SnowKangaroo.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "ServerInstanceURLTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
          <TestableReference
-            skipped = "NO">
+            skipped = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "BE50E2071FB92EB800948FBC"

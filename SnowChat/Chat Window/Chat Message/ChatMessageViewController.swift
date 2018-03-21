@@ -18,6 +18,12 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     @IBOutlet private weak var bubbleTrailingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var agentImageTopConstraint: NSLayoutConstraint!
     
+    private var controlHeightConstraint: NSLayoutConstraint?
+    private var controlWidthConstraint: NSLayoutConstraint?
+    
+    private var isAgentMessage: Bool!
+    private var theme: Theme!
+    
     var controlCache: ControlCache?
     var resourceProvider: ControlResourceProvider?
     
@@ -44,7 +50,12 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         addUIControl(control, at: bubbleLocation)
     }
     
-    func configure(withChatMessageModel model: ChatMessageModel, controlCache cache: ControlCache, controlDelegate delegate: ControlDelegate, resourceProvider provider: ControlResourceProvider) {
+    func configure(withChatMessageModel model: ChatMessageModel,
+                   controlCache cache: ControlCache,
+                   controlDelegate delegate: ControlDelegate,
+                   resourceProvider provider: ControlResourceProvider) {
+        isAgentMessage = (model.isLiveAgentConversation == true && model.bubbleLocation == .left)
+        self.theme = model.theme
         self.controlCache = cache
         self.resourceProvider = provider
         self.model = model
@@ -66,8 +77,13 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     private func prepareControlForReuse() {
         if let control = uiControl, isPresentingControl(control) {
+            controlHeightConstraint?.isActive = false
+            controlWidthConstraint?.isActive = false
             control.removeFromParent()
-            controlCache?.cacheControl(forModel: control.model)
+            
+            if control.isReusable {
+                controlCache?.cacheControl(forModel: control.model)
+            }
         }
     }
     
@@ -89,6 +105,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         // Remove current control if needed
         prepareControlForReuse()
         
+        applyTheme(for: control, at: location)
         let controlViewController = control.viewController
         controlViewController.willMove(toParentViewController: self)
         addChildViewController(controlViewController)
@@ -96,24 +113,26 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
 
         controlView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(controlView)
-        
         NSLayoutConstraint.activate([controlView.leadingAnchor.constraint(equalTo: bubbleView.contentView.leadingAnchor),
                                      controlView.trailingAnchor.constraint(equalTo: bubbleView.contentView.trailingAnchor),
                                      controlView.topAnchor.constraint(equalTo: bubbleView.contentView.topAnchor),
                                      controlView.bottomAnchor.constraint(equalTo: bubbleView.contentView.bottomAnchor)])
         
-        if let preferredControlSize = control.maxContentSize {
-            if preferredControlSize.width != .greatestFiniteMagnitude {
-                controlView.widthAnchor.constraint(lessThanOrEqualToConstant: preferredControlSize.width).isActive = true
+        // Adjust width and height of the control if needed
+        if let preferredControlSize = control.preferredContentSize {
+            if preferredControlSize.width != UIViewNoIntrinsicMetric {
+                controlWidthConstraint = controlView.widthAnchor.constraint(equalToConstant: preferredControlSize.width)
+                controlWidthConstraint?.priority = .defaultLow
+                controlWidthConstraint?.isActive = true
             }
             
-            if preferredControlSize.height != .greatestFiniteMagnitude {
-                controlView.heightAnchor.constraint(lessThanOrEqualToConstant: preferredControlSize.height).isActive = true
+            if preferredControlSize.height != UIViewNoIntrinsicMetric {
+                controlHeightConstraint = controlView.heightAnchor.constraint(equalToConstant: preferredControlSize.height)
+                controlHeightConstraint?.isActive = true
             }
         }
         
         updateConstraints(forLocation: location)
-        updateBubble(forControl: control, andLocation: location)
         
         if control.model.type == .outputImage {
             bubbleView.contentViewInsets = UIEdgeInsets.zero
@@ -156,19 +175,23 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         view.setNeedsUpdateConstraints()
     }
     
-    // MARK: Update colors
+    // MARK: Theme
     
-    private func updateBubble(forControl control: ControlProtocol, andLocation location: BubbleLocation) {
-        bubbleView.borderColor = UIColor.agentBubbleBackgroundColor
-        
-        if control.model.type == .text {
-            let textViewController = control.viewController as! TextControl.TextViewController
-            textViewController.textLabel.textColor = (location == .right) ? UIColor.userBubbleTextColor : UIColor.agentBubbleTextColor
-            textViewController.textLabel.backgroundColor = (location == .right) ? UIColor.userBubbleBackgroundColor : UIColor.agentBubbleBackgroundColor
+    private func applyTheme(for control: ControlProtocol, at location: BubbleLocation) {
+        let controlTheme: ControlTheme
+        if location == .right {
+            controlTheme = theme.controlTheme()
+        } else if isAgentMessage {
+            controlTheme = theme.controlThemeForAgent()
+        } else {
+            controlTheme = theme.controlThemeForBot()
         }
         
-        control.viewController.view.backgroundColor = (location == .right) ? UIColor.userBubbleBackgroundColor : UIColor.agentBubbleBackgroundColor
-        bubbleView.backgroundColor = (location == .right) ? UIColor.userBubbleBackgroundColor : UIColor.agentBubbleBackgroundColor
+        control.applyTheme(controlTheme)
+        
+        // update bubble
+        bubbleView.borderColor = controlTheme.backgroundColor
+        bubbleView.backgroundColor = controlTheme.backgroundColor
         
         // Make sure that a little tail in the bubble gets colored like picker background. now it is hardcoded to white but will need to get theme color
         if control.viewController is PickerViewController {

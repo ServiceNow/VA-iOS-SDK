@@ -7,8 +7,6 @@
 //
 
 import MobileCoreServices
-import AVFoundation
-import Photos
 
 class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -39,23 +37,23 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
         }
 
         self.model = inputImageModel
-        self.style = .inline
+        self.style = .list
     }
     
     // MARK: - PickerViewControllerDelegate
     
-    func pickerViewController(_ viewController: PickerViewController, didFinishWithModel model: PickerControlViewModel) {
+    func pickerViewController(_ viewController: UIViewController, didFinishWithModel model: PickerControlViewModel) {
         guard let item = model.selectedItem else { return }
         
         switch item.type {
         case .takePhoto:
-            authorizeCamera({ [weak self] status in
+            UserDataManager.authorizeCamera({ [weak self] status in
                 if status == .authorized {
                     self?.presentImagePickerControllerWithSourceType(.camera)
                 }
             })
         case .photoLibrary:
-            authorizePhoto({ [weak self] status in
+            UserDataManager.authorizePhoto({ [weak self] status in
                 if status == .authorized {
                     self?.presentImagePickerControllerWithSourceType(.photoLibrary)
                 }
@@ -65,7 +63,7 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
         }
     }
     
-    func pickerViewController(_ viewController: PickerViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
+    func pickerViewController(_ viewController: UIViewController, didSelectItem item: PickerItem, forPickerModel pickerModel: PickerControlViewModel) {
         
     }
     
@@ -105,51 +103,5 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
         inputImageModel.selectedImageData = imageData
         
         delegate?.control(self, didFinishWithModel: model)
-    }
-    
-    // MARK: - Authorization
-    // TODO: Below two methods could be extracted to a separate class and become class methods
-    private func authorizeCamera(_ handler: @escaping (AVAuthorizationStatus) -> Swift.Void) {
-        guard nil != Bundle.main.infoDictionary?["NSCameraUsageDescription"] else {
-            fatalError("Please provide value for the NSCameraUsageDescription key in Info.plist of your application")
-        }
-        
-        guard UIImagePickerController.isCameraDeviceAvailable(.rear) else {
-            DispatchQueue.main.async {
-                handler(.denied)
-            }
-            
-            return
-        }
-        
-        let authorizationStatus = AVCaptureDevice.authorizationStatus(for: .video)
-        if authorizationStatus == .notDetermined {
-            AVCaptureDevice.requestAccess(for: .video) { granted in
-                handler(granted ? .authorized : .denied)
-            }
-        } else {
-            DispatchQueue.main.async {
-                handler(authorizationStatus)
-            }
-        }
-    }
-    
-    private func authorizePhoto(_ handler: @escaping (PHAuthorizationStatus) -> Swift.Void) {
-        
-        // Check if Info.plist has a value for NSPhotoLibraryUsageDescription key. Otherwise the app will crash
-        guard nil != Bundle.main.infoDictionary?["NSPhotoLibraryUsageDescription"] else {
-            fatalError("Please provide value for the NSPhotoLibraryUsageDescription key in Info.plist of your application")
-        }
-        
-        let authorizationStatus = PHPhotoLibrary.authorizationStatus()
-        if authorizationStatus == .notDetermined {
-            PHPhotoLibrary.requestAuthorization({ status in
-                handler(status)
-            })
-        } else {
-            DispatchQueue.main.async {
-                handler(authorizationStatus)
-            }
-        }
     }
 }

@@ -32,6 +32,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     private var canFetchOlderMessages = false
     private var timeLastHistoryFetch: Date = Date()
     private var isLoading = false
+    private var defaultMessageHeight: CGFloat?
     
     override var tableView: UITableView {
         // swiftlint:disable:next force_unwrapping
@@ -79,6 +80,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     override func viewWillLayoutSubviews() {
         // not calling super to override slack's behavior
         adjustContentInset()
+        defaultMessageHeight = tableView.bounds.height * 0.3
     }
     
     private func adjustContentInset() {
@@ -168,7 +170,10 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
             return
         }
         
-        cell.messageViewController?.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self, resourceProvider: chatterbox.apiManager)
+        cell.messageViewController?.configure(withChatMessageModel: model,
+                                              controlCache: uiControlCache,
+                                              controlDelegate: self,
+                                              resourceProvider: chatterbox.apiManager)
         UIView.animate(withDuration: 0.3, animations: {
             self.tableView.beginUpdates()
             self.tableView.endUpdates()
@@ -305,8 +310,11 @@ extension ConversationViewController {
         case .inConversation:
             // TODO: validate the text against the input type when we have such a notion...
             break
+        case .inAgentConversation:
+            // TODO: validate?
+            break
         default:
-            Logger.default.logDebug("Text updated: state=\(inputState)")
+            break
         }
     }
     
@@ -337,7 +345,7 @@ extension ConversationViewController {
             let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
             dataController.updateControlData(model, isSkipped: false)
         case .inAgentConversation:
-            // send ther input as a straight-up data control (not an update)
+            // send the input as a straight-up data control (not an update)
             let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
             dataController.sendControlData(model)
             textView.text = ""
@@ -426,7 +434,11 @@ extension ConversationViewController {
     private func configureConversationCell(_ cell: ConversationViewCell, messageModel model: ChatMessageModel, at indexPath: IndexPath) {
         let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
         cell.messageViewController = messageViewController
-        messageViewController.configure(withChatMessageModel: model, controlCache: uiControlCache, controlDelegate: self, resourceProvider: chatterbox.apiManager)
+        adjustModelSizeIfNeeded(model)
+        messageViewController.configure(withChatMessageModel: model,
+                                        controlCache: uiControlCache,
+                                        controlDelegate: self,
+                                        resourceProvider: chatterbox.apiManager)
         messageViewController.didMove(toParentViewController: self)
     }
     
@@ -436,6 +448,18 @@ extension ConversationViewController {
         } else {
             return nil
         }
+    }
+    
+    // MARK: - Special case for OutputHtmlViewModel..
+    private func adjustModelSizeIfNeeded(_ messageModel: ChatMessageModel) {
+        guard let outputHtmlModel = messageModel.controlModel as? OutputHtmlControlViewModel,
+            let messageHeight = defaultMessageHeight,
+            let size = outputHtmlModel.size,
+            size.height == UIViewNoIntrinsicMetric else {
+                return
+        }
+        
+        outputHtmlModel.size = CGSize(width: UIViewNoIntrinsicMetric, height: messageHeight)
     }
     
     // MARK: - ChatMessageViewController reuse
@@ -546,7 +570,7 @@ extension ConversationViewController: ChatEventListener {
     }
 }
 
-extension ConversationViewController: ControlDelegate, OutputImageControlDelegate {
+extension ConversationViewController: ControlDelegate {
     
     // MARK: - ControlDelegate
     
@@ -555,7 +579,7 @@ extension ConversationViewController: ControlDelegate, OutputImageControlDelegat
         dataController.updateControlData(model, isSkipped: false)
     }
     
-    func controlDidFinishImageDownload(_ control: OutputImageControl) {
+    func controlDidFinishLoading(_ control: ControlProtocol) {
         tableView.beginUpdates()
         tableView.endUpdates()
     }
@@ -566,10 +590,11 @@ extension ConversationViewController: ControlDelegate, OutputImageControlDelegat
                 return 2
             }
             
-            if let imageViewModel = chatModel.controlModel as? OutputImageViewModel, let size = imageViewModel.imageSize {
+            if let viewModel = chatModel.controlModel as? Resizable, let size = viewModel.size {
                 return size.height
             }
         }
+        
         return 200
     }
 }
@@ -586,7 +611,7 @@ extension ConversationViewController {
     // MARK: - Activity Indicator
     
     fileprivate func setupActivityIndicator() {
-        activityIndicator.color = UIColor.controlTextColor
+        activityIndicator.color = Theme.controlTextColor
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(activityIndicator)
         
