@@ -52,10 +52,6 @@ class ChatDataController {
     internal var changeSet = [ModelChangeType]()
     
     internal let logger = Logger.logger(for: "ChatDataController")
-    
-    deinit {
-        print("BARF in chat data controller!")
-    }
 
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox

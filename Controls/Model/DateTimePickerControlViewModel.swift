@@ -62,7 +62,7 @@ class DateTimePickerControlViewModel: ControlViewModel, ValueRepresentable {
     }
     
     var dateFormatter: DateFormatter {
-        return DateFormatter.dateTimeFormatter
+        return DateFormatter.localDisplayDateTimeFormatter
     }
     
     var displayValue: String? {
@@ -84,7 +84,7 @@ class DatePickerControlViewModel: DateTimePickerControlViewModel {
     }
     
     override var dateFormatter: DateFormatter {
-        return DateFormatter.glideDateOnlyFormatter
+        return DateFormatter.glideLocalDateOnlyFormatter
     }
 }
 
@@ -94,6 +94,6 @@ class TimePickerControlViewModel: DateTimePickerControlViewModel {
     }
     
     override var dateFormatter: DateFormatter {
-        return DateFormatter.glideTimeFormatter
+        return DateFormatter.glideLocalTimeOnlyFormatter
     }
 }

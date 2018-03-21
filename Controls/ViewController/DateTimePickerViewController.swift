@@ -114,7 +114,7 @@ class DateTimePickerViewController: UIViewController {
     
     private func updateSelectedDateLabelWithDate(_ date: Date) {
         guard let model = model else { return }
-        let dateFormatter = DateFormatter.formatterForDateTimeControlType(model.type)
+        let dateFormatter = DateFormatter.localDisplayFormatter(for: model.type)
         let dateString = dateFormatter.string(from: date)
         selectedDateLabel.text = dateString
         model.value = date

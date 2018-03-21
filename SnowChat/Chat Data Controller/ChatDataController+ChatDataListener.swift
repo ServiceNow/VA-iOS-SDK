@@ -429,7 +429,7 @@ extension ChatDataController: ChatDataListener {
                 return nil
         }
         
-        let dateFormatter = DateFormatter.formatterForChatterboxControlType(response.controlType)
+        let dateFormatter = DateFormatter.localDisplayFormatter(for: response.controlType)
         let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
         let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: dateFormatter.string(from: value))
         
@@ -446,16 +446,7 @@ extension ChatDataController: ChatDataListener {
                 return nil
         }
         
-        let displayValue: String
-        let dateFormatter = DateFormatter.formatterForChatterboxControlType(response.controlType)
-        if response.controlType == .time, let date = DateFormatter.glideDisplayTimeFormatter.date(from: value) {
-            displayValue = dateFormatter.string(from: date)
-        } else if response.controlType == .date, let date = DateFormatter.glideDisplayDateOnlyFormatter.date(from: value) {
-            displayValue = dateFormatter.string(from: date)
-        } else {
-            displayValue = ""
-        }
-        
+        let displayValue = DateFormatter.glideDisplayString(for: value, for: response.controlType)
         let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
         let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue)
         
