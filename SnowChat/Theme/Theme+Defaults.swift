@@ -88,6 +88,9 @@ extension Theme {
     }
     
     // MARK: - custom colors
+    class var controlActionFontColor: UIColor {
+        return UIColor(red: 0, green: 122 / 255, blue: 255 / 255, alpha: 1)
+    }
     
     class var controlSelectedBackgroundColor: UIColor {
         return UIColor(red: 0.85, green: 0.85, blue: 0.85, alpha: 1)

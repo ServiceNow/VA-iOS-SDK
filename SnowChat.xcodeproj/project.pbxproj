@@ -69,6 +69,7 @@
 		573BDA8A20614F0000AC6C2D /* Theme+Controls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BDA8920614F0000AC6C2D /* Theme+Controls.swift */; };
 		573BDA8C206153D500AC6C2D /* Theme+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BDA8B206153D500AC6C2D /* Theme+Defaults.swift */; };
 		573BDA8E206162BE00AC6C2D /* DateOrTimePickerControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BDA8D206162BE00AC6C2D /* DateOrTimePickerControlMessage.swift */; };
+		573BDA932062B5E000AC6C2D /* CarouselControlFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BDA922062B5E000AC6C2D /* CarouselControlFooterView.swift */; };
 		573F78F7202275000008391D /* ButtonControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573F78F6202275000008391D /* ButtonControl.swift */; };
 		573F78FD202288F40008391D /* ControlViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573F78FC202288F40008391D /* ControlViewCell.swift */; };
 		5740F431202269E90060B349 /* MultiPartControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5740F430202269E90060B349 /* MultiPartControlMessage.swift */; };
@@ -101,6 +102,7 @@
 		5796E4481FD0B3E0009D2035 /* CGPath+Bubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5796E4471FD0B3E0009D2035 /* CGPath+Bubble.swift */; };
 		579A48F220125039007CF338 /* PickerMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579A48F120125039007CF338 /* PickerMetadata.swift */; };
 		57ADE69F2059F7DC00F5D57C /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57ADE69E2059F7DC00F5D57C /* Theme.swift */; };
+		57ADE6A3205AB1BD00F5D57C /* ImageBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57ADE6A2205AB1BD00F5D57C /* ImageBrowserViewController.swift */; };
 		57B0861020465E0200F009D2 /* CarouselControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0860F20465E0200F009D2 /* CarouselControl.swift */; };
 		57B0861220465F0F00F009D2 /* CarouselViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0861120465F0F00F009D2 /* CarouselViewController.swift */; };
 		57B0861420465FE400F009D2 /* CarouselControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0861320465FE400F009D2 /* CarouselControlViewModel.swift */; };
@@ -279,6 +281,7 @@
 		573BDA8920614F0000AC6C2D /* Theme+Controls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+Controls.swift"; sourceTree = "<group>"; };
 		573BDA8B206153D500AC6C2D /* Theme+Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+Defaults.swift"; sourceTree = "<group>"; };
 		573BDA8D206162BE00AC6C2D /* DateOrTimePickerControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateOrTimePickerControlMessage.swift; sourceTree = "<group>"; };
+		573BDA922062B5E000AC6C2D /* CarouselControlFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselControlFooterView.swift; sourceTree = "<group>"; };
 		573F78F6202275000008391D /* ButtonControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonControl.swift; sourceTree = "<group>"; };
 		573F78FC202288F40008391D /* ControlViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlViewCell.swift; sourceTree = "<group>"; };
 		5740F430202269E90060B349 /* MultiPartControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPartControlMessage.swift; sourceTree = "<group>"; };
@@ -311,6 +314,7 @@
 		5796E4471FD0B3E0009D2035 /* CGPath+Bubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPath+Bubble.swift"; sourceTree = "<group>"; };
 		579A48F120125039007CF338 /* PickerMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerMetadata.swift; sourceTree = "<group>"; };
 		57ADE69E2059F7DC00F5D57C /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		57ADE6A2205AB1BD00F5D57C /* ImageBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserViewController.swift; sourceTree = "<group>"; };
 		57B0860F20465E0200F009D2 /* CarouselControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselControl.swift; sourceTree = "<group>"; };
 		57B0861120465F0F00F009D2 /* CarouselViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselViewController.swift; sourceTree = "<group>"; };
 		57B0861320465FE400F009D2 /* CarouselControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselControlViewModel.swift; sourceTree = "<group>"; };
@@ -594,6 +598,7 @@
 				57D1DB781FEC88D200082F78 /* OutputImageViewController.swift */,
 				57DF7C33202C1066008D013A /* ControlWebViewController.swift */,
 				57B0861120465F0F00F009D2 /* CarouselViewController.swift */,
+				57ADE6A2205AB1BD00F5D57C /* ImageBrowserViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -610,6 +615,7 @@
 				5728D8E1204759480071EF9E /* CarouselCollectionViewCell.swift */,
 				5728D8E520475C300071EF9E /* CarouselControlViewLayout.swift */,
 				5728D8E720478C000071EF9E /* CarouselControlHeaderView.swift */,
+				573BDA922062B5E000AC6C2D /* CarouselControlFooterView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1287,6 +1293,7 @@
 				57026187204E2B14003D56DE /* Handlers.swift in Sources */,
 				C43479EC1FE460700091806D /* TopicSelection.swift in Sources */,
 				8BD222292037FC550040B657 /* HTTPURLResponse+Auth.swift in Sources */,
+				573BDA932062B5E000AC6C2D /* CarouselControlFooterView.swift in Sources */,
 				C48441C8202CB6C600D67757 /* SystemErrorControlMessage.swift in Sources */,
 				C4694A54203E3C18006A3C23 /* AgentTextControlMessage.swift in Sources */,
 				57532BAD1FD777FA001D674C /* TextControl.swift in Sources */,
@@ -1364,6 +1371,7 @@
 				C41EF5D21FDB0F2500707F45 /* ChatDataListener.swift in Sources */,
 				575566A9200FAF1D000953F7 /* PickerHeaderFooterView.swift in Sources */,
 				C4CAFEA31FBCF2F8007007F5 /* ChatData.swift in Sources */,
+				57ADE6A3205AB1BD00F5D57C /* ImageBrowserViewController.swift in Sources */,
 				C4AF7793200E7B0B0029598A /* ViewDataChangeListener.swift in Sources */,
 				8B0A1F67204080D400DE4D4C /* APIManager+ImageUpload.swift in Sources */,
 				C47B3643204DB38200559410 /* ChatSessionSettings.swift in Sources */,

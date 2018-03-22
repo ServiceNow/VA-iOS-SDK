@@ -39,21 +39,19 @@ public enum SNOWAMBResult<Value> {
 public enum AMBGlideSessionStatus: String {
     case loggedIn = "session.logged.in"
     case loggedOut = "session.logged.out"
+    case invalidated = "session.invalidated"
 }
 
-public struct SNOWAMBGlideStatus {
-    let ambActive: Bool
-    let sessionStatus: String?
+public struct SNOWAMBGlideStatus: Equatable {
     
-    init(ambActive: Bool, sessionStatus: String?) {
-        self.ambActive = ambActive
-        self.sessionStatus = sessionStatus
+    public let ambActive: Bool
+    public let sessionStatus: AMBGlideSessionStatus?
+    
+    public static func == (lhs: SNOWAMBGlideStatus, rhs: SNOWAMBGlideStatus) -> Bool {
+        return lhs.ambActive == rhs.ambActive &&
+            lhs.sessionStatus == rhs.sessionStatus
     }
     
-    static public func != (lhs: SNOWAMBGlideStatus, rhs: SNOWAMBGlideStatus) -> Bool {
-        return lhs.ambActive != rhs.ambActive ||
-               lhs.sessionStatus != rhs.sessionStatus
-    }
 }
 
 //
@@ -67,7 +65,7 @@ public protocol SNOWAMBClientDelegate: AnyObject {
     func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromchannel channel: String)
     func ambClient(_ client: SNOWAMBClient, didReceiveMessage: SNOWAMBMessage, fromChannel channel: String)
     func ambClient(_ client: SNOWAMBClient, didChangeClientStatus status: SNOWAMBClientStatus)
-    func ambClient(_ client: SNOWAMBClient, didChangeGlideStatus status: SNOWAMBGlideStatus)
+    func ambClient(_ client: SNOWAMBClient, didReceiveGlideStatus status: SNOWAMBGlideStatus)
     func ambClient(_ client: SNOWAMBClient, didFailWithError error: SNOWAMBError)
 }
 
@@ -125,13 +123,14 @@ public class SNOWAMBClient {
     private var queuedSubscriptionChannels = Set<String>()
     private var longPollingInterval: TimeInterval = 0.0
     private var longPollingTimeout: TimeInterval = 0.0
-    private let retryInterval: TimeInterval = 1.0
+    private let retryInterval: TimeInterval = 10.0
     private var retryAttempt = 0
     private var reopenChannelsAfterSuccessfulConnectMessages = true
     private var dataTasks = [URLSessionDataTask]()
     
     private var scheduledConnectTask: DispatchWorkItem?
     private var connectDataTask: URLSessionDataTask?
+    private var connectDataTaskTime: Date?
     private var messageId = 0
     
     public var clientStatus = SNOWAMBClientStatus.disconnected {
@@ -158,9 +157,7 @@ public class SNOWAMBClient {
     
     public var glideStatus: SNOWAMBGlideStatus = SNOWAMBGlideStatus(ambActive: false, sessionStatus: nil) {
         didSet {
-            if oldValue != glideStatus {
-                delegate?.ambClient(self, didChangeGlideStatus: glideStatus)
-            }
+            delegate?.ambClient(self, didReceiveGlideStatus: glideStatus)
         }
     }
     
@@ -173,7 +170,15 @@ public class SNOWAMBClient {
                     // TODO: Keep testing this!
 //                    cancelAllDataTasks()
                 } else {
-                    self.clientStatus = .retrying
+                    let currentTime = Date()
+                    if let connectDataTaskTime = self.connectDataTaskTime {
+                        let timeDiff = Double(Int(currentTime.timeIntervalSince1970 - connectDataTaskTime.timeIntervalSince1970))
+                        if longPollingTimeout > 0 && timeDiff > longPollingTimeout / 1000 {
+                            self.clientStatus = .disconnected
+                            connect()
+                            return
+                        }
+                    }
                     startConnectRequest()
                 }
             }
@@ -194,6 +199,7 @@ public class SNOWAMBClient {
     // MARK: public methods
     
     public func connect() {
+        connectDataTaskTime = nil
         sendBayeuxHandshakeMessage()
     }
     
@@ -432,11 +438,13 @@ private extension SNOWAMBClient {
     
     func handleConnectMessage(_ ambMessage: SNOWAMBMessage) {
         
-        func parseGlideSessionStatus(_ ext: [String : Any]?) {
-            if let ext = ext {
-                self.glideStatus = SNOWAMBGlideStatus(ambActive: ext["glide.amb.active"] as? Bool ?? false,
-                                                      sessionStatus: ext["glide.session.status"] as? String)
-            }
+        func parseGlideSessionStatus(from ext: [String : Any]) {
+            let sessionStatusString = ext["glide.session.status"] as? String
+            let sessionStatus = sessionStatusString.flatMap { AMBGlideSessionStatus(rawValue: $0) }
+            
+            let ambActive = ext["glide.amb.active"] as? Bool ?? false
+            
+            glideStatus = SNOWAMBGlideStatus(ambActive: ambActive, sessionStatus: sessionStatus)
         }
         
         if  let advice = ambMessage.advice,
@@ -451,7 +459,9 @@ private extension SNOWAMBClient {
         if ambMessage.successful {
             scheduledConnectTask = nil
     
-            parseGlideSessionStatus(ambMessage.ext)
+            if let ext = ambMessage.ext {
+                parseGlideSessionStatus(from: ext)
+            }
             
             if self.reopenChannelsAfterSuccessfulConnectMessages {
                 self.reopenChannelsAfterSuccessfulConnectMessages = false
@@ -631,6 +641,7 @@ private extension SNOWAMBClient {
         postBayeuxMessage(bayeuxMessage, completion: handler)
     }
     
+    //swiftlint:disable:next function_body_length
     @discardableResult func postBayeuxMessage(_ message: [String : Any],
                                               timeout: TimeInterval = 0.0,
                                               completion handler: SNOWAMBPublishMessageHandler? = nil) -> URLSessionDataTask? {
@@ -684,6 +695,7 @@ private extension SNOWAMBClient {
 
         if let task = task {
             if channel == AMBChannel.connect.name {
+                connectDataTaskTime = Date()
                 connectDataTask = task
             }
             dataTasks.append(task)
