@@ -19,8 +19,8 @@ class ControlsUtil {
             return TextControl(model: model)
         case .outputImage:
             return OutputImageControl(model: model, imageDownloader: provider.imageDownloader)
-        case .inputImage:
-            return InputImageControl(model: model)
+        case .fileUpload:
+            return FileUploadControl(model: model)
         case .outputLink:
             return OutputLinkControl(model: model, resourceProvider: provider)
         case .outputHtml:
