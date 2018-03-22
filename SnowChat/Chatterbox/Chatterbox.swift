@@ -168,8 +168,12 @@ class Chatterbox {
     }
     
     internal func processControlMessage(_ control: ControlData) {
-        switch control.direction {
+        guard control.controlType != .unknown else {
+            logger.logInfo("Unknown control type: \(control)")
+            return
+        }
         
+        switch control.direction {
         case .fromClient:
             if let conversationId = conversationContext.conversationId {
                 processResponseControlMessage(control, forConversation: conversationId)
