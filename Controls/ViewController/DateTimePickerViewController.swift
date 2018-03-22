@@ -25,6 +25,7 @@ class DateTimePickerViewController: UIViewController {
         didSet {
             guard isViewLoaded == true else { return }
             updateDisplayMode()
+            updatePickerDate()
             updateSelectedDateLabelWithDate(datePicker.date)
         }
     }
@@ -53,13 +54,10 @@ class DateTimePickerViewController: UIViewController {
         switch model.type {
         case .dateTime:
             displayMode = .dateTime
-            datePicker.date = Date()
         case .time:
             displayMode = .time
-            datePicker.date = Date(timeIntervalSince1970: 0)
         case .date:
             displayMode = .date
-            datePicker.date = Date()
         default:
             fatalError("Wrong model assigned")
         }
@@ -116,23 +114,9 @@ class DateTimePickerViewController: UIViewController {
     
     private func updateSelectedDateLabelWithDate(_ date: Date) {
         guard let model = model else { return }
-        let dateFormatter = DateFormatter.formatterForDateTimeControlType(model.type)
+        let dateFormatter = DateFormatter.localDisplayFormatter(for: model.type)
         let dateString = dateFormatter.string(from: date)
         selectedDateLabel.text = dateString
-        model.value = adjustedDateToPickerMode(date)
-    }
-    
-    private func adjustedDateToPickerMode(_ date: Date) -> Date {
-        let calendar: Calendar = datePicker.calendar
-        switch displayMode {
-        case .date:
-            guard let adjustedDate = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: date) else {
-                fatalError("Error during date adjustment")
-            }
-            
-            return adjustedDate
-        case .dateTime, .time:
-            return date
-        }
+        model.value = date
     }
 }

@@ -272,8 +272,10 @@ class Chatterbox {
             updateMultiSelectControl(control)
         case .multiPart:
             updateMultiPartControl(control)
-        case .dateTime, .date, .time:
+        case .dateTime:
             updateDateTimeControl(control)
+        case .date, .time:
+            updateDateOrTimeControl(control)
         case .agentText:
             // NOTE: only used for live agent mode
             updateTextControl(control)
@@ -333,6 +335,13 @@ class Chatterbox {
     
     fileprivate func updateDateTimeControl(_ control: ControlData) {
         if var dateTimeControl = control as? DateTimePickerControlMessage, let conversationId = dateTimeControl.data.conversationId {
+            dateTimeControl.data = updateRichControlData(dateTimeControl.data)
+            publishControlUpdate(dateTimeControl, forConversation: conversationId)
+        }
+    }
+    
+    fileprivate func updateDateOrTimeControl(_ control: ControlData) {
+        if var dateTimeControl = control as? DateOrTimePickerControlMessage, let conversationId = dateTimeControl.data.conversationId {
             dateTimeControl.data = updateRichControlData(dateTimeControl.data)
             publishControlUpdate(dateTimeControl, forConversation: conversationId)
         }
