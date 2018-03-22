@@ -14,7 +14,7 @@ enum ControlType {
     
     case outputImage
     
-    case inputImage
+    case fileUpload
     
     case outputLink
     
@@ -35,40 +35,6 @@ enum ControlType {
     case typingIndicator
     
     case button
-
-    //swiftlint:disable:next cyclomatic_complexity
-    func description() -> String {
-        switch self {
-        case .multiSelect:
-            return "Multiselect"
-        case .text:
-            return "Text"
-        case .outputImage:
-            return "Image Output"
-        case .inputImage:
-            return "Image Input"
-        case .outputLink:
-            return "Link Output"
-        case .outputHtml:
-            return "Output HTML"
-        case .dateTime:
-            return "Date Time Picker"
-        case .time:
-            return "Time Picker"
-        case .date:
-            return "Date Picker"
-        case .boolean:
-            return "Boolean"
-        case .singleSelect:
-            return "Single Select"
-        case .carousel:
-            return "Carousel"
-        case .typingIndicator:
-            return "Typing Indicator"
-        case .button:
-            return "Button"
-        }
-    }
 }
 
 // MARK: - ControlDelegate
