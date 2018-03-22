@@ -15,8 +15,8 @@ struct User {
 
 extension User {
     init?(dictionary: [String : Any]) {
-        guard let username = dictionary["user_name"] as? String,
-            let sysId = dictionary["user_id"] as? String else {
+        guard let username = dictionary["user_name"] as? String, !username.isEmpty,
+            let sysId = dictionary["user_sys_id"] as? String, !sysId.isEmpty else {
                 return nil
         }
         
