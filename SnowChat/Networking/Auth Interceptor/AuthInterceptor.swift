@@ -42,6 +42,9 @@ class AuthInterceptor: RequestAdapter, RequestRetrier {
         // Prefer end user session
         urlRequest.setValue(String(true), forHTTPHeaderField: HTTPHeaderField.endUser)
         
+        // REST APIs should count as user activity for AMB (see STRY5186037)
+        urlRequest.setValue(String(true), forHTTPHeaderField: HTTPHeaderField.userActivity)
+        
         // Opt out of Qlue public API support
         urlRequest.setValue(String(true), forHTTPHeaderField: HTTPHeaderField.requireLoggedIn)
         

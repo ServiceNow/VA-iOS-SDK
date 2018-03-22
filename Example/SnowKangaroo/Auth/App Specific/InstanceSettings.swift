@@ -19,7 +19,7 @@ class InstanceSettings {
     
     private static let instanceURLKey = "InstanceSettingsInstanceURL"
     private static let credentialKey = "InstanceSettingsCredential"
-    private static let authProviderKey = "InstanceSettingsAuthProviderStringMapped"
+    private static let authProviderKey = "InstanceSettingsAuthProvider"
     
     private let defaults = UserDefaults.standard
     
