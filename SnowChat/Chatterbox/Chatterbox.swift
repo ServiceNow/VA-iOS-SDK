@@ -284,7 +284,7 @@ class Chatterbox {
             // NOTE: only used for live agent mode
             updateTextControl(control)
         case .fileUpload:
-            updateInputImageControl(control)
+            updateFileUploadControl(control)
         default:
             logger.logError("Unrecognized control type - skipping: \(type)")
             return
@@ -357,10 +357,10 @@ class Chatterbox {
         }
     }
     
-    fileprivate func updateInputImageControl(_ control: ControlData) {
-        if var inputImageControl = control as? FileUploadControlMessage, let conversationId = inputImageControl.data.conversationId {
-            inputImageControl.data = updateRichControlData(inputImageControl.data)
-            publishControlUpdate(inputImageControl, forConversation: conversationId)
+    fileprivate func updateFileUploadControl(_ control: ControlData) {
+        if var fileUploadControl = control as? FileUploadControlMessage, let conversationId = fileUploadControl.data.conversationId {
+            fileUploadControl.data = updateRichControlData(fileUploadControl.data)
+            publishControlUpdate(fileUploadControl, forConversation: conversationId)
         }
     }
     

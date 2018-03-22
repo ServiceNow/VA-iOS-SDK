@@ -134,9 +134,9 @@ extension ChatMessageModel {
                 return nil
         }
         
-        let inputImage = FileUploadViewModel(id: message.messageId, label: title, required: required, itemType: itemType.rawValue)
+        let fileUploadModel = FileUploadViewModel(id: message.messageId, label: title, required: required, itemType: itemType.rawValue)
         let direction = message.direction
-        let snowViewModel = ChatMessageModel(model: inputImage, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
+        let snowViewModel = ChatMessageModel(model: fileUploadModel, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         return snowViewModel
     }
     

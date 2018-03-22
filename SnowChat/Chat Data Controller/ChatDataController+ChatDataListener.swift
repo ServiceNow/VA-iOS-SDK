@@ -70,8 +70,8 @@ extension ChatDataController: ChatDataListener {
             guard messageExchange.message is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
             self.didCompleteMultiPartExchange(messageExchange, forChat: chatId)
         case .fileUpload:
-            guard messageExchange.message is FileUploadControlMessage else { fatalError("Could not view message as InputImageControlMessage in ChatDataListener") }
-            self.didCompleteInputImageExchange(messageExchange, forChat: chatId)
+            guard messageExchange.message is FileUploadControlMessage else { fatalError("Could not view message as FileUploadControlMessage in ChatDataListener") }
+            self.didCompleteFileUploadExchange(messageExchange, forChat: chatId)
         case .unknown:
             guard let message = messageExchange.message as? ControlDataUnknown else { fatalError("Could not view message as ControlDataUnknown in ChatDataListener") }
             guard let chatControl = chatMessageModel(withMessage: message) else { return }
@@ -185,8 +185,8 @@ extension ChatDataController: ChatDataListener {
         replaceLastControl(with: typingIndicatorModel)
     }
     
-    private func didCompleteInputImageExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        if let viewModels = controlsForInputImage(from: messageExchange) {
+    private func didCompleteFileUploadExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
+        if let viewModels = controlsForFileUpload(from: messageExchange) {
             replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme))
             if let response = viewModels.response {
                 presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
@@ -282,7 +282,7 @@ extension ChatDataController: ChatDataListener {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
         case .fileUpload:
-            if let viewModels = controlsForInputImage(from: historyExchange) {
+            if let viewModels = controlsForFileUpload(from: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
         case .text:
@@ -399,10 +399,10 @@ extension ChatDataController: ChatDataListener {
         return (message: questionModel, response: answerModel)
     }
     
-    func controlsForInputImage(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: OutputImageViewModel?)? {
+    func controlsForFileUpload(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: OutputImageViewModel?)? {
         guard let message = messageExchange.message as? FileUploadControlMessage,
             let label = message.data.richControl?.uiMetadata?.label else {
-                logger.logError("MessageExchange is not valid in inputImageControlsFromMessageExchange method - skipping!")
+                logger.logError("MessageExchange is not valid in fileUploadControlsFromMessageExchange method - skipping!")
                 return nil
         }
         let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)

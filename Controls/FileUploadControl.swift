@@ -18,7 +18,7 @@ class FileUploadControl: NSObject, PickerControlProtocol, UIImagePickerControlle
         }
     }
     
-    private var inputImageModel: FileUploadViewModel {
+    private var fileUploadModel: FileUploadViewModel {
         return model as! FileUploadViewModel
     }
     
@@ -43,6 +43,8 @@ class FileUploadControl: NSObject, PickerControlProtocol, UIImagePickerControlle
     // MARK: - PickerViewControllerDelegate
     
     func pickerViewController(_ viewController: UIViewController, didFinishWithModel model: PickerControlViewModel) {
+        
+        // TODO: when we support file upload, we will need to add here appropriate cases
         guard let item = model.selectedItem else { return }
         
         switch item.type {
@@ -93,14 +95,14 @@ class FileUploadControl: NSObject, PickerControlProtocol, UIImagePickerControlle
         let image = info[UIImagePickerControllerOriginalImage] as! UIImage
         if #available(iOS 11.0, *) {
             let imageURL = info[UIImagePickerControllerImageURL] as! URL
-            inputImageModel.imageName = imageURL.deletingPathExtension().lastPathComponent
+            fileUploadModel.imageName = imageURL.deletingPathExtension().lastPathComponent
         } else {
             let imageURL = info[UIImagePickerControllerReferenceURL] as! URL
-            inputImageModel.imageName = imageURL.deletingPathExtension().lastPathComponent
+            fileUploadModel.imageName = imageURL.deletingPathExtension().lastPathComponent
         }
         
         let imageData = UIImageJPEGRepresentation(image, 0.2)
-        inputImageModel.selectedImageData = imageData
+        fileUploadModel.selectedImageData = imageData
         
         delegate?.control(self, didFinishWithModel: model)
     }
