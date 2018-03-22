@@ -9,7 +9,7 @@
 import UIKit
 import AlamofireImage
 
-class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ThemeableControl {
+class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ImageBrowserDelegate, ThemeableControl {
     
     weak var delegate: PickerViewControllerDelegate?
     var imageDownloader: ImageDownloader?
@@ -131,6 +131,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         guard let imageDownloader = imageDownloader else { return }
         let urls = model.items.flatMap({ ($0 as? CarouselItem)?.attachment })
         let browserViewController = ImageBrowserViewController(photoURLs: urls, imageDownloader: imageDownloader, selectedImage: indexPath.row)
+        browserViewController.delegate = self
         let navigationController = UINavigationController(rootViewController: browserViewController)
         
         navigationController.modalPresentationStyle = .overFullScreen
@@ -180,5 +181,11 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     func applyTheme(_ theme: ControlTheme?) {
         self.theme = theme
+    }
+    
+    // MARK: - ImageBrowserDelegate
+    
+    func imageBrowser(_ browser: ImageBrowserViewController, didSelectImageAt index: Int) {
+        collectionView?.scrollToItem(at: IndexPath(row: index, section: 0), at: .centeredHorizontally, animated: false)
     }
 }

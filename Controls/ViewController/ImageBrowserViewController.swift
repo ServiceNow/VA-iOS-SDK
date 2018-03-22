@@ -10,7 +10,7 @@ import Foundation
 import AlamofireImage
 
 protocol ImageBrowserDelegate: AnyObject {
-    func imageBrowser(_ browser: ImageBrowserViewController, didSelectImage atIndex: Int)
+    func imageBrowser(_ browser: ImageBrowserViewController, didSelectImageAt index: Int)
 }
 
 class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
@@ -42,7 +42,7 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     }
     
     @objc func doneButtonTapped(_ sender: UIBarButtonItem) {
-        delegate?.imageBrowser(self, didSelectImage: currentImage)
+        delegate?.imageBrowser(self, didSelectImageAt: currentImage)
         dismiss(animated: true, completion: nil)
     }
     
