@@ -128,15 +128,20 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     }
     
     private func zoomIn(itemAt indexPath: IndexPath) {
+        guard let imageDownloader = imageDownloader else { return }
+        let urls = model.items.flatMap({ ($0 as? CarouselItem)?.attachment })
+        let browserViewController = ImageBrowserViewController(photoURLs: urls, imageDownloader: imageDownloader, selectedImage: indexPath.row)
+        let navigationController = UINavigationController(rootViewController: browserViewController)
         
+        navigationController.modalPresentationStyle = .overFullScreen
+        present(navigationController, animated: true, completion: nil)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let comparisonResult = carouselControlViewLayout.focusedIndexPath.compare(indexPath)
         switch comparisonResult {
         case .orderedSame:
-            // TODO: zoom in!
-            print("Zoom in!")
+            zoomIn(itemAt: indexPath)
         case .orderedAscending:
             carouselControlViewLayout.selectNextItem()
         case .orderedDescending:
