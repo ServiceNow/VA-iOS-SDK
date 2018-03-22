@@ -1,5 +1,5 @@
 //
-//  InputImageControl.swift
+//  FileUploadControl.swift
 //  SnowChat
 //
 //  Created by Michael Borowiec on 2/16/18.
@@ -8,7 +8,7 @@
 
 import MobileCoreServices
 
-class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class FileUploadControl: NSObject, PickerControlProtocol, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     var visibleItemCount: Int = 2
     
@@ -18,8 +18,8 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
         }
     }
     
-    private var inputImageModel: InputImageViewModel {
-        return model as! InputImageViewModel
+    private var inputImageModel: FileUploadViewModel {
+        return model as! FileUploadViewModel
     }
     
     var style: PickerControlStyle
@@ -32,7 +32,7 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
     weak var delegate: ControlDelegate?
     
     required init(model: ControlViewModel) {
-        guard let inputImageModel = model as? InputImageViewModel else {
+        guard let inputImageModel = model as? FileUploadViewModel else {
             fatalError("Wrong model class")
         }
 

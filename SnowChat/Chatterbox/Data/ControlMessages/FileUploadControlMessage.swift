@@ -1,12 +1,12 @@
 //
-//  InputImageControlMessage.swift
+//  FileUploadControlMessage.swift
 //  SnowChat
 //
 //  Created by Michael Borowiec on 2/16/18.
 //  Copyright © 2018 ServiceNow. All rights reserved.
 //
 
-struct InputImageControlMessage: ControlData {
+struct FileUploadControlMessage: ControlData {
     
     var uniqueId: String {
         return id
@@ -19,7 +19,7 @@ struct InputImageControlMessage: ControlData {
     }
     
     var id: String = ChatUtil.uuidString()
-    var controlType = ChatterboxControlType.inputImage
+    var controlType = ChatterboxControlType.fileUpload
     
     var messageId: String {
         return data.messageId
@@ -50,7 +50,7 @@ struct InputImageControlMessage: ControlData {
         data = withData
     }
     
-    init(withValue value: String, fromMessage message: InputImageControlMessage) {
+    init(withValue value: String, fromMessage message: FileUploadControlMessage) {
         data = message.data
         data.sendTime = Date()
         data.richControl?.value = value

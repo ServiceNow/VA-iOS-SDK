@@ -250,7 +250,7 @@ class ChatDataController {
                 updateDateOrTimeData(data, lastPendingMessage)
             case .multiPart:
                 updateMultiPartData(data, lastPendingMessage)
-            case .inputImage:
+            case .fileUpload:
                 updateInputImageData(data, lastPendingMessage)
             default:
                 logger.logDebug("Unhandled control type: \(lastPendingMessage.controlType)")
@@ -342,8 +342,8 @@ class ChatDataController {
     }
     
     fileprivate func updateInputImageData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
-        if let inputImageViewModel = data as? InputImageViewModel,
-            var inputImageMessage = lastPendingMessage as? InputImageControlMessage {
+        if let inputImageViewModel = data as? FileUploadViewModel,
+            var inputImageMessage = lastPendingMessage as? FileUploadControlMessage {
             
             inputImageMessage.id = ChatUtil.uuidString()
             inputImageMessage.data.messageId = ChatUtil.uuidString()

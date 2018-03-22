@@ -69,8 +69,8 @@ extension ChatDataController: ChatDataListener {
         case .multiPart:
             guard messageExchange.message is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
             self.didCompleteMultiPartExchange(messageExchange, forChat: chatId)
-        case .inputImage:
-            guard messageExchange.message is InputImageControlMessage else { fatalError("Could not view message as InputImageControlMessage in ChatDataListener") }
+        case .fileUpload:
+            guard messageExchange.message is FileUploadControlMessage else { fatalError("Could not view message as InputImageControlMessage in ChatDataListener") }
             self.didCompleteInputImageExchange(messageExchange, forChat: chatId)
         case .unknown:
             guard let message = messageExchange.message as? ControlDataUnknown else { fatalError("Could not view message as ControlDataUnknown in ChatDataListener") }
@@ -281,7 +281,7 @@ extension ChatDataController: ChatDataListener {
             if let viewModels = controlsForInput(from: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
-        case .inputImage:
+        case .fileUpload:
             if let viewModels = controlsForInputImage(from: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
@@ -400,7 +400,7 @@ extension ChatDataController: ChatDataListener {
     }
     
     func controlsForInputImage(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: OutputImageViewModel?)? {
-        guard let message = messageExchange.message as? InputImageControlMessage,
+        guard let message = messageExchange.message as? FileUploadControlMessage,
             let label = message.data.richControl?.uiMetadata?.label else {
                 logger.logError("MessageExchange is not valid in inputImageControlsFromMessageExchange method - skipping!")
                 return nil
@@ -408,7 +408,7 @@ extension ChatDataController: ChatDataListener {
         let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
         
         let answerModel: OutputImageViewModel?
-        if let response = messageExchange.response as? InputImageControlMessage,
+        if let response = messageExchange.response as? FileUploadControlMessage,
             let value = response.data.richControl?.value ?? "",
             let url = URL(string: value) {
             answerModel = OutputImageViewModel(id: ChatUtil.uuidString(), value: url)
