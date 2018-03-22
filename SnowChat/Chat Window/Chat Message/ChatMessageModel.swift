@@ -129,11 +129,12 @@ extension ChatMessageModel {
     
     static func model(withMessage message: FileUploadControlMessage, theme: Theme) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
-            let required = message.data.richControl?.uiMetadata?.required else {
+            let required = message.data.richControl?.uiMetadata?.required,
+            let itemType = message.data.richControl?.uiMetadata?.itemType else {
                 return nil
         }
         
-        let inputImage = FileUploadViewModel(id: message.messageId, label: title, required: required)
+        let inputImage = FileUploadViewModel(id: message.messageId, label: title, required: required, itemType: itemType.rawValue)
         let direction = message.direction
         let snowViewModel = ChatMessageModel(model: inputImage, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         return snowViewModel

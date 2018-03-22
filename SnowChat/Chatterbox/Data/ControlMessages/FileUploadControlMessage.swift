@@ -38,7 +38,7 @@ struct FileUploadControlMessage: ControlData {
     }
     
     let type: String = "consumerTextMessage"
-    var data: RichControlData<ControlWrapper<String?, UIMetadata>>
+    var data: RichControlData<ControlWrapper<String?, FileUploadMetadata>>
     
     // define the properties that we decode / encode
     private enum CodingKeys: String, CodingKey {
@@ -46,7 +46,7 @@ struct FileUploadControlMessage: ControlData {
         case data
     }
     
-    init(withData: RichControlData<ControlWrapper<String?, UIMetadata>>) {
+    init(withData: RichControlData<ControlWrapper<String?, FileUploadMetadata>>) {
         data = withData
     }
     
