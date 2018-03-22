@@ -43,8 +43,10 @@ extension Chatterbox {
                     
                     strongSelf.contextualActions = actionMessage
                     strongSelf.state = .topicSelection
-                    
-                    strongSelf.chatEventListener?.chatterbox(strongSelf, didEstablishUserSession:  sessionId, forChat: strongSelf.chatId)
+
+                    strongSelf.chatEventListeners.forEach(withType: ChatEventListener.self, { listener in
+                        listener.chatterbox(strongSelf, didEstablishUserSession:  sessionId, forChat: strongSelf.chatId)
+                    })
                     
                     completion(.success(actionMessage))
                 }

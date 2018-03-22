@@ -81,14 +81,18 @@ extension Chatterbox {
     
     internal func finishTopic(_ conversationId: String) {
         let topicInfo = TopicInfo(topicId: nil, topicName: nil, taskId: nil, conversationId: conversationId)
-        chatEventListener?.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
+        chatEventListeners.forEach(withType: ChatEventListener.self) { listener in
+            listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
+        }
     }
     
     internal func resumeUserTopic(topicInfo: TopicInfo) {
         showTopic {
             self.state = .userConversation
             self.setupForConversation(topicInfo: topicInfo)
-            self.chatEventListener?.chatterbox(self, didResumeTopic: topicInfo, forChat: self.chatId)
+            self.chatEventListeners.forEach(withType: ChatEventListener.self) { listener in
+                listener.chatterbox(self, didResumeTopic: topicInfo, forChat: self.chatId)
+            }
         }
     }
 
@@ -162,7 +166,9 @@ extension Chatterbox {
         state = .userConversation
         
         setupForConversation(topicInfo: topicInfo)
-        chatEventListener?.chatterbox(self, didStartTopic: topicInfo, forChat: chatId)
+        chatEventListeners.forEach(withType: ChatEventListener.self) { listener in
+            listener.chatterbox(self, didStartTopic: topicInfo, forChat: chatId)
+        }
     }
     
     private func setupForConversation(topicInfo: TopicInfo) {

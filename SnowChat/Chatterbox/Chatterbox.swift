@@ -47,9 +47,10 @@ class Chatterbox {
     }
     var vendor: ChatVendor?
     
-    weak var chatDataListener: ChatDataListener?
-    weak var chatEventListener: ChatEventListener?
-    weak var chatAuthListener: ChatAuthListener?
+    // AnyObject as type is a bummer, but Swift bug requires is https://bugs.swift.org/browse/SR-55
+    var chatDataListeners = ListenerList<AnyObject>()
+    var chatEventListeners = ListenerList<AnyObject>()
+    var chatAuthListeners = ListenerList<AnyObject>()
     
     internal var conversationContext = ConversationContext()
     internal var contextualActions: ContextualActionMessage?
@@ -102,10 +103,8 @@ class Chatterbox {
     
     // MARK: - Methods
     
-    init(instance: ServerInstance, dataListener: ChatDataListener? = nil, eventListener: ChatEventListener? = nil) {
+    init(instance: ServerInstance) {
         self.serverInstance = instance
-        chatDataListener = dataListener
-        chatEventListener = eventListener
     }
     
     internal func publishMessage<T>(_ message: T) where T: Encodable {
@@ -149,13 +148,18 @@ class Chatterbox {
     
     fileprivate func processIncomingControlMessage(_ control: ControlData, forConversation conversationId: String) {
         chatStore.storeControlData(control, forConversation: conversationId, fromChat: self)
-        chatDataListener?.chatterbox(self, didReceiveControlMessage: control, forChat: chatId)
+        
+        chatDataListeners.forEach(withType: ChatDataListener.self, { listener in
+            listener.chatterbox(self, didReceiveControlMessage: control, forChat: chatId)
+        })
     }
     
     fileprivate func processResponseControlMessage(_ control: ControlData, forConversation conversationId: String) {
         if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last, !lastExchange.isComplete {
             if let updatedExchange = chatStore.storeResponseData(control, forConversation: conversationId) {
-                chatDataListener?.chatterbox(self, didCompleteMessageExchange: updatedExchange, forChat: conversationId)
+                chatDataListeners.forEach(withType: ChatDataListener.self, { listener in
+                    listener.chatterbox(self, didCompleteMessageExchange: updatedExchange, forChat: conversationId)
+                })
             }
         } else {
             // our own reply message from an agent chat
@@ -197,7 +201,9 @@ class Chatterbox {
             saveDataToPersistence()
             
             let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, taskId: nil, conversationId: topicFinishedMessage.data.conversationId ?? "CONVERSATION_ID")
-            chatEventListener?.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
+            chatEventListeners.forEach(withType: ChatEventListener.self, { listener in
+                listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
+            })
         }
     }
 
@@ -238,7 +244,10 @@ class Chatterbox {
                                       topicName: nil,
                                       taskId: nil,
                                       conversationId: topicFinishedMessage.data.conversationId ?? "NIL_CONVERSATION_ID")
-            chatEventListener?.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
+            
+            chatEventListeners.forEach(withType: ChatEventListener.self, { listener in
+                listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
+            })
         }
     }
 
@@ -252,7 +261,9 @@ class Chatterbox {
             let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last, !lastExchange.isComplete {
             
             chatStore.cancelPendingExchange(forConversation: conversationId)
-            chatDataListener?.chatterbox(self, didCompleteMessageExchange: lastExchange, forChat: conversationId)
+            chatDataListeners.forEach(withType: ChatDataListener.self, { listener in
+                listener.chatterbox(self, didCompleteMessageExchange: lastExchange, forChat: conversationId)
+            })
         }
     }
     

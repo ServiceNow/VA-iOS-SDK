@@ -32,8 +32,8 @@ public final class ChatService {
         let instance = ServerInstance(instanceURL: instanceURL)
         self.chatterbox = Chatterbox(instance: instance)
         self.delegate = delegate
-        self.chatterbox.chatEventListener = self
-        self.chatterbox.chatAuthListener = self
+        self.chatterbox.chatEventListeners.addListener(self)
+        self.chatterbox.chatAuthListeners.addListener(self)
         
         // Set default log levels for debugging
         Logger.logger(for: "AMBClient").logLevel = .error

@@ -92,7 +92,9 @@ extension Chatterbox {
                 logger.logDebug("*** ConnectToAgent Message from server: conversationId=\(startAgentChatMessage.data.conversationId ?? "NIL") topicId=\(startAgentChatMessage.data.actionMessage.topicId) taskId=\(startAgentChatMessage.data.taskId ?? "NIL")")
                 
                 let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
-                chatEventListener?.chatterbox(self, willStartAgentChat: agentInfo, forChat: chatId)
+                chatEventListeners.forEach(withType: ChatEventListener.self) { listener in
+                    listener.chatterbox(self, willStartAgentChat: agentInfo, forChat: chatId)
+                }
                 
                 // store the taskId for this conversation
                 conversationContext.taskId = startAgentChatMessage.data.taskId
@@ -121,7 +123,9 @@ extension Chatterbox {
         
         setupForAgentConversation(topicInfo: topicInfo)
         let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
-        chatEventListener?.chatterbox(self, didStartAgentChat: agentInfo, forChat: chatId)
+        chatEventListeners.forEach(withType: ChatEventListener.self) { listener in
+            listener.chatterbox(self, didStartAgentChat: agentInfo, forChat: chatId)
+        }
     }
     
     private func setupForAgentConversation(topicInfo: TopicInfo) {
@@ -137,7 +141,9 @@ extension Chatterbox {
         conversationContext.taskId = nil
         
         let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
-        chatEventListener?.chatterbox(self, didFinishAgentChat:agentInfo, forChat: chatId)
+        chatEventListeners.forEach(withType: ChatEventListener.self) { listener in
+            listener.chatterbox(self, didFinishAgentChat: agentInfo, forChat: chatId)
+        }
     }
     
     private func createStartAgentChatReadyMessage(fromMessage message: StartAgentChatMessage) -> StartAgentChatMessage {
@@ -162,7 +168,9 @@ extension Chatterbox {
                 let message = NSLocalizedString("I'm sorry, no agents are currently available. Please call us at \(phone), email us at \(email), or try again later.",
                     comment: "Message when no agents available during live agent transfer")
                 let textControl = OutputTextControlMessage(withValue: message, sessionId: sessionId, conversationId: conversationId, taskId: taskId, direction: MessageDirection.fromServer)
-                chatDataListener?.chatterbox(self, didReceiveControlMessage: textControl, forChat: chatId)
+                chatDataListeners.forEach(withType: ChatDataListener.self) { listener in
+                    listener.chatterbox(self, didReceiveControlMessage: textControl, forChat: chatId)
+            }
         }
     }
 }

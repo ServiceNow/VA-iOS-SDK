@@ -149,7 +149,9 @@ extension Chatterbox {
             
             var count = 0
             
-            strongSelf.chatDataListener?.chatterbox(strongSelf, willLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
+            strongSelf.chatDataListeners.forEach(withType: ChatDataListener.self, { listener in
+                listener.chatterbox(strongSelf, willLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
+            })
             
             conversations.forEach({ [weak self] conversation in
                 guard let strongSelf = self else { return }
@@ -165,7 +167,9 @@ extension Chatterbox {
                 count += strongSelf.loadConversationHistory(conversation)
             })
             
-            strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
+            strongSelf.chatDataListeners.forEach(withType: ChatDataListener.self, { listener in
+                listener.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
+            })
             
             completion(count)
         })
@@ -175,14 +179,18 @@ extension Chatterbox {
         var count = 0
         let conversationId = conversation.conversationId
         
-        chatDataListener?.chatterbox(self, willLoadConversationHistory: conversationId, forChat: chatId)
+        chatDataListeners.forEach(withType: ChatDataListener.self, { listener in
+            listener.chatterbox(self, willLoadConversationHistory: conversationId, forChat: chatId)
+        })
         
         conversation.messageExchanges().reversed().forEach({ exchange in
             self.storeHistoryAndPublish(exchange, forConversation: conversationId)
             count += (exchange.response != nil ? 2 : 1)
         })
         
-        chatDataListener?.chatterbox(self, didLoadConversationHistory: conversationId, forChat: chatId)
+        chatDataListeners.forEach(withType: ChatDataListener.self, { listener in
+           listener.chatterbox(self, didLoadConversationHistory: conversationId, forChat: chatId)
+        })
         
         return count
     }
@@ -233,14 +241,18 @@ extension Chatterbox {
         if let consumerId = session?.user.consumerAccountId {
             logger.logDebug("--> Loading conversations for \(consumerId)")
             
-            self.chatDataListener?.chatterbox(self, willLoadConversationsForConsumerAccount: consumerId, forChat: self.chatId)
+            chatDataListeners.forEach(withType: ChatDataListener.self) { listener in
+                listener.chatterbox(self, willLoadConversationsForConsumerAccount: consumerId, forChat: self.chatId)
+            }
             
             apiManager.fetchConversations(forConsumer: consumerId, completionHandler: { [weak self] conversations in
                 guard let strongSelf = self else { return }
                 
                 guard let lastConversation = conversations.last else {
                     // no messages - signal we are finished
-                    strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
+                    strongSelf.chatDataListeners.forEach(withType: ChatDataListener.self) { listener in
+                        listener.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
+                    }
                     completionHandler(nil)
                     return
                 }
@@ -260,7 +272,9 @@ extension Chatterbox {
                         
                         // if we are on an in-progress conversation, then signal that history loading is done and process
                         // the in-progress conversation as a live-one, not a historical one
-                        strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
+                        strongSelf.chatDataListeners.forEach(withType: ChatDataListener.self) { listener in
+                            listener.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
+                        }
                     } else {
                         // normalize the completion state (error, canceled, completed all become completed)
                         conversation.state = .completed
@@ -271,7 +285,9 @@ extension Chatterbox {
                     if isLastConversation {
                         // notify that load is complete, unless we already did (for the in-progress conversation)
                         if !isInProgress {
-                            strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
+                            strongSelf.chatDataListeners.forEach(withType: ChatDataListener.self) { listener in
+                                listener.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
+                            }
                         }
                         
                         strongSelf.syncConversationState(conversation)
@@ -287,13 +303,17 @@ extension Chatterbox {
     
     internal func storeHistoryAndPublish(_ exchange: MessageExchange, forConversation conversationId: String) {
         chatStore.storeHistory(exchange, forConversation: conversationId)
-        chatDataListener?.chatterbox(self, didReceiveHistory: exchange, forChat: chatId)
+        chatDataListeners.forEach(withType: ChatDataListener.self) { listener in
+            listener.chatterbox(self, didReceiveHistory: exchange, forChat: chatId)
+        }
     }
     
     internal func storeConversationAndPublish(_ conversation: Conversation) {
         chatStore.storeConversation(conversation)
         
-        self.chatDataListener?.chatterbox(self, willLoadConversation: conversation.conversationId, forChat: self.chatId)
+        chatDataListeners.forEach(withType: ChatDataListener.self) { listener in
+            listener.chatterbox(self, willLoadConversation: conversation.conversationId, forChat: self.chatId)
+        }
         
         conversation.messageExchanges().forEach { exchange in
             let outputOnlyMessage = exchange.message.isOutputOnly || exchange.message.controlType == .multiPart
@@ -306,26 +326,32 @@ extension Chatterbox {
             }
         }
         
-        self.chatDataListener?.chatterbox(self, didLoadConversation: conversation.conversationId, forChat: self.chatId)
+        chatDataListeners.forEach(withType: ChatDataListener.self) { listener in
+            listener.chatterbox(self, didLoadConversation: conversation.conversationId, forChat: self.chatId)
+        }
     }
     
     internal func notifyMessage(_ message: ControlData) {
-        guard let chatDataListener = chatDataListener else {
+        guard chatDataListeners.count > 0 else {
             logger.logError("No ChatDataListener in NotifyControlReceived")
             return
         }
         
-        chatDataListener.chatterbox(self, didReceiveControlMessage: message, forChat: chatId)
+        chatDataListeners.forEach(withType: ChatDataListener.self) { listener in
+            listener.chatterbox(self, didReceiveControlMessage: message, forChat: chatId)
+        }
     }
     
     internal func notifyMessageExchange(_ exchange: MessageExchange) {
         logger.logDebug("--> Notifying MessageExchange: message=\(exchange.message.controlType) | response=\(exchange.response?.controlType ?? .unknown)")
         
-        guard let chatDataListener = chatDataListener else {
+        guard chatDataListeners.count > 0 else {
             logger.logError("No ChatDataListener in notifyResponseReceived")
             return
         }
         
-        chatDataListener.chatterbox(self, didCompleteMessageExchange: exchange, forChat: chatId)
+        chatDataListeners.forEach(withType: ChatDataListener.self) { listener in
+            listener.chatterbox(self, didCompleteMessageExchange: exchange, forChat: chatId)
+        }
     }
 }
