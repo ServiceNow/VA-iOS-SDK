@@ -18,9 +18,15 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     weak var delegate: ImageBrowserDelegate?
     private var photoURLs: [URL]
     private var imageDownloader: ImageDownloader
-    private var currentImage: Int
-    private var scrollView = UIScrollView()
+    private var currentImage: Int {
+        didSet {
+            pageControl.currentPage = currentImage
+        }
+    }
+    
+    private let scrollView = UIScrollView()
     private var imageViews = [UIImageView]()
+    let pageControl = UIPageControl()
     
     init(photoURLs: [URL], imageDownloader: ImageDownloader, selectedImage index: Int = 0) {
         self.photoURLs = photoURLs
@@ -33,12 +39,19 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateContentOffset(forCurrentImage: currentImage)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
-        setupScrollView()
-
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Done", comment: ""), style: .plain, target: self, action: #selector(doneButtonTapped(_:)))
+        view.backgroundColor = .white
+        
+        setupPageControl()
+        setupScrollView()
+        updateContentOffset(forCurrentImage: currentImage)
     }
     
     @objc func doneButtonTapped(_ sender: UIBarButtonItem) {
@@ -53,32 +66,18 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
         scrollView.showsHorizontalScrollIndicator = false
         view.addSubview(scrollView)
         
-        if #available(iOS 11, *) {
-            let guide = view.safeAreaLayoutGuide
-            NSLayoutConstraint.activate([scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                         scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                         scrollView.topAnchor.constraint(equalTo: guide.topAnchor),
-                                         scrollView.bottomAnchor.constraint(equalTo: guide.bottomAnchor)])
-        } else {
-            edgesForExtendedLayout = UIRectEdge()
-            NSLayoutConstraint.activate([scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                         scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                         scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-                                         scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
-        }
+        NSLayoutConstraint.activate([scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                                     scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                                     scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+                                     scrollView.bottomAnchor.constraint(equalTo: pageControl.topAnchor)])
         
-        setupImageViews()
+        setupImageViewsForScrollView()
         
         // forcing layout subviews so we can navigate to preselected page right away
         view.layoutIfNeeded()
-        updateContentOffset(forCurrentImage: currentImage)
     }
     
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        currentImage = Int(scrollView.bounds.midX / scrollView.bounds.width)
-    }
-    
-    private func setupImageViews() {
+    private func setupImageViewsForScrollView() {
         photoURLs.forEach({ url in
             let imageView = UIImageView()
             imageView.contentMode = .scaleAspectFit
@@ -105,14 +104,30 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
         })
     }
     
+    private func setupPageControl() {
+        pageControl.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(pageControl)
+        
+        NSLayoutConstraint.activate([pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor)])
+        if #available(iOS 11, *) {
+            NSLayoutConstraint.activate([pageControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)])
+        } else {
+            NSLayoutConstraint.activate([pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 30)])
+        }
+        
+        pageControl.numberOfPages = photoURLs.count
+        pageControl.currentPage = currentImage
+    }
+    
     private func updateContentOffset(forCurrentImage index: Int) {
         var contentOffset = scrollView.contentOffset
         contentOffset.x = CGFloat(index) * scrollView.bounds.width
         scrollView.contentOffset = contentOffset
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        updateContentOffset(forCurrentImage: currentImage)
+    // MARK: - UIScrollViewDelegate
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        currentImage = Int(scrollView.bounds.midX / scrollView.bounds.width)
     }
 }

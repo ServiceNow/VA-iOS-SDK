@@ -18,6 +18,9 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     private var gradientOverlayView = GradientView()
     private var theme: ControlTheme?
     
+    private let currentPageIndicatorTintColor = UIColor(red: 0, green: 122 / 255, blue: 255 / 255, alpha: 1)
+    private let pageIndicatorTintColor = UIColor(red: 174 / 255, green: 213 / 255, blue: 255 / 255, alpha: 1)
+    
     private var carouselControlViewLayout: CarouselControlViewLayout {
         return collectionView?.collectionViewLayout as! CarouselControlViewLayout
     }
@@ -140,8 +143,9 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         let urls = model.items.flatMap({ ($0 as? CarouselItem)?.attachment })
         let browserViewController = ImageBrowserViewController(photoURLs: urls, imageDownloader: imageDownloader, selectedImage: indexPath.row)
         browserViewController.delegate = self
+        browserViewController.pageControl.currentPageIndicatorTintColor = currentPageIndicatorTintColor
+        browserViewController.pageControl.pageIndicatorTintColor = pageIndicatorTintColor
         let navigationController = UINavigationController(rootViewController: browserViewController)
-        
         navigationController.modalPresentationStyle = .overFullScreen
         present(navigationController, animated: true, completion: nil)
     }
