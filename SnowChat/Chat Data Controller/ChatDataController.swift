@@ -250,8 +250,8 @@ class ChatDataController {
                 updateDateOrTimeData(data, lastPendingMessage)
             case .multiPart:
                 updateMultiPartData(data, lastPendingMessage)
-            case .inputImage:
-                updateInputImageData(data, lastPendingMessage)
+            case .fileUpload:
+                updateFileUploadData(data, lastPendingMessage)
             default:
                 logger.logDebug("Unhandled control type: \(lastPendingMessage.controlType)")
                 return
@@ -341,20 +341,20 @@ class ChatDataController {
         }
     }
     
-    fileprivate func updateInputImageData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
-        if let inputImageViewModel = data as? InputImageViewModel,
-            var inputImageMessage = lastPendingMessage as? InputImageControlMessage {
+    fileprivate func updateFileUploadData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
+        if let fileUploadViewModel = data as? FileUploadViewModel,
+            var fileUploadMessage = lastPendingMessage as? FileUploadControlMessage {
             
-            inputImageMessage.id = ChatUtil.uuidString()
-            inputImageMessage.data.messageId = ChatUtil.uuidString()
+            fileUploadMessage.id = ChatUtil.uuidString()
+            fileUploadMessage.data.messageId = ChatUtil.uuidString()
             
-            guard let imageData = inputImageViewModel.selectedImageData,
-                let imageName = inputImageViewModel.imageName,
-                let taskId = inputImageMessage.data.taskId else { return }
+            guard let imageData = fileUploadViewModel.selectedImageData,
+                let imageName = fileUploadViewModel.imageName,
+                let taskId = fileUploadMessage.data.taskId else { return }
             
             chatterbox.apiManager.uploadImage(data: imageData, withName:imageName, taskId: taskId, completion: { [weak self] result in
-                inputImageMessage.data.richControl?.value = result
-                self?.chatterbox.update(control: inputImageMessage)
+                fileUploadMessage.data.richControl?.value = result
+                self?.chatterbox.update(control: fileUploadMessage)
             })
         }
     }

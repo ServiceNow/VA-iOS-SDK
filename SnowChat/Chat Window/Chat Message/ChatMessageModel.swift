@@ -94,8 +94,8 @@ extension ChatMessageModel {
         case .outputHtml:
             guard let controlMessage = message as? OutputHtmlControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage, theme: theme)
-        case .inputImage:
-            guard let controlMessage = message as? InputImageControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+        case .fileUpload:
+            guard let controlMessage = message as? FileUploadControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage, theme: theme)
         case .systemError:
             guard let systemErrorMessage = message as? SystemErrorControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
@@ -127,15 +127,16 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func model(withMessage message: InputImageControlMessage, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: FileUploadControlMessage, theme: Theme) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
-            let required = message.data.richControl?.uiMetadata?.required else {
+            let required = message.data.richControl?.uiMetadata?.required,
+            let itemType = message.data.richControl?.uiMetadata?.itemType else {
                 return nil
         }
         
-        let inputImage = InputImageViewModel(id: message.messageId, label: title, required: required)
+        let fileUploadModel = FileUploadViewModel(id: message.messageId, label: title, required: required, itemType: itemType.rawValue)
         let direction = message.direction
-        let snowViewModel = ChatMessageModel(model: inputImage, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
+        let snowViewModel = ChatMessageModel(model: fileUploadModel, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         return snowViewModel
     }
     

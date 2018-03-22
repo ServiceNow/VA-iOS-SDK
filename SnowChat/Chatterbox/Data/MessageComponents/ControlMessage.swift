@@ -34,10 +34,21 @@ struct ControlModel: Codable {
 struct UIMetadata: Codable {
     var label: String?
     var header: String?
-    
     var required: Bool?
     
     var error: UIError?
+}
+
+struct FileUploadMetadata: Codable {
+    
+    enum ItemType: String, Codable {
+        case image
+        case file
+    }
+    
+    var itemType: ItemType
+    var label: String?
+    var required: Bool?
 }
 
 struct LabeledValue: Codable {
