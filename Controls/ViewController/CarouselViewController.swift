@@ -198,6 +198,6 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     // MARK: - ImageBrowserDelegate
     
     func imageBrowser(_ browser: ImageBrowserViewController, didSelectImageAt index: Int) {
-        collectionView?.scrollToItem(at: IndexPath(row: index, section: 0), at: .centeredHorizontally, animated: false)
+        carouselControlViewLayout.selectItem(at: IndexPath(row: index, section: 0))
     }
 }

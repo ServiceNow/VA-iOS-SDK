@@ -166,6 +166,12 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         collectionView?.setContentOffset(contentOffset, animated: true)
     }
     
+    func selectItem(at indexPath: IndexPath, animated: Bool = false) {
+        focusedIndexPath = indexPath
+        let contentOffset = targetContentOffset(for: indexPath)
+        collectionView?.setContentOffset(contentOffset, animated: animated)
+    }
+    
     private func targetContentOffset(for indexPath: IndexPath) -> CGPoint {
         guard let collectionView = self.collectionView else { return CGPoint.zero }
         guard let cell = collectionView.cellForItem(at: indexPath) else {
