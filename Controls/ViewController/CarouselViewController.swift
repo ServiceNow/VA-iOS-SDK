@@ -103,6 +103,14 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         collectionView.reloadData()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        // center on the focused index path. When we first launch Carousel we want to center the first item
+        let focusedIndexPath = (collectionView?.collectionViewLayout as? CarouselControlViewLayout)?.focusedIndexPath ?? IndexPath(item: 0, section: 0)
+        collectionView?.selectItem(at: focusedIndexPath, animated: false, scrollPosition: .centeredHorizontally)
+    }
+    
     // MARK: UICollectionViewDataSource
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
