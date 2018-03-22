@@ -106,7 +106,7 @@ extension APIManager {
                                       "sysparm_sort": "desc"]
         if messageId != nil {
             parameters["lastMessageId"] = messageId
-            parameters["sysparm_sort"] = before ? "desc" : "asc"
+            parameters["sysparm_sort"] = "desc"
             parameters["sysparm_age"] = before ? "older" : "newer"
         }
         

@@ -14,6 +14,7 @@ class ControlVisualTheme: ControlTheme {
     var selectedBackgroundColor: UIColor
     var borderColor: UIColor
     var fontColor: UIColor
+    var actionFontColor: UIColor
     var headerBackgroundColor: UIColor
     var headerFontColor: UIColor
     var dividerColor: UIColor
@@ -26,6 +27,7 @@ class ControlVisualTheme: ControlTheme {
         self.headerFontColor = headerFontColor
         self.dividerColor = Theme.dividerColor
         self.selectedBackgroundColor = Theme.controlSelectedBackgroundColor
+        self.actionFontColor = Theme.controlActionFontColor
     }
 }
 
