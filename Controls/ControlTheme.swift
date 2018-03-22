@@ -15,7 +15,7 @@ protocol ControlTheme {
     var selectedBackgroundColor: UIColor { get }
     var borderColor: UIColor { get }
     var fontColor: UIColor { get }
-    var actionFontColor: UIColor { get } // color to buttons like "Done", "Select"
+    var actionFontColor: UIColor { get } // color for buttons like "Done", "Select"
     
     var headerBackgroundColor: UIColor { get }
     var headerFontColor: UIColor { get }
