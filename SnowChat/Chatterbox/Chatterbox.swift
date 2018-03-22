@@ -47,7 +47,11 @@ class Chatterbox {
     }
     var vendor: ChatVendor?
     
-    weak var chatDataListener: ChatDataListener?
+    weak var chatDataListener: ChatDataListener? {
+        didSet {
+            logger.logDebug("ChatDataListener property set: \(String(describing: chatDataListener))")
+        }
+    }
     weak var chatEventListener: ChatEventListener?
     weak var chatAuthListener: ChatAuthListener?
     
@@ -213,7 +217,7 @@ class Chatterbox {
     
     internal func didReceiveSystemError(_ message: String) {
         switch state {
-        case .userConversation:
+        case .userConversation, .topicSelection:
             transferToLiveAgent()
         case .agentConversation:
             // signal an end of conversation so the user can try a new conversation

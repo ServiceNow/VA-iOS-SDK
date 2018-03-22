@@ -264,6 +264,7 @@ class ChatDataController {
             var boolMessage = lastPendingMessage as? BooleanControlMessage {
             
             boolMessage.id = ChatUtil.uuidString()
+            boolMessage.data.messageId = ChatUtil.uuidString()
             boolMessage.data.richControl?.value = booleanViewModel.resultValue
             chatterbox.update(control: boolMessage)
         }
@@ -274,6 +275,7 @@ class ChatDataController {
             var inputMessage = lastPendingMessage as? InputControlMessage {
             
             inputMessage.id = ChatUtil.uuidString()
+            inputMessage.data.messageId = ChatUtil.uuidString()
             inputMessage.data.richControl?.value = textViewModel.value
             chatterbox.update(control: inputMessage)
         }
@@ -281,7 +283,9 @@ class ChatDataController {
     
     fileprivate func updatePickerData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         guard var pickerMessage = lastPendingMessage as? PickerControlMessage else { return }
+        
         pickerMessage.id = ChatUtil.uuidString()
+        pickerMessage.data.messageId = ChatUtil.uuidString()
         
         if let carouselViewModel = data as? CarouselControlViewModel {
             pickerMessage.data.richControl?.value = carouselViewModel.resultValue
@@ -297,6 +301,7 @@ class ChatDataController {
             var multiSelectMessage = lastPendingMessage as? MultiSelectControlMessage {
             
             multiSelectMessage.id = multiSelectViewModel.id
+            multiSelectMessage.data.messageId = ChatUtil.uuidString()
             multiSelectMessage.data.richControl?.value = multiSelectViewModel.resultValue
             chatterbox.update(control: multiSelectMessage)
         }
@@ -307,6 +312,7 @@ class ChatDataController {
             var dateTimeMessage = lastPendingMessage as? DateTimePickerControlMessage {
             
             dateTimeMessage.id = dateTimeViewModel.id
+            dateTimeMessage.data.messageId = ChatUtil.uuidString()
             dateTimeMessage.data.richControl?.value = dateTimeViewModel.resultValue
             chatterbox.update(control: dateTimeMessage)
         }
@@ -329,6 +335,7 @@ class ChatDataController {
             var multiPartMessage = lastPendingMessage as? MultiPartControlMessage {
             
             multiPartMessage.id = buttonViewModel.id
+            multiPartMessage.data.messageId = ChatUtil.uuidString()
             multiPartMessage.data.richControl?.uiMetadata?.index = buttonViewModel.value + 1
             chatterbox.update(control: multiPartMessage)
         }
@@ -337,6 +344,9 @@ class ChatDataController {
     fileprivate func updateInputImageData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         if let inputImageViewModel = data as? InputImageViewModel,
             var inputImageMessage = lastPendingMessage as? InputImageControlMessage {
+            
+            inputImageMessage.id = ChatUtil.uuidString()
+            inputImageMessage.data.messageId = ChatUtil.uuidString()
             
             guard let imageData = inputImageViewModel.selectedImageData,
                 let imageName = inputImageViewModel.imageName,
