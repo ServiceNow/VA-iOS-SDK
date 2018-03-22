@@ -20,6 +20,10 @@ class CarouselControlHeaderView: UICollectionReusableView {
         setupDivider()
     }
     
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private func setupLabel() {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(titleLabel)
@@ -37,10 +41,6 @@ class CarouselControlHeaderView: UICollectionReusableView {
                                      dividerView.bottomAnchor.constraint(equalTo: bottomAnchor),
                                      dividerView.heightAnchor.constraint(equalToConstant: 1)])
         bringSubview(toFront: dividerView)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     func configure(with model: CarouselControlViewModel) {
