@@ -212,7 +212,7 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func model(withMessage message: OutputTextControlMessage, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: OutputTextControlMessage, theme: Theme?) -> ChatMessageModel? {
         guard let value = message.data.richControl?.value else {
             return nil
         }
@@ -248,7 +248,7 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func model(withMessage message: OutputImageControlMessage, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: OutputImageControlMessage, theme: Theme?) -> ChatMessageModel? {
         guard let value = message.data.richControl?.value else {
             return nil
         }
@@ -264,7 +264,7 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func model(withMessage message: OutputLinkControlMessage, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: OutputLinkControlMessage, theme: Theme?) -> ChatMessageModel? {
         guard let value = message.data.richControl?.value else {
             return nil
         }

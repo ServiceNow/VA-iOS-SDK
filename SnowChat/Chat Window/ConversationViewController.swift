@@ -118,8 +118,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         tableView.backgroundColor = theme?.backgroundColor
         self.autoCompletionView.backgroundColor = theme?.buttonBackgroundColor
         
-        navigationController?.navigationBar.isTranslucent = true
-        navigationController?.navigationBar.barTintColor = theme?.headerBackgroundColor
+//        navigationController?.navigationBar.isTranslucent = true
+//        navigationController?.navigationBar.barTintColor = theme?.headerBackgroundColor
     }
 
     private func setupInputForState() {
