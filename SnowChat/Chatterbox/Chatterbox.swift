@@ -48,9 +48,15 @@ class Chatterbox {
     var vendor: ChatVendor?
     
     // AnyObject as type is a bummer, but Swift bug requires is https://bugs.swift.org/browse/SR-55
-    var chatDataListeners = ListenerList<AnyObject>()
-    var chatEventListeners = ListenerList<AnyObject>()
-    var chatAuthListeners = ListenerList<AnyObject>()
+    private(set) var chatDataListeners = ListenerList<AnyObject>()
+    private(set) var chatEventListeners = ListenerList<AnyObject>()
+    private(set) var chatAuthListeners = ListenerList<AnyObject>()
+    
+    internal func notifyDataListeners(_ closure: (ChatDataListener) -> Void) {
+        chatDataListeners.forEach(withType: ChatDataListener.self) { (listener) in
+            closure(listener)
+        }
+    }
     
     internal var conversationContext = ConversationContext()
     internal var contextualActions: ContextualActionMessage?
@@ -149,17 +155,17 @@ class Chatterbox {
     fileprivate func processIncomingControlMessage(_ control: ControlData, forConversation conversationId: String) {
         chatStore.storeControlData(control, forConversation: conversationId, fromChat: self)
         
-        chatDataListeners.forEach(withType: ChatDataListener.self, { listener in
+        notifyDataListeners { listener in
             listener.chatterbox(self, didReceiveControlMessage: control, forChat: chatId)
-        })
+        }
     }
     
     fileprivate func processResponseControlMessage(_ control: ControlData, forConversation conversationId: String) {
         if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last, !lastExchange.isComplete {
             if let updatedExchange = chatStore.storeResponseData(control, forConversation: conversationId) {
-                chatDataListeners.forEach(withType: ChatDataListener.self, { listener in
+                notifyDataListeners { listener in
                     listener.chatterbox(self, didCompleteMessageExchange: updatedExchange, forChat: conversationId)
-                })
+                }
             }
         } else {
             // our own reply message from an agent chat
@@ -212,11 +218,15 @@ class Chatterbox {
     }
 
     fileprivate func updateContextIfNeeded(_ control: ControlData) {
-        if let taskId = control.taskId,
-            let conversationId = control.conversationId {
-            // keep our taskId and conversationId's updated with the latest from the server
-            // NOTE: this MUST be done for agent messages, but should be fine for chatbot messages too
+        // keep our taskId and conversationID up to date with incoming messages
+        
+        if let taskId = control.taskId {
             conversationContext.taskId = taskId
+        }
+        
+        if let conversationId = control.conversationId,
+           conversationId != conversationContext.systemConversationId {
+
             conversationContext.conversationId = conversationId
         }
     }
@@ -265,9 +275,9 @@ class Chatterbox {
             let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last, !lastExchange.isComplete {
             
             chatStore.cancelPendingExchange(forConversation: conversationId)
-            chatDataListeners.forEach(withType: ChatDataListener.self, { listener in
+            notifyDataListeners { listener in
                 listener.chatterbox(self, didCompleteMessageExchange: lastExchange, forChat: conversationId)
-            })
+            }
         }
     }
     

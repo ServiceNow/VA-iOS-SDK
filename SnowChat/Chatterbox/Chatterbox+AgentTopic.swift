@@ -164,12 +164,13 @@ extension Chatterbox {
             let phone = session?.settings?.brandingSettings?.supportPhone,
             let conversationId = conversationContext.conversationId,
             let sessionId = conversationContext.sessionId {
-                let taskId = conversationContext.taskId
-                let message = NSLocalizedString("I'm sorry, no agents are currently available. Please call us at \(phone), email us at \(email), or try again later.",
-                    comment: "Message when no agents available during live agent transfer")
-                let textControl = OutputTextControlMessage(withValue: message, sessionId: sessionId, conversationId: conversationId, taskId: taskId, direction: MessageDirection.fromServer)
-                chatDataListeners.forEach(withType: ChatDataListener.self) { listener in
-                    listener.chatterbox(self, didReceiveControlMessage: textControl, forChat: chatId)
+        
+            let taskId = conversationContext.taskId
+            let message = NSLocalizedString("I'm sorry, no agents are currently available. Please call us at \(phone), email us at \(email), or try again later.",
+                comment: "Message when no agents available during live agent transfer")
+            let textControl = OutputTextControlMessage(withValue: message, sessionId: sessionId, conversationId: conversationId, taskId: taskId, direction: MessageDirection.fromServer)
+            notifyDataListeners { listener in
+                listener.chatterbox(self, didReceiveControlMessage: textControl, forChat: chatId)
             }
         }
     }
