@@ -56,7 +56,7 @@ class ChatDataController {
 
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
-        self.chatterbox.chatDataListener = self
+        self.chatterbox.chatDataListeners.addListener(self)
         self.changeListener = changeListener
     }
     

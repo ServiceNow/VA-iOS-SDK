@@ -51,6 +51,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         // swiftlint:disable:next force_unwrapping
         super.init(tableViewStyle: .plain)!        
 
+        self.chatterbox.chatEventListeners.addListener(self)
         self.dataController.setChangeListener(self)
     }
     

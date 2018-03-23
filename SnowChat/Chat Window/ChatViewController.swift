@@ -21,6 +21,8 @@ public class ChatViewController: UIViewController {
         self.chatterbox = chatterbox
         
         super.init(nibName: nil, bundle: nil)
+        
+        self.chatterbox.chatEventListeners.addListener(self)
     }
     
     public required init?(coder aDecoder: NSCoder) {
@@ -122,35 +124,35 @@ public class ChatViewController: UIViewController {
 extension ChatViewController: ChatEventListener {
     
     func chatterbox(_ chatterbox: Chatterbox, didStartTopic topicInfo: TopicInfo, forChat chatId: String) {
-        conversationViewController?.chatterbox(chatterbox, didStartTopic: topicInfo, forChat: chatId)
+        Logger.default.logInfo("ChatEventListener.didStartTopic: \(topicInfo)")
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didResumeTopic topicInfo: TopicInfo, forChat chatId: String) {
-        conversationViewController?.chatterbox(chatterbox, didResumeTopic: topicInfo, forChat: chatId)
+        Logger.default.logInfo("ChatEventListener.didResumeTopic: \(topicInfo)")
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topicInfo: TopicInfo, forChat chatId: String) {
-        conversationViewController?.chatterbox(chatterbox, didFinishTopic: topicInfo, forChat: chatId)
+        Logger.default.logInfo("ChatEventListener.didFinishTopic: \(topicInfo)")
     }
 
     func chatterbox(_ chatterbox: Chatterbox, willStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
-        conversationViewController?.chatterbox(chatterbox, willStartAgentChat: agentInfo, forChat: chatId)
+        Logger.default.logInfo("ChatEventListener.willStartAgentChat: \(agentInfo)")
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
-        conversationViewController?.chatterbox(chatterbox, willStartAgentChat: agentInfo, forChat: chatId)
+        Logger.default.logInfo("ChatEventListener.didStartAgentChat: \(agentInfo)")
     }
 
     func chatterbox(_ chatterbox: Chatterbox, didResumeAgentChat agentInfo: AgentInfo, forChat chatId: String) {
-        conversationViewController?.chatterbox(chatterbox, didResumeAgentChat: agentInfo, forChat: chatId)
+        Logger.default.logInfo("ChatEventListener.didResumeAgentChat: \(agentInfo)")
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didFinishAgentChat agentInfo: AgentInfo, forChat chatId: String) {
-        conversationViewController?.chatterbox(chatterbox, didFinishAgentChat: agentInfo, forChat: chatId)
+        Logger.default.logInfo("ChatEventListener.didFinishAgentChat: \(agentInfo)")
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
-        conversationViewController?.chatterbox(chatterbox, didEstablishUserSession: sessionId, forChat: chatId)
+        Logger.default.logInfo("ChatEventListener.didEstablishUserSession: \(sessionId)")
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {
