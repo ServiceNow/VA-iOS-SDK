@@ -15,7 +15,7 @@ class DataStoreTests: XCTestCase {
     
     
     override func setUp() {
-        chatterbox = Chatterbox(instance: ServerInstance(instanceURL: URL(fileURLWithPath: "")), dataListener: nil, eventListener: nil)
+        chatterbox = Chatterbox(instance: ServerInstance(instanceURL: URL(fileURLWithPath: "")))
     }
     
     func testNoMessages() {
