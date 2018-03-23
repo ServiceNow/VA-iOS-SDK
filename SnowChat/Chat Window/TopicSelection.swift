@@ -14,14 +14,14 @@ class TopicSelectionHandler: AutoCompleteHandler {
     
     private weak var conversationController: ConversationViewController?
     private let chatterbox: Chatterbox
-    private let theme: Theme?
+    private let theme: Theme
     
     // MARK: - Initialization
     
     init(withController controller: ConversationViewController, chatterbox: Chatterbox ) {
         conversationController = controller
         self.chatterbox = chatterbox
-        self.theme = chatterbox.session?.settings?.brandingSettings?.theme
+        self.theme = chatterbox.session?.settings?.brandingSettings?.theme ?? Theme()
         setupAutoCompletionView()
         setupInputBar()
     }
@@ -84,7 +84,7 @@ class TopicSelectionHandler: AutoCompleteHandler {
         
         let text = topics[row].title
         cell.topicLabel?.text = text
-        cell.topicLabel?.textColor = theme?.linkColor
+        cell.topicLabel?.textColor = theme.linkColor
         
         return cell
     }
@@ -107,11 +107,11 @@ class TopicSelectionHandler: AutoCompleteHandler {
         let hasTopics = topics.count > 0
         
         let containerView = UIView()
-        containerView.backgroundColor = theme?.categoryBackgroundColor
+        containerView.backgroundColor = theme.categoryBackgroundColor
         
         let headerView = UILabel()
         headerView.text = titleString()
-        headerView.textColor = theme?.categoryFontColor
+        headerView.textColor = theme.categoryFontColor
         
         if !hasTopics && !isAllTopics {
             addAllTopicsTapHandler(containerView)

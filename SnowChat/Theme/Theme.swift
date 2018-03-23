@@ -9,7 +9,7 @@
 import Foundation
 
 protocol Themeable {
-    func applyTheme(_ theme: Theme?)
+    func applyTheme(_ theme: Theme)
 }
 
 class Theme {
@@ -204,19 +204,5 @@ class Theme {
                 self?.colorPropertiesMap[key] = UIColor(hexValue: value)
             }
         }
-        
-        applyAppearance()
-    }
-    
-    private func applyAppearance() {
-        // For some elements we can just use UIAppearance..makes theming life easier
-        UIView.appearance(whenContainedInInstancesOf: [ChatMessageViewController.self]).backgroundColor = backgroundColor
-        UIView.appearance(whenContainedInInstancesOf: [BubbleView.self, ChatMessageViewController.self]).backgroundColor = nil
-        TopicSelectionTableCell.appearance(whenContainedInInstancesOf: [ConversationViewController.self]).backgroundColor = buttonBackgroundColor
-        UITableViewCell.appearance(whenContainedInInstancesOf: [BubbleView.self, ChatMessageViewController.self]).backgroundColor = buttonBackgroundColor
-        StartTopicDividerCell.appearance(whenContainedInInstancesOf: [ConversationViewController.self]).backgroundColor = backgroundColor
-        UIView.appearance(whenContainedInInstancesOf: [PickerTableViewCell.self]).backgroundColor = buttonBackgroundColor
-        UIView.appearance(whenContainedInInstancesOf: [SelectableViewCell.self]).backgroundColor = buttonBackgroundColor
-        GradientView.appearance(whenContainedInInstancesOf: [CarouselViewController.self, BubbleView.self, ChatMessageViewController.self]).backgroundColor = .white
     }
 }

@@ -52,7 +52,7 @@ class ChatDataController {
     internal var changeSet = [ModelChangeType]()
     
     internal let logger = Logger.logger(for: "ChatDataController")
-    private(set) var theme: Theme?
+    private(set) var theme = Theme()
 
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
@@ -63,11 +63,11 @@ class ChatDataController {
     // MARK: - Theme preparation
     
     func loadTheme() {
-        guard let theme = chatterbox.session?.settings?.brandingSettings?.theme else {
-            fatalError("Something went really wrong if theme is not provided here")
+        if let theme = chatterbox.session?.settings?.brandingSettings?.theme {
+            self.theme = theme
         }
         
-        self.theme = theme
+        applyAppearance()
     }
     
     func setChangeListener(_ listener: ViewDataChangeListener) {

@@ -10,7 +10,7 @@ extension ChatMessageModel {
     
     // MARK: Nested models for multi part control
     
-    static func model(withMessage message: MultiPartControlMessage, theme: Theme?) -> ChatMessageModel? {
+    static func model(withMessage message: MultiPartControlMessage, theme: Theme) -> ChatMessageModel? {
         guard let nestedControlValue = message.data.richControl?.content?.value,
             let nestedControlType = message.nestedControlType else {
                 return nil
@@ -48,7 +48,7 @@ extension ChatMessageModel {
         return chatMessageModel
     }
     
-    static func buttonModel(withMessage message: MultiPartControlMessage, theme: Theme?) -> ChatMessageModel? {
+    static func buttonModel(withMessage message: MultiPartControlMessage, theme: Theme) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.navigationBtnLabel,
             let index = message.data.richControl?.uiMetadata?.index else {
                 return nil

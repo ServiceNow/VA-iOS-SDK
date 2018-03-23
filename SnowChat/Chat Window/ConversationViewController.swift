@@ -114,13 +114,13 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         tableView.register(StartTopicDividerCell.self, forCellReuseIdentifier: StartTopicDividerCell.cellIdentifier)
     }
     
-    func applyTheme(_ theme: Theme?) {
-        tableView.backgroundColor = theme?.backgroundColor
-        self.autoCompletionView.backgroundColor = theme?.buttonBackgroundColor
+    func applyTheme(_ theme: Theme) {
+        tableView.backgroundColor = theme.backgroundColor
+        self.autoCompletionView.backgroundColor = theme.buttonBackgroundColor
         
         // Might need to apply: https://developer.apple.com/library/content/qa/qa1808/_index.html
-        navigationController?.navigationBar.barTintColor = theme?.headerBackgroundColor
-        textInputbar.backgroundColor = theme?.inputBackgroundColor
+        navigationController?.navigationBar.barTintColor = theme.headerBackgroundColor
+        textInputbar.backgroundColor = theme.inputBackgroundColor
     }
 
     private func setupInputForState() {

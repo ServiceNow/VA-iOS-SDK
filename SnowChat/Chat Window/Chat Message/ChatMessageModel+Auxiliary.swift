@@ -8,7 +8,7 @@
 
 extension ChatMessageModel {
     
-    static func auxiliaryModel(withMessage message: ControlData, theme: Theme?) -> ChatMessageModel? {
+    static func auxiliaryModel(withMessage message: ControlData, theme: Theme) -> ChatMessageModel? {
         switch message.controlType {
         case .dateTime:
             return ChatMessageModel.auxiliaryModel(withMessage: message as! DateTimePickerControlMessage, theme: theme)
@@ -21,7 +21,7 @@ extension ChatMessageModel {
         }
     }
     
-    static func auxiliaryModel(withMessage message: DateTimePickerControlMessage, theme: Theme?) -> ChatMessageModel? {
+    static func auxiliaryModel(withMessage message: DateTimePickerControlMessage, theme: Theme) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
             let required = message.data.richControl?.uiMetadata?.required else {
                 return nil
@@ -34,7 +34,7 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func auxiliaryModel(withMessage message: DateOrTimePickerControlMessage, theme: Theme?) -> ChatMessageModel? {
+    static func auxiliaryModel(withMessage message: DateOrTimePickerControlMessage, theme: Theme) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
             let required = message.data.richControl?.uiMetadata?.required else {
                 return nil

@@ -19,7 +19,7 @@ class ControlViewCell: UITableViewCell, ControlPresentable {
         let control = ControlsUtil.controlForViewModel(controlModel, resourceProvider: resourceProvider)
         addUIControl(control, at: .left)
         
-        let controlTheme = model.isLiveAgentConversation ? model.theme?.controlThemeForAgent() : model.theme?.controlThemeForBot()
+        let controlTheme = model.isLiveAgentConversation ? model.theme.controlThemeForAgent() : model.theme.controlThemeForBot()
         control.applyTheme(controlTheme)
     }
     
