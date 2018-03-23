@@ -9,7 +9,7 @@
 import Foundation
 
 protocol Themeable {
-    func applyTheme(_ theme: Theme)
+    func applyTheme(_ theme: Theme?)
 }
 
 class Theme {
@@ -213,5 +213,7 @@ class Theme {
         StartTopicDividerCell.appearance(whenContainedInInstancesOf: [ConversationViewController.self]).backgroundColor = backgroundColor
         UIView.appearance(whenContainedInInstancesOf: [PickerTableViewCell.self]).backgroundColor = buttonBackgroundColor
         UIView.appearance(whenContainedInInstancesOf: [SelectableViewCell.self]).backgroundColor = buttonBackgroundColor
+        
+        UINavigationBar.appearance().tintColor = headerBackgroundColor
     }
 }

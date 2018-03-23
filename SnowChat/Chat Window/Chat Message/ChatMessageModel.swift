@@ -30,14 +30,14 @@ class ChatMessageModel {
     let controlModel: ControlViewModel?
     let requiresInput: Bool
     var messageId: String?
-    var theme: Theme
+    var theme: Theme?
     
     var avatarURL: URL?
     var bubbleLocation: BubbleLocation?
     var isLiveAgentConversation: Bool
     var isAuxiliary = false
     
-    init(model: ControlViewModel, messageId: String? = nil, bubbleLocation: BubbleLocation, requiresInput: Bool = false, theme: Theme, isAgentMessage: Bool = false) {
+    init(model: ControlViewModel, messageId: String? = nil, bubbleLocation: BubbleLocation, requiresInput: Bool = false, theme: Theme?, isAgentMessage: Bool = false) {
         self.type = .control
         self.controlModel = model
         self.bubbleLocation = bubbleLocation
@@ -47,7 +47,7 @@ class ChatMessageModel {
         self.isLiveAgentConversation = isAgentMessage
     }
     
-    init(type: ChatMessageType, theme: Theme) {
+    init(type: ChatMessageType, theme: Theme?) {
         guard type == .topicDivider else { fatalError("initializer only supports non-control types") }
         self.type = type
         self.controlModel = nil
@@ -59,7 +59,7 @@ class ChatMessageModel {
 
 extension ChatMessageModel {
     //swiftlint:disable:next cyclomatic_complexity function_body_length
-    static func model(withMessage message: ControlData, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: ControlData, theme: Theme?) -> ChatMessageModel? {
         switch message.controlType {
         case .boolean:
             guard let controlMessage = message as? BooleanControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
@@ -115,7 +115,7 @@ extension ChatMessageModel {
         return nil
     }
     
-    static func model(withMessage message: BooleanControlMessage, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: BooleanControlMessage, theme: Theme?) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
             let required = message.data.richControl?.uiMetadata?.required else {
                 return nil
@@ -127,7 +127,7 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func model(withMessage message: FileUploadControlMessage, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: FileUploadControlMessage, theme: Theme?) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
             let required = message.data.richControl?.uiMetadata?.required,
             let itemType = message.data.richControl?.uiMetadata?.itemType else {
@@ -140,7 +140,7 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func model(withMessage message: PickerControlMessage, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: PickerControlMessage, theme: Theme?) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
             let required = message.data.richControl?.uiMetadata?.required else {
                 return nil
@@ -173,7 +173,7 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func model(withMessage message: MultiSelectControlMessage, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: MultiSelectControlMessage, theme: Theme?) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
             let required = message.data.richControl?.uiMetadata?.required else {
                 return nil
@@ -188,7 +188,7 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func model(withMessage message: DateTimePickerControlMessage, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: DateTimePickerControlMessage, theme: Theme?) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label else {
                 return nil
         }
@@ -200,7 +200,7 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func model(withMessage message: DateOrTimePickerControlMessage, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: DateOrTimePickerControlMessage, theme: Theme?) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label else {
             return nil
         }
@@ -223,7 +223,7 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func model(withMessage message: AgentTextControlMessage, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: AgentTextControlMessage, theme: Theme?) -> ChatMessageModel? {
         let value = message.data.text
         let direction = message.direction
         let textModel = TextControlViewModel(id: message.messageId, value: value)
@@ -236,7 +236,7 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func model(withMessage message: InputControlMessage, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: InputControlMessage, theme: Theme?) -> ChatMessageModel? {
         guard let value = message.data.richControl?.uiMetadata?.label else {
             return nil
         }
@@ -277,7 +277,7 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func model(withMessage message: OutputHtmlControlMessage, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: OutputHtmlControlMessage, theme: Theme?) -> ChatMessageModel? {
         guard let value = message.data.richControl?.value else {
             return nil
         }
@@ -297,7 +297,7 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func model(withMessage message: SystemErrorControlMessage, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: SystemErrorControlMessage, theme: Theme?) -> ChatMessageModel? {
         guard let value = message.data.richControl?.uiMetadata?.error.message,
             let instruction = message.data.richControl?.uiMetadata?.error.handler?.instruction else {
             return nil
@@ -311,7 +311,7 @@ extension ChatMessageModel {
         return textChatModel
     }
     
-    static func model(withMessage message: ControlDataUnknown, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: ControlDataUnknown, theme: Theme?) -> ChatMessageModel? {
         let value = message.label ?? ""
         let direction = message.direction
         let outputTextModel = TextControlViewModel(id: ChatUtil.uuidString(), value: "Unsupported control: \(value)")

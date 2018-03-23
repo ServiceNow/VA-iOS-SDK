@@ -9,7 +9,7 @@
 import Foundation
 import SlackTextViewController
 
-class ConversationViewController: SLKTextViewController, ViewDataChangeListener {
+class ConversationViewController: SLKTextViewController, ViewDataChangeListener, Themeable {
     
     private enum InputState {
         case inSystemTopicSelection     // user can select topic, talk to tagent, or quit
@@ -112,8 +112,14 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
         tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
         tableView.register(StartTopicDividerCell.self, forCellReuseIdentifier: StartTopicDividerCell.cellIdentifier)
-        tableView.backgroundColor = dataController.theme.backgroundColor
-        self.autoCompletionView.backgroundColor = dataController.theme.buttonBackgroundColor
+    }
+    
+    func applyTheme(_ theme: Theme?) {
+        tableView.backgroundColor = theme?.backgroundColor
+        self.autoCompletionView.backgroundColor = theme?.buttonBackgroundColor
+        
+        navigationController?.navigationBar.isTranslucent = true
+        navigationController?.navigationBar.barTintColor = theme?.headerBackgroundColor
     }
 
     private func setupInputForState() {
@@ -529,6 +535,8 @@ extension ConversationViewController: ChatEventListener {
     func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
         // if we were shown before the session was established then we did not load history yet, so do it now
         loadHistory()
+        dataController.loadTheme()
+        applyTheme(dataController.theme)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didStartTopic topicInfo: TopicInfo, forChat chatId: String) {
