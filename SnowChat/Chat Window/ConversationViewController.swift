@@ -18,7 +18,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         case inAgentConversation        // in a conversation with an agent
     }
     
-    private let bottomInset: CGFloat = 60
+    private let bottomInset: CGFloat = 45
     
     private var inputState = InputState.inTopicSelection
     private var autocompleteHandler: AutoCompleteHandler?

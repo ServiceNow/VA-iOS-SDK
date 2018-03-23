@@ -212,7 +212,6 @@ class Theme {
         StartTopicDividerCell.appearance(whenContainedInInstancesOf: [ConversationViewController.self]).backgroundColor = backgroundColor
         UIView.appearance(whenContainedInInstancesOf: [PickerTableViewCell.self]).backgroundColor = buttonBackgroundColor
         UIView.appearance(whenContainedInInstancesOf: [SelectableViewCell.self]).backgroundColor = buttonBackgroundColor
-        
-        UINavigationBar.appearance().tintColor = headerBackgroundColor
+        GradientView.appearance(whenContainedInInstancesOf: [CarouselViewController.self, BubbleView.self, ChatMessageViewController.self]).backgroundColor = .white
     }
 }
