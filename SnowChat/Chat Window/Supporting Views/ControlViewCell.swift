@@ -14,9 +14,13 @@ class ControlViewCell: UITableViewCell, ControlPresentable {
     
     private(set) var control: ControlProtocol?
     
-    func configure(with model: ControlViewModel, resourceProvider: ControlResourceProvider) {
-        let control = ControlsUtil.controlForViewModel(model, resourceProvider: resourceProvider)
+    func configure(with model: ChatMessageModel, resourceProvider: ControlResourceProvider) {
+        guard let controlModel = model.controlModel else { return }
+        let control = ControlsUtil.controlForViewModel(controlModel, resourceProvider: resourceProvider)
         addUIControl(control, at: .left)
+        
+        let controlTheme = model.isLiveAgentConversation ? model.theme?.controlThemeForAgent() : model.theme?.controlThemeForBot()
+        control.applyTheme(controlTheme)
     }
     
     override func prepareForReuse() {

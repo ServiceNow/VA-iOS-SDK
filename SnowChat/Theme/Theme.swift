@@ -207,8 +207,7 @@ class Theme {
         
         UIView.appearance(whenContainedInInstancesOf: [ChatMessageViewController.self]).backgroundColor = backgroundColor
         UIView.appearance(whenContainedInInstancesOf: [BubbleView.self, ChatMessageViewController.self]).backgroundColor = nil
-        
-        UITableViewCell.appearance(whenContainedInInstancesOf: [ConversationViewController.self]).backgroundColor = buttonBackgroundColor
+        TopicSelectionTableCell.appearance(whenContainedInInstancesOf: [ConversationViewController.self]).backgroundColor = buttonBackgroundColor
         UITableViewCell.appearance(whenContainedInInstancesOf: [BubbleView.self, ChatMessageViewController.self]).backgroundColor = buttonBackgroundColor
         StartTopicDividerCell.appearance(whenContainedInInstancesOf: [ConversationViewController.self]).backgroundColor = backgroundColor
         UIView.appearance(whenContainedInInstancesOf: [PickerTableViewCell.self]).backgroundColor = buttonBackgroundColor

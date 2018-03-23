@@ -147,9 +147,9 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: headerViewIdentifier) as! PickerHeaderView
         headerView.titleLabel?.text = model.label
-        headerView.contentView.backgroundColor = theme?.headerBackgroundColor
-        headerView.titleLabel?.textColor = theme?.headerFontColor
-        headerView.titleLabel?.backgroundColor = theme?.headerBackgroundColor
+        headerView.contentView.backgroundColor = theme?.backgroundColor
+        headerView.titleLabel?.textColor = theme?.fontColor
+        headerView.titleLabel?.backgroundColor = theme?.backgroundColor
         return headerView
     }
     
@@ -157,8 +157,8 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
         guard model.isMultiSelect else { return nil }
         let footerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: footerViewIdentifier) as! PickerFooterView
         footerView.doneButton?.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
-        footerView.contentView.backgroundColor = theme?.headerBackgroundColor
-        footerView.doneButton?.backgroundColor = theme?.headerBackgroundColor
+        footerView.contentView.backgroundColor = theme?.backgroundColor
+        footerView.doneButton?.backgroundColor = theme?.backgroundColor
         footerView.doneButton?.setTitleColor(theme?.headerBackgroundColor, for: .normal)
         return footerView
     }

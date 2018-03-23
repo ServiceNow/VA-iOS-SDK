@@ -120,6 +120,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         
 //        navigationController?.navigationBar.isTranslucent = true
 //        navigationController?.navigationBar.barTintColor = theme?.headerBackgroundColor
+        textInputbar.backgroundColor = theme?.inputBackgroundColor
     }
 
     private func setupInputForState() {
@@ -406,10 +407,9 @@ extension ConversationViewController {
         switch chatMessageModel.type {
             
         case .control:
-            guard let controlModel = chatMessageModel.controlModel else { return UITableViewCell() }
             if chatMessageModel.isAuxiliary {
                 let controlCell = tableView.dequeueReusableCell(withIdentifier: ControlViewCell.cellIdentifier, for: indexPath) as! ControlViewCell
-                controlCell.configure(with: controlModel, resourceProvider: chatterbox.apiManager)
+                controlCell.configure(with: chatMessageModel, resourceProvider: chatterbox.apiManager)
                 controlCell.control?.delegate = self
                 cell = controlCell
             } else {

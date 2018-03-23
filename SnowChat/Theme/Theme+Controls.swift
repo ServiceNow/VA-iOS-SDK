@@ -19,8 +19,9 @@ class ControlVisualTheme: ControlTheme {
     var headerBackgroundColor: UIColor
     var headerFontColor: UIColor
     var dividerColor: UIColor
+    var linkColor: UIColor
     
-    init(backgroundColor: UIColor, buttonBackgroundColor: UIColor, borderColor: UIColor, fontColor: UIColor, headerBackgroundColor: UIColor, headerFontColor: UIColor) {
+    init(backgroundColor: UIColor, buttonBackgroundColor: UIColor, borderColor: UIColor, fontColor: UIColor, headerBackgroundColor: UIColor, headerFontColor: UIColor, linkColor: UIColor) {
         self.backgroundColor = backgroundColor
         self.buttonBackgroundColor = buttonBackgroundColor
         self.borderColor = borderColor
@@ -30,6 +31,7 @@ class ControlVisualTheme: ControlTheme {
         self.dividerColor = Theme.dividerColor
         self.selectedBackgroundColor = Theme.controlSelectedBackgroundColor
         self.actionFontColor = Theme.controlActionFontColor
+        self.linkColor = linkColor
     }
 }
 
@@ -42,7 +44,8 @@ extension Theme {
                                   borderColor: agentBubbleBackgroundColor,
                                   fontColor: agentBubbleFontColor,
                                   headerBackgroundColor: headerBackgroundColor,
-                                  headerFontColor: headerFontColor)
+                                  headerFontColor: headerFontColor,
+                                  linkColor: linkColor)
     }
     
     func controlThemeForBot() -> ControlTheme {
@@ -51,7 +54,8 @@ extension Theme {
                                   borderColor: botBubbleBackgroundColor,
                                   fontColor: botBubbleFontColor,
                                   headerBackgroundColor: headerBackgroundColor,
-                                  headerFontColor: headerFontColor)
+                                  headerFontColor: headerFontColor,
+                                  linkColor: linkColor)
     }
     
     func controlTheme() -> ControlTheme {
@@ -60,6 +64,7 @@ extension Theme {
                                   borderColor: bubbleBackgroundColor,
                                   fontColor: bubbleFontColor,
                                   headerBackgroundColor: headerBackgroundColor,
-                                  headerFontColor: headerFontColor)
+                                  headerFontColor: headerFontColor,
+                                  linkColor: linkColor)
     }
 }
