@@ -32,7 +32,6 @@ public final class ChatService {
         let instance = ServerInstance(instanceURL: instanceURL)
         self.chatterbox = Chatterbox(instance: instance)
         self.delegate = delegate
-        self.chatterbox.chatEventListeners.addListener(self)
         self.chatterbox.chatAuthListeners.addListener(self)
         
         // Set default log levels for debugging
@@ -85,51 +84,6 @@ public final class ChatService {
 
     }
 
-}
-
-// TODO: Chatterbox should support multiple event listeners instead of proxying
-extension ChatService: ChatEventListener {
-    
-    func chatterbox(_ chatterbox: Chatterbox, willStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
-        viewController?.chatterbox(chatterbox, willStartAgentChat: agentInfo, forChat: chatId)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
-        viewController?.chatterbox(chatterbox, didStartAgentChat: agentInfo, forChat: chatId)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didResumeAgentChat agentInfo: AgentInfo, forChat chatId: String) {
-        viewController?.chatterbox(chatterbox, didResumeAgentChat: agentInfo, forChat: chatId)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didFinishAgentChat agentInfo: AgentInfo, forChat chatId: String) {
-        viewController?.chatterbox(chatterbox, didFinishAgentChat: agentInfo, forChat: chatId)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {
-        Logger.default.logDebug("Transport Status Changed: \(transportStatus)")
-        viewController?.chatterbox(chatterbox, didReceiveTransportStatus: transportStatus, forChat: chatId)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
-        Logger.default.logDebug("Session Established: \(sessionId)")
-        viewController?.chatterbox(chatterbox, didEstablishUserSession: sessionId, forChat: chatId)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didStartTopic topicInfo: TopicInfo, forChat chatId: String) {
-        Logger.default.logDebug("Topic Started: \(topicInfo)")
-        viewController?.chatterbox(chatterbox, didStartTopic: topicInfo, forChat: chatId)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didResumeTopic topicInfo: TopicInfo, forChat chatId: String) {
-        Logger.default.logDebug("Topic Resumed: \(topicInfo)")
-        viewController?.chatterbox(chatterbox, didResumeTopic: topicInfo, forChat: chatId)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topicInfo: TopicInfo, forChat chatId: String) {
-        Logger.default.logDebug("Topic Finished: \(topicInfo)")
-        viewController?.chatterbox(chatterbox, didFinishTopic: topicInfo, forChat: chatId)
-    }
 }
 
 extension ChatService: ChatAuthListener {
