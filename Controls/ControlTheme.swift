@@ -12,8 +12,8 @@ import UIKit
 
 protocol ControlTheme {
     var backgroundColor: UIColor { get }
+    var buttonBackgroundColor: UIColor { get }
     var selectedBackgroundColor: UIColor { get }
-    var borderColor: UIColor { get }
     var fontColor: UIColor { get }
     var actionFontColor: UIColor { get } // color for buttons like "Done", "Select"
     

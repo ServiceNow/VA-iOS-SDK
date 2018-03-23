@@ -11,6 +11,7 @@
 
 class ControlVisualTheme: ControlTheme {
     var backgroundColor: UIColor
+    var buttonBackgroundColor: UIColor
     var selectedBackgroundColor: UIColor
     var borderColor: UIColor
     var fontColor: UIColor
@@ -19,8 +20,9 @@ class ControlVisualTheme: ControlTheme {
     var headerFontColor: UIColor
     var dividerColor: UIColor
     
-    init(backgroundColor: UIColor, borderColor: UIColor, fontColor: UIColor, headerBackgroundColor: UIColor, headerFontColor: UIColor) {
+    init(backgroundColor: UIColor, buttonBackgroundColor: UIColor, borderColor: UIColor, fontColor: UIColor, headerBackgroundColor: UIColor, headerFontColor: UIColor) {
         self.backgroundColor = backgroundColor
+        self.buttonBackgroundColor = buttonBackgroundColor
         self.borderColor = borderColor
         self.fontColor = fontColor
         self.headerBackgroundColor = headerBackgroundColor
@@ -36,6 +38,7 @@ class ControlVisualTheme: ControlTheme {
 extension Theme {
     func controlThemeForAgent() -> ControlTheme {
         return ControlVisualTheme(backgroundColor: agentBubbleBackgroundColor,
+                                  buttonBackgroundColor: buttonBackgroundColor,
                                   borderColor: agentBubbleBackgroundColor,
                                   fontColor: agentBubbleFontColor,
                                   headerBackgroundColor: headerBackgroundColor,
@@ -44,6 +47,7 @@ extension Theme {
     
     func controlThemeForBot() -> ControlTheme {
         return ControlVisualTheme(backgroundColor: botBubbleBackgroundColor,
+                                  buttonBackgroundColor: buttonBackgroundColor,
                                   borderColor: botBubbleBackgroundColor,
                                   fontColor: botBubbleFontColor,
                                   headerBackgroundColor: headerBackgroundColor,
@@ -52,6 +56,7 @@ extension Theme {
     
     func controlTheme() -> ControlTheme {
         return ControlVisualTheme(backgroundColor: bubbleBackgroundColor,
+                                  buttonBackgroundColor: buttonBackgroundColor,
                                   borderColor: bubbleBackgroundColor,
                                   fontColor: bubbleFontColor,
                                   headerBackgroundColor: headerBackgroundColor,

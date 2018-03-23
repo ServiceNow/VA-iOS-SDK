@@ -62,9 +62,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupActivityIndicator()
-        setupTableView()        
+        setupTableView()
     }
     
     internal func loadHistory() {
@@ -113,6 +112,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
         tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
         tableView.register(StartTopicDividerCell.self, forCellReuseIdentifier: StartTopicDividerCell.cellIdentifier)
+        tableView.backgroundColor = dataController.theme.backgroundColor
+        self.autoCompletionView.backgroundColor = dataController.theme.buttonBackgroundColor
     }
 
     private func setupInputForState() {

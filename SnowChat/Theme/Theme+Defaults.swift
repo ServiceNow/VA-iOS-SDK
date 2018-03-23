@@ -64,7 +64,7 @@ extension Theme {
     }
     
     class var defaultButtonBackgroundColor: UIColor {
-        return UIColor.red
+        return UIColor.white
     }
     
     class var defaultDisabledLinkColor: UIColor {

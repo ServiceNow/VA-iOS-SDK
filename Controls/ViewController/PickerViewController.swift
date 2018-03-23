@@ -116,7 +116,6 @@ extension PickerViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifier = model.isMultiSelect ? SelectableViewCell.cellIdentifier : PickerTableViewCell.cellIdentifier
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
-        cell.contentView.backgroundColor = UIColor.white
         guard let configurableCell = cell as? ConfigurablePickerCell else {
             return cell
         }

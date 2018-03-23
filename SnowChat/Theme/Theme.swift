@@ -204,5 +204,14 @@ class Theme {
                 self?.colorPropertiesMap[key] = UIColor(hexValue: value)
             }
         }
+        
+        UIView.appearance(whenContainedInInstancesOf: [ChatMessageViewController.self]).backgroundColor = backgroundColor
+        UIView.appearance(whenContainedInInstancesOf: [BubbleView.self, ChatMessageViewController.self]).backgroundColor = nil
+        
+        UITableViewCell.appearance(whenContainedInInstancesOf: [ConversationViewController.self]).backgroundColor = buttonBackgroundColor
+        UITableViewCell.appearance(whenContainedInInstancesOf: [BubbleView.self, ChatMessageViewController.self]).backgroundColor = buttonBackgroundColor
+        StartTopicDividerCell.appearance(whenContainedInInstancesOf: [ConversationViewController.self]).backgroundColor = backgroundColor
+        UIView.appearance(whenContainedInInstancesOf: [PickerTableViewCell.self]).backgroundColor = buttonBackgroundColor
+        UIView.appearance(whenContainedInInstancesOf: [SelectableViewCell.self]).backgroundColor = buttonBackgroundColor
     }
 }
