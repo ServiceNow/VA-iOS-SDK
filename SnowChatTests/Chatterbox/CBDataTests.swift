@@ -165,6 +165,7 @@ class ChatterboxDataTests: XCTestCase {
         XCTAssertEqual("SubscribeToSupportQueue", message.data.actionMessage.type)
         XCTAssertEqual(true, message.active)
         XCTAssertEqual("30 Seconds", message.waitTimeDisplayString)
+        XCTAssertEqual(.fromServer, message.direction)
         XCTAssertTrue(message.data.actionMessage.supportQueue.sysId!.lengthOfBytes(using: String.Encoding.utf8) > 0)
     }
 
