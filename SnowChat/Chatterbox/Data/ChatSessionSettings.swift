@@ -118,7 +118,9 @@ struct BrandingSettings: Codable {
     
     var virtualAgentLogo: String?
     var virtualAgentProfileId: String?
-    var theme = Theme() // Codable requires default value :/
+    
+    // swiftlint:disable:next redundant_optional_initialization
+    var theme: Theme? = nil // Codable requires default value :/
     
     private enum CodingKeys: String, CodingKey {
         case supportEmailLabel

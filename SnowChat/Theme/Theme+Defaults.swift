@@ -12,7 +12,7 @@ extension Theme {
     }
     
     class var defaultLinkColor: UIColor {
-        return UIColor.red
+        return UIColor(red: 0 / 255, green: 139 / 255, blue: 255 / 255, alpha: 1)
     }
     
     class var defaultTimestampColor: UIColor {
@@ -20,7 +20,7 @@ extension Theme {
     }
     
     class var defaultInputBackgroundColor: UIColor {
-        return UIColor.red
+        return UIColor.white
     }
     
     class var defaultBubbleFontColor: UIColor {
@@ -64,7 +64,7 @@ extension Theme {
     }
     
     class var defaultButtonBackgroundColor: UIColor {
-        return UIColor.red
+        return UIColor.white
     }
     
     class var defaultDisabledLinkColor: UIColor {

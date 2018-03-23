@@ -11,6 +11,7 @@
 
 class ControlVisualTheme: ControlTheme {
     var backgroundColor: UIColor
+    var buttonBackgroundColor: UIColor
     var selectedBackgroundColor: UIColor
     var borderColor: UIColor
     var fontColor: UIColor
@@ -18,9 +19,11 @@ class ControlVisualTheme: ControlTheme {
     var headerBackgroundColor: UIColor
     var headerFontColor: UIColor
     var dividerColor: UIColor
+    var linkColor: UIColor
     
-    init(backgroundColor: UIColor, borderColor: UIColor, fontColor: UIColor, headerBackgroundColor: UIColor, headerFontColor: UIColor) {
+    init(backgroundColor: UIColor, buttonBackgroundColor: UIColor, borderColor: UIColor, fontColor: UIColor, headerBackgroundColor: UIColor, headerFontColor: UIColor, linkColor: UIColor) {
         self.backgroundColor = backgroundColor
+        self.buttonBackgroundColor = buttonBackgroundColor
         self.borderColor = borderColor
         self.fontColor = fontColor
         self.headerBackgroundColor = headerBackgroundColor
@@ -28,6 +31,7 @@ class ControlVisualTheme: ControlTheme {
         self.dividerColor = Theme.dividerColor
         self.selectedBackgroundColor = Theme.controlSelectedBackgroundColor
         self.actionFontColor = Theme.controlActionFontColor
+        self.linkColor = linkColor
     }
 }
 
@@ -36,25 +40,31 @@ class ControlVisualTheme: ControlTheme {
 extension Theme {
     func controlThemeForAgent() -> ControlTheme {
         return ControlVisualTheme(backgroundColor: agentBubbleBackgroundColor,
+                                  buttonBackgroundColor: buttonBackgroundColor,
                                   borderColor: agentBubbleBackgroundColor,
                                   fontColor: agentBubbleFontColor,
                                   headerBackgroundColor: headerBackgroundColor,
-                                  headerFontColor: headerFontColor)
+                                  headerFontColor: headerFontColor,
+                                  linkColor: linkColor)
     }
     
     func controlThemeForBot() -> ControlTheme {
         return ControlVisualTheme(backgroundColor: botBubbleBackgroundColor,
+                                  buttonBackgroundColor: buttonBackgroundColor,
                                   borderColor: botBubbleBackgroundColor,
                                   fontColor: botBubbleFontColor,
                                   headerBackgroundColor: headerBackgroundColor,
-                                  headerFontColor: headerFontColor)
+                                  headerFontColor: headerFontColor,
+                                  linkColor: linkColor)
     }
     
     func controlTheme() -> ControlTheme {
         return ControlVisualTheme(backgroundColor: bubbleBackgroundColor,
+                                  buttonBackgroundColor: buttonBackgroundColor,
                                   borderColor: bubbleBackgroundColor,
                                   fontColor: bubbleFontColor,
                                   headerBackgroundColor: headerBackgroundColor,
-                                  headerFontColor: headerFontColor)
+                                  headerFontColor: headerFontColor,
+                                  linkColor: linkColor)
     }
 }

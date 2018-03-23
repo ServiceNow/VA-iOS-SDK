@@ -166,14 +166,14 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         switch kind {
         case UICollectionElementKindSectionHeader:
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CarouselControlHeaderView.headerIdentifier, for: indexPath) as! CarouselControlHeaderView
-            headerView.backgroundColor = theme?.headerBackgroundColor
-            headerView.titleLabel.backgroundColor = theme?.headerBackgroundColor
+            headerView.backgroundColor = theme?.backgroundColor
+            headerView.titleLabel.backgroundColor = theme?.backgroundColor
             headerView.dividerView.backgroundColor = theme?.dividerColor
             headerView.configure(with: model)
             return headerView
         case UICollectionElementKindSectionFooter:
             let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionFooter, withReuseIdentifier: CarouselControlFooterView.footerIdentifier, for: indexPath) as! CarouselControlFooterView
-            footerView.backgroundColor = theme?.headerBackgroundColor
+            footerView.backgroundColor = theme?.backgroundColor
             footerView.selectButton.setTitleColor(theme?.actionFontColor, for: .normal)
             footerView.selectButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
             footerView.dividerView.backgroundColor = theme?.dividerColor

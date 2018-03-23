@@ -9,7 +9,7 @@
 import Foundation
 import SlackTextViewController
 
-class ConversationViewController: SLKTextViewController, ViewDataChangeListener {
+class ConversationViewController: SLKTextViewController, ViewDataChangeListener, Themeable {
     
     private enum InputState {
         case inSystemTopicSelection     // user can select topic, talk to tagent, or quit
@@ -18,7 +18,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         case inAgentConversation        // in a conversation with an agent
     }
     
-    private let bottomInset: CGFloat = 60
+    private let bottomInset: CGFloat = 45
     
     private var inputState = InputState.inTopicSelection
     private var autocompleteHandler: AutoCompleteHandler?
@@ -63,9 +63,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupActivityIndicator()
-        setupTableView()        
+        setupTableView()
     }
     
     internal func loadHistory() {
@@ -114,6 +113,15 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener 
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
         tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
         tableView.register(StartTopicDividerCell.self, forCellReuseIdentifier: StartTopicDividerCell.cellIdentifier)
+    }
+    
+    func applyTheme(_ theme: Theme) {
+        tableView.backgroundColor = theme.backgroundColor
+        self.autoCompletionView.backgroundColor = theme.buttonBackgroundColor
+        
+        // Might need to apply: https://developer.apple.com/library/content/qa/qa1808/_index.html
+        navigationController?.navigationBar.barTintColor = theme.headerBackgroundColor
+        textInputbar.backgroundColor = theme.inputBackgroundColor
     }
 
     private func setupInputForState() {
@@ -400,10 +408,9 @@ extension ConversationViewController {
         switch chatMessageModel.type {
             
         case .control:
-            guard let controlModel = chatMessageModel.controlModel else { return UITableViewCell() }
             if chatMessageModel.isAuxiliary {
                 let controlCell = tableView.dequeueReusableCell(withIdentifier: ControlViewCell.cellIdentifier, for: indexPath) as! ControlViewCell
-                controlCell.configure(with: controlModel, resourceProvider: chatterbox.apiManager)
+                controlCell.configure(with: chatMessageModel, resourceProvider: chatterbox.apiManager)
                 controlCell.control?.delegate = self
                 cell = controlCell
             } else {
@@ -529,6 +536,8 @@ extension ConversationViewController: ChatEventListener {
     func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
         // if we were shown before the session was established then we did not load history yet, so do it now
         loadHistory()
+        dataController.loadTheme()
+        applyTheme(dataController.theme)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didStartTopic topicInfo: TopicInfo, forChat chatId: String) {

@@ -40,4 +40,11 @@ class DateTimePickerControl: ControlProtocol {
     @objc func selectedDoneButton(_ sender: UIButton) {
         delegate?.control(self, didFinishWithModel: model)
     }
+    
+    // MARK: Theme
+    
+    func applyTheme(_ theme: ControlTheme?) {
+        dateTimeViewController.view.backgroundColor = .clear
+        dateTimeViewController.doneButton.setTitleColor(theme?.linkColor, for: .normal)
+    }
 }
