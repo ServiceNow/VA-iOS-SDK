@@ -13,6 +13,7 @@ class ListenerList<T> where T: AnyObject {
     private var listeners = [WeakRef<T>]()
     
     var count: Int {
+        compact()
         return listeners.count
     }
     

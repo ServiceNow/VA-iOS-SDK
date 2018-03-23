@@ -990,6 +990,7 @@
 		C4F3AF301FD601EA00B27B0D /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				C4EF7C442065906F00E3904B /* ListenerList.swift */,
 				C4F3AF311FD601FE00B27B0D /* Util.swift */,
 				C4562FFE2059859F00B79688 /* UIColor+HexValue.swift */,
 				C4EF7C3D2064190900E3904B /* ListenerList.swift */,
@@ -1299,6 +1300,7 @@
 				5704EA341FEAAE4B001020E6 /* TypingIndicatorControl.swift in Sources */,
 				5763F3C81FE20FF90035764A /* PickerItem.swift in Sources */,
 				572A4E421FCF07150081318D /* PickerTableViewCell.swift in Sources */,
+				C4EF7C452065906F00E3904B /* ListenerList.swift in Sources */,
 				572FAC181FC47A9C00B0B956 /* MultiSelectControl.swift in Sources */,
 				C4A774A91FDF22E200B6DF68 /* ChatEventListener.swift in Sources */,
 				57C1054D205035880007740C /* LocationContextHandler.swift in Sources */,
