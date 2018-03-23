@@ -205,6 +205,11 @@ class Theme {
             }
         }
         
+        applyAppearance()
+    }
+    
+    private func applyAppearance() {
+        // For some elements we can just use UIAppearance..makes theming life easier
         UIView.appearance(whenContainedInInstancesOf: [ChatMessageViewController.self]).backgroundColor = backgroundColor
         UIView.appearance(whenContainedInInstancesOf: [BubbleView.self, ChatMessageViewController.self]).backgroundColor = nil
         TopicSelectionTableCell.appearance(whenContainedInInstancesOf: [ConversationViewController.self]).backgroundColor = buttonBackgroundColor
