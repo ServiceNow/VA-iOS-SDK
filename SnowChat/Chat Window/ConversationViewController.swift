@@ -118,8 +118,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         tableView.backgroundColor = theme?.backgroundColor
         self.autoCompletionView.backgroundColor = theme?.buttonBackgroundColor
         
-//        navigationController?.navigationBar.isTranslucent = true
-//        navigationController?.navigationBar.barTintColor = theme?.headerBackgroundColor
+        // Might need to apply: https://developer.apple.com/library/content/qa/qa1808/_index.html
+        navigationController?.navigationBar.barTintColor = theme?.headerBackgroundColor
         textInputbar.backgroundColor = theme?.inputBackgroundColor
     }
 
