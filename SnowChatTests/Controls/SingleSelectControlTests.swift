@@ -19,6 +19,11 @@ class SingleSelectControlTests: XCTestCase {
         self.singleSelectItems = [PickerItem(label: "Item 1", value: "1"), PickerItem(label: "Item 2", value: "2"), PickerItem(label: "Item 3", value: "3"), PickerItem(label: "Item 4", value: "4")]
     }
     
+    func testSingSelectControlModelType() {
+        let model = SingleSelectControlViewModel(id: "123", label: "?", required: true, items: singleSelectItems!)
+        XCTAssertEqual(.singleSelect, model.type)
+    }
+    
     func testSingleSelectVCDefaultPresentationStyle() {
         let model = SingleSelectControlViewModel(id: "123", label: "?", required: true, items: singleSelectItems!)
         let singleSelect = SingleSelectControl(model: model)

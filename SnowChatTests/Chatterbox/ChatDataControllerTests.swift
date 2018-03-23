@@ -30,10 +30,6 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         var updatedControl: ControlData?
         var pendingControlMessage: ControlData?
         
-        init(instance: ServerInstance) {
-            super.init(instance: instance)
-        }
-        
         override func lastPendingControlMessage(forConversation conversationId: String) -> ControlData? {
             return pendingControlMessage
         }
