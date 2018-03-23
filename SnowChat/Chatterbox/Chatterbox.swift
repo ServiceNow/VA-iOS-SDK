@@ -48,12 +48,25 @@ class Chatterbox {
     var vendor: ChatVendor?
     
     // AnyObject as type is a bummer, but Swift bug requires is https://bugs.swift.org/browse/SR-55
+    // - workaround is to make notification wrappers to hide the casting...
     private(set) var chatDataListeners = ListenerList<AnyObject>()
     private(set) var chatEventListeners = ListenerList<AnyObject>()
     private(set) var chatAuthListeners = ListenerList<AnyObject>()
     
     internal func notifyDataListeners(_ closure: (ChatDataListener) -> Void) {
-        chatDataListeners.forEach(withType: ChatDataListener.self) { (listener) in
+        chatDataListeners.forEach(withType: ChatDataListener.self) { listener in
+            closure(listener)
+        }
+    }
+
+    internal func notifyEventListeners(_ closure: (ChatEventListener) -> Void) {
+        chatEventListeners.forEach(withType: ChatEventListener.self) { listener in
+            closure(listener)
+        }
+    }
+
+    internal func notifyAuthListeners(_ closure: (ChatAuthListener) -> Void) {
+        chatAuthListeners.forEach(withType: ChatAuthListener.self) { listener in
             closure(listener)
         }
     }
@@ -211,9 +224,9 @@ class Chatterbox {
             saveDataToPersistence()
             
             let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, taskId: nil, conversationId: topicFinishedMessage.data.conversationId ?? "CONVERSATION_ID")
-            chatEventListeners.forEach(withType: ChatEventListener.self, { listener in
+            notifyEventListeners { listener in
                 listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
-            })
+            }
         }
     }
 
@@ -259,9 +272,9 @@ class Chatterbox {
                                       taskId: nil,
                                       conversationId: topicFinishedMessage.data.conversationId ?? "NIL_CONVERSATION_ID")
             
-            chatEventListeners.forEach(withType: ChatEventListener.self, { listener in
+            notifyEventListeners { listener in
                 listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
-            })
+            }
         }
     }
 

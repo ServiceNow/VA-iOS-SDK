@@ -92,7 +92,7 @@ extension Chatterbox {
                 logger.logDebug("*** ConnectToAgent Message from server: conversationId=\(startAgentChatMessage.data.conversationId ?? "NIL") topicId=\(startAgentChatMessage.data.actionMessage.topicId) taskId=\(startAgentChatMessage.data.taskId ?? "NIL")")
                 
                 let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
-                chatEventListeners.forEach(withType: ChatEventListener.self) { listener in
+                notifyEventListeners { listener in
                     listener.chatterbox(self, willStartAgentChat: agentInfo, forChat: chatId)
                 }
                 
@@ -123,7 +123,7 @@ extension Chatterbox {
         
         setupForAgentConversation(topicInfo: topicInfo)
         let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
-        chatEventListeners.forEach(withType: ChatEventListener.self) { listener in
+        notifyEventListeners { listener in
             listener.chatterbox(self, didStartAgentChat: agentInfo, forChat: chatId)
         }
     }
@@ -141,7 +141,7 @@ extension Chatterbox {
         conversationContext.taskId = nil
         
         let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
-        chatEventListeners.forEach(withType: ChatEventListener.self) { listener in
+        notifyEventListeners { listener in
             listener.chatterbox(self, didFinishAgentChat: agentInfo, forChat: chatId)
         }
     }

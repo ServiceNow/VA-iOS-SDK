@@ -15,7 +15,7 @@ extension Chatterbox: TransportStatusListener {
     func apiManagerTransportDidBecomeUnavailable(_ apiManager: APIManager) {
         logger.logInfo("Network unavailable....")
         
-        chatEventListeners.forEach(withType: ChatEventListener.self) { listener in
+        notifyEventListeners { listener in
             listener.chatterbox(self, didReceiveTransportStatus: .unreachable, forChat: chatId)
         }
     }
@@ -23,7 +23,7 @@ extension Chatterbox: TransportStatusListener {
     private static var alreadySynchronizing = false
     
     func apiManagerTransportDidBecomeAvailable(_ apiManager: APIManager) {
-        chatEventListeners.forEach(withType: ChatEventListener.self) { listener in
+        notifyEventListeners { listener in
             listener.chatterbox(self, didReceiveTransportStatus: .reachable, forChat: chatId)
         }
         
@@ -39,7 +39,7 @@ extension Chatterbox: TransportStatusListener {
     func apiManagerAuthenticationDidBecomeInvalid(_ apiManager: APIManager) {
         logger.logInfo("Authorization failed!")
         
-        chatAuthListeners.forEach(withType: ChatAuthListener.self) { listener in
+        notifyAuthListeners { listener in
             listener.chatterboxAuthenticationDidBecomeInvalid(self)
         }
     }
