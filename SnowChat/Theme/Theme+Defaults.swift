@@ -12,7 +12,7 @@ extension Theme {
     }
     
     class var defaultLinkColor: UIColor {
-        return UIColor.red
+        return UIColor(red: 0 / 255, green: 139 / 255, blue: 255 / 255, alpha: 1)
     }
     
     class var defaultTimestampColor: UIColor {
@@ -20,7 +20,7 @@ extension Theme {
     }
     
     class var defaultInputBackgroundColor: UIColor {
-        return UIColor.red
+        return UIColor.white
     }
     
     class var defaultBubbleFontColor: UIColor {
@@ -56,7 +56,7 @@ extension Theme {
     }
     
     class var defaultSeparatorColor: UIColor {
-        return UIColor.red
+        return UIColor(red: 0.97, green: 0.97, blue: 0.97, alpha: 1)
     }
     
     class var defaultCategoryBackgroundColor: UIColor {
@@ -64,7 +64,7 @@ extension Theme {
     }
     
     class var defaultButtonBackgroundColor: UIColor {
-        return UIColor.red
+        return UIColor.white
     }
     
     class var defaultDisabledLinkColor: UIColor {
@@ -88,6 +88,9 @@ extension Theme {
     }
     
     // MARK: - custom colors
+    class var controlActionFontColor: UIColor {
+        return UIColor(red: 0, green: 122 / 255, blue: 255 / 255, alpha: 1)
+    }
     
     class var controlSelectedBackgroundColor: UIColor {
         return UIColor(red: 0.85, green: 0.85, blue: 0.85, alpha: 1)

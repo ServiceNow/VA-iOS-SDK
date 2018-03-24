@@ -60,15 +60,18 @@ extension ChatDataController: ChatDataListener {
         case .multiSelect:
             guard messageExchange.message is MultiSelectControlMessage else { fatalError("Could not view message as MultiSelectControlMessage in ChatDataListener") }
             self.didCompleteMultiSelectExchange(messageExchange, forChat: chatId)
-        case .dateTime, .date, .time:
+        case .dateTime:
             guard messageExchange.message is DateTimePickerControlMessage else { fatalError("Could not view message as DateTimePickerControlMessage in ChatDataListener") }
             self.didCompleteDateTimeExchange(messageExchange, forChat: chatId)
+        case .date, .time:
+            guard messageExchange.message is DateOrTimePickerControlMessage else { fatalError("Could not view message as DateTimePickerControlMessage in ChatDataListener") }
+            self.didCompleteDateOrTimeExchange(messageExchange, forChat: chatId)
         case .multiPart:
             guard messageExchange.message is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
             self.didCompleteMultiPartExchange(messageExchange, forChat: chatId)
-        case .inputImage:
-            guard messageExchange.message is InputImageControlMessage else { fatalError("Could not view message as InputImageControlMessage in ChatDataListener") }
-            self.didCompleteInputImageExchange(messageExchange, forChat: chatId)
+        case .fileUpload:
+            guard messageExchange.message is FileUploadControlMessage else { fatalError("Could not view message as FileUploadControlMessage in ChatDataListener") }
+            self.didCompleteFileUploadExchange(messageExchange, forChat: chatId)
         case .unknown:
             guard let message = messageExchange.message as? ControlDataUnknown else { fatalError("Could not view message as ControlDataUnknown in ChatDataListener") }
             guard let chatControl = chatMessageModel(withMessage: message) else { return }
@@ -135,7 +138,6 @@ extension ChatDataController: ChatDataListener {
             
             // We need to check the last displayed control. In case of regular topic flow we will have TextControl and DateTimeControl as a seperate controls but they will represent one message coming from the server.
             let lastMessage = controlData[0]
-            
             var shouldReplaceLastControlWithResponse = true
             
             // By comparing ids we can distinguish between loading messages from the history and actual topic flow scenarios.
@@ -158,13 +160,33 @@ extension ChatDataController: ChatDataListener {
         }
     }
     
+    private func didCompleteDateOrTimeExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
+        if let viewModels = controlsForDateOrTimePicker(from: messageExchange) {
+            let lastMessage = controlData[0]
+            var shouldReplaceLastControlWithResponse = true
+            if lastMessage.messageId != messageExchange.message.messageId {
+                replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme))
+                shouldReplaceLastControlWithResponse = false
+            }
+            
+            guard let response = viewModels.response else { return }
+            
+            let answer = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme)
+            if shouldReplaceLastControlWithResponse {
+                replaceLastControl(with: answer)
+            } else {
+                presentControlData(answer)
+            }
+        }
+    }
+    
     private func didCompleteMultiPartExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         let typingIndicatorModel = ChatMessageModel(model: typingIndicator, bubbleLocation: .left, theme: theme)
         replaceLastControl(with: typingIndicatorModel)
     }
     
-    private func didCompleteInputImageExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        if let viewModels = controlsForInputImage(from: messageExchange) {
+    private func didCompleteFileUploadExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
+        if let viewModels = controlsForFileUpload(from: messageExchange) {
             replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme))
             if let response = viewModels.response {
                 presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
@@ -247,16 +269,20 @@ extension ChatDataController: ChatDataListener {
             if let viewModels = controlsForMultiSelect(from: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
-        case .dateTime, .date, .time:
+        case .dateTime:
             if let viewModels = controlsForDateTimePicker(from: historyExchange) {
+                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+            }
+        case .date, .time:
+            if let viewModels = controlsForDateOrTimePicker(from: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
         case .input:
             if let viewModels = controlsForInput(from: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
-        case .inputImage:
-            if let viewModels = controlsForInputImage(from: historyExchange) {
+        case .fileUpload:
+            if let viewModels = controlsForFileUpload(from: historyExchange) {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
         case .text:
@@ -373,16 +399,16 @@ extension ChatDataController: ChatDataListener {
         return (message: questionModel, response: answerModel)
     }
     
-    func controlsForInputImage(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: OutputImageViewModel?)? {
-        guard let message = messageExchange.message as? InputImageControlMessage,
+    func controlsForFileUpload(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: OutputImageViewModel?)? {
+        guard let message = messageExchange.message as? FileUploadControlMessage,
             let label = message.data.richControl?.uiMetadata?.label else {
-                logger.logError("MessageExchange is not valid in inputImageControlsFromMessageExchange method - skipping!")
+                logger.logError("MessageExchange is not valid in fileUploadControlsFromMessageExchange method - skipping!")
                 return nil
         }
         let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
         
         let answerModel: OutputImageViewModel?
-        if let response = messageExchange.response as? InputImageControlMessage,
+        if let response = messageExchange.response as? FileUploadControlMessage,
             let value = response.data.richControl?.value ?? "",
             let url = URL(string: value) {
             answerModel = OutputImageViewModel(id: ChatUtil.uuidString(), value: url)
@@ -403,9 +429,27 @@ extension ChatDataController: ChatDataListener {
                 return nil
         }
         
-        let dateFormatter = DateFormatter.formatterForChatterboxControlType(response.controlType)
+        let dateFormatter = DateFormatter.localDisplayFormatter(for: response.controlType)
         let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
         let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: dateFormatter.string(from: value))
+        
+        return (message: questionModel, response: answerModel)
+    }
+    
+    func controlsForDateOrTimePicker(from messageExchange: MessageExchange) -> (message: TextControlViewModel, response: TextControlViewModel?)? {
+        guard messageExchange.isComplete,
+            let response = messageExchange.response as? DateOrTimePickerControlMessage,
+            let message = messageExchange.message as? DateOrTimePickerControlMessage,
+            let label = message.data.richControl?.uiMetadata?.label,
+            let value = response.data.richControl?.value ?? "" else {
+                logger.logError("MessageExchange is not valid in dateOrTimePickerControlsFromMessageExchange method - skipping!")
+                return nil
+        }
+        
+        // Takes string date or time and returns localized string (i.e. turns "2018-03-21" into Mar 21, 2018)
+        let displayValue = DateFormatter.glideDisplayString(for: value, for: response.controlType)
+        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue)
         
         return (message: questionModel, response: answerModel)
     }
@@ -416,12 +460,11 @@ extension ChatDataController: ChatDataListener {
             let message = messageExchange.message as? InputControlMessage,
             let messageValue: String = message.data.richControl?.uiMetadata?.label,
             let responseValue: String = response.data.richControl?.value ?? "" else {
-                
                 logger.logError("MessageExchange is not valid in inputControlsFromMessageExchange method - skipping!")
                 return nil
         }
-        // a completed input exchange is two text controls, with the value of the message and the value of the response
         
+        // a completed input exchange is two text controls, with the value of the message and the value of the response
         let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: messageValue)
         let answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: responseValue)
         

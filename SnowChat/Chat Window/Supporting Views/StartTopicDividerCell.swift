@@ -26,6 +26,7 @@ class StartTopicDividerCell: UITableViewCell, Themeable {
     
     func configure(with model: ChatMessageModel) {
         self.model = model
+        applyTheme(model.theme)
     }
     
     override func prepareForReuse() {
@@ -46,9 +47,9 @@ class StartTopicDividerCell: UITableViewCell, Themeable {
                                      contentView.bottomAnchor.constraint(equalTo: lineView.bottomAnchor, constant: 10.0)])
     }
     
-    // MARK: - Theme
+    // MARK: Themeable
     
     func applyTheme(_ theme: Theme) {
-        lineView.backgroundColor = theme.headerBackgroundColor
+        lineView.backgroundColor = theme.separatorColor
     }
 }

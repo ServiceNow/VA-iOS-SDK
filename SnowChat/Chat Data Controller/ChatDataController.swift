@@ -52,13 +52,22 @@ class ChatDataController {
     internal var changeSet = [ModelChangeType]()
     
     internal let logger = Logger.logger(for: "ChatDataController")
-    private(set) var theme: Theme
+    private(set) var theme = Theme()
 
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
-        theme = chatterbox.session?.settings?.brandingSettings?.theme ?? Theme()
-        self.chatterbox.chatDataListener = self
+        self.chatterbox.chatDataListeners.addListener(self)
         self.changeListener = changeListener
+    }
+    
+    // MARK: - Theme preparation
+    
+    func loadTheme() {
+        if let theme = chatterbox.session?.settings?.brandingSettings?.theme {
+            self.theme = theme
+        }
+        
+        applyAppearance()
     }
     
     func setChangeListener(_ listener: ViewDataChangeListener) {
@@ -227,6 +236,7 @@ class ChatDataController {
         }
     }
     
+    //swiftlint:disable:next cyclomatic_complexity
     fileprivate func updateChatterbox(_ data: ControlViewModel) {
         guard let conversationId = self.conversationId else {
             logger.logError("No ConversationID in updateChatterbox!")
@@ -243,12 +253,14 @@ class ChatDataController {
                 updatePickerData(data, lastPendingMessage)
             case .multiSelect:
                 updateMultiSelectData(data, lastPendingMessage)
-            case .dateTime, .date, .time:
+            case .dateTime:
                 updateDateTimeData(data, lastPendingMessage)
+            case .date, .time:
+                updateDateOrTimeData(data, lastPendingMessage)
             case .multiPart:
                 updateMultiPartData(data, lastPendingMessage)
-            case .inputImage:
-                updateInputImageData(data, lastPendingMessage)
+            case .fileUpload:
+                updateFileUploadData(data, lastPendingMessage)
             default:
                 logger.logDebug("Unhandled control type: \(lastPendingMessage.controlType)")
                 return
@@ -261,6 +273,7 @@ class ChatDataController {
             var boolMessage = lastPendingMessage as? BooleanControlMessage {
             
             boolMessage.id = ChatUtil.uuidString()
+            boolMessage.data.messageId = ChatUtil.uuidString()
             boolMessage.data.richControl?.value = booleanViewModel.resultValue
             chatterbox.update(control: boolMessage)
         }
@@ -271,6 +284,7 @@ class ChatDataController {
             var inputMessage = lastPendingMessage as? InputControlMessage {
             
             inputMessage.id = ChatUtil.uuidString()
+            inputMessage.data.messageId = ChatUtil.uuidString()
             inputMessage.data.richControl?.value = textViewModel.value
             chatterbox.update(control: inputMessage)
         }
@@ -278,7 +292,9 @@ class ChatDataController {
     
     fileprivate func updatePickerData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         guard var pickerMessage = lastPendingMessage as? PickerControlMessage else { return }
+        
         pickerMessage.id = ChatUtil.uuidString()
+        pickerMessage.data.messageId = ChatUtil.uuidString()
         
         if let carouselViewModel = data as? CarouselControlViewModel {
             pickerMessage.data.richControl?.value = carouselViewModel.resultValue
@@ -294,6 +310,7 @@ class ChatDataController {
             var multiSelectMessage = lastPendingMessage as? MultiSelectControlMessage {
             
             multiSelectMessage.id = multiSelectViewModel.id
+            multiSelectMessage.data.messageId = ChatUtil.uuidString()
             multiSelectMessage.data.richControl?.value = multiSelectViewModel.resultValue
             chatterbox.update(control: multiSelectMessage)
         }
@@ -304,7 +321,20 @@ class ChatDataController {
             var dateTimeMessage = lastPendingMessage as? DateTimePickerControlMessage {
             
             dateTimeMessage.id = dateTimeViewModel.id
+            dateTimeMessage.data.messageId = ChatUtil.uuidString()
             dateTimeMessage.data.richControl?.value = dateTimeViewModel.resultValue
+            chatterbox.update(control: dateTimeMessage)
+        }
+    }
+    
+    fileprivate func updateDateOrTimeData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
+        // TODO: Add DatePickerControlViewModel
+        if let dateTimeViewModel = data as? DateTimePickerControlViewModel,
+            var dateTimeMessage = lastPendingMessage as? DateOrTimePickerControlMessage {
+            
+            dateTimeMessage.id = dateTimeViewModel.id
+            let dateTimeDisplayValue = dateTimeViewModel.displayValue
+            dateTimeMessage.data.richControl?.value = dateTimeDisplayValue
             chatterbox.update(control: dateTimeMessage)
         }
     }
@@ -314,22 +344,26 @@ class ChatDataController {
             var multiPartMessage = lastPendingMessage as? MultiPartControlMessage {
             
             multiPartMessage.id = buttonViewModel.id
+            multiPartMessage.data.messageId = ChatUtil.uuidString()
             multiPartMessage.data.richControl?.uiMetadata?.index = buttonViewModel.value + 1
             chatterbox.update(control: multiPartMessage)
         }
     }
     
-    fileprivate func updateInputImageData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
-        if let inputImageViewModel = data as? InputImageViewModel,
-            var inputImageMessage = lastPendingMessage as? InputImageControlMessage {
+    fileprivate func updateFileUploadData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
+        if let fileUploadViewModel = data as? FileUploadViewModel,
+            var fileUploadMessage = lastPendingMessage as? FileUploadControlMessage {
             
-            guard let imageData = inputImageViewModel.selectedImageData,
-                let imageName = inputImageViewModel.imageName,
-                let taskId = inputImageMessage.data.taskId else { return }
+            fileUploadMessage.id = ChatUtil.uuidString()
+            fileUploadMessage.data.messageId = ChatUtil.uuidString()
+            
+            guard let imageData = fileUploadViewModel.selectedImageData,
+                let imageName = fileUploadViewModel.imageName,
+                let taskId = fileUploadMessage.data.taskId else { return }
             
             chatterbox.apiManager.uploadImage(data: imageData, withName:imageName, taskId: taskId, completion: { [weak self] result in
-                inputImageMessage.data.richControl?.value = result
-                self?.chatterbox.update(control: inputImageMessage)
+                fileUploadMessage.data.richControl?.value = result
+                self?.chatterbox.update(control: fileUploadMessage)
             })
         }
     }

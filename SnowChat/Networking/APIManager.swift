@@ -172,6 +172,8 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
         authStatus = .loggedOut(user)
         
         addAMBPauseReason(.loggedOut)
+        
+        transportListener?.apiManagerAuthenticationDidBecomeInvalid(self)
     }
     
     // MARK: - Transport Listener

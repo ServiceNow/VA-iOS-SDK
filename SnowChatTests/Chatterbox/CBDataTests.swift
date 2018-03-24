@@ -130,6 +130,7 @@ class ChatterboxDataTests: XCTestCase {
         let agentText = ExampleData.exampleAgentTextControlMessage()
         
         XCTAssertNotNil(agentText)
+        XCTAssertEqual("c012b7e3c31013009cbbdccdf3d3ae1e", agentText.messageId)
         XCTAssertEqual(agentText.controlType, .agentText)
         XCTAssertEqual(agentText.data.text, "Duty Now For The Future!")
         XCTAssertEqual(agentText.data.agent, true)
@@ -164,6 +165,7 @@ class ChatterboxDataTests: XCTestCase {
         XCTAssertEqual("SubscribeToSupportQueue", message.data.actionMessage.type)
         XCTAssertEqual(true, message.active)
         XCTAssertEqual("30 Seconds", message.waitTimeDisplayString)
+        XCTAssertEqual(.fromServer, message.direction)
         XCTAssertTrue(message.data.actionMessage.supportQueue.sysId!.lengthOfBytes(using: String.Encoding.utf8) > 0)
     }
 
