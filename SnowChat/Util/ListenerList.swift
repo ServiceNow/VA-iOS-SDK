@@ -46,7 +46,9 @@ class ListenerList<T> where T: AnyObject {
         let newList = listeners.filter { $0.value != nil }
         
         let delta = listeners.count - newList.count
-        Logger.default.logInfo("ListenerList compacted \(delta) nil-items")
+        if delta > 0 {
+            Logger.default.logInfo("ListenerList compacted \(delta) nil-items")
+        }
         
         listeners = newList
     }

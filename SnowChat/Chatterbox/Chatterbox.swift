@@ -103,6 +103,7 @@ class Chatterbox {
         case uninitialized
         case topicSelection
         case userConversation
+        case waitingForAgent
         case agentConversation
     }
     
@@ -139,7 +140,7 @@ class Chatterbox {
         switch state {
         case .userConversation:
             cancelUserConversation()
-        case .agentConversation:
+        case .waitingForAgent, .agentConversation:
             endAgentConversation()
         default:
             break
@@ -154,7 +155,8 @@ class Chatterbox {
         
         switch action.eventType {
         case .finishedUserTopic:
-            didReceiveTopicFinishedAction(action)
+            guard let topicFinished = action as? TopicFinishedMessage else { return false }
+            didReceiveTopicFinishedAction(topicFinished)
         case .supportQueueSubscribe:
             if let subscribeMessage = action as? SubscribeToSupportQueueMessage {
                 didReceiveSubscribeToSupportAction(subscribeMessage)
@@ -165,7 +167,7 @@ class Chatterbox {
         return true
     }
     
-    fileprivate func processIncomingControlMessage(_ control: ControlData, forConversation conversationId: String) {
+    internal func processIncomingControlMessage(_ control: ControlData, forConversation conversationId: String) {
         chatStore.storeControlData(control, forConversation: conversationId, fromChat: self)
         
         notifyDataListeners { listener in
@@ -200,7 +202,15 @@ class Chatterbox {
         
         case .fromServer:
             updateContextIfNeeded(control)
-
+            
+            if state == .waitingForAgent {
+                if control.controlType == .agentText {
+                    // this signals the start of the agent conversation
+                    state = .agentConversation
+                    agentTopicStarted(withMessage: control)
+                }
+            }
+            
             if control.controlType == .contextualAction, let contextualActionControl = control as? ContextualActionMessage {
                 updateContextualActions(contextualActionControl)
                 return
@@ -217,19 +227,6 @@ class Chatterbox {
         contextualActions = newContextualActions
     }
     
-    fileprivate func handleTopicFinishedAction(_ action: ActionData) {
-        if let topicFinishedMessage = action as? TopicFinishedMessage {
-            conversationContext.conversationId = nil
-            
-            saveDataToPersistence()
-            
-            let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, taskId: nil, conversationId: topicFinishedMessage.data.conversationId ?? "CONVERSATION_ID")
-            notifyEventListeners { listener in
-                listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
-            }
-        }
-    }
-
     fileprivate func updateContextIfNeeded(_ control: ControlData) {
         // keep our taskId and conversationID up to date with incoming messages
         
@@ -248,7 +245,7 @@ class Chatterbox {
         switch state {
         case .userConversation, .topicSelection:
             transferToLiveAgent()
-        case .agentConversation:
+        case .waitingForAgent, .agentConversation:
             // signal an end of conversation so the user can try a new conversation
             guard let sessionId = self.conversationContext.sessionId,
                 let conversationId = self.conversationContext.conversationId else { return }
@@ -258,23 +255,16 @@ class Chatterbox {
         }
     }
     
-    internal func didReceiveTopicFinishedAction(_ action: ActionData) {
-        if let topicFinishedMessage = action as? TopicFinishedMessage {
-            
-            cancelPendingExchangeIfNeeded()
-                
-            conversationContext.conversationId = nil
-            
-            saveDataToPersistence()
-            
-            let topicInfo = TopicInfo(topicId: nil,
-                                      topicName: nil,
-                                      taskId: nil,
-                                      conversationId: topicFinishedMessage.data.conversationId ?? "NIL_CONVERSATION_ID")
-            
-            notifyEventListeners { listener in
-                listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
-            }
+    internal func didReceiveTopicFinishedAction(_ action: TopicFinishedMessage) {
+        cancelPendingExchangeIfNeeded()
+        
+        conversationContext.conversationId = nil
+        
+        saveDataToPersistence()
+        
+        let topicInfo = nullTopicInfo
+        notifyEventListeners { listener in
+            listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
         }
     }
 

@@ -405,7 +405,7 @@ class ChatDataController {
         
     }
     
-    func topicDidFinish(_ topicInfo: TopicInfo) {
+    func topicDidFinish() {
         conversationId = nil
         
         // FIXME: add a completion message. This will eventually come from the service but for now we synthesize it
@@ -417,7 +417,8 @@ class ChatDataController {
     }
     
     func agentTopicDidStart(agentInfo: AgentInfo) {
-        let message = NSLocalizedString("An agent is now taking your case.", comment: "Default agent responded message to show to user")
+        let agentName = agentInfo.agentId == "" ? NSLocalizedString("An agent", comment: "placeholder for agent name when none is provided") : agentInfo.agentId
+        let message = NSLocalizedString("\(agentName) is now taking your case.", comment: "Default agent responded message to show to user")
         let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         bufferControlMessage(ChatMessageModel(model: completionTextControl, bubbleLocation: .left, theme: theme))
     }

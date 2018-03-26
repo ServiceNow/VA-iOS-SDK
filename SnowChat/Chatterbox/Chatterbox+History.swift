@@ -112,6 +112,10 @@ extension Chatterbox {
                 completion(0)
                 return
         }
+
+        notifyDataListeners { listener in
+            listener.chatterbox(self, willLoadConversationsForConsumerAccount: consumerAccountId, forChat: chatId)
+        }
         
         apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { [weak self] conversations in
             guard let strongSelf = self else {
@@ -120,10 +124,6 @@ extension Chatterbox {
             }
             
             var count = 0
-            
-            strongSelf.notifyDataListeners { listener in
-                listener.chatterbox(strongSelf, willLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
-            }
             
             conversations.forEach({ [weak self] conversation in
                 guard let strongSelf = self else { return }
