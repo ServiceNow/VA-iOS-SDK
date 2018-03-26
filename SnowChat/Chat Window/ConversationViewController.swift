@@ -15,12 +15,18 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         case inSystemTopicSelection     // user can select topic, talk to tagent, or quit
         case inTopicSelection           // user is searching topics
         case inConversation             // user is in an active conversation
+        case waitingForAgent            // waiting for an agent to connect
         case inAgentConversation        // in a conversation with an agent
     }
     
     private let bottomInset: CGFloat = 45
     
-    private var inputState = InputState.inTopicSelection
+    private var inputState = InputState.inTopicSelection {
+        didSet {
+            setupInputForState()
+        }
+    }
+    
     private var autocompleteHandler: AutoCompleteHandler?
 
     private let dataController: ChatDataController
@@ -130,6 +136,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
             setupForTopicSelection()
         case .inSystemTopicSelection:
             setupForSystemTopicSelection()
+        case .waitingForAgent:
+            setupForWaitingOnAgent()
         case .inAgentConversation:
             setupForAgentConversation()
         case .inConversation:
@@ -163,6 +171,10 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     
     private func setupForConversation() {
         setupTextViewForConversation()
+        setTextInputbarHidden(true, animated: true)
+    }
+    
+    private func setupForWaitingOnAgent() {
         setTextInputbarHidden(true, animated: true)
     }
     
@@ -285,21 +297,24 @@ extension ConversationViewController {
     }
     
     func fetchOlderMessagesIfPossible() {
-        if canFetchOlderMessages,
-            Date().timeIntervalSince(timeLastHistoryFetch) > 5.0 {
+        guard canFetchOlderMessages,
+            Date().timeIntervalSince(timeLastHistoryFetch) > 5.0 else {
+                Logger.default.logDebug("Skipping fetch of older messages - last one was \(Date().timeIntervalSince(timeLastHistoryFetch)) ago")
+                return
+        }
             
-            canFetchOlderMessages = false
+        canFetchOlderMessages = false
 
-            dataController.fetchOlderMessages { [weak self] count in
-                guard let strongSelf = self else { return }
-                
-                if count > 0 {
-                    // TODO: need to provide indices for the updated rows...
-                    strongSelf.tableView.reloadData()
-                }
-                strongSelf.canFetchOlderMessages = true
-                strongSelf.timeLastHistoryFetch = Date()
+        dataController.fetchOlderMessages { [weak self] count in
+            guard let strongSelf = self else { return }
+            
+            if count > 0 {
+                // TODO: need to provide indices for the updated rows...
+                strongSelf.tableView.reloadData()
             }
+            
+            strongSelf.canFetchOlderMessages = true
+            strongSelf.timeLastHistoryFetch = Date()
         }
     }
     
@@ -497,8 +512,8 @@ extension ConversationViewController: ChatEventListener {
         guard self.chatterbox.id == chatterbox.id else {
             return
         }
-        inputState = .inAgentConversation
-        setupInputForState()
+        
+        inputState = .waitingForAgent
         
         dataController.agentTopicWillStart()
     }
@@ -507,7 +522,9 @@ extension ConversationViewController: ChatEventListener {
         guard self.chatterbox.id == chatterbox.id else {
             return
         }
-        
+
+        inputState = .inAgentConversation
+
         dataController.agentTopicDidStart(agentInfo: agentInfo)
     }
     
@@ -517,7 +534,6 @@ extension ConversationViewController: ChatEventListener {
         }
         
         inputState = .inAgentConversation
-        setupInputForState()
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didFinishAgentChat agentInfo: AgentInfo, forChat chatId: String) {
@@ -526,8 +542,7 @@ extension ConversationViewController: ChatEventListener {
         }
         
         inputState = .inTopicSelection
-        setupInputForState()
-        
+
         dataController.agentTopicDidFinish()
     }
     
@@ -548,8 +563,6 @@ extension ConversationViewController: ChatEventListener {
         dataController.topicDidStart(topicInfo)
         
         inputState = .inConversation
-        
-        setupInputForState()
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didResumeTopic topicInfo: TopicInfo, forChat chatId: String) {
@@ -560,7 +573,6 @@ extension ConversationViewController: ChatEventListener {
         dataController.topicDidResume(topicInfo)
         
         inputState = .inConversation
-        setupInputForState()
         manageInputControl()
     }
     
@@ -569,7 +581,7 @@ extension ConversationViewController: ChatEventListener {
             return
         }
 
-        dataController.topicDidFinish(topicInfo)
+        dataController.topicDidFinish()
         
         inputState = .inTopicSelection
         setupInputForState()
@@ -632,9 +644,11 @@ extension ConversationViewController {
     var showActivityIndicator: Bool {
         set(show) {
             if show {
+                view.bringSubview(toFront: activityIndicator)
                 activityIndicator.startAnimating()
             } else {
                 activityIndicator.stopAnimating()
+                view.sendSubview(toBack: activityIndicator)
             }
         }
         get {

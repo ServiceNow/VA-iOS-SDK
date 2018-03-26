@@ -15,6 +15,8 @@ struct TopicInfo {
     let conversationId: String
 }
 
+internal var nullTopicInfo = TopicInfo(topicId: nil, topicName: nil, taskId: nil, conversationId: "")
+
 struct AgentInfo {
     let agentId: String
     let agentAvatar: String?

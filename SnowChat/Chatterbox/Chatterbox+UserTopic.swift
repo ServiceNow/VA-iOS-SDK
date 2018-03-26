@@ -80,7 +80,7 @@ extension Chatterbox {
     }
     
     internal func finishTopic(_ conversationId: String) {
-        let topicInfo = TopicInfo(topicId: nil, topicName: nil, taskId: nil, conversationId: conversationId)
+        let topicInfo = nullTopicInfo
         notifyEventListeners { listener in
             listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
         }

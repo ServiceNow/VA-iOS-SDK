@@ -22,7 +22,6 @@ extension Chatterbox {
         cancelPendingExchangeIfNeeded()
         
         if let sessionId = session?.id, let conversationId = conversationContext.systemConversationId {
-            state = .agentConversation
             messageHandler = startLiveAgentHandshakeHandler
             
             var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
@@ -51,12 +50,12 @@ extension Chatterbox {
     
     internal func resumeLiveAgentTopic(conversation: Conversation) {
         showTopic {
-            guard var taskId = self.conversationContext.taskId,
-                let conversationId = self.conversationContext.conversationId else {
-                    self.logger.logError("No ConversationId or taskId from ShowTopic: cannot resume agent chat!")
+            guard let conversationId = self.conversationContext.conversationId,
+                var taskId = self.conversationContext.taskId else {
                     self.endAgentTopic()
                     return
             }
+            
             // FIXME: have to get the taskId from the last message in history, since the server is sending the incorrect
             //        taskId in the showTopic response. Remove when server fixes this!
             if let correctTaskId = conversation.messageExchanges().last?.message.taskId {
@@ -65,9 +64,14 @@ extension Chatterbox {
                 self.conversationContext.taskId = correctTaskId
                 taskId = correctTaskId
             }
-            
+
             let topicInfo = TopicInfo(topicId: Chatterbox.liveAgentTopicId, topicName: nil, taskId: taskId, conversationId: conversationId)
             self.startAgentTopic(topicInfo: topicInfo)
+
+            self.notifyEventListeners { listener in
+                let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
+                listener.chatterbox(self, didResumeAgentChat: agentInfo, forChat: self.chatId)
+            }
         }
     }
 
@@ -78,7 +82,10 @@ extension Chatterbox {
         
         if controlMessage.controlType == .text {
             logger.logDebug("*** Text Message in LiveAgentHandler")
-            processControlMessage(controlMessage)
+            
+            if let conversationId = controlMessage.conversationId {
+                processIncomingControlMessage(controlMessage, forConversation: conversationId)
+            }
             return
         }
         
@@ -108,7 +115,7 @@ extension Chatterbox {
             } else {
                 logger.logDebug("*** ConnectToAgent Message from client: Agent Topic Started!")
                 
-                // we got back out own start topic response, so begin the agent topic
+                // we got back out own start topic response, so we are now in the queue waiting for an 
                 let conversationId = startAgentChatMessage.data.actionMessage.topicId
                 let topicId = startAgentChatMessage.data.actionMessage.topicId
                 let taskId = startAgentChatMessage.data.taskId
@@ -119,10 +126,26 @@ extension Chatterbox {
     }
     
     private func startAgentTopic(topicInfo: TopicInfo) {
-        state = .agentConversation
+        state = .waitingForAgent
         
         setupForAgentConversation(topicInfo: topicInfo)
+        
         let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
+        notifyEventListeners { listener in
+            listener.chatterbox(self, willStartAgentChat: agentInfo, forChat: chatId)
+        }
+    }
+    
+    internal func agentTopicStarted(withMessage message: ControlData?) {
+
+        let agentInfo: AgentInfo
+        
+        if let textMessage = message as? AgentTextControlMessage {
+            agentInfo = AgentInfo(agentId: textMessage.data.sender?.name ?? "", agentAvatar: textMessage.data.sender?.avatarPath)
+        } else {
+            agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
+        }
+        
         notifyEventListeners { listener in
             listener.chatterbox(self, didStartAgentChat: agentInfo, forChat: chatId)
         }
