@@ -48,5 +48,5 @@ extension APIManager {
         })
         return subscription
     }
-    
+        
 }

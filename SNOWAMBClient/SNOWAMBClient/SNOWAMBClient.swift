@@ -12,8 +12,7 @@ public typealias SNOWAMBPublishMessageHandler = (SNOWAMBResult<[SNOWAMBMessage]>
 public enum SNOWAMBResult<Value> {
     case success(Value)
     case failure(SNOWAMBError)
-    
-    public var value: Value? {
+        public var value: Value? {
         switch self {
         case .success(let value):
             return value
@@ -30,6 +29,15 @@ public enum SNOWAMBResult<Value> {
             return error
         }
     }
+    
+    public var isSuccess: Bool {
+        switch self {
+        case .success:
+            return true
+        case .failure:
+            return false
+        }
+    }
 }
 
 //
@@ -43,7 +51,6 @@ public enum AMBGlideSessionStatus: String {
 }
 
 public struct SNOWAMBGlideStatus: Equatable {
-    
     public let ambActive: Bool
     public let sessionStatus: AMBGlideSessionStatus?
     
@@ -62,7 +69,7 @@ public protocol SNOWAMBClientDelegate: AnyObject {
     func ambClientDidConnect(_ client: SNOWAMBClient)
     func ambClientDidDisconnect(_ client: SNOWAMBClient)
     func ambClient(_ client: SNOWAMBClient, didSubscribeToChannel channel: String)
-    func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromchannel channel: String)
+    func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromChannel channel: String)
     func ambClient(_ client: SNOWAMBClient, didReceiveMessage: SNOWAMBMessage, fromChannel channel: String)
     func ambClient(_ client: SNOWAMBClient, didChangeClientStatus status: SNOWAMBClientStatus)
     func ambClient(_ client: SNOWAMBClient, didReceiveGlideStatus status: SNOWAMBGlideStatus)
@@ -240,7 +247,8 @@ public class SNOWAMBClient {
     public func unsubscribe(subscription: SNOWAMBSubscription) {
         cleanupSubscriptions()
 
-        guard var subscriptions = subscriptionsByChannel[subscription.channel] else {
+        guard var subscriptions = subscriptionsByChannel[subscription.channel],
+                  !subscriptions.isEmpty  else {
             return
         }
         
@@ -424,6 +432,7 @@ private extension SNOWAMBClient {
 
     func subscribeQueuedChannels() {
         queuedSubscriptionChannels.forEach({ sendBayeuxSubscribeMessage(channel: $0) })
+        queuedSubscriptionChannels.removeAll()
     }
     
     func reopenSubscriptions() {
@@ -535,7 +544,7 @@ private extension SNOWAMBClient {
         if ambMessage.successful {
             subscribedChannels.remove(ambMessage.channel)
             cleanupSubscriptions()
-            delegate?.ambClient(self, didUnsubscribeFromchannel: ambMessage.channel)
+            delegate?.ambClient(self, didUnsubscribeFromChannel: ambMessage.subscription ?? "")
         } else {
             delegate?.ambClient(self, didFailWithError: SNOWAMBError.disconnectFailed)
         }
@@ -641,29 +650,28 @@ private extension SNOWAMBClient {
         postBayeuxMessage(bayeuxMessage, completion: handler)
     }
     
-    //swiftlint:disable:next function_body_length
+    private func channelNameToPath(_ channel : String) -> String {
+        var path = ""
+        if channel.hasPrefix("/meta") {
+            let parts = channel.split(separator: "/").map(String.init)
+            guard let lastPart = parts.last else {
+                return ""
+            }
+            switch channel {
+            case AMBChannel.handshake.name:
+                path = lastPart
+            case AMBChannel.connect.name:
+                path = lastPart
+            default:
+                path = ""
+            }
+        }
+        return path
+    }
+    
     @discardableResult func postBayeuxMessage(_ message: [String : Any],
                                               timeout: TimeInterval = 0.0,
                                               completion handler: SNOWAMBPublishMessageHandler? = nil) -> URLSessionDataTask? {
-        
-        func channelNameToPath(_ channel : String) -> String {
-            var path = ""
-            if channel.hasPrefix("/meta") {
-                let parts = channel.split(separator: "/").map(String.init)
-                guard let lastPart = parts.last else {
-                    return ""
-                }
-                switch lastPart {
-                case AMBChannel.handshake.name:
-                    path = lastPart
-                case AMBChannel.connect.name:
-                    path = lastPart
-                default:
-                    path = ""
-                }
-            }
-            return path
-        }
         
         guard let channel = message["channel"] as? String else {
             delegate?.ambClient(self,
