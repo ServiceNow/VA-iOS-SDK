@@ -242,6 +242,7 @@ public class SNOWAMBClient {
         if subscribedChannels.contains(channel) {
             return
         }
+        queuedSubscriptionChannels.insert(channel)
         sendBayeuxSubscribeMessage(channel: channel)
     }
     
