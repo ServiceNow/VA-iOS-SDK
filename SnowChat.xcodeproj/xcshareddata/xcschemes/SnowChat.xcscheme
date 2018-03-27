@@ -50,6 +50,9 @@
                   Identifier = "BooleanControlTests">
                </Test>
                <Test
+                  Identifier = "ChatSessionTests">
+               </Test>
+               <Test
                   Identifier = "ChatterboxDataTests">
                </Test>
                <Test
