@@ -206,6 +206,7 @@ public class SNOWAMBClient {
     // MARK: public methods
     
     public func connect() {
+        cancelAllDataTasks()
         connectDataTaskTime = nil
         sendBayeuxHandshakeMessage()
     }

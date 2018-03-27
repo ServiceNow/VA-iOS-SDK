@@ -79,11 +79,27 @@ public final class ChatService {
                     completion(ChatServiceError.noSession(error))
                 }
             }
-            
         }
-
     }
+    
+    public func updateCredentials(token: OAuthToken, completion: @escaping (ChatServiceError?) -> Void) {
+        if isInitializing {
+            fatalError("Only one initialization can be performed at a time.")
+        }
+        
+        isInitializing = true
 
+        chatterbox.updateUserSession(token: token) { (result) in
+            self.isInitializing = false
+            
+            switch result {
+            case let .failure(error):
+                completion(ChatServiceError.noSession(error))
+            default:
+                completion(nil)
+            }
+        }
+    }
 }
 
 extension ChatService: ChatAuthListener {

@@ -36,6 +36,7 @@ import SNOWAMBClient
 enum ChatterboxError: Error {
     case invalidParameter(details: String)
     case invalidCredentials(details: String)
+    case illegalState(details: String)
     case unknown(details: String)
 }
 

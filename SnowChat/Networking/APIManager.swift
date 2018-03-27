@@ -141,6 +141,16 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
         }
     }
     
+    func updateUserSession(token: OAuthToken, completion: @escaping (Result<User>) -> Void) {
+        if case let .loggedIn(currentUser) = authStatus {
+            authStatus = .loggedOut(currentUser)
+        }
+        
+        prepareUserSession(token: token, completion: completion)
+        
+        ambClient.connect()
+    }
+    
     private func clearAllCookies() {
         guard let cookieStorage = sessionManager.session.configuration.httpCookieStorage else { return }
         cookieStorage.cookies?.forEach { (cookie) in
