@@ -684,6 +684,7 @@ private extension SNOWAMBClient {
         }
         
         var myMessage = message
+        
         myMessage["messageId"] = String(messageId)
         messageId += 1
 
