@@ -21,7 +21,7 @@ class NotificationBanner: UIView {
     init() {
         super.init(frame: CGRect.zero)
 
-        backgroundColor = UIColor.gray
+        backgroundColor = UIColor.lightGray
 
         setupViews()
     }

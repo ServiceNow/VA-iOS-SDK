@@ -146,9 +146,17 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
             authStatus = .loggedOut(currentUser)
         }
         
-        prepareUserSession(token: token, completion: completion)
-        
-        ambClient.connect()
+        prepareUserSession(token: token) { [weak self] result in
+            guard let strongSelf = self else { return }
+            
+            switch result {
+            case .success:
+                strongSelf.ambClient.connect()
+            default:
+                break
+            }
+            completion(result)
+        }
     }
     
     private func clearAllCookies() {

@@ -24,6 +24,7 @@ struct AgentInfo {
 
 enum TransportStatus {
     case reachable
+    case reconnecting
     case unreachable
 }
 

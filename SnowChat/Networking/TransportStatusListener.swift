@@ -12,7 +12,10 @@ protocol TransportStatusListener: AnyObject {
     
     // transport is not available means no AMB and no REST calls
     func apiManagerTransportDidBecomeUnavailable(_ apiManager: APIManager)
-    
+
+    // transport is being reconnected
+    func apiManagerTransportIsReconnecting(_ apiManager: APIManager)
+
     // transport available means AMB and REST can be called
     func apiManagerTransportDidBecomeAvailable(_ apiManager: APIManager)
     
