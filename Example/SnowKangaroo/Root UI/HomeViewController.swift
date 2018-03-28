@@ -35,8 +35,13 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     // MARK: - UI Setup
     
     private func setupChatService() {
+        guard self.chatService == nil else {
+            NSLog("ChatService already setup!")
+            return
+        }
         guard let instanceURL = InstanceSettings.shared.instanceURL else {
-                return
+            NSLog("No instance URL defined: cannot setup ChatService")
+            return
         }
         
         let chatService = ChatService(instanceURL: instanceURL, delegate: self)
