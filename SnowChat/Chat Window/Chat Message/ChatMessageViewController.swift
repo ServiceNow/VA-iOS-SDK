@@ -67,10 +67,13 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     private func loadAvatar() {
         if let provider = resourceProvider {
-            let avatarURL = model?.avatarURL ?? provider.avatarURL
             
             agentImageView.af_imageDownloader = provider.imageDownloader
-            agentImageView.af_setImage(withURL: avatarURL)
+            
+            if let avatarURL = model?.avatarURL ?? theme.avatarUrl {
+                agentImageView.af_setImage(withURL: avatarURL)
+            }
+            
             agentImageView.addCircleMaskIfNeeded()
         }
     }
