@@ -32,8 +32,7 @@ extension ChatDataController: ContextItemProvider {
     fileprivate func refreshConversationMenuItem() -> ContextMenuItem {
         let menuItem = ContextMenuItem(withTitle: NSLocalizedString("Refresh Conversation", comment: "Context Menu Item Title")) { viewController, sender in
             self.logger.logDebug("Refresh Conversation menu selected")
-            //self.syncConversation()
-            NotificationCenter.default.post(name: Notification.Name("com.servicenow.snowKangaroo.notification.name.authenticationDidBecomeValid"), object: nil)
+            self.syncConversation()
         }
         return menuItem
     }

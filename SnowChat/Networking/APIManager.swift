@@ -20,7 +20,7 @@ enum APIManagerError: Error {
 
 class APIManager: NSObject, SNOWAMBClientDelegate {
     
-    private enum AuthStatus {
+    internal enum AuthStatus {
         case loggedIn(User)
         case loggedOut(User?)
     }
@@ -63,7 +63,7 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
         return configuration
     }
     
-    private var authStatus: AuthStatus
+    internal var authStatus: AuthStatus
     
     // MARK: - Initialization
     
@@ -138,24 +138,6 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
                 }
                 
                 completion(.success(user))
-        }
-    }
-    
-    func updateUserSession(token: OAuthToken, completion: @escaping (Result<User>) -> Void) {
-        if case let .loggedIn(currentUser) = authStatus {
-            authStatus = .loggedOut(currentUser)
-        }
-        
-        prepareUserSession(token: token) { [weak self] result in
-            guard let strongSelf = self else { return }
-            
-            switch result {
-            case .success:
-                strongSelf.ambClient.connect()
-            default:
-                break
-            }
-            completion(result)
         }
     }
     

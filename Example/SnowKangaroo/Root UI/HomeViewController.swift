@@ -12,10 +12,6 @@ import SnowChat
 class HomeViewController: UIViewController, ChatServiceDelegate {
     
     private var chatService: ChatService?
-    private var sessionStart: Date?
-    private var sessionStarted: Bool {
-        return sessionStart != nil
-    }
     
     @IBOutlet private weak var statusLabel: UILabel!
     
@@ -62,12 +58,10 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     // MARK: - Chat
     
     private func startChat() {
-        guard let chatService = chatService,
-            let credential = InstanceSettings.shared.credential else {
+        guard let credential = InstanceSettings.shared.credential else {
                 return
         }
-        navigationController?.pushViewController(chatService.chatViewController(), animated: true)
-        
+
         establishChatSession(credential: credential, logOutOnAuthFailure: true)
     }
     
@@ -76,29 +70,16 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         
         let token = credential.idToken ?? credential.accessToken
 
-        if sessionStarted {
-            chatService.updateCredentials(token: token) { [weak self] error in
-                if let error = error {
-                    self?.errorInUserSession(error, logOutOnAuthFailure)
-                } else {
-                    self?.sessionStart = Date()
-                }
-            }
-        } else {
-            let userDefinedContextData = UserDefinedContextData()
-            chatService.establishUserSession(token: token, userContextData: userDefinedContextData) { [weak self] (error) in
-                if let error = error {
-                    self?.errorInUserSession(error, logOutOnAuthFailure)
-                } else {
-                    self?.sessionStart = Date()
-                }
+        chatService.establishUserSession(token: token, userContextData: UserDefinedContextData()) { [weak self] (error) in
+            if let error = error {
+                self?.errorInUserSession(error, logOutOnAuthFailure)
+            } else {
+                self?.navigationController?.pushViewController(chatService.chatViewController(), animated: true)
             }
         }
     }
 
     private func errorInUserSession(_ error: ChatServiceError, _ logOutOnAuthFailure: Bool = false) {
-        sessionStart = nil
-        
         if case ChatServiceError.invalidCredentials = error {
             if logOutOnAuthFailure {
                 postLogOutNotification()
@@ -117,7 +98,6 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     }
     
     @objc func logOutButtonTapped(_ sender: Any) {
-        sessionStart = nil
         postLogOutNotification()
     }
     
