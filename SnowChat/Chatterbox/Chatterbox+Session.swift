@@ -54,6 +54,32 @@ extension Chatterbox {
         }
     }
     
+    func updateUserSession(token: OAuthToken, completion: @escaping (Result<ContextualActionMessage>) -> Void) {
+        guard let sessionId = session?.id,
+            let actionMessage = contextualActions else {
+                logger.logError("updateUserSession requires an existing user session and chat session!")
+                completion(.failure(ChatterboxError.illegalState(details: "Previous chat handshake required")))
+                return
+        }
+        
+        apiManager.updateUserSession(token: token) { [weak self] result in
+            guard let strongSelf = self else { return }
+            
+            guard result.error == nil else {
+                if let error = result.error {
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            strongSelf.notifyEventListeners { listener in
+                listener.chatterbox(strongSelf, didRestoreUserSession: sessionId, forChat: strongSelf.chatId)
+            }
+            
+            completion(.success(actionMessage))
+        }
+    }
+    
     private func createChatSession(vendor: ChatVendor, completion: @escaping (Error?) -> Void) {
         let sessionContext = ChatSessionContext(vendor: vendor)
         

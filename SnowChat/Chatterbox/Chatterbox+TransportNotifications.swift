@@ -9,20 +9,30 @@
 import Foundation
 
 extension Chatterbox: TransportStatusListener {
+
+    private static var alreadySynchronizing = false
     
     // MARK: - handle transport notifications
     
     func apiManagerTransportDidBecomeUnavailable(_ apiManager: APIManager) {
-        logger.logInfo("Network unavailable....")
+        logger.logInfo("Transport is unavailable")
         
         notifyEventListeners { listener in
             listener.chatterbox(self, didReceiveTransportStatus: .unreachable, forChat: chatId)
         }
     }
-    
-    private static var alreadySynchronizing = false
-    
+
+    func apiManagerTransportIsReconnecting(_ apiManager: APIManager) {
+        logger.logDebug("Transport is reconnecting...")
+
+        notifyEventListeners { listener in
+            listener.chatterbox(self, didReceiveTransportStatus: .reconnecting, forChat: chatId)
+        }
+    }
+
     func apiManagerTransportDidBecomeAvailable(_ apiManager: APIManager) {
+        logger.logDebug("Transport is available")
+
         notifyEventListeners { listener in
             listener.chatterbox(self, didReceiveTransportStatus: .reachable, forChat: chatId)
         }

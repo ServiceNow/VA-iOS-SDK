@@ -155,10 +155,16 @@ extension ChatViewController: ChatEventListener {
         Logger.default.logInfo("ChatEventListener.didEstablishUserSession: \(sessionId)")
     }
     
+    func chatterbox(_ chatterbox: Chatterbox, didRestoreUserSession sessionId: String, forChat chatId: String ) {
+        Logger.default.logInfo("ChatEventListener.didRestoreUserSession: \(sessionId)")
+    }
+
     func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {
         switch transportStatus {
         case .unreachable:
             showDisconnectedBanner()
+        case .reconnecting:
+            updateBannerForReconnecting()
         case .reachable:
             hideDisconnectedBanner()
         }
@@ -166,16 +172,28 @@ extension ChatViewController: ChatEventListener {
     
     private func showDisconnectedBanner() {
         guard let banner = banner else { return }
-        banner.text = NSLocalizedString("Disconnected...", comment: "Message in alert banner when network is disconnected")
+        
+        banner.text = NSLocalizedString("Lost network connection", comment: "Message in alert banner when network is disconnected")
         view.addSubview(banner)
         NSLayoutConstraint.activate(bannerConstraints)
     }
     
-    private func hideDisconnectedBanner() {
+    private func updateBannerForReconnecting() {
         guard let banner = banner else { return }
+        
+        banner.text = NSLocalizedString("Reconnecting...", comment: "Message in alert banner when network is reconnecting")
+        banner.setNeedsDisplay()
+    }
+    
+    private func hideDisconnectedBanner() {
+        guard let banner = banner, banner.superview != nil else { return }
 
-        banner.text = NSLocalizedString("Reconnected", comment: "Message in alert banner when network is connected after being disconnected (briefly displayed)")
-        banner.removeFromSuperview()
-        NSLayoutConstraint.deactivate(bannerConstraints)
+        banner.text = NSLocalizedString("Network connected", comment: "Message in alert banner when network is connected after being disconnected (briefly displayed)")
+        banner.setNeedsDisplay()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            banner.removeFromSuperview()
+            NSLayoutConstraint.deactivate(self.bannerConstraints)
+        }
     }
 }

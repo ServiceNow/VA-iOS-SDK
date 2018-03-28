@@ -40,6 +40,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     private var isLoading = false
     private var defaultMessageHeight: CGFloat?
     
+    private var wasHistoryLoadedForUser: Bool = false
+    
     override var tableView: UITableView {
         // swiftlint:disable:next force_unwrapping
         return super.tableView!
@@ -74,9 +76,11 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     }
     
     internal func loadHistory() {
-        dataController.loadHistory { (error) in
+        dataController.loadHistory { [weak self] error in
             if let error = error {
                 Logger.default.logError("Error loading history! \(error)")
+            } else {
+                self?.wasHistoryLoadedForUser = true
             }
         }
     }
@@ -548,11 +552,20 @@ extension ConversationViewController: ChatEventListener {
     
     // MARK: - ChatEventListener
     
+    private func initializeSessionIfNeeded() {
+        if !wasHistoryLoadedForUser {
+            loadHistory()
+            dataController.loadTheme()
+            applyTheme(dataController.theme)
+        }
+    }
+    
     func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
-        // if we were shown before the session was established then we did not load history yet, so do it now
-        loadHistory()
-        dataController.loadTheme()
-        applyTheme(dataController.theme)
+        initializeSessionIfNeeded()
+    }
+    
+    func chatterbox(_ chatterbox: Chatterbox, didRestoreUserSession sessionId: String, forChat chatId: String ) {
+        initializeSessionIfNeeded()
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didStartTopic topicInfo: TopicInfo, forChat chatId: String) {

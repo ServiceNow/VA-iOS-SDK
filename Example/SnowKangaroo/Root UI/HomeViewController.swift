@@ -12,7 +12,11 @@ import SnowChat
 class HomeViewController: UIViewController, ChatServiceDelegate {
     
     private var chatService: ChatService?
-
+    private var sessionStart: Date?
+    private var sessionStarted: Bool {
+        return sessionStart != nil
+    }
+    
     @IBOutlet private weak var statusLabel: UILabel!
     
     // MARK: - View Life Cycle
@@ -22,12 +26,27 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         
         title = "SnowKangaroo"
         
+        setupChatService()
         setupStatusLabel()
         setupNavigationBarButtons()
         setupAuthNotificationObserving()
     }
     
     // MARK: - UI Setup
+    
+    private func setupChatService() {
+        guard self.chatService == nil else {
+            NSLog("ChatService already setup!")
+            return
+        }
+        guard let instanceURL = InstanceSettings.shared.instanceURL else {
+            NSLog("No instance URL defined: cannot setup ChatService")
+            return
+        }
+        
+        let chatService = ChatService(instanceURL: instanceURL, delegate: self)
+        self.chatService = chatService
+    }
     
     private func setupNavigationBarButtons() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Log Out", comment: ""), style: .plain, target: self, action: #selector(logOutButtonTapped(_:)))
@@ -43,36 +62,51 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     // MARK: - Chat
     
     private func startChat() {
-        guard let instanceURL = InstanceSettings.shared.instanceURL,
+        guard let chatService = chatService,
             let credential = InstanceSettings.shared.credential else {
                 return
         }
-        
-        let chatService = ChatService(instanceURL: instanceURL, delegate: self)
-        self.chatService = chatService
-        
         navigationController?.pushViewController(chatService.chatViewController(), animated: true)
         
-        establishChatSession(credential: credential, logOutOnAuthFailure: false)
+        establishChatSession(credential: credential, logOutOnAuthFailure: true)
     }
     
     private func establishChatSession(credential: OAuthCredential, logOutOnAuthFailure: Bool) {
         guard let chatService = chatService else { return }
         
-        let userDefinedContextData = UserDefinedContextData()
         let token = credential.idToken ?? credential.accessToken
-        chatService.establishUserSession(token: token, userContextData: userDefinedContextData) { [weak self] (error) in
-            if let error = error {
-                if case ChatServiceError.invalidCredentials = error {
-                    if logOutOnAuthFailure {
-                        self?.postLogOutNotification()
-                    } else {
-                        self?.postAuthenticationDidBecomeInvalidNotification()
-                    }
+
+        if sessionStarted {
+            chatService.updateCredentials(token: token) { [weak self] error in
+                if let error = error {
+                    self?.errorInUserSession(error, logOutOnAuthFailure)
                 } else {
-                    self?.presentError(error)
+                    self?.sessionStart = Date()
                 }
             }
+        } else {
+            let userDefinedContextData = UserDefinedContextData()
+            chatService.establishUserSession(token: token, userContextData: userDefinedContextData) { [weak self] (error) in
+                if let error = error {
+                    self?.errorInUserSession(error, logOutOnAuthFailure)
+                } else {
+                    self?.sessionStart = Date()
+                }
+            }
+        }
+    }
+
+    private func errorInUserSession(_ error: ChatServiceError, _ logOutOnAuthFailure: Bool = false) {
+        sessionStart = nil
+        
+        if case ChatServiceError.invalidCredentials = error {
+            if logOutOnAuthFailure {
+                postLogOutNotification()
+            } else {
+                postAuthenticationDidBecomeInvalidNotification()
+            }
+        } else {
+            presentError(error)
         }
     }
     
@@ -83,6 +117,7 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     }
     
     @objc func logOutButtonTapped(_ sender: Any) {
+        sessionStart = nil
         postLogOutNotification()
     }
     
