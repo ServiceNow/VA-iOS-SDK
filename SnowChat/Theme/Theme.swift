@@ -39,6 +39,16 @@ class Theme {
     
     private var colorPropertiesMap = [String : UIColor]()
     
+    private(set) var avatarUrl: URL?
+    
+    func updateAvatar(path: String, instance: ServerInstance) {
+        let instanceURL = instance.instanceURL
+        
+        if avatarUrl?.path != path {
+            avatarUrl = URL(string:path, relativeTo: instanceURL)
+        }
+    }
+    
     var categoryFontColor: UIColor {
         guard let color = colorPropertiesMap[ColorSettings.categoryFontColor] else {
             return Theme.defaultCategoryFontColor
