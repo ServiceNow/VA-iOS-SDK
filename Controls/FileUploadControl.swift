@@ -94,11 +94,13 @@ class FileUploadControl: NSObject, PickerControlProtocol, UIImagePickerControlle
         viewController.presentedViewController?.dismiss(animated: true, completion: nil)
         let image = info[UIImagePickerControllerOriginalImage] as! UIImage
         if #available(iOS 11.0, *) {
-            let imageURL = info[UIImagePickerControllerImageURL] as! URL
-            fileUploadModel.imageName = imageURL.deletingPathExtension().lastPathComponent
+            if let imageURL = info[UIImagePickerControllerImageURL] as? URL {
+                fileUploadModel.imageName = imageURL.deletingPathExtension().lastPathComponent
+            }
         } else {
-            let imageURL = info[UIImagePickerControllerReferenceURL] as! URL
-            fileUploadModel.imageName = imageURL.deletingPathExtension().lastPathComponent
+            if let imageURL = info[UIImagePickerControllerReferenceURL] as? URL {
+                fileUploadModel.imageName = imageURL.deletingPathExtension().lastPathComponent
+            }
         }
         
         let imageData = UIImageJPEGRepresentation(image, 0.2)
