@@ -155,6 +155,10 @@ extension ChatViewController: ChatEventListener {
         Logger.default.logInfo("ChatEventListener.didEstablishUserSession: \(sessionId)")
     }
     
+    func chatterbox(_ chatterbox: Chatterbox, didRestoreUserSession sessionId: String, forChat chatId: String ) {
+        Logger.default.logInfo("ChatEventListener.didRestoreUserSession: \(sessionId)")
+    }
+
     func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {
         switch transportStatus {
         case .unreachable:
