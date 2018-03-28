@@ -19,10 +19,6 @@ public final class ChatService {
     
     private let chatterbox: Chatterbox
     
-    private weak var viewController: ChatViewController?
-    
-    private(set) var userActions: ContextualActionMessage?
-    
     private var isInitializing: Bool = false
     
     // FIXME: What is the vendor ID for? Who defines this?
@@ -47,8 +43,6 @@ public final class ChatService {
         }
 
         let viewController = ChatViewController(chatterbox: chatterbox)
-        self.viewController = viewController
-        
         return viewController
     }
     
@@ -65,20 +59,19 @@ public final class ChatService {
             
             switch result {
             case let .success(message):
-                Logger.default.logDebug("Session Initialized")
-                self.userActions = message
+                Logger.default.logDebug("Session Initialized: \(message)")
                 completion(nil)
             case let .failure(error):
                 Logger.default.logDebug("Session failed to initialize: \(error.localizedDescription)")
-                self.userActions = nil
-                
-                // TODO: Leaking APIManager abstraction into chat service. Consider fixing this.
-                if case APIManagerError.invalidToken = error {
-                    completion(ChatServiceError.invalidCredentials)
-                } else {
-                    completion(ChatServiceError.noSession(error))
-                }
+                completion(chatError(fromError: error))
             }
+        }
+        
+        func chatError(fromError error: Error) -> ChatServiceError {
+            if case APIManagerError.invalidToken = error {
+                return ChatServiceError.invalidCredentials
+            }
+            return ChatServiceError.noSession(error)
         }
     }
     
