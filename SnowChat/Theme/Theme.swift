@@ -41,8 +41,10 @@ class Theme {
     
     private(set) var avatarUrl: URL?
     
-    func updateAvatar(path: String, instance: ServerInstance) {
-        let instanceURL = instance.instanceURL
+    var instanceURL: URL?
+    
+    func updateAvatar(path: String) {
+        guard let instanceURL = instanceURL else { return }
         
         if avatarUrl?.path != path {
             avatarUrl = URL(string:path, relativeTo: instanceURL)

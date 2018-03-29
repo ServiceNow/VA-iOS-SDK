@@ -366,7 +366,13 @@ extension ChatDataController: ChatDataListener {
             // If the message is of carousel style we want to show output image, not text
             if response.data.richControl?.uiMetadata?.style == .carousel,
                 let attachmentString = selectedOption?.attachment,
-                let url = URL(string: attachmentString) {
+                var url = URL(string: attachmentString) {
+                
+                // if the url is relative, make it relative to the instanceURL
+                if url.host == nil {
+                    url = URL(string: attachmentString, relativeTo: chatterbox.serverInstance.instanceURL) ?? url
+                }
+                
                 answerViewModel = OutputImageViewModel(id: ChatUtil.uuidString(), label: selectedOption?.label, value: url)
             } else {
                 answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: selectedOption?.label ?? value)

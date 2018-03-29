@@ -451,9 +451,14 @@ class ChatDataController {
     }
     
     func pushTopicTitle(topicInfo: TopicInfo) {
-        guard let message = topicInfo.topicName else {
+        guard var message = topicInfo.topicName else {
             return
         }
+        
+        if message.count == 0 {
+            message = NSLocalizedString("New Topic", comment: "Default text for new topic indicator, when topic has no name")
+        }
+        
         let titleTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         
         // NOTE: we do not buffer the welcome message currently - this is intentional
