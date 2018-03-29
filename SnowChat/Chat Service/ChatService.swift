@@ -17,6 +17,15 @@ public final class ChatService {
     
     public weak var delegate: ChatServiceDelegate?
     
+    public var isConnected: Bool {
+        switch chatterbox.apiManager.authStatus {
+        case .loggedIn:
+            return true
+        default:
+            return false
+        }
+    }
+    
     private let chatterbox: Chatterbox
     
     private var isInitializing: Bool = false
@@ -53,17 +62,33 @@ public final class ChatService {
         
         isInitializing = true
         
-        chatterbox.establishUserSession(vendor: vendor, token: token, userContextData: contextData) { (result) in
-            
-            self.isInitializing = false
-            
-            switch result {
-            case let .success(message):
-                Logger.default.logDebug("Session Initialized: \(message)")
-                completion(nil)
-            case let .failure(error):
-                Logger.default.logDebug("Session failed to initialize: \(error.localizedDescription)")
-                completion(chatError(fromError: error))
+        if isConnected {
+            chatterbox.restoreUserSession { result in
+                
+                self.isInitializing = false
+                
+                switch result {
+                case let .success(message):
+                    Logger.default.logDebug("Session Updated: \(message)")
+                    completion(nil)
+                case let .failure(error):
+                    Logger.default.logDebug("Session failed to update: \(error.localizedDescription)")
+                    completion(chatError(fromError: error))
+                }
+            }
+        } else {
+            chatterbox.establishUserSession(vendor: vendor, token: token, userContextData: contextData) { (result) in
+                
+                self.isInitializing = false
+                
+                switch result {
+                case let .success(message):
+                    Logger.default.logDebug("Session Initialized: \(message)")
+                    completion(nil)
+                case let .failure(error):
+                    Logger.default.logDebug("Session failed to initialize: \(error.localizedDescription)")
+                    completion(chatError(fromError: error))
+                }
             }
         }
         
@@ -72,25 +97,6 @@ public final class ChatService {
                 return ChatServiceError.invalidCredentials
             }
             return ChatServiceError.noSession(error)
-        }
-    }
-    
-    public func updateCredentials(token: OAuthToken, completion: @escaping (ChatServiceError?) -> Void) {
-        if isInitializing {
-            fatalError("Only one initialization can be performed at a time.")
-        }
-        
-        isInitializing = true
-
-        chatterbox.updateUserSession(token: token) { (result) in
-            self.isInitializing = false
-            
-            switch result {
-            case let .failure(error):
-                completion(ChatServiceError.noSession(error))
-            default:
-                completion(nil)
-            }
         }
     }
 }
