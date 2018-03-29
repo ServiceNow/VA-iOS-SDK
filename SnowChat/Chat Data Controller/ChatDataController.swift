@@ -358,8 +358,9 @@ class ChatDataController {
             fileUploadMessage.data.messageId = ChatUtil.uuidString()
             
             guard let imageData = fileUploadViewModel.selectedImageData,
-                let imageName = fileUploadViewModel.imageName,
                 let taskId = fileUploadMessage.data.taskId else { return }
+            
+            let imageName = fileUploadViewModel.imageName ?? "image"
             
             chatterbox.apiManager.uploadImage(data: imageData, withName:imageName, taskId: taskId, completion: { [weak self] result in
                 fileUploadMessage.data.richControl?.value = result
