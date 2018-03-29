@@ -39,41 +39,6 @@
                BlueprintName = "SnowChatTests"
                ReferencedContainer = "container:SnowChat.xcodeproj">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "APIManagerChatSessionTest">
-               </Test>
-               <Test
-                  Identifier = "APIManagerChatTopicsTest">
-               </Test>
-               <Test
-                  Identifier = "BooleanControlTests">
-               </Test>
-               <Test
-                  Identifier = "ChatSessionTests">
-               </Test>
-               <Test
-                  Identifier = "ChatterboxDataTests">
-               </Test>
-               <Test
-                  Identifier = "ControlCacheTests">
-               </Test>
-               <Test
-                  Identifier = "DataControllerTests">
-               </Test>
-               <Test
-                  Identifier = "DataStoreTests">
-               </Test>
-               <Test
-                  Identifier = "LoggerTests">
-               </Test>
-               <Test
-                  Identifier = "MultiSelectControlTests">
-               </Test>
-               <Test
-                  Identifier = "SingleSelectControlTests">
-               </Test>
-            </SkippedTests>
          </TestableReference>
       </Testables>
       <MacroExpansion>
