@@ -68,8 +68,21 @@ extension Chatterbox {
             let topicInfo = TopicInfo(topicId: Chatterbox.liveAgentTopicId, topicName: nil, taskId: taskId, conversationId: conversationId)
             self.startAgentTopic(topicInfo: topicInfo)
 
+            var agentInfo: SenderInfo?
+            
+            if let agentMessage = conversation.messageExchanges().first(where: { exchange in
+                    let message = exchange.message
+                    if let isAgent = message.isAgent, isAgent == true {
+                        return true
+                    }
+                    return false
+            }) {
+                agentInfo = agentMessage.message.senderInfo
+            }
+            
             self.notifyEventListeners { listener in
-                let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
+                let agentInfo = AgentInfo(agentId: agentInfo?.name ?? AgentInfo.IDUNKNOWN,
+                                          agentAvatar: agentInfo?.avatarPath)
                 listener.chatterbox(self, didResumeAgentChat: agentInfo, forChat: self.chatId)
             }
         }

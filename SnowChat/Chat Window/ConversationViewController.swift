@@ -512,6 +512,8 @@ extension ConversationViewController {
 
 extension ConversationViewController: ChatEventListener {
     
+    // MARK: - ChatEventListener
+
     func chatterbox(_ chatterbox: Chatterbox, willStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
         guard self.chatterbox.id == chatterbox.id else {
             return
@@ -537,7 +539,12 @@ extension ConversationViewController: ChatEventListener {
             return
         }
         
-        inputState = .inAgentConversation
+        if agentInfo.agentId == AgentInfo.IDUNKNOWN {
+            // no agent yet, so it is still waiting
+            inputState = .waitingForAgent
+        } else {
+            inputState = .inAgentConversation
+        }
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didFinishAgentChat agentInfo: AgentInfo, forChat chatId: String) {
@@ -549,8 +556,6 @@ extension ConversationViewController: ChatEventListener {
 
         dataController.agentTopicDidFinish()
     }
-    
-    // MARK: - ChatEventListener
     
     private func initializeSessionIfNeeded() {
         if !wasHistoryLoadedForUser {
@@ -597,7 +602,6 @@ extension ConversationViewController: ChatEventListener {
         dataController.topicDidFinish()
         
         inputState = .inTopicSelection
-        setupInputForState()
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {

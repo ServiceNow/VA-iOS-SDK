@@ -134,6 +134,9 @@ protocol ControlData: Storable, Codable {
     var conversationId: String? { get }
     var taskId: String? { get }
     
+    var isAgent: Bool? { get }
+    var senderInfo: SenderInfo? { get }
+
     var direction: MessageDirection { get }
     var messageTime: Date { get }
     
@@ -145,6 +148,14 @@ extension ControlData {
         return false
     }
     
+    var isAgent: Bool? {
+        return false
+    }
+    
+    var senderInfo: SenderInfo? {
+        return nil
+    }
+    
     var taskId: String? {
         return nil
     }
@@ -152,7 +163,7 @@ extension ControlData {
 
 struct ControlDataUnknown: ControlData {
     
-    let id: String = "UNKNOWN"
+    let id: String = ChatUtil.uuidString()
     let controlType: ChatterboxControlType = .unknown
     let messageId: String = "UNKNOWN_MESSAGE_ID"
     let conversationId: String? = "UNKNOWN_CONVERSATION_ID"
