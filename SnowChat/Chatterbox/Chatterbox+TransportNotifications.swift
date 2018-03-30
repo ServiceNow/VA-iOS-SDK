@@ -9,19 +9,33 @@
 import Foundation
 
 extension Chatterbox: TransportStatusListener {
+
+    private static var alreadySynchronizing = false
     
     // MARK: - handle transport notifications
     
     func apiManagerTransportDidBecomeUnavailable(_ apiManager: APIManager) {
-        logger.logInfo("Network unavailable....")
+        logger.logInfo("Transport is unavailable")
         
-        chatEventListener?.chatterbox(self, didReceiveTransportStatus: .unreachable, forChat: chatId)
+        notifyEventListeners { listener in
+            listener.chatterbox(self, didReceiveTransportStatus: .unreachable, forChat: chatId)
+        }
     }
-    
-    private static var alreadySynchronizing = false
-    
+
+    func apiManagerTransportIsReconnecting(_ apiManager: APIManager) {
+        logger.logDebug("Transport is reconnecting...")
+
+        notifyEventListeners { listener in
+            listener.chatterbox(self, didReceiveTransportStatus: .reconnecting, forChat: chatId)
+        }
+    }
+
     func apiManagerTransportDidBecomeAvailable(_ apiManager: APIManager) {
-        chatEventListener?.chatterbox(self, didReceiveTransportStatus: .reachable, forChat: chatId)
+        logger.logDebug("Transport is available")
+
+        notifyEventListeners { listener in
+            listener.chatterbox(self, didReceiveTransportStatus: .reachable, forChat: chatId)
+        }
         
         guard !Chatterbox.alreadySynchronizing, conversationContext.conversationId != nil else { return }
         
@@ -35,6 +49,8 @@ extension Chatterbox: TransportStatusListener {
     func apiManagerAuthenticationDidBecomeInvalid(_ apiManager: APIManager) {
         logger.logInfo("Authorization failed!")
         
-        chatAuthListener?.chatterboxAuthenticationDidBecomeInvalid(self)
+        notifyAuthListeners { listener in
+            listener.chatterboxAuthenticationDidBecomeInvalid(self)
+        }
     }
 }

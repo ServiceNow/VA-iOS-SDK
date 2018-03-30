@@ -17,11 +17,16 @@ public final class ChatService {
     
     public weak var delegate: ChatServiceDelegate?
     
+    public var isConnected: Bool {
+        switch chatterbox.apiManager.authStatus {
+        case .loggedIn:
+            return true
+        default:
+            return false
+        }
+    }
+    
     private let chatterbox: Chatterbox
-    
-    private weak var viewController: ChatViewController?
-    
-    private(set) var userActions: ContextualActionMessage?
     
     private var isInitializing: Bool = false
     
@@ -32,8 +37,7 @@ public final class ChatService {
         let instance = ServerInstance(instanceURL: instanceURL)
         self.chatterbox = Chatterbox(instance: instance)
         self.delegate = delegate
-        self.chatterbox.chatEventListener = self
-        self.chatterbox.chatAuthListener = self
+        self.chatterbox.chatAuthListeners.addListener(self)
         
         // Set default log levels for debugging
         Logger.logger(for: "AMBClient").logLevel = .error
@@ -48,8 +52,6 @@ public final class ChatService {
         }
 
         let viewController = ChatViewController(chatterbox: chatterbox)
-        self.viewController = viewController
-        
         return viewController
     }
     
@@ -60,75 +62,42 @@ public final class ChatService {
         
         isInitializing = true
         
-        chatterbox.establishUserSession(vendor: vendor, token: token, userContextData: contextData) { (result) in
-            
-            self.isInitializing = false
-            
-            switch result {
-            case let .success(message):
-                Logger.default.logDebug("Session Initialized")
-                self.userActions = message
-                completion(nil)
-            case let .failure(error):
-                Logger.default.logDebug("Session failed to initialize: \(error.localizedDescription)")
-                self.userActions = nil
+        if isConnected {
+            chatterbox.restoreUserSession { result in
                 
-                // TODO: Leaking APIManager abstraction into chat service. Consider fixing this.
-                if case APIManagerError.invalidToken = error {
-                    completion(ChatServiceError.invalidCredentials)
-                } else {
-                    completion(ChatServiceError.noSession(error))
+                self.isInitializing = false
+                
+                switch result {
+                case let .success(message):
+                    Logger.default.logDebug("Session Updated: \(message)")
+                    completion(nil)
+                case let .failure(error):
+                    Logger.default.logDebug("Session failed to update: \(error.localizedDescription)")
+                    completion(chatError(fromError: error))
                 }
             }
-            
+        } else {
+            chatterbox.establishUserSession(vendor: vendor, token: token, userContextData: contextData) { (result) in
+                
+                self.isInitializing = false
+                
+                switch result {
+                case let .success(message):
+                    Logger.default.logDebug("Session Initialized: \(message)")
+                    completion(nil)
+                case let .failure(error):
+                    Logger.default.logDebug("Session failed to initialize: \(error.localizedDescription)")
+                    completion(chatError(fromError: error))
+                }
+            }
         }
-
-    }
-
-}
-
-// TODO: Chatterbox should support multiple event listeners instead of proxying
-extension ChatService: ChatEventListener {
-    
-    func chatterbox(_ chatterbox: Chatterbox, willStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
-        viewController?.chatterbox(chatterbox, willStartAgentChat: agentInfo, forChat: chatId)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
-        viewController?.chatterbox(chatterbox, didStartAgentChat: agentInfo, forChat: chatId)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didResumeAgentChat agentInfo: AgentInfo, forChat chatId: String) {
-        viewController?.chatterbox(chatterbox, didResumeAgentChat: agentInfo, forChat: chatId)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didFinishAgentChat agentInfo: AgentInfo, forChat chatId: String) {
-        viewController?.chatterbox(chatterbox, didFinishAgentChat: agentInfo, forChat: chatId)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {
-        Logger.default.logDebug("Transport Status Changed: \(transportStatus)")
-        viewController?.chatterbox(chatterbox, didReceiveTransportStatus: transportStatus, forChat: chatId)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
-        Logger.default.logDebug("Session Established: \(sessionId)")
-        viewController?.chatterbox(chatterbox, didEstablishUserSession: sessionId, forChat: chatId)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didStartTopic topicInfo: TopicInfo, forChat chatId: String) {
-        Logger.default.logDebug("Topic Started: \(topicInfo)")
-        viewController?.chatterbox(chatterbox, didStartTopic: topicInfo, forChat: chatId)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didResumeTopic topicInfo: TopicInfo, forChat chatId: String) {
-        Logger.default.logDebug("Topic Resumed: \(topicInfo)")
-        viewController?.chatterbox(chatterbox, didResumeTopic: topicInfo, forChat: chatId)
-    }
-    
-    func chatterbox(_ chatterbox: Chatterbox, didFinishTopic topicInfo: TopicInfo, forChat chatId: String) {
-        Logger.default.logDebug("Topic Finished: \(topicInfo)")
-        viewController?.chatterbox(chatterbox, didFinishTopic: topicInfo, forChat: chatId)
+        
+        func chatError(fromError error: Error) -> ChatServiceError {
+            if case APIManagerError.invalidToken = error {
+                return ChatServiceError.invalidCredentials
+            }
+            return ChatServiceError.noSession(error)
+        }
     }
 }
 

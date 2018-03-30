@@ -99,11 +99,18 @@ class ChatDataStore {
     
     func storeConversation(_ conversation: Conversation) {
         if let index = conversations.index(where: { $0.conversationId == conversation.conversationId }) {
-            conversations[index] = conversation
-            // TODO: merge existing messages if the conversation already exists ???
+            // add to existing conversation
+            conversations[index].appendMessageExchanges(conversation.messageExchanges())
         } else {
+            // add new conversation
             conversations.append(conversation)
         }
+    }
+    
+    func updateConversation(_ conversation: Conversation) {
+        guard let index = conversations.index(where: { $0.conversationId == conversation.conversationId })  else { return }
+        
+        conversations[index].appendMessageExchanges(conversation.messageExchanges())
     }
     
     func storeHistory(_ exchange: MessageExchange, forConversation conversationId: String) {
@@ -199,8 +206,17 @@ struct Conversation: Storable, Codable {
         return exchanges.first
     }
     
-    func newestExchange() -> MessageExchange? {
-        return exchanges.last
+    func newestServerMessage() -> ControlData? {
+        let exchange = exchanges.reversed().first { exchange in
+            return exchange.message.direction == .fromServer
+        }
+        return exchange?.message
+    }
+    
+    mutating func appendMessageExchanges(_ newExchanges: [MessageExchange]) {
+        newExchanges.forEach { exchange in
+            exchanges.append(exchange)
+        }
     }
     
     enum ConversationState: String, Codable {

@@ -11,8 +11,6 @@ import WebKit
 
 protocol ControlResourceProvider: ControlWebResourceProvider {
     var imageDownloader: ImageDownloader { get }
-    
-    var avatarURL: URL { get }
 }
 
 protocol ControlWebResourceProvider {
@@ -21,12 +19,5 @@ protocol ControlWebResourceProvider {
 }
 
 extension APIManager: ControlResourceProvider {
-    
-    var avatarURL: URL {
-        if let avatarUrl = instance.avatarUrl {
-            return avatarUrl
-        } else {
-            return instance.instanceURL.appendingPathComponent("/images/default_virtual_agent_avatar.png")
-        }
-    }
+
 }

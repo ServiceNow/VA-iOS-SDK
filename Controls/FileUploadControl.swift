@@ -1,5 +1,5 @@
 //
-//  InputImageControl.swift
+//  FileUploadControl.swift
 //  SnowChat
 //
 //  Created by Michael Borowiec on 2/16/18.
@@ -8,7 +8,7 @@
 
 import MobileCoreServices
 
-class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class FileUploadControl: NSObject, PickerControlProtocol, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     var visibleItemCount: Int = 2
     
@@ -18,8 +18,8 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
         }
     }
     
-    private var inputImageModel: InputImageViewModel {
-        return model as! InputImageViewModel
+    private var fileUploadModel: FileUploadViewModel {
+        return model as! FileUploadViewModel
     }
     
     var style: PickerControlStyle
@@ -32,7 +32,7 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
     weak var delegate: ControlDelegate?
     
     required init(model: ControlViewModel) {
-        guard let inputImageModel = model as? InputImageViewModel else {
+        guard let inputImageModel = model as? FileUploadViewModel else {
             fatalError("Wrong model class")
         }
 
@@ -43,6 +43,8 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
     // MARK: - PickerViewControllerDelegate
     
     func pickerViewController(_ viewController: UIViewController, didFinishWithModel model: PickerControlViewModel) {
+        
+        // TODO: when we support file upload, we will need to add here appropriate cases
         guard let item = model.selectedItem else { return }
         
         switch item.type {
@@ -92,15 +94,17 @@ class InputImageControl: NSObject, PickerControlProtocol, UIImagePickerControlle
         viewController.presentedViewController?.dismiss(animated: true, completion: nil)
         let image = info[UIImagePickerControllerOriginalImage] as! UIImage
         if #available(iOS 11.0, *) {
-            let imageURL = info[UIImagePickerControllerImageURL] as! URL
-            inputImageModel.imageName = imageURL.deletingPathExtension().lastPathComponent
+            if let imageURL = info[UIImagePickerControllerImageURL] as? URL {
+                fileUploadModel.imageName = imageURL.deletingPathExtension().lastPathComponent
+            }
         } else {
-            let imageURL = info[UIImagePickerControllerReferenceURL] as! URL
-            inputImageModel.imageName = imageURL.deletingPathExtension().lastPathComponent
+            if let imageURL = info[UIImagePickerControllerReferenceURL] as? URL {
+                fileUploadModel.imageName = imageURL.deletingPathExtension().lastPathComponent
+            }
         }
         
         let imageData = UIImageJPEGRepresentation(image, 0.2)
-        inputImageModel.selectedImageData = imageData
+        fileUploadModel.selectedImageData = imageData
         
         delegate?.control(self, didFinishWithModel: model)
     }

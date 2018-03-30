@@ -20,7 +20,7 @@ enum APIManagerError: Error {
 
 class APIManager: NSObject, SNOWAMBClientDelegate {
     
-    private enum AuthStatus {
+    internal enum AuthStatus {
         case loggedIn(User)
         case loggedOut(User?)
     }
@@ -63,7 +63,7 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
         return configuration
     }
     
-    private var authStatus: AuthStatus
+    internal var authStatus: AuthStatus
     
     // MARK: - Initialization
     
@@ -172,6 +172,8 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
         authStatus = .loggedOut(user)
         
         addAMBPauseReason(.loggedOut)
+        
+        transportListener?.apiManagerAuthenticationDidBecomeInvalid(self)
     }
     
     // MARK: - Transport Listener

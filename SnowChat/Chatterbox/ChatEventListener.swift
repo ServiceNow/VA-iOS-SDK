@@ -15,6 +15,8 @@ struct TopicInfo {
     let conversationId: String
 }
 
+internal var nullTopicInfo = TopicInfo(topicId: nil, topicName: nil, taskId: nil, conversationId: "")
+
 struct AgentInfo {
     let agentId: String
     let agentAvatar: String?
@@ -22,6 +24,7 @@ struct AgentInfo {
 
 enum TransportStatus {
     case reachable
+    case reconnecting
     case unreachable
 }
 
@@ -37,6 +40,7 @@ protocol ChatEventListener: AnyObject {
     func chatterbox(_ chatterbox: Chatterbox, didFinishAgentChat agentInfo: AgentInfo, forChat chatId: String)
 
     func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String)
-    
+    func chatterbox(_ chatterbox: Chatterbox, didRestoreUserSession sessionId: String, forChat chatId: String)
+
     func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String)
 }

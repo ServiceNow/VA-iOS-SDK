@@ -212,24 +212,16 @@ class SNOWAMBClientTests: XCTestCase {
     func testGlideStateLoggedIn() {
         waitForLogin()
         
-        let subscribedExpectation = XCTestExpectation(description: "AMB subscribed to test channel")
-        let glideLoggedInExpectation = XCTestExpectation(description: "AMB Glide session logged in")
+        let glideLoggedInExpectation = XCTestExpectation(description: "AMB Glide session is \"logged in\"")
         
         testExpectations.removeAll()
         testExpectations[ExpectationType.glideLoggedIn] = glideLoggedInExpectation
-        testExpectations[ExpectationType.subscribed] = subscribedExpectation
 
         ambClient?.delegate = self
         ambClient?.connect()
-        // important to wait for subscription going through before publishing
-        let subscription = subscribeToTestChannel()
-        self.wait(for: [subscribedExpectation], timeout: 10)
+        
+        self.wait(for: [glideLoggedInExpectation], timeout: 10)
         XCTAssert(subscription != nil, "AMB subcription subscription is nil")
-        // publish message and wait for reply with
-        print("glide status=\(String(describing: ambClient?.glideStatus))")
-        publishMessage()
-        self.wait(for: [glideLoggedInExpectation], timeout: 100)
-        print("glide status=\(String(describing: ambClient?.glideStatus))")
     }
     
     func testPublishMessage() {

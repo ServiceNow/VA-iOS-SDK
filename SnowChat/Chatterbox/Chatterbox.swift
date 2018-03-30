@@ -36,6 +36,7 @@ import SNOWAMBClient
 enum ChatterboxError: Error {
     case invalidParameter(details: String)
     case invalidCredentials(details: String)
+    case illegalState(details: String)
     case unknown(details: String)
 }
 
@@ -47,9 +48,29 @@ class Chatterbox {
     }
     var vendor: ChatVendor?
     
-    weak var chatDataListener: ChatDataListener?
-    weak var chatEventListener: ChatEventListener?
-    weak var chatAuthListener: ChatAuthListener?
+    // AnyObject as type is a bummer, but Swift bug requires is https://bugs.swift.org/browse/SR-55
+    // - workaround is to make notification wrappers to hide the casting...
+    private(set) var chatDataListeners = ListenerList<AnyObject>()
+    private(set) var chatEventListeners = ListenerList<AnyObject>()
+    private(set) var chatAuthListeners = ListenerList<AnyObject>()
+    
+    internal func notifyDataListeners(_ closure: (ChatDataListener) -> Void) {
+        chatDataListeners.forEach(withType: ChatDataListener.self) { listener in
+            closure(listener)
+        }
+    }
+
+    internal func notifyEventListeners(_ closure: (ChatEventListener) -> Void) {
+        chatEventListeners.forEach(withType: ChatEventListener.self) { listener in
+            closure(listener)
+        }
+    }
+
+    internal func notifyAuthListeners(_ closure: (ChatAuthListener) -> Void) {
+        chatAuthListeners.forEach(withType: ChatAuthListener.self) { listener in
+            closure(listener)
+        }
+    }
     
     internal var conversationContext = ConversationContext()
     internal var contextualActions: ContextualActionMessage?
@@ -58,8 +79,10 @@ class Chatterbox {
     
     internal var session: ChatSession? {
         didSet {
-            if let settings = session?.settings?.virtualAgentSettings {
-                apiManager.instance.avatar = settings.avatar
+            if let settings = session?.settings?.virtualAgentSettings,
+                let avatarPath = settings.avatar,
+                let theme = session?.settings?.brandingSettings?.theme {
+                    theme.updateAvatar(path: avatarPath, instance: serverInstance)
             }
         }
     }
@@ -83,6 +106,7 @@ class Chatterbox {
         case uninitialized
         case topicSelection
         case userConversation
+        case waitingForAgent
         case agentConversation
     }
     
@@ -102,10 +126,8 @@ class Chatterbox {
     
     // MARK: - Methods
     
-    init(instance: ServerInstance, dataListener: ChatDataListener? = nil, eventListener: ChatEventListener? = nil) {
+    init(instance: ServerInstance) {
         self.serverInstance = instance
-        chatDataListener = dataListener
-        chatEventListener = eventListener
     }
     
     internal func publishMessage<T>(_ message: T) where T: Encodable {
@@ -121,7 +143,7 @@ class Chatterbox {
         switch state {
         case .userConversation:
             cancelUserConversation()
-        case .agentConversation:
+        case .waitingForAgent, .agentConversation:
             endAgentConversation()
         default:
             break
@@ -136,7 +158,8 @@ class Chatterbox {
         
         switch action.eventType {
         case .finishedUserTopic:
-            didReceiveTopicFinishedAction(action)
+            guard let topicFinished = action as? TopicFinishedMessage else { return false }
+            didReceiveTopicFinishedAction(topicFinished)
         case .supportQueueSubscribe:
             if let subscribeMessage = action as? SubscribeToSupportQueueMessage {
                 didReceiveSubscribeToSupportAction(subscribeMessage)
@@ -147,15 +170,20 @@ class Chatterbox {
         return true
     }
     
-    fileprivate func processIncomingControlMessage(_ control: ControlData, forConversation conversationId: String) {
+    internal func processIncomingControlMessage(_ control: ControlData, forConversation conversationId: String) {
         chatStore.storeControlData(control, forConversation: conversationId, fromChat: self)
-        chatDataListener?.chatterbox(self, didReceiveControlMessage: control, forChat: chatId)
+        
+        notifyDataListeners { listener in
+            listener.chatterbox(self, didReceiveControlMessage: control, forChat: chatId)
+        }
     }
     
     fileprivate func processResponseControlMessage(_ control: ControlData, forConversation conversationId: String) {
         if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last, !lastExchange.isComplete {
             if let updatedExchange = chatStore.storeResponseData(control, forConversation: conversationId) {
-                chatDataListener?.chatterbox(self, didCompleteMessageExchange: updatedExchange, forChat: conversationId)
+                notifyDataListeners { listener in
+                    listener.chatterbox(self, didCompleteMessageExchange: updatedExchange, forChat: conversationId)
+                }
             }
         } else {
             // our own reply message from an agent chat
@@ -164,8 +192,12 @@ class Chatterbox {
     }
     
     internal func processControlMessage(_ control: ControlData) {
-        switch control.direction {
+        guard control.controlType != .unknown else {
+            logger.logInfo("Unknown control type: \(control)")
+            return
+        }
         
+        switch control.direction {
         case .fromClient:
             if let conversationId = conversationContext.conversationId {
                 processResponseControlMessage(control, forConversation: conversationId)
@@ -173,7 +205,15 @@ class Chatterbox {
         
         case .fromServer:
             updateContextIfNeeded(control)
-
+            
+            if state == .waitingForAgent {
+                if control.controlType == .agentText {
+                    // this signals the start of the agent conversation
+                    state = .agentConversation
+                    agentTopicStarted(withMessage: control)
+                }
+            }
+            
             if control.controlType == .contextualAction, let contextualActionControl = control as? ContextualActionMessage {
                 updateContextualActions(contextualActionControl)
                 return
@@ -190,32 +230,25 @@ class Chatterbox {
         contextualActions = newContextualActions
     }
     
-    fileprivate func handleTopicFinishedAction(_ action: ActionData) {
-        if let topicFinishedMessage = action as? TopicFinishedMessage {
-            conversationContext.conversationId = nil
-            
-            saveDataToPersistence()
-            
-            let topicInfo = TopicInfo(topicId: "TOPIC_ID", topicName: nil, taskId: nil, conversationId: topicFinishedMessage.data.conversationId ?? "CONVERSATION_ID")
-            chatEventListener?.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
-        }
-    }
-
     fileprivate func updateContextIfNeeded(_ control: ControlData) {
-        if let taskId = control.taskId,
-            let conversationId = control.conversationId {
-            // keep our taskId and conversationId's updated with the latest from the server
-            // NOTE: this MUST be done for agent messages, but should be fine for chatbot messages too
+        // keep our taskId and conversationID up to date with incoming messages
+        
+        if let taskId = control.taskId {
             conversationContext.taskId = taskId
+        }
+        
+        if let conversationId = control.conversationId,
+           conversationId != conversationContext.systemConversationId {
+
             conversationContext.conversationId = conversationId
         }
     }
     
     internal func didReceiveSystemError(_ message: String) {
         switch state {
-        case .userConversation:
+        case .userConversation, .topicSelection:
             transferToLiveAgent()
-        case .agentConversation:
+        case .waitingForAgent, .agentConversation:
             // signal an end of conversation so the user can try a new conversation
             guard let sessionId = self.conversationContext.sessionId,
                 let conversationId = self.conversationContext.conversationId else { return }
@@ -225,20 +258,16 @@ class Chatterbox {
         }
     }
     
-    internal func didReceiveTopicFinishedAction(_ action: ActionData) {
-        if let topicFinishedMessage = action as? TopicFinishedMessage {
-            
-            cancelPendingExchangeIfNeeded()
-                
-            conversationContext.conversationId = nil
-            
-            saveDataToPersistence()
-            
-            let topicInfo = TopicInfo(topicId: nil,
-                                      topicName: nil,
-                                      taskId: nil,
-                                      conversationId: topicFinishedMessage.data.conversationId ?? "NIL_CONVERSATION_ID")
-            chatEventListener?.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
+    internal func didReceiveTopicFinishedAction(_ action: TopicFinishedMessage) {
+        cancelPendingExchangeIfNeeded()
+        
+        conversationContext.conversationId = nil
+        
+        saveDataToPersistence()
+        
+        let topicInfo = nullTopicInfo
+        notifyEventListeners { listener in
+            listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
         }
     }
 
@@ -252,7 +281,9 @@ class Chatterbox {
             let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last, !lastExchange.isComplete {
             
             chatStore.cancelPendingExchange(forConversation: conversationId)
-            chatDataListener?.chatterbox(self, didCompleteMessageExchange: lastExchange, forChat: conversationId)
+            notifyDataListeners { listener in
+                listener.chatterbox(self, didCompleteMessageExchange: lastExchange, forChat: conversationId)
+            }
         }
     }
     
@@ -272,13 +303,15 @@ class Chatterbox {
             updateMultiSelectControl(control)
         case .multiPart:
             updateMultiPartControl(control)
-        case .dateTime, .date, .time:
+        case .dateTime:
             updateDateTimeControl(control)
+        case .date, .time:
+            updateDateOrTimeControl(control)
         case .agentText:
             // NOTE: only used for live agent mode
             updateTextControl(control)
-        case .inputImage:
-            updateInputImageControl(control)
+        case .fileUpload:
+            updateFileUploadControl(control)
         default:
             logger.logError("Unrecognized control type - skipping: \(type)")
             return
@@ -338,16 +371,23 @@ class Chatterbox {
         }
     }
     
+    fileprivate func updateDateOrTimeControl(_ control: ControlData) {
+        if var dateTimeControl = control as? DateOrTimePickerControlMessage, let conversationId = dateTimeControl.data.conversationId {
+            dateTimeControl.data = updateRichControlData(dateTimeControl.data)
+            publishControlUpdate(dateTimeControl, forConversation: conversationId)
+        }
+    }
+    
     fileprivate func updateTextControl(_ control: ControlData) {
         if let textControl = control as? AgentTextControlMessage, let conversationId = textControl.conversationId {
             publishControlUpdate(textControl, forConversation: conversationId)
         }
     }
     
-    fileprivate func updateInputImageControl(_ control: ControlData) {
-        if var inputImageControl = control as? InputImageControlMessage, let conversationId = inputImageControl.data.conversationId {
-            inputImageControl.data = updateRichControlData(inputImageControl.data)
-            publishControlUpdate(inputImageControl, forConversation: conversationId)
+    fileprivate func updateFileUploadControl(_ control: ControlData) {
+        if var fileUploadControl = control as? FileUploadControlMessage, let conversationId = fileUploadControl.data.conversationId {
+            fileUploadControl.data = updateRichControlData(fileUploadControl.data)
+            publishControlUpdate(fileUploadControl, forConversation: conversationId)
         }
     }
     

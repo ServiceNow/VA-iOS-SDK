@@ -79,8 +79,11 @@ extension ChatMessageModel {
         case .multiPart:
             guard let controlMessage = message as? MultiPartControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage, theme: theme)
-        case .dateTime, .date, .time:
+        case .dateTime:
             guard let controlMessage = message as? DateTimePickerControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+            return model(withMessage: controlMessage, theme: theme)
+        case .date, .time:
+            guard let controlMessage = message as? DateOrTimePickerControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage, theme: theme)
         case .outputImage:
             guard let controlMessage = message as? OutputImageControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
@@ -91,8 +94,8 @@ extension ChatMessageModel {
         case .outputHtml:
             guard let controlMessage = message as? OutputHtmlControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage, theme: theme)
-        case .inputImage:
-            guard let controlMessage = message as? InputImageControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
+        case .fileUpload:
+            guard let controlMessage = message as? FileUploadControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
             return model(withMessage: controlMessage, theme: theme)
         case .systemError:
             guard let systemErrorMessage = message as? SystemErrorControlMessage else { fatalError("message is not what it seems in ChatMessageModel") }
@@ -124,15 +127,16 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
-    static func model(withMessage message: InputImageControlMessage, theme: Theme) -> ChatMessageModel? {
+    static func model(withMessage message: FileUploadControlMessage, theme: Theme) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
-            let required = message.data.richControl?.uiMetadata?.required else {
+            let required = message.data.richControl?.uiMetadata?.required,
+            let itemType = message.data.richControl?.uiMetadata?.itemType else {
                 return nil
         }
         
-        let inputImage = InputImageViewModel(id: message.messageId, label: title, required: required)
+        let fileUploadModel = FileUploadViewModel(id: message.messageId, label: title, required: required, itemType: itemType.rawValue)
         let direction = message.direction
-        let snowViewModel = ChatMessageModel(model: inputImage, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
+        let snowViewModel = ChatMessageModel(model: fileUploadModel, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         return snowViewModel
     }
     
@@ -187,6 +191,18 @@ extension ChatMessageModel {
     static func model(withMessage message: DateTimePickerControlMessage, theme: Theme) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label else {
                 return nil
+        }
+        
+        let direction = message.direction
+        
+        let textViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: title)
+        let snowViewModel = ChatMessageModel(model: textViewModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
+        return snowViewModel
+    }
+    
+    static func model(withMessage message: DateOrTimePickerControlMessage, theme: Theme) -> ChatMessageModel? {
+        guard let title = message.data.richControl?.uiMetadata?.label else {
+            return nil
         }
         
         let direction = message.direction

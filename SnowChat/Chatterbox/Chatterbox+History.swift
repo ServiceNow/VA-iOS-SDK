@@ -16,37 +16,28 @@ extension Chatterbox {
     
     func syncConversation(_ completion: @escaping (Int) -> Void) {
         // get the newest message and see if there are any messages newer than that for this consumer
-        //
+
         guard let consumerAccountId = session?.user.consumerAccountId else {
             logger.logError("No consumerAccountId in syncConversation!")
             return
         }
         guard let conversationId = conversationContext.conversationId,
             let conversation = chatStore.conversation(forId: conversationId),
-            let newestExchange = conversation.newestExchange() else {
+            let newestServerMessage = conversation.newestServerMessage() else {
                 logger.logError("Could not determine last message ID")
                 completion(0)
                 return
         }
         
-        let newestMessage = newestExchange.message
-        
-        apiManager.fetchNewerConversations(forConsumer: consumerAccountId, afterMessage: newestMessage.messageId, completionHandler: { [weak self] conversations in
+        apiManager.fetchNewerConversations(forConsumer: consumerAccountId, afterMessage: newestServerMessage.messageId, completionHandler: { [weak self] conversations in
             guard let strongSelf = self else { return }
             
             if conversations.count == 0 {
-                strongSelf.syncNoConversationsReturned()
+                strongSelf.logger.logDebug("Sync with NO conversation returned - nothing to do!")
                 completion(0)
-                
-            } else if conversations.count == 1 && conversations.first?.conversationId == conversationId {
-                // we got back something for the current conversation; make sure it matches the response we have
-                guard let receivedConversation = conversations.first else { return }
-                strongSelf.syncCurrentConversation(receivedConversation, newestExchange)
-                completion(1)
-                
             } else {
-                // if we are here we have to reload everything
-                strongSelf.clearAndReloadFromPersistence(completionHandler: { (error) in
+                // changes on the server - reload from saved state
+                strongSelf.clearAndReloadFromService(completionHandler: { (error) in
                     let count = strongSelf.chatStore.conversations.count
                     completion(count)
                 })
@@ -71,25 +62,6 @@ extension Chatterbox {
         case .unknown:
             logger.logError("Unknown conversation state in syncConversation!")
         }
-    }
-    
-    fileprivate func syncNoConversationsReturned() {
-        // if no messages were returned, then we have the latest messages, just need to update the input mode
-        logger.logDebug("Sync with NO conversation returned - nothing to do!")
-    }
-    
-    fileprivate func syncCurrentConversation(_ receivedConversation: Conversation, _ newestExchange: MessageExchange) {
-        guard let firstReceivedExchange = receivedConversation.messageExchanges().first,
-            let receivedResponseId = firstReceivedExchange.response?.messageId,
-            let ourResponseId = newestExchange.response?.messageId,
-            receivedResponseId == ourResponseId  else {
-                // responses do not match!
-                return
-        }
-        
-        // our last response matches the info we received, we are in sync!
-        logger.logInfo("Conversation messages in sync!")
-        syncConversationState(receivedConversation)
     }
     
     internal func flattenMessageExchanges(_ exchanges: [MessageExchange]) -> [ControlData] {
@@ -140,6 +112,10 @@ extension Chatterbox {
                 completion(0)
                 return
         }
+
+        notifyDataListeners { listener in
+            listener.chatterbox(self, willLoadConversationsForConsumerAccount: consumerAccountId, forChat: chatId)
+        }
         
         apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { [weak self] conversations in
             guard let strongSelf = self else {
@@ -148,8 +124,6 @@ extension Chatterbox {
             }
             
             var count = 0
-            
-            strongSelf.chatDataListener?.chatterbox(strongSelf, willLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
             
             conversations.forEach({ [weak self] conversation in
                 guard let strongSelf = self else { return }
@@ -165,7 +139,9 @@ extension Chatterbox {
                 count += strongSelf.loadConversationHistory(conversation)
             })
             
-            strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
+            strongSelf.notifyDataListeners { listener in
+                listener.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
+            }
             
             completion(count)
         })
@@ -175,14 +151,18 @@ extension Chatterbox {
         var count = 0
         let conversationId = conversation.conversationId
         
-        chatDataListener?.chatterbox(self, willLoadConversationHistory: conversationId, forChat: chatId)
+        notifyDataListeners { listener in
+            listener.chatterbox(self, willLoadConversationHistory: conversationId, forChat: chatId)
+        }
         
         conversation.messageExchanges().reversed().forEach({ exchange in
             self.storeHistoryAndPublish(exchange, forConversation: conversationId)
             count += (exchange.response != nil ? 2 : 1)
         })
         
-        chatDataListener?.chatterbox(self, didLoadConversationHistory: conversationId, forChat: chatId)
+        notifyDataListeners { listener in
+           listener.chatterbox(self, didLoadConversationHistory: conversationId, forChat: chatId)
+        }
         
         return count
     }
@@ -200,9 +180,9 @@ extension Chatterbox {
         }
     }
     
-    internal func clearAndReloadFromPersistence(completionHandler: @escaping (Error?) -> Void) {
+    internal func clearAndReloadFromService(completionHandler: @escaping (Error?) -> Void) {
         chatStore.reset()
-        loadDataFromPersistence(completionHandler: completionHandler)
+        refreshConversations(skipSyncingState: true, completionHandler: completionHandler)
     }
     
     internal func loadDataFromPersistence(completionHandler: @escaping (Error?) -> Void) {
@@ -216,7 +196,7 @@ extension Chatterbox {
          }
          */
         
-        refreshConversations(completionHandler: completionHandler)
+        refreshConversations(skipSyncingState: false, completionHandler: completionHandler)
     }
     
     // refreshConversations - pull all conversations from the service for the current consumerAccountId
@@ -226,21 +206,27 @@ extension Chatterbox {
     //
     // If the last conversation is in-progress, we have to process it like a live conversation, not
     // one loaded from history, to ensure that the controls are displayed as they need to be for an
-    // active convresation. We also have to resume the conversation by sending the showTopic message
+    // active convresation.
+    //
+    // Unless we are skipping synchronization of conversation state we also have to resume the conversation by sending the showTopic message
     // to ensure that the server knows it was resumed by our current session
-    internal func refreshConversations(completionHandler: @escaping (Error?) -> Void) {
+    internal func refreshConversations(skipSyncingState: Bool = false, completionHandler: @escaping (Error?) -> Void) {
         
         if let consumerId = session?.user.consumerAccountId {
             logger.logDebug("--> Loading conversations for \(consumerId)")
             
-            self.chatDataListener?.chatterbox(self, willLoadConversationsForConsumerAccount: consumerId, forChat: self.chatId)
+            notifyDataListeners { listener in
+                listener.chatterbox(self, willLoadConversationsForConsumerAccount: consumerId, forChat: self.chatId)
+            }
             
             apiManager.fetchConversations(forConsumer: consumerId, completionHandler: { [weak self] conversations in
                 guard let strongSelf = self else { return }
                 
                 guard let lastConversation = conversations.last else {
                     // no messages - signal we are finished
-                    strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
+                    strongSelf.notifyDataListeners { listener in
+                        listener.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
+                    }
                     completionHandler(nil)
                     return
                 }
@@ -260,7 +246,9 @@ extension Chatterbox {
                         
                         // if we are on an in-progress conversation, then signal that history loading is done and process
                         // the in-progress conversation as a live-one, not a historical one
-                        strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
+                        strongSelf.notifyDataListeners { listener in
+                            listener.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
+                        }
                     } else {
                         // normalize the completion state (error, canceled, completed all become completed)
                         conversation.state = .completed
@@ -271,10 +259,14 @@ extension Chatterbox {
                     if isLastConversation {
                         // notify that load is complete, unless we already did (for the in-progress conversation)
                         if !isInProgress {
-                            strongSelf.chatDataListener?.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
+                            strongSelf.notifyDataListeners { listener in
+                                listener.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
+                            }
                         }
                         
-                        strongSelf.syncConversationState(conversation)
+                        if !skipSyncingState {
+                            strongSelf.syncConversationState(conversation)
+                        }
                     }
                 }
                 completionHandler(nil)
@@ -287,13 +279,26 @@ extension Chatterbox {
     
     internal func storeHistoryAndPublish(_ exchange: MessageExchange, forConversation conversationId: String) {
         chatStore.storeHistory(exchange, forConversation: conversationId)
-        chatDataListener?.chatterbox(self, didReceiveHistory: exchange, forChat: chatId)
+        notifyDataListeners { listener in
+            listener.chatterbox(self, didReceiveHistory: exchange, forChat: chatId)
+        }
     }
     
     internal func storeConversationAndPublish(_ conversation: Conversation) {
         chatStore.storeConversation(conversation)
         
-        self.chatDataListener?.chatterbox(self, willLoadConversation: conversation.conversationId, forChat: self.chatId)
+        notifyDataListeners { listener in
+            listener.chatterbox(self, willLoadConversation: conversation.conversationId, forChat: self.chatId)
+        }
+        
+        notifyMessagesFor(conversation)
+        
+        notifyDataListeners { listener in
+            listener.chatterbox(self, didLoadConversation: conversation.conversationId, forChat: self.chatId)
+        }
+    }
+    
+    private func notifyMessagesFor(_ conversation: Conversation) {
         
         conversation.messageExchanges().forEach { exchange in
             let outputOnlyMessage = exchange.message.isOutputOnly || exchange.message.controlType == .multiPart
@@ -305,27 +310,29 @@ extension Chatterbox {
                 notifyMessageExchange(exchange)
             }
         }
-        
-        self.chatDataListener?.chatterbox(self, didLoadConversation: conversation.conversationId, forChat: self.chatId)
     }
     
     internal func notifyMessage(_ message: ControlData) {
-        guard let chatDataListener = chatDataListener else {
+        guard chatDataListeners.count > 0 else {
             logger.logError("No ChatDataListener in NotifyControlReceived")
             return
         }
         
-        chatDataListener.chatterbox(self, didReceiveControlMessage: message, forChat: chatId)
+        notifyDataListeners { listener in
+            listener.chatterbox(self, didReceiveControlMessage: message, forChat: chatId)
+        }
     }
     
     internal func notifyMessageExchange(_ exchange: MessageExchange) {
         logger.logDebug("--> Notifying MessageExchange: message=\(exchange.message.controlType) | response=\(exchange.response?.controlType ?? .unknown)")
         
-        guard let chatDataListener = chatDataListener else {
+        guard chatDataListeners.count > 0 else {
             logger.logError("No ChatDataListener in notifyResponseReceived")
             return
         }
         
-        chatDataListener.chatterbox(self, didCompleteMessageExchange: exchange, forChat: chatId)
+        notifyDataListeners { listener in
+            listener.chatterbox(self, didCompleteMessageExchange: exchange, forChat: chatId)
+        }
     }
 }

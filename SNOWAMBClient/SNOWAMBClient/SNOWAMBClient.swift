@@ -206,6 +206,7 @@ public class SNOWAMBClient {
     // MARK: public methods
     
     public func connect() {
+        cancelAllDataTasks()
         connectDataTaskTime = nil
         sendBayeuxHandshakeMessage()
     }
@@ -241,6 +242,7 @@ public class SNOWAMBClient {
         if subscribedChannels.contains(channel) {
             return
         }
+        queuedSubscriptionChannels.insert(channel)
         sendBayeuxSubscribeMessage(channel: channel)
     }
     
@@ -448,12 +450,8 @@ private extension SNOWAMBClient {
     func handleConnectMessage(_ ambMessage: SNOWAMBMessage) {
         
         func parseGlideSessionStatus(from ext: [String : Any]) {
-            let sessionStatus: AMBGlideSessionStatus?
-            if let sessionStatusString = ext["glide.session.status"] as? String {
-                sessionStatus = AMBGlideSessionStatus(rawValue: sessionStatusString)
-            } else {
-                sessionStatus = nil
-            }
+            let sessionStatusString = ext["glide.session.status"] as? String
+            let sessionStatus = sessionStatusString.flatMap { AMBGlideSessionStatus(rawValue: $0) }
             
             let ambActive = ext["glide.amb.active"] as? Bool ?? false
             
