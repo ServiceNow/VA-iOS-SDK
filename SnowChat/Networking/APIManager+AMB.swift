@@ -45,7 +45,7 @@ extension APIManager {
             case .success:
                 if let message = result.value {
                     Logger.default.logInfo("Incoming AMB Message: \(message.jsonDataString)")
-                    if message.messageType == SNOWAMBMessageType.dataMessage {
+                    if message.messageType == .dataMessage {
                         messageHandler(result, subscription)
                     }
                 }
