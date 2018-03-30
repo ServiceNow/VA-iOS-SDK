@@ -140,6 +140,23 @@ extension ChatMessageModel {
         return snowViewModel
     }
     
+    private static func carouselItemsFromOptions(_ options: [CarouselLabeledValue], _ theme: Theme) -> [CarouselItem] {
+        // TODO: CarouselItem should maybe have an init that takes a CarouselLabeledValue...
+        
+        return options.map { (labeledValue: CarouselLabeledValue) -> CarouselItem in
+            var url: URL?
+            if let attachment = labeledValue.attachment {
+                url = URL(string: attachment)
+                
+                // fixup relative URL's using the instanceURL associated with the theme
+                if url != nil && url?.host == nil {
+                    url = URL(string: attachment, relativeTo: theme.instanceURL) ?? url
+                }
+            }
+            return CarouselItem(label: labeledValue.label, value: labeledValue.value, attachment: url)
+        }
+    }
+    
     static func model(withMessage message: PickerControlMessage, theme: Theme) -> ChatMessageModel? {
         guard let title = message.data.richControl?.uiMetadata?.label,
             let required = message.data.richControl?.uiMetadata?.required else {
@@ -152,17 +169,7 @@ extension ChatMessageModel {
         
         let pickerModel: PickerControlViewModel
         if message.data.richControl?.uiMetadata?.style == .carousel {
-            
-            // TODO: Is there a nicer way to create CarouselItems?
-            let items = options.map { (labeledValue: CarouselLabeledValue) -> CarouselItem in
-                var url: URL?
-                if let attachment = labeledValue.attachment {
-                    url = URL(string: attachment)
-                }
-                
-                return CarouselItem(label: labeledValue.label, value: labeledValue.value, attachment: url)
-            }
-            
+            let items = carouselItemsFromOptions(options, theme)
             pickerModel = CarouselControlViewModel(id: message.messageId, label: title, required: required, items: items)
         } else {
             let items = options.map { PickerItem(label: $0.label, value: $0.value) }
