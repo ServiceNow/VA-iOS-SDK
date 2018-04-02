@@ -35,6 +35,14 @@ struct AgentTextControlMessage: Codable, ControlData {
         return data.sendTime
     }
     
+    var isAgent: Bool? {
+        return data.isAgent
+    }
+    
+    var sender: SenderInfo? {
+        return data.sender
+    }
+    
     var type: String = "systemTextMessage"
     var data: AgentTextData
     var source: String?

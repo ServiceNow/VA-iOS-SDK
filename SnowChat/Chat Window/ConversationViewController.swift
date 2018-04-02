@@ -546,6 +546,7 @@ extension ConversationViewController: ChatEventListener {
             inputState = .waitingForAgent
         } else {
             inputState = .inAgentConversation
+            manageInputControl()
         }
     }
     

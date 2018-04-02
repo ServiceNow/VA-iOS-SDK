@@ -19,15 +19,11 @@ class ChatDataFactory {
 
             var controlType: ChatterboxControlType = .unknown
 
-            // see if it is an agentText message first
-            // NOTE: (agent message do not conform to normal rich-control format /sad)
-            if controlMessage.data.text != nil {
+            // check for richControl message types first, then look for agentText if there is no richControl type
+            if let uiType = controlMessage.data.richControl?.uiType {
+                controlType = ChatterboxControlType(rawValue: uiType) ?? .unknown
+            } else if controlMessage.data.text != nil {
                 controlType = .agentText
-            } else {
-                // check for richControl message types
-                if let uiType = controlMessage.data.richControl?.uiType {
-                    controlType = ChatterboxControlType(rawValue: uiType) ?? .unknown
-                }
             }
             
             switch controlType {

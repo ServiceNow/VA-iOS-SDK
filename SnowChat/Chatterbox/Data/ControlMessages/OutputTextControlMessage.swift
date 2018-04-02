@@ -25,7 +25,7 @@ struct OutputTextControlMessage: Codable, ControlData {
     }
     
     var sender: SenderInfo? {
-        return data.senderInfo
+        return data.sender
     }
     
     var id: String = ChatUtil.uuidString()

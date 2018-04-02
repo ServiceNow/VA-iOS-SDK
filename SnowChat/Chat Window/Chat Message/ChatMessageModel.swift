@@ -236,7 +236,7 @@ extension ChatMessageModel {
         let textModel = TextControlViewModel(id: message.messageId, value: value)
         let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme, isAgentMessage: true)
 
-        if let avatarPath = message.data.sender?.avatarPath {
+        if let avatarPath = message.sender?.avatarPath {
             snowViewModel.avatarURL = URL(string: avatarPath)
         }
         
@@ -268,6 +268,11 @@ extension ChatMessageModel {
         
         let outputImageModel = OutputImageViewModel(id: message.messageId, value: url)
         let snowViewModel = ChatMessageModel(model: outputImageModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
+        
+        if let avatarPath = message.sender?.avatarPath {
+            snowViewModel.avatarURL = URL(string: avatarPath)
+        }
+
         return snowViewModel
     }
     
@@ -281,6 +286,11 @@ extension ChatMessageModel {
         guard let url = URL(string: value.action) else { return nil }
         let outputLinkModel = OutputLinkControlViewModel(id: message.messageId, value: url)
         let snowViewModel = ChatMessageModel(model: outputLinkModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
+
+        if let avatarPath = message.sender?.avatarPath {
+            snowViewModel.avatarURL = URL(string: avatarPath)
+        }
+
         return snowViewModel
     }
     
@@ -301,6 +311,7 @@ extension ChatMessageModel {
         outputHtmlModel.size = size
         
         let snowViewModel = ChatMessageModel(model: outputHtmlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
+        
         return snowViewModel
     }
     

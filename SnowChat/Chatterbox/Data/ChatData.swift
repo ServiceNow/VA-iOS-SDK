@@ -135,7 +135,7 @@ protocol ControlData: Storable, Codable {
     var taskId: String? { get }
     
     var isAgent: Bool? { get }
-    var senderInfo: SenderInfo? { get }
+    var sender: SenderInfo? { get }
 
     var direction: MessageDirection { get }
     var messageTime: Date { get }
@@ -152,7 +152,7 @@ extension ControlData {
         return false
     }
     
-    var senderInfo: SenderInfo? {
+    var sender: SenderInfo? {
         return nil
     }
     
