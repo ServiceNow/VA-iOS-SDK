@@ -1,11 +1,11 @@
 public class SNOWAMBSubscription {
     
-    let uuid: String
-    var valid = false
-    var pending = true
-    var subscribed = false
+    public let uuid: String
+    public var valid = false
+    public var subscribed = false
+    public let channel: String
+    
     let client: SNOWAMBClient
-    let channel: String
     let messageHandler: SNOWAMBMessageHandler
     
     init(channel: String, client: SNOWAMBClient, messageHandler: @escaping SNOWAMBMessageHandler) {
