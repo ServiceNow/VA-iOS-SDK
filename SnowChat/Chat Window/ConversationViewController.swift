@@ -71,8 +71,10 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setupActivityIndicator()
         setupTableView()
+        initializeSessionIfNeeded()
     }
     
     internal func loadHistory() {

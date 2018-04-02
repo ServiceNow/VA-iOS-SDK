@@ -77,13 +77,9 @@ class Chatterbox {
     
     internal let chatStore = ChatDataStore(storeId: "ChatterboxDataStore")
     
-    internal var session: ChatSession? {
+    var session: ChatSession? {
         didSet {
-            if let settings = session?.settings?.virtualAgentSettings,
-                let avatarPath = settings.avatar,
-                let theme = session?.settings?.brandingSettings?.theme {
-                    theme.updateAvatar(path: avatarPath, instance: serverInstance)
-            }
+            updateSettings()
         }
     }
     
@@ -123,6 +119,18 @@ class Chatterbox {
     
     internal var userContextData: Codable?
     internal let appContextManager = AppContextManager()
+    
+    internal func updateSettings() {
+        if let theme = session?.settings?.brandingSettings?.theme {
+            theme.instanceURL = serverInstance.instanceURL
+        }
+        
+        if let settings = session?.settings?.virtualAgentSettings,
+            let avatarPath = settings.avatar,
+            let theme = session?.settings?.brandingSettings?.theme {
+            theme.updateAvatar(path: avatarPath)
+        }
+    }
     
     // MARK: - Methods
     
