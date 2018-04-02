@@ -63,7 +63,7 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
         return configuration
     }
     
-    internal var authStatus: AuthStatus
+    internal private(set) var authStatus: AuthStatus
     
     // MARK: - Initialization
     
