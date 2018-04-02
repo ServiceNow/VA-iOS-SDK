@@ -413,7 +413,6 @@ class Chatterbox {
         var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId, uiMetadata: uiMetadata)
         startTopic.data.richControl?.value = "showTopic"
         startTopic.data.direction = .fromClient
-        startTopic.data.taskId = conversationContext.taskId
         
         installShowTopicHandler {
             completion()
