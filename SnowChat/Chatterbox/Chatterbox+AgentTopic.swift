@@ -70,15 +70,19 @@ extension Chatterbox {
 
             var agentInfo: SenderInfo?
             
-            if let agentMessage = conversation.messageExchanges().first(where: { exchange in
-                    let message = exchange.message
-                    if let isAgent = message.isAgent, isAgent == true {
-                        return true
-                    }
-                    return false
-            }) {
-                agentInfo = agentMessage.message.senderInfo
-            }
+            // get the agent messages and see if the conversation has been accepted by an agent yet
+            let agentMessages = conversation.messageExchanges().flatMap({ (exchange) -> ControlData? in
+                let message = exchange.message
+                if let isAgent = message.isAgent, isAgent == true {
+                    return message
+                }
+                return nil
+            })
+            
+            guard agentMessages.count > 0 else { return }
+            
+            self.state = .agentConversation
+            agentInfo = agentMessages.first?.senderInfo
             
             self.notifyEventListeners { listener in
                 let agentInfo = AgentInfo(agentId: agentInfo?.name ?? AgentInfo.IDUNKNOWN,
