@@ -35,7 +35,6 @@ class ChatSessionTests: XCTestCase {
             assertBrandingSettings(settingsDictionary, settings)
             assertGeneralSettings(settingsDictionary, settings)
             assertVirtualAgentSettings(settingsDictionary, settings)
-            assertLiveAgentSettings(settingsDictionary, settings)
             
         } catch {
             XCTAssertFalse(true)
@@ -47,31 +46,18 @@ class ChatSessionTests: XCTestCase {
         XCTAssertNotNil(virtualAgentDictionary)
 
         XCTAssertEqual(settings.virtualAgentSettings?.avatar, virtualAgentDictionary["avatar"] as? String)
-        XCTAssertEqual(settings.virtualAgentSettings?.name, virtualAgentDictionary["name"] as? String)
-
-    }
-    
-    fileprivate func assertLiveAgentSettings(_ settingsDictionary: [String: Any], _ settings: ChatSessionSettings) {
-        let liveAgentDictionary = settingsDictionary["liveAgentSetup"] as! [String: Any]
-        XCTAssertNotNil(liveAgentDictionary)
-        
-        // TODO: add live agent settions and tests when needed
     }
     
     fileprivate func assertGeneralSettings(_ settingsDictionary: [String: Any], _ settings: ChatSessionSettings) {
         let generalDictionary = settingsDictionary["generalSettings"] as! [String: Any]
         XCTAssertNotNil(generalDictionary)
 
-        XCTAssertEqual(settings.generalSettings?.botName, generalDictionary["bot_name"] as? String)
-        XCTAssertEqual(settings.generalSettings?.liveAgentHandoffMessage, generalDictionary["live_agent_handoff"] as? String)
-        XCTAssertEqual(settings.generalSettings?.introMessage, generalDictionary["intro_msg"] as? String)
-        XCTAssertEqual(settings.generalSettings?.vendorName, generalDictionary["vendor_name"] as? String)
+        XCTAssertEqual(settings.generalSettings?.welcomeMessage, generalDictionary["welcome_message"] as? String)
+        XCTAssertEqual(settings.generalSettings?.genericErrorMessage, generalDictionary["error_message"] as? String)
+        XCTAssertEqual(settings.generalSettings?.introMessage, generalDictionary["top_selection_message"] as? String)
+        
         XCTAssertEqual(settings.generalSettings?.presenceDelay, Int((generalDictionary["type_presence_delay"] as? String)!))
-        XCTAssertEqual(settings.generalSettings?.genericErrorMessage, generalDictionary["generic_error"] as? String)
-
         XCTAssertEqual(settings.generalSettings?.messageDelay, Int((generalDictionary["msg_delay"] as? String)!))
-
-
     }
     
     fileprivate func assertBrandingSettings(_ settingsDictionary: [String: Any], _ settings: ChatSessionSettings) {
@@ -88,21 +74,16 @@ class ChatSessionTests: XCTestCase {
     let settingsJSON = """
     {
         "generalSettings": {
-            "support_email": "support@servicenow.com",
-            "bot_name": "NowBot",
-            "live_agent_handoff": "We will be transferring you to an Agent, when the next available Agent is ready",
-            "support_hours": "M-F 9-5 PST",
-            "support_phone": "1-800-245-6000",
-            "intro_msg": "Hello and welcome to our support chat! How can I help you?",
-            "vendor_name": "Service Now",
-            "type_presence_delay": "999",
-            "generic_error": "There are no agents available right now, Please try again later.",
-            "msg_delay": "600"
+            "error_message": "An unrecoverable error has occurred.",
+            "type_presence_delay": "1000",
+            "welcome_message": "Welcome to our support chat! How can I help you?",
+            "msg_delay": "500",
+            "top_selection_message": "You can type your request below, or use the button to see everything that I can assist you with"
         },
         "brandingSettings": {
             "header_bg_color": "#fafafa",
             "load_animation_color": "#7f8e9f",
-            "category_font_color": "#000",
+            "category_font_color": "#6d6d72",
             "bubble_bg_color": "#e6e6e6",
             "support_phone": "1-800-245-6000",
             "bot_bubble_bg_color": "#c3ddef",
@@ -113,15 +94,13 @@ class ChatSessionTests: XCTestCase {
             "seperator_color": "#B8B8B8",
             "support_email_label": "Send Email to Customer Support",
             "link_color": "#008bff",
-            "support_hours": "M-F 9-5 PST",
             "support_hours_label": "Contact Live Agent",
             "support_phone_label": "Call Support(Daily, 5AM - 11 PM)",
             "bubble_font_color": "#000",
             "agent_bubble_font_color": "#000",
             "header_font_color": "#7f8e9f",
             "bot_bubble_font_color": "#000",
-            "category_bg_color": "#7f8e9f",
-            "subheader_label": "Servicenow Inc",
+            "category_bg_color": "#efeff4",
             "system_message_color": "#7f8e9f",
             "timestamp_color": "#B8B8B8",
             "va_logo": "1ddddc53dbb743001f4cf9b61d9619ad.iix",
@@ -131,34 +110,10 @@ class ChatSessionTests: XCTestCase {
             "button_bg_color": "#fff",
             "input_bg_color": "#fafafa"
         },
-        "liveAgentSetup": {
-            "vrcontext": [
-
-            ],
-            "queues": [
-                {
-                    "queue": "",
-                    "application": "csm"
-                },
-                {
-                    "queue": "",
-                    "application": "hr"
-                },
-                {
-                    "queue": "",
-                    "application": "itsm"
-                },
-                {
-                    "queue": "",
-                    "application": "global"
-                }
-            ],
-            "globalDefaultQueue": "",
-            "virtual_agent_enabled": true
-        },
         "virtualAgentProfile": {
             "avatar": "1ddddc53dbb743001f4cf9b61d9619ad.iix?t=small"
-        }
+        },
+        "textDirection": "ltr"
     }
     """
 }

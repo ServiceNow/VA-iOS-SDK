@@ -42,19 +42,14 @@ struct ChatSessionSettings: Codable {
 }
 
 struct GeneralSettings: Codable {
-    var botName: String
-    var vendorName: String
     var messageDelay: Int
     var presenceDelay: Int
     
+    var welcomeMessage: String
     var introMessage: String
-    var liveAgentHandoffMessage: String
     var genericErrorMessage: String
-
+    
     init(fromDictionary dictionary: [String: Any]) {
-        botName = dictionary["bot_name"] as? String ?? "ChatBot"
-        vendorName = dictionary["vendor_name"] as? String ?? "Vendor"
-        
         if let strMessageDelay = dictionary["msg_delay"] as? String {
             messageDelay = Int(strMessageDelay) ?? 500
         } else {
@@ -67,9 +62,9 @@ struct GeneralSettings: Codable {
             presenceDelay = 1000
         }
         
-        introMessage = dictionary["intro_msg"] as? String ?? "Hello and welcome to our support chat! How can I help you?"
-        liveAgentHandoffMessage = dictionary["live_agent_handoff"] as? String ?? "We will be transferring you to an Agent when the next available Agent is ready."
-        genericErrorMessage = dictionary["generic_error"] as? String ?? "There are no agents available right now. Please try again later."
+        welcomeMessage = dictionary["welcome_message"] as? String ?? "Welcome to our Support Chat! How can I help you"
+        introMessage = dictionary["top_selection_message"] as? String ?? "You can type your request below, or use the button to see everything that I can assist you with."
+        genericErrorMessage = dictionary["error_message"] as? String ?? "An unrecoverable error has occurred."
     }
 }
 
@@ -104,7 +99,6 @@ struct BrandingSettings: Codable {
      - key : support_phone
      - key : support_email_label
      - key : support_email
-     - key : support_hours (obsolete)
      */
     
     var supportEmailLabel: String?
@@ -114,7 +108,6 @@ struct BrandingSettings: Codable {
     var supportHoursLabel: String?
     
     var headerLabel: String?
-    var subHeaderLabel: String?
     
     var virtualAgentLogo: String?
     var virtualAgentProfileId: String?
@@ -129,7 +122,6 @@ struct BrandingSettings: Codable {
         case supportPhone
         case supportHoursLabel
         case headerLabel
-        case subHeaderLabel
         case virtualAgentLogo
         case virtualAgentProfileId
         
@@ -144,7 +136,6 @@ struct BrandingSettings: Codable {
         supportPhone = dictionary["support_phone"] as? String
         
         headerLabel = dictionary["header_label"] as? String
-        subHeaderLabel = dictionary["subheader_label"] as? String
         virtualAgentLogo = dictionary["va_logo"] as? String
         virtualAgentProfileId = dictionary["va_profile"] as? String
         
@@ -154,11 +145,9 @@ struct BrandingSettings: Codable {
 
 struct VirtualAgentSettings: Codable {
     var avatar: String?
-    var name: String?
     
     init(fromDictionary dictionary:  [String: Any]) {
         avatar = dictionary["avatar"] as? String
-        name = dictionary["name"] as? String
     }
 }
 
