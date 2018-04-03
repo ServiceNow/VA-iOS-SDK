@@ -58,7 +58,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         // NOTE: this failable initializer cannot really fail, so keeping it clean and forcing
         // swiftlint:disable:next force_unwrapping
         super.init(tableViewStyle: .plain)!        
-
+        
         self.chatterbox.chatEventListeners.addListener(self)
         self.dataController.setChangeListener(self)
     }
@@ -75,6 +75,14 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         setupActivityIndicator()
         setupTableView()
         initializeSessionIfNeeded()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if let vendorName = chatterbox.session?.settings?.brandingSettings?.headerLabel {
+            self.navigationController?.navigationBar.topItem?.title = vendorName
+        }
     }
     
     internal func loadHistory() {
