@@ -1,5 +1,6 @@
 import XCTest
 import Alamofire
+
 @testable import SnowChat
 
 class AMBTransportTests: XCTestCase {

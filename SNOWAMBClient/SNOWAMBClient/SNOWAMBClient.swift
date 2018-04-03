@@ -3,7 +3,7 @@ import Foundation
 public typealias SNOWAMBMessageDictionary = [String : Any]
 public typealias SNOWAMBMessageDataExtention = [String : Any]
 public typealias SNOWAMBMessageHandler = (SNOWAMBResult<SNOWAMBMessage>, SNOWAMBSubscription) -> Void
-public typealias SNOWAMBPublishMessageHandler = (SNOWAMBResult<[SNOWAMBMessage]>) -> Void
+public typealias SNOWAMBPublishMessageHandler = (SNOWAMBResult<SNOWAMBMessage>) -> Void
 
 //
 // SNOWAMBResult
@@ -124,6 +124,18 @@ public class SNOWAMBClient {
     public var clientId: String?
     
     public var maximumRetryAttempts = 5
+    
+    struct PostedMessageRecord {
+        let timestamp: Date
+        var handler: SNOWAMBPublishMessageHandler
+        
+        init(handler: @escaping SNOWAMBPublishMessageHandler) {
+            self.timestamp = Date()
+            self.handler = handler
+        }
+    }
+    // [messageId: PostedMessageRecord]
+    private var postedMessages = [String : PostedMessageRecord]()
     
     private var subscriptionsByChannel = [String : [SNOWAMBSubscriptionWeakWrapper]]()
     private var subscribedChannels = Set<String>()
@@ -353,11 +365,7 @@ private extension SNOWAMBClient {
             do {
                 if let ambMessage = try SNOWAMBMessage(rawMessage: rawMessage) {
                    handleAMBMessage(ambMessage)
-                    // messages with data/payload are passed through subscription handler and corresponding delegate.
-                    // here we return response messages without payload
-                    if ambMessage.data == nil {
-                       parsedMessages.append(ambMessage)
-                    }
+                   parsedMessages.append(ambMessage)
                 }
             } catch {
                 let error = SNOWAMBError.messageParserError(description: "message is not well formatted")
@@ -509,7 +517,7 @@ private extension SNOWAMBClient {
         }
     }
     
-    func handleDisconnectMessage(_ ambMessage : SNOWAMBMessage) {
+    func handleDisconnectMessage(_ ambMessage: SNOWAMBMessage) {
         if ambMessage.successful {
             cancelAllDataTasks()
             subscribedChannels.removeAll()
@@ -519,7 +527,7 @@ private extension SNOWAMBClient {
         }
     }
     
-    func handleSubscribeMessage(_ ambMessage : SNOWAMBMessage) {
+    func handleSubscribeMessage(_ ambMessage: SNOWAMBMessage) {
         if ambMessage.successful {
             guard let channel = ambMessage.subscription else {
                 return
@@ -532,6 +540,8 @@ private extension SNOWAMBClient {
                         subscription.subscribed = true
                         let updatedWrapper = SNOWAMBSubscriptionWeakWrapper(subscription)
                         updatedSubscriptions.append(updatedWrapper)
+                        // letting subscriber know that subscription went through
+                        subscription.messageHandler(SNOWAMBResult.success(ambMessage), subscription)
                     }
                 })
                 subscriptionsByChannel[channel] = updatedSubscriptions
@@ -542,7 +552,7 @@ private extension SNOWAMBClient {
         }
     }
     
-    func handleUnsubscribeMessage(_ ambMessage : SNOWAMBMessage) {
+    func handleUnsubscribeMessage(_ ambMessage: SNOWAMBMessage) {
         if ambMessage.successful {
             subscribedChannels.remove(ambMessage.channel)
             cleanupSubscriptions()
@@ -671,6 +681,21 @@ private extension SNOWAMBClient {
         return path
     }
     
+    func invokeHandlers(forMessages messages: [SNOWAMBMessage]) {
+        messages.forEach({ (message) in
+            if let messageId = message.id,
+               let record = postedMessages[messageId] {
+                record.handler(SNOWAMBResult.success(message))
+            }
+        })
+        
+        // should be timeouted already
+        self.postedMessages = postedMessages.filter({ (arg) -> Bool in
+            let (_, messageRecord) = arg
+            return Double(Int(Date().timeIntervalSince1970 - messageRecord.timestamp.timeIntervalSince1970)) < longPollingTimeout * 2
+        })
+    }
+    
     @discardableResult func postBayeuxMessage(_ message: [String : Any],
                                               timeout: TimeInterval = 0.0,
                                               completion handler: SNOWAMBPublishMessageHandler? = nil) -> URLSessionDataTask? {
@@ -688,20 +713,25 @@ private extension SNOWAMBClient {
 
         let path = channelNameToPath(channel)
         let fullPath = String(format:"/amb/%@", path)
+        if let handler = handler {
+            self.postedMessages[String(messageId)] = PostedMessageRecord(handler: handler)
+        }
+        
         let task = httpClient.post(fullPath, jsonParameters: myMessage as Any, timeout: timeout,
             success: { [weak self] (responseObject: Any?) -> Void in
-                let result = self?.parseResponseObject(responseObject)
-                if let handler = handler,
-                   let result = result {
-                    handler(result)
+                guard let strongSelf = self else { return }
+                let result = strongSelf.parseResponseObject(responseObject)
+                if  let messages = result.value {
+                    strongSelf.invokeHandlers(forMessages: messages)
                 }
             },
             failure: { [weak self] (error: Any?) -> Void in
+                guard let strongSelf = self else { return }
                 let httpError = error as! Error
                 if let handler = handler {
                     handler(SNOWAMBResult.failure(SNOWAMBError.httpRequestFailed(description: httpError.localizedDescription)))
                 }
-                self?.handleHTTPResponseError(message: myMessage, error: httpError)
+                strongSelf.handleHTTPResponseError(message: myMessage, error: httpError)
         })
 
         if let task = task {

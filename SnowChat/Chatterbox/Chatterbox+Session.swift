@@ -98,6 +98,7 @@ extension Chatterbox {
             switch result {
             case .success:
                 if let message = result.value {
+                    guard message.messageType == .dataMessage else { return }
                     let messageString = message.jsonDataString
                     
                     strongSelf.logger.logDebug("Received from AMB: \(messageString)")
