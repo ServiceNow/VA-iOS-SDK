@@ -12,6 +12,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="HomeViewController" customModule="SnowKangaroo" customModuleProvider="target">
             <connections>
+                <outlet property="chatButton" destination="0uk-o0-ZvU" id="A5l-Mb-B99"/>
                 <outlet property="statusLabel" destination="sOR-2o-VVs" id="ztq-c0-jQt"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>

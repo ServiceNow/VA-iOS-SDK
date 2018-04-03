@@ -13,6 +13,7 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     
     private var chatService: ChatService?
     
+    @IBOutlet weak var chatButton: UIButton!
     @IBOutlet private weak var statusLabel: UILabel!
     
     // MARK: - View Life Cycle
@@ -23,9 +24,16 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         title = "SnowKangaroo"
         
         setupChatService()
-        setupStatusLabel()
         setupNavigationBarButtons()
         setupAuthNotificationObserving()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        setupStatusLabel()
+
+        chatButton.isEnabled = true
     }
     
     // MARK: - UI Setup
@@ -59,9 +67,11 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     
     private func startChat() {
         guard let credential = InstanceSettings.shared.credential else {
-                return
+            return
         }
 
+        chatButton.isEnabled = false
+        statusLabel.text = "Establishing Chat Session..."
         establishChatSession(credential: credential, logOutOnAuthFailure: true)
     }
     
