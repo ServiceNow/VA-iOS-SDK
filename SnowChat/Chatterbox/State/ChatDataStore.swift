@@ -27,6 +27,11 @@ class ChatDataStore {
     //
     func storeControlData(_ data: ControlData, forConversation conversationId: String, fromChat source: Chatterbox) {
         let index = findOrCreateConversation(conversationId, withName: "", withState: .inProgress)
+        
+        #if DEBUG
+        conversations[index].checkForDuplicates(data.messageId)
+        #endif
+        
         conversations[index].add(MessageExchange(withMessage: data))
     }
     
@@ -37,6 +42,11 @@ class ChatDataStore {
             Logger.default.logError("No conversation found for \(conversationId) in storeResponseData")
             return nil
         }
+
+        #if DEBUG
+            conversations[index].checkForDuplicates(data.messageId)
+        #endif
+
         return conversations[index].storeResponse(data)
     }
     
@@ -217,6 +227,23 @@ struct Conversation: Storable, Codable {
         newExchanges.forEach { exchange in
             exchanges.append(exchange)
         }
+    }
+        
+    func checkForDuplicates(_ messageId: String) -> MessageExchange? {
+        // see if there are any messages with the given id already in the conversation
+        let dup = messageExchanges().first { (exchange) -> Bool in
+            let message = exchange.message
+            if message.messageId == messageId {
+                Logger.default.logError("*** DUPLICATE MESSAGE ID FOUND: \(message)")
+                return true
+            }
+            if let response = exchange.response, response.messageId == messageId {
+                Logger.default.logError("*** DUPLICATE MESSAGE ID FOUND IN RESPONSE: \(response)")
+                return true
+            }
+            return false
+        }
+        return dup
     }
     
     enum ConversationState: String, Codable {

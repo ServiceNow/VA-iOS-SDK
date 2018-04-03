@@ -20,6 +20,8 @@ internal var nullTopicInfo = TopicInfo(topicId: nil, topicName: nil, taskId: nil
 struct AgentInfo {
     let agentId: String
     let agentAvatar: String?
+    
+    static let IDUNKNOWN = "UNKNOWN"
 }
 
 enum TransportStatus {

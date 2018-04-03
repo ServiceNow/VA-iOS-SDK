@@ -41,6 +41,14 @@ struct OutputImageControlMessage: Codable, ControlData {
         return true
     }
 
+    var isAgent: Bool? {
+        return data.isAgent
+    }
+    
+    var sender: SenderInfo? {
+        return data.sender
+    }
+
     let type: String = "systemTextMessage"
     var data: RichControlData<ControlWrapper<String, UIMetadata>>
     
