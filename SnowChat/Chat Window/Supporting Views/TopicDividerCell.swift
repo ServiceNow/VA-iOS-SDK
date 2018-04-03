@@ -1,5 +1,5 @@
 //
-//  StartTopicDividerCell.swift
+//  TopicDividerCell.swift
 //  SnowChat
 //
 //  Created by Marc Attinasi on 2/8/18.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-class StartTopicDividerCell: UITableViewCell, Themeable {
+class TopicDividerCell: UITableViewCell, Themeable {
     static let cellIdentifier = "StartTopicDividerCell"
     
     var model: ChatMessageModel?
@@ -43,7 +43,7 @@ class StartTopicDividerCell: UITableViewCell, Themeable {
         NSLayoutConstraint.activate([lineView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5.0),
                                      lineView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5.0),
                                      lineView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10.0),
-                                     lineView.heightAnchor.constraint(equalToConstant: 2.0),
+                                     lineView.heightAnchor.constraint(equalToConstant: 1.0),
                                      contentView.bottomAnchor.constraint(equalTo: lineView.bottomAnchor, constant: 10.0)])
     }
     

@@ -54,6 +54,8 @@ class ChatDataController {
     internal let logger = Logger.logger(for: "ChatDataController")
     private(set) var theme = Theme()
 
+    static internal let showAllTopicsAction = 999
+    
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
         self.chatterbox.chatDataListeners.addListener(self)
@@ -197,7 +199,7 @@ class ChatDataController {
         bufferControlMessage(auxiliaryModel)
     }
     
-    func pushTypingIndicator() {
+    func pushTypingIndicatorIfNeeded() {
         if isShowingTypingIndicator() {
             return
         }
@@ -222,6 +224,20 @@ class ChatDataController {
         }
         controlData.remove(at: 0)
         addModelChange(ModelChangeType.delete(index: 0))
+        applyModelChanges()
+    }
+    
+    fileprivate func removeTopicPromptIfPresent() {
+        guard let lastControl = controlData.first,
+            let button = lastControl.controlModel as? ButtonControlViewModel,
+            button.value == ChatDataController.showAllTopicsAction else { return }
+        
+        // remove the button and the prompt
+        controlData.remove(at: 0)
+        addModelChange(ModelChangeType.delete(index: 0))
+
+        controlData.remove(at: 0)
+        addModelChange(ModelChangeType.delete(index: 1))
         applyModelChanges()
     }
     
@@ -393,12 +409,13 @@ class ChatDataController {
     func topicDidStart(_ topicInfo: TopicInfo) {
         conversationId = topicInfo.conversationId
     
-        pushTopicStartDivider(topicInfo)
+        removeTopicPromptIfPresent()
+
         if topicInfo.topicName != nil {
             pushTopicTitle(topicInfo: topicInfo)
         }
         
-        pushTypingIndicator()
+        pushTypingIndicatorIfNeeded()
     }
 
     func topicDidResume(_ topicInfo: TopicInfo) {
@@ -409,8 +426,8 @@ class ChatDataController {
     func topicDidFinish() {
         conversationId = nil
         
-        // FIXME: add a completion message. This will eventually come from the service but for now we synthesize it
-        presentCompletionMessage()
+        pushEndOfTopicDividerIfNeeded()
+        presentTopicPrompt()
     }
 
     func agentTopicWillStart() {
@@ -425,24 +442,33 @@ class ChatDataController {
     }
     
     func agentTopicDidFinish() {
-        presentCompletionMessage()
+        presentTopicPrompt()
     }
     
-    func presentCompletionMessage() {
-        let message = NSLocalizedString("Thanks for visiting. If you need anything else, just ask!", comment: "Default end of topic message to show to user")
-        let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
-        bufferControlMessage(ChatMessageModel(model: completionTextControl, bubbleLocation: .left, theme: theme))
+    func presentTopicPrompt() {
+        // show the intro-message and a button the user can tap to get all topics
+        
+        if let message = chatterbox.session?.settings?.generalSettings?.introMessage {
+            let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
+            bufferControlMessage(ChatMessageModel(model: completionTextControl, bubbleLocation: .left, theme: theme))
+            let completionActionButton = ButtonControlViewModel(id: ChatUtil.uuidString(), label: "View all Topics", value: ChatDataController.showAllTopicsAction)
+            let buttonModel = ChatMessageModel(model: completionActionButton, bubbleLocation: .left, theme: theme)
+            buttonModel.isAuxiliary = true
+            bufferControlMessage(buttonModel)
+        }
     }
 
     func presentWelcomeMessage() {
-        let message = chatterbox.session?.welcomeMessage ?? NSLocalizedString("Welcome! What can we help you with?", comment: "Default welcome message")
+        let message = chatterbox.session?.settings?.generalSettings?.welcomeMessage ?? NSLocalizedString("Welcome! What can we help you with?", comment: "Default welcome message")
         let welcomeTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         
         // NOTE: we do not buffer the welcome message currently - this is intentional
         presentControlData(ChatMessageModel(model: welcomeTextControl, bubbleLocation: .left, theme: theme))
     }
     
-    func pushTopicStartDivider(_ topicInfo: TopicInfo) {
+    func pushEndOfTopicDividerIfNeeded() {
+        guard let lastControl = controlData.first, lastControl.type != .topicDivider else { return }
+        
         // if there is a typing indicator we want to remove that first
         popTypingIndicator()
         
@@ -514,7 +540,7 @@ class ChatDataController {
         presentControlData(control)
         
         if controlMessageBuffer.count > 0 {
-            pushTypingIndicator()
+            pushTypingIndicatorIfNeeded()
         }
     }
 }
