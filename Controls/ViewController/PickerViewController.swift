@@ -10,7 +10,7 @@ import UIKit
 
 class PickerViewController: UIViewController, ThemeableControl {
     
-    private static let MAX_VISIBLE_ITEMS = 15
+    private static let MAX_VISIBLE_ITEMS = 25
     
     private let headerViewIdentifier = "HeaderView"
     private let footerViewIdentifier = "FooterView"
