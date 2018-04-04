@@ -132,7 +132,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
         tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
-        tableView.register(StartTopicDividerCell.self, forCellReuseIdentifier: StartTopicDividerCell.cellIdentifier)
+        tableView.register(TopicDividerCell.self, forCellReuseIdentifier: TopicDividerCell.cellIdentifier)
     }
     
     func applyTheme(_ theme: Theme) {
@@ -448,7 +448,7 @@ extension ConversationViewController {
                 cell = conversationCell
             }
         case .topicDivider:
-            let dividerCell = tableView.dequeueReusableCell(withIdentifier: StartTopicDividerCell.cellIdentifier, for: indexPath) as! StartTopicDividerCell
+            let dividerCell = tableView.dequeueReusableCell(withIdentifier: TopicDividerCell.cellIdentifier, for: indexPath) as! TopicDividerCell
             dividerCell.configure(with: chatMessageModel)
             cell = dividerCell
         }
@@ -625,7 +625,15 @@ extension ConversationViewController: ControlDelegate {
     // MARK: - ControlDelegate
     
     func control(_ control: ControlProtocol, didFinishWithModel model: ControlViewModel) {
-        // TODO: how to determine if it was skipped?
+        if let model = model as? ButtonControlViewModel,
+            model.value == ChatDataController.showAllTopicsAction,
+            let handler = autocompleteHandler as? TopicSelectionHandler {
+            
+            // show the all-topics list
+            handler.showAllTopics()
+            return
+        }
+        
         dataController.updateControlData(model, isSkipped: false)
     }
     

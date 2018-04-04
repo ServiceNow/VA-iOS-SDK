@@ -16,7 +16,7 @@ extension ChatDataController {
         UIView.appearance(whenContainedInInstancesOf: [BubbleView.self, ChatMessageViewController.self]).backgroundColor = nil
         TopicSelectionTableCell.appearance(whenContainedInInstancesOf: [ConversationViewController.self]).backgroundColor = theme.buttonBackgroundColor
         UITableViewCell.appearance(whenContainedInInstancesOf: [BubbleView.self, ChatMessageViewController.self]).backgroundColor = theme.buttonBackgroundColor
-        StartTopicDividerCell.appearance(whenContainedInInstancesOf: [ConversationViewController.self]).backgroundColor = theme.backgroundColor
+        TopicDividerCell.appearance(whenContainedInInstancesOf: [ConversationViewController.self]).backgroundColor = theme.backgroundColor
         UIView.appearance(whenContainedInInstancesOf: [PickerTableViewCell.self]).backgroundColor = theme.buttonBackgroundColor
         UIView.appearance(whenContainedInInstancesOf: [SelectableViewCell.self]).backgroundColor = theme.buttonBackgroundColor
         GradientView.appearance(whenContainedInInstancesOf: [CarouselViewController.self, BubbleView.self, ChatMessageViewController.self]).backgroundColor = .white

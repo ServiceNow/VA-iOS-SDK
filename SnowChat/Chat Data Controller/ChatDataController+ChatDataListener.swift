@@ -84,7 +84,7 @@ extension ChatDataController: ChatDataListener {
         
         // we updated the controls for the response, so push a typing indicator while we wait for a new control to come in
         if isBufferingEnabled {
-            pushTypingIndicator()
+            pushTypingIndicatorIfNeeded()
         }
     }
     
@@ -204,12 +204,15 @@ extension ChatDataController: ChatDataListener {
         let topicName = conversation.topicTypeName
         let topicId = conversationId
         let topicInfo = TopicInfo(topicId: topicId, topicName: topicName, taskId: nil, conversationId: conversationId)
-        pushTopicStartDivider(topicInfo)
         pushTopicTitle(topicInfo: topicInfo)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
         logger.logInfo("Conversation \(conversationId) did load")
+        
+        if let conversation = chatterbox.conversation(forId: conversationId), !conversation.state.isInProgress {
+            pushEndOfTopicDividerIfNeeded()
+        }
     }
     
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversationHistory conversationId: String, forChat chatId: String) {

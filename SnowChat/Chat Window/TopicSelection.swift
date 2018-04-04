@@ -163,9 +163,13 @@ class TopicSelectionHandler: AutoCompleteHandler {
     
     func showAllTopics() {
         chatterbox.apiManager.allTopics { topics in
-            self.topics = topics
+            if topics.count == 0 {
+                self.topics = [ChatTopic(title: "No Topics Found", name: "")]
+            } else {
+                self.topics = topics
+            }
             self.isAllTopics = true
-            self.conversationController?.showAutoCompletionView(topics.count > 0)
+            self.conversationController?.showAutoCompletionView(true)
         }
     }
     

@@ -229,6 +229,7 @@ struct Conversation: Storable, Codable {
         }
     }
         
+    @discardableResult
     func checkForDuplicates(_ messageId: String) -> MessageExchange? {
         // see if there are any messages with the given id already in the conversation
         let dup = messageExchanges().first { (exchange) -> Bool in
