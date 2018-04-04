@@ -10,6 +10,8 @@ import UIKit
 
 class PickerViewController: UIViewController, ThemeableControl {
     
+    private static let MAX_VISIBLE_ITEMS = 15
+    
     private let headerViewIdentifier = "HeaderView"
     private let footerViewIdentifier = "FooterView"
     private let fullSizeContainer = FullSizeScrollViewContainerView()
@@ -17,7 +19,7 @@ class PickerViewController: UIViewController, ThemeableControl {
     
     weak var delegate: PickerViewControllerDelegate?
     
-    var visibleItemCount: Int = 3 {
+    var visibleItemCount: Int = MAX_VISIBLE_ITEMS {
         didSet {
             fullSizeContainer.maxVisibleItemCount = visibleItemCount
 
