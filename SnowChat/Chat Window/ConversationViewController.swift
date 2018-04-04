@@ -58,7 +58,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         // NOTE: this failable initializer cannot really fail, so keeping it clean and forcing
         // swiftlint:disable:next force_unwrapping
         super.init(tableViewStyle: .plain)!        
-
+        
         self.chatterbox.chatEventListeners.addListener(self)
         self.dataController.setChangeListener(self)
     }
@@ -75,6 +75,14 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         setupActivityIndicator()
         setupTableView()
         initializeSessionIfNeeded()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if let vendorName = chatterbox.session?.settings?.brandingSettings?.headerLabel {
+            self.navigationController?.navigationBar.topItem?.title = vendorName
+        }
     }
     
     internal func loadHistory() {
@@ -514,6 +522,8 @@ extension ConversationViewController {
 
 extension ConversationViewController: ChatEventListener {
     
+    // MARK: - ChatEventListener
+
     func chatterbox(_ chatterbox: Chatterbox, willStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
         guard self.chatterbox.id == chatterbox.id else {
             return
@@ -539,7 +549,13 @@ extension ConversationViewController: ChatEventListener {
             return
         }
         
-        inputState = .inAgentConversation
+        if agentInfo.agentId == AgentInfo.IDUNKNOWN {
+            // no agent yet, so it is still waiting
+            inputState = .waitingForAgent
+        } else {
+            inputState = .inAgentConversation
+            manageInputControl()
+        }
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didFinishAgentChat agentInfo: AgentInfo, forChat chatId: String) {
@@ -551,8 +567,6 @@ extension ConversationViewController: ChatEventListener {
 
         dataController.agentTopicDidFinish()
     }
-    
-    // MARK: - ChatEventListener
     
     private func initializeSessionIfNeeded() {
         if !wasHistoryLoadedForUser {
@@ -599,7 +613,6 @@ extension ConversationViewController: ChatEventListener {
         dataController.topicDidFinish()
         
         inputState = .inTopicSelection
-        setupInputForState()
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {

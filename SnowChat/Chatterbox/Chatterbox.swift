@@ -215,7 +215,7 @@ class Chatterbox {
             updateContextIfNeeded(control)
             
             if state == .waitingForAgent {
-                if control.controlType == .agentText {
+                if let isAgent = control.isAgent, isAgent == true {
                     // this signals the start of the agent conversation
                     state = .agentConversation
                     agentTopicStarted(withMessage: control)

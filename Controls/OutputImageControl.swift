@@ -59,6 +59,7 @@ class OutputImageControl: ControlProtocol {
             
             // FIXME: Handle error / no image case
             if response.error != nil {
+                Logger.default.logError("No image found for \(imageModel.value)")
                 return
             }
 

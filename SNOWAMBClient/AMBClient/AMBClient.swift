@@ -3,10 +3,10 @@ import Foundation
 public typealias AMBMessageDictionary = [String : Any]
 public typealias AMBMessageDataExtention = [String : Any]
 public typealias AMBMessageHandler = (AMBResult<AMBMessage>, AMBSubscription) -> Void
-public typealias AMBPublishMessageHandler = (AMBResult<[AMBMessage]>) -> Void
+public typealias AMBPublishMessageHandler = (AMBResult<AMBMessage>) -> Void
 
 //
-// SNOWAMBResult
+// MARK: - AMBResult
 //
 
 public enum AMBResult<Value> {
@@ -41,7 +41,7 @@ public enum AMBResult<Value> {
 }
 
 //
-// SNOWAMBGlideStatus
+// MARK: - AMBGlideStatus
 //
 
 public enum AMBGlideSessionStatus: String {
@@ -62,7 +62,7 @@ public struct AMBGlideStatus: Equatable {
 }
 
 //
-// SNOWAMBClientDelegate
+// MARK: - AMBClientDelegate
 //
 
 public protocol AMBClientDelegate: AnyObject {
@@ -77,7 +77,7 @@ public protocol AMBClientDelegate: AnyObject {
 }
 
 //
-// SNOWAMBClientStatus
+// MARK: - AMBClientStatus
 //
 
 public enum AMBClientStatus {
@@ -101,7 +101,7 @@ enum AMBChannel: String {
 }
 
 //
-// MARK: SNOWAMBClient
+// MARK: - AMBClient
 //
 
 public class AMBClient {
@@ -124,6 +124,18 @@ public class AMBClient {
     public var clientId: String?
     
     public var maximumRetryAttempts = 5
+    
+    struct PostedMessageRecord {
+        let timestamp: Date
+        var handler: AMBPublishMessageHandler
+        
+        init(handler: @escaping AMBPublishMessageHandler) {
+            self.timestamp = Date()
+            self.handler = handler
+        }
+    }
+    // [messageId: PostedMessageRecord]
+    private var postedMessages = [String : PostedMessageRecord]()
     
     private var subscriptionsByChannel = [String : [AMBSubscriptionWeakWrapper]]()
     private var subscribedChannels = Set<String>()
@@ -353,11 +365,7 @@ private extension AMBClient {
             do {
                 if let ambMessage = try AMBMessage(rawMessage: rawMessage) {
                    handleAMBMessage(ambMessage)
-                    // messages with data/payload are passed through subscription handler and corresponding delegate.
-                    // here we return response messages without payload
-                    if ambMessage.data == nil {
-                       parsedMessages.append(ambMessage)
-                    }
+                   parsedMessages.append(ambMessage)
                 }
             } catch {
                 let error = AMBError.messageParserError(description: "message is not well formatted")
@@ -532,6 +540,8 @@ private extension AMBClient {
                         subscription.subscribed = true
                         let updatedWrapper = AMBSubscriptionWeakWrapper(subscription)
                         updatedSubscriptions.append(updatedWrapper)
+                        // letting subscriber know that subscription went through
+                        subscription.messageHandler(AMBResult.success(ambMessage), subscription)
                     }
                 })
                 subscriptionsByChannel[channel] = updatedSubscriptions
@@ -671,6 +681,21 @@ private extension AMBClient {
         return path
     }
     
+    func invokeHandlers(forMessages messages: [AMBMessage]) {
+        messages.forEach({ (message) in
+            if let messageId = message.id,
+               let record = postedMessages[messageId] {
+                record.handler(AMBResult.success(message))
+            }
+        })
+        
+        // should be timeouted already
+        self.postedMessages = postedMessages.filter({ (arg) -> Bool in
+            let (_, messageRecord) = arg
+            return Double(Int(Date().timeIntervalSince1970 - messageRecord.timestamp.timeIntervalSince1970)) < longPollingTimeout * 2
+        })
+    }
+    
     @discardableResult func postBayeuxMessage(_ message: [String : Any],
                                               timeout: TimeInterval = 0.0,
                                               completion handler: AMBPublishMessageHandler? = nil) -> URLSessionDataTask? {
@@ -688,20 +713,25 @@ private extension AMBClient {
 
         let path = channelNameToPath(channel)
         let fullPath = String(format:"/amb/%@", path)
+        if let handler = handler {
+            self.postedMessages[String(messageId)] = PostedMessageRecord(handler: handler)
+        }
+        
         let task = httpClient.post(fullPath, jsonParameters: myMessage as Any, timeout: timeout,
             success: { [weak self] (responseObject: Any?) -> Void in
-                let result = self?.parseResponseObject(responseObject)
-                if let handler = handler,
-                   let result = result {
-                    handler(result)
+                guard let strongSelf = self else { return }
+                let result = strongSelf.parseResponseObject(responseObject)
+                if  let messages = result.value {
+                    strongSelf.invokeHandlers(forMessages: messages)
                 }
             },
             failure: { [weak self] (error: Any?) -> Void in
+                guard let strongSelf = self else { return }
                 let httpError = error as! Error
                 if let handler = handler {
                     handler(AMBResult.failure(AMBError.httpRequestFailed(description: httpError.localizedDescription)))
                 }
-                self?.handleHTTPResponseError(message: myMessage, error: httpError)
+                strongSelf.handleHTTPResponseError(message: myMessage, error: httpError)
         })
 
         if let task = task {

@@ -68,13 +68,40 @@ extension Chatterbox {
             let topicInfo = TopicInfo(topicId: Chatterbox.liveAgentTopicId, topicName: nil, taskId: taskId, conversationId: conversationId)
             self.startAgentTopic(topicInfo: topicInfo)
 
+            // get the agent messages and see if the conversation has been accepted by an agent yet
+            let agentMessages = conversation.messageExchanges().flatMap({ (exchange) -> ControlData? in
+                let message = exchange.message
+                if let isAgent = message.isAgent, isAgent == true {
+                    return message
+                }
+                return nil
+            })
+            
+            guard agentMessages.count > 0 else { return }
+            
+            self.state = .agentConversation
+        
+            let chatAgentInfo = self.agentInfo(fromMessages: agentMessages)
+            
             self.notifyEventListeners { listener in
-                let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
-                listener.chatterbox(self, didResumeAgentChat: agentInfo, forChat: self.chatId)
+                listener.chatterbox(self, didResumeAgentChat: chatAgentInfo, forChat: self.chatId)
             }
         }
     }
 
+    private func agentInfo(fromMessages: [ControlData]) -> AgentInfo {
+        var sender: SenderInfo?
+        
+        sender = fromMessages.first(where: { control in
+            return control.sender != nil
+        })?.sender
+        
+        let agentInfo = AgentInfo(agentId: sender?.name ?? AgentInfo.IDUNKNOWN,
+                                  agentAvatar: sender?.avatarPath)
+        
+        return agentInfo
+    }
+    
     private func startLiveAgentHandshakeHandler(_ message: String) {
         logger.logDebug("**** startLiveAgentHandshakeHandler received: \(message)")
         

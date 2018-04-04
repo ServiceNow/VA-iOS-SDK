@@ -1,9 +1,14 @@
-public struct AMBMessage {
-    
+public enum AMBMessageType {
+    case dataMessage
+    case responseMessage
+}
+
+public class AMBMessage {
     // id may be "" for handshake/connect message
     public let id: String?
     public let successful: Bool
     public let channel: String
+    public let messageType: AMBMessageType
     
     // other fields are optional (set to nil or 0 for timestamp)
     public let authSuccessful: Bool?
@@ -64,7 +69,13 @@ public struct AMBMessage {
         self.toChannel = messageDict["toChannel"] as? String
         self.ext = messageDict["ext"] as? [String : Any]
         self.data = messageDict["data"] as? [String : Any]
-    
+        
+        if self.data != nil {
+            self.messageType = .dataMessage
+        } else {
+            self.messageType = .responseMessage
+        }
+            
         self.jsonDataString = toJSON(self.data)
         // TODO: Remove eventually. Using for debugging purposes (alex a, 01-18-17)
         self.jsonFullMessageString = toJSON(messageDict)

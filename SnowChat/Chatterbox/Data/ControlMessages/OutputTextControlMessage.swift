@@ -20,6 +20,14 @@ struct OutputTextControlMessage: Codable, ControlData {
         return data.direction
     }
     
+    var isAgent: Bool? {
+        return data.isAgent
+    }
+    
+    var sender: SenderInfo? {
+        return data.sender
+    }
+    
     var id: String = ChatUtil.uuidString()
     var controlType = ChatterboxControlType.text
     
