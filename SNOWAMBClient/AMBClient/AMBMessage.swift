@@ -1,4 +1,4 @@
-public struct SNOWAMBMessage {
+public struct AMBMessage {
     
     // id may be "" for handshake/connect message
     public let id: String?
@@ -40,7 +40,7 @@ public struct SNOWAMBMessage {
         }
         
         guard let messageDict = rawMessage as? [String : Any] else {
-            throw SNOWAMBError.messageParserError(description: "AMB Message is not [String:Any] dictionary")
+            throw AMBError.messageParserError(description: "AMB Message is not [String:Any] dictionary")
         }
 
         self.id = messageDict["id"] as? String
@@ -49,7 +49,7 @@ public struct SNOWAMBMessage {
         if let channel = messageDict["channel"] as? String {
             self.channel = channel
         } else {
-            throw SNOWAMBError.messageParserError(description: "AMB Message is missing channel field")
+            throw AMBError.messageParserError(description: "AMB Message is missing channel field")
         }
         
         self.authSuccessful = messageDict["authSuccessful"] as? Bool

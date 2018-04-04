@@ -31,7 +31,7 @@
 //
 
 import Foundation
-import SNOWAMBClient
+import AMBClient
 
 enum ChatterboxError: Error {
     case invalidParameter(details: String)
@@ -87,9 +87,9 @@ class Chatterbox {
     internal var chatChannel: String {
         return "/cs/messages/\(chatId)"
     }
-    internal var chatSubscription: SNOWAMBSubscription?
+    internal var chatSubscription: AMBSubscription?
     
-    internal var supportQueueSubscription: SNOWAMBSubscription?
+    internal var supportQueueSubscription: AMBSubscription?
     internal var supportQueueInfo: SupportQueue?
     
     internal let serverInstance: ServerInstance

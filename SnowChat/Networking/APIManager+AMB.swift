@@ -1,10 +1,10 @@
-import SNOWAMBClient
+import AMBClient
 
 // MARK: - AMB Transport
 
 extension APIManager {
     
-    func sendMessage(_ message: [String: Any], toChannel channel: String, completion: @escaping (SNOWAMBResult<[SNOWAMBMessage]>) -> Void = { _ in }) {
+    func sendMessage(_ message: [String: Any], toChannel channel: String, completion: @escaping (AMBResult<[AMBMessage]>) -> Void = { _ in }) {
         ambClient.publishMessage(message, toChannel: channel, withExtension:[:]) { (result) in
                                     switch result {
                                     case .success:
@@ -34,8 +34,8 @@ extension APIManager {
         }
     }
     
-    func subscribe(_ channelName: String, messages messageHandler: @escaping SNOWAMBMessageHandler) -> SNOWAMBSubscription {
-        let subscription: SNOWAMBSubscription = ambClient.subscribe(channel: channelName, messageHandler: { (result, subscription) in
+    func subscribe(_ channelName: String, messages messageHandler: @escaping AMBMessageHandler) -> AMBSubscription {
+        let subscription: AMBSubscription = ambClient.subscribe(channel: channelName, messageHandler: { (result, subscription) in
             switch result {
             case .success:
                 if let message = result.value {

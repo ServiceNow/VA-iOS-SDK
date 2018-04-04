@@ -1,4 +1,4 @@
-public enum SNOWAMBError: Error {
+public enum AMBError: Error {
     case handshakeFailed(description: String)
     case connectFailed(description: String)
     case subscribeFailed
@@ -10,7 +10,7 @@ public enum SNOWAMBError: Error {
     case unhandledMessageReceived(channel: String)
 }
 
-extension SNOWAMBError: LocalizedError {
+extension AMBError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .handshakeFailed(description: let description):

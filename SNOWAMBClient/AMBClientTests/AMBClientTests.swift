@@ -3,7 +3,7 @@ import XCTest
 
 import Foundation
 
-class SNOWAMBClientTests: XCTestCase {
+class AMBClientTests: XCTestCase {
     
     enum ExpectationType: String {
         case handshaken
@@ -30,7 +30,7 @@ class SNOWAMBClientTests: XCTestCase {
     let password = "snow2004"
     let testChannelName = "C3E4C47D16AC4B8ABB424F59B7C29FF3"
     var ambHTTPClient: SNOWTestHTTPClient?
-    var ambClient: SNOWAMBClient?
+    var ambClient: AMBClient?
     var accessToken = ""
     
     var privateRESTAPI: URL?
@@ -78,7 +78,7 @@ class SNOWAMBClientTests: XCTestCase {
         // swiftlint:disable:next force_unwrapping
         ambHTTPClient = SNOWTestHTTPClient(baseURL: baseURL!)
         // swiftlint:disable:next force_unwrapping
-        ambClient = SNOWAMBClient(httpClient: ambHTTPClient!)
+        ambClient = AMBClient(httpClient: ambHTTPClient!)
         
         login()
     }
@@ -89,7 +89,7 @@ class SNOWAMBClientTests: XCTestCase {
     
     // MARK: - helpers
     
-    private func httpRequest(url: URL, headers: HTTPHeaders, completion handler: @escaping (SNOWAMBResult<Data>) -> Void) {
+    private func httpRequest(url: URL, headers: HTTPHeaders, completion handler: @escaping (AMBResult<Data>) -> Void) {
         
         func addHeaders(toRequest request: inout URLRequest) {
             for (field, value) in headers {
@@ -105,16 +105,16 @@ class SNOWAMBClientTests: XCTestCase {
             if let error = error {
                 let errorMessage = "http error: " + error.localizedDescription
                 if let response = response as? HTTPURLResponse {
-                    handler(SNOWAMBResult.failure(SNOWAMBError.httpRequestFailed(description: "http status code:\(response.statusCode) \(errorMessage)")))
+                    handler(AMBResult.failure(AMBError.httpRequestFailed(description: "http status code:\(response.statusCode) \(errorMessage)")))
                 } else {
-                    handler(SNOWAMBResult.failure(SNOWAMBError.httpRequestFailed(description: "error \(errorMessage)")))
+                    handler(AMBResult.failure(AMBError.httpRequestFailed(description: "error \(errorMessage)")))
                 }
             } else if let response = response as? HTTPURLResponse {
                 if response.statusCode == 200 {
                     // swiftlint:disable:next force_unwrapping
-                    handler(SNOWAMBResult.success(data!))
+                    handler(AMBResult.success(data!))
                 } else {
-                    handler(SNOWAMBResult.failure(SNOWAMBError.httpRequestFailed(description: "http status code:\(response.statusCode)")))
+                    handler(AMBResult.failure(AMBError.httpRequestFailed(description: "http status code:\(response.statusCode)")))
                 }
             }
         }
@@ -150,7 +150,7 @@ class SNOWAMBClientTests: XCTestCase {
         })
     }
 
-    @discardableResult func subscribeToTestChannel() -> SNOWAMBSubscription? {
+    @discardableResult func subscribeToTestChannel() -> AMBSubscription? {
         let subscription = ambClient?.subscribe(channel: testChannelName, messageHandler: { [weak self] (result, subscription) in
             if result.isSuccess {
                 if let messageReceivedExpectation = self?.testExpectations[ExpectationType.messageReceived] {
@@ -247,8 +247,8 @@ class SNOWAMBClientTests: XCTestCase {
 
 // MARK: - SNOWAMBClientDelegate
 
-extension SNOWAMBClientTests: SNOWAMBClientDelegate {
-    func ambClientDidConnect(_ client: SNOWAMBClient) {
+extension AMBClientTests: AMBClientDelegate {
+    func ambClientDidConnect(_ client: AMBClient) {
         if let expectation = testExpectations[ExpectationType.handshaken] {
             expectation.fulfill()
         }
@@ -257,38 +257,38 @@ extension SNOWAMBClientTests: SNOWAMBClientDelegate {
         }
     }
     
-    func ambClientDidDisconnect(_ client: SNOWAMBClient) {
+    func ambClientDidDisconnect(_ client: AMBClient) {
         if let expectation = testExpectations[ExpectationType.disconnected] {
             expectation.fulfill()
         }
     }
     
-    func ambClient(_ client: SNOWAMBClient, didSubscribeToChannel channel: String) {
+    func ambClient(_ client: AMBClient, didSubscribeToChannel channel: String) {
         if let expectation = testExpectations[ExpectationType.subscribed],
             channel == testChannelName {
             expectation.fulfill()
         }
     }
     
-    func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromChannel channel: String) {
+    func ambClient(_ client: AMBClient, didUnsubscribeFromChannel channel: String) {
         if let expectation = testExpectations[ExpectationType.unsubscribed],
             channel == testChannelName {
             expectation.fulfill()
         }
     }
     
-    func ambClient(_ client: SNOWAMBClient, didReceiveMessage: SNOWAMBMessage, fromChannel channel: String) {
+    func ambClient(_ client: AMBClient, didReceiveMessage: AMBMessage, fromChannel channel: String) {
         if let expectation = testExpectations[ExpectationType.messageReceived],
             channel == testChannelName {
             expectation.fulfill()
         }
     }
     
-    func ambClient(_ client: SNOWAMBClient, didChangeClientStatus status: SNOWAMBClientStatus) {
+    func ambClient(_ client: AMBClient, didChangeClientStatus status: AMBClientStatus) {
         // Anything to do here???
     }
     
-    func ambClient(_ client: SNOWAMBClient, didReceiveGlideStatus status: SNOWAMBGlideStatus) {
+    func ambClient(_ client: AMBClient, didReceiveGlideStatus status: AMBGlideStatus) {
         if status.ambActive {
             if let expectation = testExpectations[ExpectationType.glideInitialState] {
                 expectation.fulfill()
@@ -311,7 +311,7 @@ extension SNOWAMBClientTests: SNOWAMBClientDelegate {
         }
     }
     
-    func ambClient(_ client: SNOWAMBClient, didFailWithError error: SNOWAMBError) {
+    func ambClient(_ client: AMBClient, didFailWithError error: AMBError) {
         if let expectation = testExpectations[ExpectationType.errorOccurred] {
             expectation.fulfill()
         } else {

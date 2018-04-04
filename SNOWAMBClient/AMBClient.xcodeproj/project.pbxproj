@@ -8,14 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		469B5D23204A308C0044B96D /* SNOWTestHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469B5D22204A308C0044B96D /* SNOWTestHTTPClient.swift */; };
-		46BC575E202EDF7500FDDB43 /* SNOWAMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46BC5754202EDF7400FDDB43 /* SNOWAMBClient.framework */; };
-		46BC5763202EDF7500FDDB43 /* SNOWAMBClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46BC5762202EDF7500FDDB43 /* SNOWAMBClientTests.swift */; };
-		46BC5765202EDF7500FDDB43 /* SNOWAMBClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 46BC5757202EDF7400FDDB43 /* SNOWAMBClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		46BC5773202EE81E00FDDB43 /* SNOWAMBError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46BC576E202EE81D00FDDB43 /* SNOWAMBError.swift */; };
-		46BC5774202EE81E00FDDB43 /* SNOWAMBSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46BC576F202EE81E00FDDB43 /* SNOWAMBSubscription.swift */; };
+		46BC575E202EDF7500FDDB43 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46BC5754202EDF7400FDDB43 /* AMBClient.framework */; };
+		46BC5763202EDF7500FDDB43 /* AMBClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46BC5762202EDF7500FDDB43 /* AMBClientTests.swift */; };
+		46BC5765202EDF7500FDDB43 /* AMBClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 46BC5757202EDF7400FDDB43 /* AMBClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		46BC5773202EE81E00FDDB43 /* AMBError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46BC576E202EE81D00FDDB43 /* AMBError.swift */; };
+		46BC5774202EE81E00FDDB43 /* AMBSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46BC576F202EE81E00FDDB43 /* AMBSubscription.swift */; };
 		46BC5775202EE81E00FDDB43 /* SNOWHTTPSessionClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46BC5770202EE81E00FDDB43 /* SNOWHTTPSessionClientProtocol.swift */; };
-		46BC5776202EE81E00FDDB43 /* SNOWAMBClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46BC5771202EE81E00FDDB43 /* SNOWAMBClient.swift */; };
-		46BC5777202EE81E00FDDB43 /* SNOWAMBMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46BC5772202EE81E00FDDB43 /* SNOWAMBMessage.swift */; };
+		46BC5776202EE81E00FDDB43 /* AMBClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46BC5771202EE81E00FDDB43 /* AMBClient.swift */; };
+		46BC5777202EE81E00FDDB43 /* AMBMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46BC5772202EE81E00FDDB43 /* AMBMessage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,17 +30,17 @@
 
 /* Begin PBXFileReference section */
 		469B5D22204A308C0044B96D /* SNOWTestHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SNOWTestHTTPClient.swift; sourceTree = "<group>"; };
-		46BC5754202EDF7400FDDB43 /* SNOWAMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SNOWAMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		46BC5757202EDF7400FDDB43 /* SNOWAMBClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SNOWAMBClient.h; sourceTree = "<group>"; };
+		46BC5754202EDF7400FDDB43 /* AMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		46BC5757202EDF7400FDDB43 /* AMBClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AMBClient.h; sourceTree = "<group>"; };
 		46BC5758202EDF7400FDDB43 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		46BC575D202EDF7500FDDB43 /* SNOWAMBClientTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SNOWAMBClientTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		46BC5762202EDF7500FDDB43 /* SNOWAMBClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SNOWAMBClientTests.swift; sourceTree = "<group>"; };
+		46BC575D202EDF7500FDDB43 /* AMBClientTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AMBClientTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		46BC5762202EDF7500FDDB43 /* AMBClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMBClientTests.swift; sourceTree = "<group>"; };
 		46BC5764202EDF7500FDDB43 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		46BC576E202EE81D00FDDB43 /* SNOWAMBError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SNOWAMBError.swift; sourceTree = "<group>"; };
-		46BC576F202EE81E00FDDB43 /* SNOWAMBSubscription.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SNOWAMBSubscription.swift; sourceTree = "<group>"; };
+		46BC576E202EE81D00FDDB43 /* AMBError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AMBError.swift; sourceTree = "<group>"; };
+		46BC576F202EE81E00FDDB43 /* AMBSubscription.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AMBSubscription.swift; sourceTree = "<group>"; };
 		46BC5770202EE81E00FDDB43 /* SNOWHTTPSessionClientProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SNOWHTTPSessionClientProtocol.swift; sourceTree = "<group>"; };
-		46BC5771202EE81E00FDDB43 /* SNOWAMBClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SNOWAMBClient.swift; sourceTree = "<group>"; };
-		46BC5772202EE81E00FDDB43 /* SNOWAMBMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SNOWAMBMessage.swift; sourceTree = "<group>"; };
+		46BC5771202EE81E00FDDB43 /* AMBClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AMBClient.swift; sourceTree = "<group>"; };
+		46BC5772202EE81E00FDDB43 /* AMBMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AMBMessage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,7 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				46BC575E202EDF7500FDDB43 /* SNOWAMBClient.framework in Frameworks */,
+				46BC575E202EDF7500FDDB43 /* AMBClient.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,8 +65,8 @@
 		46BC574A202EDF7400FDDB43 = {
 			isa = PBXGroup;
 			children = (
-				46BC5756202EDF7400FDDB43 /* SNOWAMBClient */,
-				46BC5761202EDF7500FDDB43 /* SNOWAMBClientTests */,
+				46BC5756202EDF7400FDDB43 /* AMBClient */,
+				46BC5761202EDF7500FDDB43 /* AMBClientTests */,
 				46BC5755202EDF7400FDDB43 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -74,34 +74,34 @@
 		46BC5755202EDF7400FDDB43 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				46BC5754202EDF7400FDDB43 /* SNOWAMBClient.framework */,
-				46BC575D202EDF7500FDDB43 /* SNOWAMBClientTests.xctest */,
+				46BC5754202EDF7400FDDB43 /* AMBClient.framework */,
+				46BC575D202EDF7500FDDB43 /* AMBClientTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		46BC5756202EDF7400FDDB43 /* SNOWAMBClient */ = {
+		46BC5756202EDF7400FDDB43 /* AMBClient */ = {
 			isa = PBXGroup;
 			children = (
-				46BC5771202EE81E00FDDB43 /* SNOWAMBClient.swift */,
-				46BC576E202EE81D00FDDB43 /* SNOWAMBError.swift */,
-				46BC5772202EE81E00FDDB43 /* SNOWAMBMessage.swift */,
-				46BC576F202EE81E00FDDB43 /* SNOWAMBSubscription.swift */,
+				46BC5771202EE81E00FDDB43 /* AMBClient.swift */,
+				46BC576E202EE81D00FDDB43 /* AMBError.swift */,
+				46BC5772202EE81E00FDDB43 /* AMBMessage.swift */,
+				46BC576F202EE81E00FDDB43 /* AMBSubscription.swift */,
 				46BC5770202EE81E00FDDB43 /* SNOWHTTPSessionClientProtocol.swift */,
-				46BC5757202EDF7400FDDB43 /* SNOWAMBClient.h */,
+				46BC5757202EDF7400FDDB43 /* AMBClient.h */,
 				46BC5758202EDF7400FDDB43 /* Info.plist */,
 			);
-			path = SNOWAMBClient;
+			path = AMBClient;
 			sourceTree = "<group>";
 		};
-		46BC5761202EDF7500FDDB43 /* SNOWAMBClientTests */ = {
+		46BC5761202EDF7500FDDB43 /* AMBClientTests */ = {
 			isa = PBXGroup;
 			children = (
-				46BC5762202EDF7500FDDB43 /* SNOWAMBClientTests.swift */,
+				46BC5762202EDF7500FDDB43 /* AMBClientTests.swift */,
 				469B5D22204A308C0044B96D /* SNOWTestHTTPClient.swift */,
 				46BC5764202EDF7500FDDB43 /* Info.plist */,
 			);
-			path = SNOWAMBClientTests;
+			path = AMBClientTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -111,16 +111,16 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				46BC5765202EDF7500FDDB43 /* SNOWAMBClient.h in Headers */,
+				46BC5765202EDF7500FDDB43 /* AMBClient.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		46BC5753202EDF7400FDDB43 /* SNOWAMBClient */ = {
+		46BC5753202EDF7400FDDB43 /* AMBClient */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 46BC5768202EDF7500FDDB43 /* Build configuration list for PBXNativeTarget "SNOWAMBClient" */;
+			buildConfigurationList = 46BC5768202EDF7500FDDB43 /* Build configuration list for PBXNativeTarget "AMBClient" */;
 			buildPhases = (
 				46BC574F202EDF7400FDDB43 /* Sources */,
 				46BC5750202EDF7400FDDB43 /* Frameworks */,
@@ -131,14 +131,14 @@
 			);
 			dependencies = (
 			);
-			name = SNOWAMBClient;
+			name = AMBClient;
 			productName = SNOWAMBClient;
-			productReference = 46BC5754202EDF7400FDDB43 /* SNOWAMBClient.framework */;
+			productReference = 46BC5754202EDF7400FDDB43 /* AMBClient.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		46BC575C202EDF7500FDDB43 /* SNOWAMBClientTests */ = {
+		46BC575C202EDF7500FDDB43 /* AMBClientTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 46BC576B202EDF7500FDDB43 /* Build configuration list for PBXNativeTarget "SNOWAMBClientTests" */;
+			buildConfigurationList = 46BC576B202EDF7500FDDB43 /* Build configuration list for PBXNativeTarget "AMBClientTests" */;
 			buildPhases = (
 				46BC5759202EDF7500FDDB43 /* Sources */,
 				46BC575A202EDF7500FDDB43 /* Frameworks */,
@@ -149,9 +149,9 @@
 			dependencies = (
 				46BC5760202EDF7500FDDB43 /* PBXTargetDependency */,
 			);
-			name = SNOWAMBClientTests;
+			name = AMBClientTests;
 			productName = SNOWAMBClientTests;
-			productReference = 46BC575D202EDF7500FDDB43 /* SNOWAMBClientTests.xctest */;
+			productReference = 46BC575D202EDF7500FDDB43 /* AMBClientTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -175,7 +175,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 46BC574E202EDF7400FDDB43 /* Build configuration list for PBXProject "SNOWAMBClient" */;
+			buildConfigurationList = 46BC574E202EDF7400FDDB43 /* Build configuration list for PBXProject "AMBClient" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -187,8 +187,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				46BC5753202EDF7400FDDB43 /* SNOWAMBClient */,
-				46BC575C202EDF7500FDDB43 /* SNOWAMBClientTests */,
+				46BC5753202EDF7400FDDB43 /* AMBClient */,
+				46BC575C202EDF7500FDDB43 /* AMBClientTests */,
 			);
 		};
 /* End PBXProject section */
@@ -215,10 +215,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				46BC5777202EE81E00FDDB43 /* SNOWAMBMessage.swift in Sources */,
-				46BC5776202EE81E00FDDB43 /* SNOWAMBClient.swift in Sources */,
-				46BC5774202EE81E00FDDB43 /* SNOWAMBSubscription.swift in Sources */,
-				46BC5773202EE81E00FDDB43 /* SNOWAMBError.swift in Sources */,
+				46BC5777202EE81E00FDDB43 /* AMBMessage.swift in Sources */,
+				46BC5776202EE81E00FDDB43 /* AMBClient.swift in Sources */,
+				46BC5774202EE81E00FDDB43 /* AMBSubscription.swift in Sources */,
+				46BC5773202EE81E00FDDB43 /* AMBError.swift in Sources */,
 				46BC5775202EE81E00FDDB43 /* SNOWHTTPSessionClientProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -227,7 +227,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				46BC5763202EDF7500FDDB43 /* SNOWAMBClientTests.swift in Sources */,
+				46BC5763202EDF7500FDDB43 /* AMBClientTests.swift in Sources */,
 				469B5D23204A308C0044B96D /* SNOWTestHTTPClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -237,7 +237,7 @@
 /* Begin PBXTargetDependency section */
 		46BC5760202EDF7500FDDB43 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 46BC5753202EDF7400FDDB43 /* SNOWAMBClient */;
+			target = 46BC5753202EDF7400FDDB43 /* AMBClient */;
 			targetProxy = 46BC575F202EDF7500FDDB43 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -367,10 +367,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = SNOWAMBClient/Info.plist;
+				INFOPLIST_FILE = AMBClient/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SNOWAMBClient;
+				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.AMBClient;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -391,10 +391,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = SNOWAMBClient/Info.plist;
+				INFOPLIST_FILE = AMBClient/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SNOWAMBClient;
+				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.AMBClient;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -409,9 +409,9 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
-				INFOPLIST_FILE = SNOWAMBClientTests/Info.plist;
+				INFOPLIST_FILE = AMBClientTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SNOWAMBClientTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.AMBClientTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
@@ -425,9 +425,9 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
-				INFOPLIST_FILE = SNOWAMBClientTests/Info.plist;
+				INFOPLIST_FILE = AMBClientTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.SNOWAMBClientTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.servicenow.AMBClientTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
@@ -438,7 +438,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		46BC574E202EDF7400FDDB43 /* Build configuration list for PBXProject "SNOWAMBClient" */ = {
+		46BC574E202EDF7400FDDB43 /* Build configuration list for PBXProject "AMBClient" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				46BC5766202EDF7500FDDB43 /* Debug */,
@@ -447,7 +447,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		46BC5768202EDF7500FDDB43 /* Build configuration list for PBXNativeTarget "SNOWAMBClient" */ = {
+		46BC5768202EDF7500FDDB43 /* Build configuration list for PBXNativeTarget "AMBClient" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				46BC5769202EDF7500FDDB43 /* Debug */,
@@ -456,7 +456,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		46BC576B202EDF7500FDDB43 /* Build configuration list for PBXNativeTarget "SNOWAMBClientTests" */ = {
+		46BC576B202EDF7500FDDB43 /* Build configuration list for PBXNativeTarget "AMBClientTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				46BC576C202EDF7500FDDB43 /* Debug */,
