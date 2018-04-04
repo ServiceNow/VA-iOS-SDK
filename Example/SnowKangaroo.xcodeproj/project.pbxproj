@@ -80,7 +80,6 @@
 		8B72FC31202B61FD00C1AFC9 /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		8B72FC34202B625A00C1AFC9 /* InstanceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceSettings.swift; sourceTree = "<group>"; };
 		8B72FC36202B696A00C1AFC9 /* OAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthCredential.swift; sourceTree = "<group>"; };
-		8B9842FD203E3B2B00FE7DAD /* SNOWAMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SNOWAMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B984305203F81DE00FE7DAD /* AuthProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthProvider.swift; sourceTree = "<group>"; };
 		8B984307203F831D00FE7DAD /* OAuthManager+AuthProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OAuthManager+AuthProvider.swift"; sourceTree = "<group>"; };
 		8B98430C203FC84900FE7DAD /* UserDefaults+Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Codable.swift"; sourceTree = "<group>"; };
@@ -243,7 +242,6 @@
 			isa = PBXGroup;
 			children = (
 				4623EB08207586EE00C1D37D /* AMBClient.framework */,
-				8B9842FD203E3B2B00FE7DAD /* SNOWAMBClient.framework */,
 				BE50E22C1FB934FF00948FBC /* SnowChat.framework */,
 			);
 			name = Frameworks;
