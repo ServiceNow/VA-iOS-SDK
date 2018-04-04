@@ -1,15 +1,14 @@
-public enum SNOWAMBMessageType {
+public enum AMBMessageType {
     case dataMessage
     case responseMessage
 }
 
-public class SNOWAMBMessage {
-    
+public class AMBMessage {
     // id may be "" for handshake/connect message
     public let id: String?
     public let successful: Bool
     public let channel: String
-    public let messageType: SNOWAMBMessageType
+    public let messageType: AMBMessageType
     
     // other fields are optional (set to nil or 0 for timestamp)
     public let authSuccessful: Bool?
@@ -46,7 +45,7 @@ public class SNOWAMBMessage {
         }
         
         guard let messageDict = rawMessage as? [String : Any] else {
-            throw SNOWAMBError.messageParserError(description: "AMB Message is not [String:Any] dictionary")
+            throw AMBError.messageParserError(description: "AMB Message is not [String:Any] dictionary")
         }
 
         self.id = messageDict["id"] as? String
@@ -55,7 +54,7 @@ public class SNOWAMBMessage {
         if let channel = messageDict["channel"] as? String {
             self.channel = channel
         } else {
-            throw SNOWAMBError.messageParserError(description: "AMB Message is missing channel field")
+            throw AMBError.messageParserError(description: "AMB Message is missing channel field")
         }
         
         self.authSuccessful = messageDict["authSuccessful"] as? Bool

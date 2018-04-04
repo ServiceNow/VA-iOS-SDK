@@ -9,7 +9,7 @@
 import Foundation
 import Alamofire
 import AlamofireImage
-import SNOWAMBClient
+import AMBClient
 import WebKit
 
 enum APIManagerError: Error {
@@ -18,7 +18,7 @@ enum APIManagerError: Error {
     case invalidUser(message: String)
 }
 
-class APIManager: NSObject, SNOWAMBClientDelegate {
+class APIManager: NSObject, AMBClientDelegate {
     
     internal enum AuthStatus {
         case loggedIn(User)
@@ -48,7 +48,7 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
         return ImageDownloader()
     }()
     
-    internal let ambClient: SNOWAMBClient
+    internal let ambClient: AMBClient
     private var ambPauseReasons = Set<AMBPauseReason>()
     private var ambTransportAvailable: Bool = false
     
@@ -72,7 +72,7 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
         self.transportListener = transportListener
         self.authStatus = .loggedOut(nil)
         
-        ambClient = SNOWAMBClient(httpClient: AMBHTTPClient(sessionManager: sessionManager, baseURL: instance.instanceURL))
+        ambClient = AMBClient(httpClient: AMBHTTPClient(sessionManager: sessionManager, baseURL: instance.instanceURL))
 
         super.init()
         
@@ -281,13 +281,13 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
     
     // MARK: - AMB Listener
     
-    func ambClientDidConnect(_ client: SNOWAMBClient) {}
-    func ambClientDidDisconnect(_ client: SNOWAMBClient) {}
-    func ambClient(_ client: SNOWAMBClient, didSubscribeToChannel channel: String) {}
-    func ambClient(_ client: SNOWAMBClient, didUnsubscribeFromChannel channel: String) {}
-    func ambClient(_ client: SNOWAMBClient, didReceiveMessage: SNOWAMBMessage, fromChannel channel: String) {}
+    func ambClientDidConnect(_ client: AMBClient) {}
+    func ambClientDidDisconnect(_ client: AMBClient) {}
+    func ambClient(_ client: AMBClient, didSubscribeToChannel channel: String) {}
+    func ambClient(_ client: AMBClient, didUnsubscribeFromChannel channel: String) {}
+    func ambClient(_ client: AMBClient, didReceiveMessage: AMBMessage, fromChannel channel: String) {}
     
-    func ambClient(_ client: SNOWAMBClient, didReceiveGlideStatus status: SNOWAMBGlideStatus) {
+    func ambClient(_ client: AMBClient, didReceiveGlideStatus status: AMBGlideStatus) {
         guard let sessionStatus = status.sessionStatus, sessionStatus == .loggedOut else {
             return
         }
@@ -297,11 +297,11 @@ class APIManager: NSObject, SNOWAMBClientDelegate {
         handleAMBSessionTimeout()
     }
     
-    func ambClient(_ client: SNOWAMBClient, didFailWithError error: SNOWAMBError) {
+    func ambClient(_ client: AMBClient, didFailWithError error: AMBError) {
         Logger.default.logInfo("AMB client error: \(error.localizedDescription)")
     }
     
-    func ambClient(_ client: SNOWAMBClient, didChangeClientStatus status: SNOWAMBClientStatus) {
+    func ambClient(_ client: AMBClient, didChangeClientStatus status: AMBClientStatus) {
         updateAMBTransportAvailabilityIfNeeded()
         Logger.default.logInfo("AMB connection notification: \(status)")
     }

@@ -38,7 +38,7 @@ class SNOWTestHTTPClient: SNOWHTTPSessionClientProtocol {
         
         return nil
     }
-    private func httpRequest(url: URL, data: Data, completion handler: @escaping (SNOWAMBResult<[Any]>) -> Void) {
+    private func httpRequest(url: URL, data: Data, completion handler: @escaping (AMBResult<[Any]>) -> Void) {
         
         func toJSON(_ data: Data?) -> [Any] {
             do {
@@ -65,16 +65,16 @@ class SNOWTestHTTPClient: SNOWHTTPSessionClientProtocol {
             if let error = error {
                 let errorMessage = "http error: " + error.localizedDescription
                 if let response = response as? HTTPURLResponse {
-                    handler(SNOWAMBResult.failure(SNOWAMBError.httpRequestFailed(description: "http status code:\(response.statusCode) \(errorMessage)")))
+                    handler(AMBResult.failure(AMBError.httpRequestFailed(description: "http status code:\(response.statusCode) \(errorMessage)")))
                 } else {
-                    handler(SNOWAMBResult.failure(SNOWAMBError.httpRequestFailed(description: "error \(errorMessage)")))
+                    handler(AMBResult.failure(AMBError.httpRequestFailed(description: "error \(errorMessage)")))
                 }
             } else {
                 let response = response as? HTTPURLResponse
                 if response?.statusCode == 200 {
-                   handler(SNOWAMBResult.success(toJSON(data)))
+                   handler(AMBResult.success(toJSON(data)))
                 } else {
-                    handler(SNOWAMBResult.failure(SNOWAMBError.httpRequestFailed(description: "http status code:\(response?.statusCode ?? 0)")))
+                    handler(AMBResult.failure(AMBError.httpRequestFailed(description: "http status code:\(response?.statusCode ?? 0)")))
                 }
             }
         }

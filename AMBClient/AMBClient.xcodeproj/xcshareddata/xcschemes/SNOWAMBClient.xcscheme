@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "46BC5753202EDF7400FDDB43"
-               BuildableName = "SNOWAMBClient.framework"
-               BlueprintName = "SNOWAMBClient"
+               BuildableName = "AMBClient.framework"
+               BlueprintName = "AMBClient"
                ReferencedContainer = "container:SNOWAMBClient.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -34,8 +34,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "46BC575C202EDF7500FDDB43"
-               BuildableName = "SNOWAMBClientTests.xctest"
-               BlueprintName = "SNOWAMBClientTests"
+               BuildableName = "AMBClientTests.xctest"
+               BlueprintName = "AMBClientTests"
                ReferencedContainer = "container:SNOWAMBClient.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -44,8 +44,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "46BC5753202EDF7400FDDB43"
-            BuildableName = "SNOWAMBClient.framework"
-            BlueprintName = "SNOWAMBClient"
+            BuildableName = "AMBClient.framework"
+            BlueprintName = "AMBClient"
             ReferencedContainer = "container:SNOWAMBClient.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -67,8 +67,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "46BC5753202EDF7400FDDB43"
-            BuildableName = "SNOWAMBClient.framework"
-            BlueprintName = "SNOWAMBClient"
+            BuildableName = "AMBClient.framework"
+            BlueprintName = "AMBClient"
             ReferencedContainer = "container:SNOWAMBClient.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -85,8 +85,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "46BC5753202EDF7400FDDB43"
-            BuildableName = "SNOWAMBClient.framework"
-            BlueprintName = "SNOWAMBClient"
+            BuildableName = "AMBClient.framework"
+            BlueprintName = "AMBClient"
             ReferencedContainer = "container:SNOWAMBClient.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

@@ -8,7 +8,7 @@
 
 import Foundation
 import Alamofire
-import SNOWAMBClient
+import AMBClient
 
 // FIXME: Hacked in networking client to make legacy AMB work
 // Remove this class and fix the AMB HTTP client protocol

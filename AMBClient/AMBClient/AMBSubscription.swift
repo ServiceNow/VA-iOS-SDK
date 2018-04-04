@@ -1,14 +1,14 @@
-public class SNOWAMBSubscription {
+public class AMBSubscription {
     
     public let uuid: String
     public var valid = false
     public var subscribed = false
     public let channel: String
     
-    let client: SNOWAMBClient
-    let messageHandler: SNOWAMBMessageHandler
+    let client: AMBClient
+    let messageHandler: AMBMessageHandler
     
-    init(channel: String, client: SNOWAMBClient, messageHandler: @escaping SNOWAMBMessageHandler) {
+    init(channel: String, client: AMBClient, messageHandler: @escaping AMBMessageHandler) {
         self.channel = channel
         self.client = client
         self.messageHandler = messageHandler
@@ -33,10 +33,10 @@ public class SNOWAMBSubscription {
 
 }
 
-public struct SNOWAMBSubscriptionWeakWrapper {
-    public weak var subscription: SNOWAMBSubscription?
+public struct AMBSubscriptionWeakWrapper {
+    public weak var subscription: AMBSubscription?
     
-    init(_ subscription: SNOWAMBSubscription) {
+    init(_ subscription: AMBSubscription) {
         self.subscription = subscription
     }
 }

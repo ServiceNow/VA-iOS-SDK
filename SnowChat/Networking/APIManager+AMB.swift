@@ -1,11 +1,11 @@
-import SNOWAMBClient
+import AMBClient
 
 // MARK: - AMB Transport
 
 extension APIManager {
     
     func sendMessage(_ message: [String: Any], toChannel channel: String,
-                     completion handler: SNOWAMBPublishMessageHandler? = nil) {
+                     completion handler: AMBPublishMessageHandler? = nil) {
         ambClient.publishMessage(message, toChannel: channel, withExtension:[:],
                                  completion: { (result) in
                                     switch result {
@@ -23,7 +23,7 @@ extension APIManager {
     }
     
     func sendMessage<T>(_ message: T, toChannel channel: String, encoder: JSONEncoder,
-                        completion handler: SNOWAMBPublishMessageHandler? = nil) where T: Encodable {
+                        completion handler: AMBPublishMessageHandler? = nil) where T: Encodable {
         do {
             let jsonData = try encoder.encode(message)
             if let dict = try JSONSerialization.jsonObject(with: jsonData, options: .allowFragments) as? [String: Any] {
@@ -39,8 +39,8 @@ extension APIManager {
         }
     }
     
-    func subscribe(_ channelName: String, messages messageHandler: @escaping SNOWAMBMessageHandler) -> SNOWAMBSubscription {
-        let subscription: SNOWAMBSubscription = ambClient.subscribe(channel: channelName, messageHandler: { (result, subscription) in
+    func subscribe(_ channelName: String, messages messageHandler: @escaping AMBMessageHandler) -> AMBSubscription {
+        let subscription: AMBSubscription = ambClient.subscribe(channel: channelName, messageHandler: { (result, subscription) in
             switch result {
             case .success:
                 if let message = result.value {
