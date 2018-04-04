@@ -441,7 +441,7 @@ class Chatterbox {
                 var responseMessage = pickerMessage
                 responseMessage.data.richControl?.value = topicToResume
                 responseMessage.data.sendTime = Date()
-                responseMessage.data.direction = MessageDirection.fromClient
+                responseMessage.data.direction = .fromClient
                 strongSelf.publishMessage(responseMessage)
                 
             } else {
@@ -449,6 +449,12 @@ class Chatterbox {
                 
                 guard actionMessage.direction == .fromServer,
                     let showTopicMessage = actionMessage as? ShowTopicMessage else { return }
+                
+                var response = showTopicMessage
+                response.data.direction = .fromClient
+                response.data.sendTime = Date()
+                response.data.actionMessage.ready = true
+                strongSelf.publishMessage(response)
                 
                 let sessionId = showTopicMessage.data.sessionId
                 let topicId = showTopicMessage.data.actionMessage.topicId

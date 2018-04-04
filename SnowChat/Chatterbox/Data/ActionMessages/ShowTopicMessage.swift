@@ -19,6 +19,7 @@ struct ShowTopicMessage: Codable, ActionData {
         var systemActionName: String = "showVendorTopic"
         var type: String = "ShowTopic"
         var topicId: String
+        var ready: Bool?
     }
     
     // define the properties that we decode / encode
