@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4623EB07207586EE00C1D37D /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4623EB08207586EE00C1D37D /* AMBClient.framework */; };
+		4623EB092075878B00C1D37D /* AMBClient.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4623EB08207586EE00C1D37D /* AMBClient.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		57C1054B204F72A30007740C /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C1054A204F72A30007740C /* UserData.swift */; };
 		8B5CF99C2034AC9C0020DF53 /* AuthNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5CF99B2034AC9C0020DF53 /* AuthNotifications.swift */; };
 		8B67BEF72037B72B008AAB18 /* OAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B67BEF62037B72B008AAB18 /* OAuthManager.swift */; };
@@ -19,8 +21,6 @@
 		8B72FC32202B61FD00C1AFC9 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B72FC31202B61FD00C1AFC9 /* RootViewController.swift */; };
 		8B72FC35202B625A00C1AFC9 /* InstanceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B72FC34202B625A00C1AFC9 /* InstanceSettings.swift */; };
 		8B72FC37202B696A00C1AFC9 /* OAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B72FC36202B696A00C1AFC9 /* OAuthCredential.swift */; };
-		8B9842FC203E3B2B00FE7DAD /* SNOWAMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B9842FD203E3B2B00FE7DAD /* SNOWAMBClient.framework */; };
-		8B9842FE203E3B3100FE7DAD /* SNOWAMBClient.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B9842FD203E3B2B00FE7DAD /* SNOWAMBClient.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8B984306203F81DE00FE7DAD /* AuthProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B984305203F81DE00FE7DAD /* AuthProvider.swift */; };
 		8B984308203F831D00FE7DAD /* OAuthManager+AuthProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B984307203F831D00FE7DAD /* OAuthManager+AuthProvider.swift */; };
 		8B98430D203FC84900FE7DAD /* UserDefaults+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B98430C203FC84900FE7DAD /* UserDefaults+Codable.swift */; };
@@ -58,8 +58,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				4623EB092075878B00C1D37D /* AMBClient.framework in Embed Frameworks */,
 				BE3BCB8C1FBA00270019A21A /* SnowChat.framework in Embed Frameworks */,
-				8B9842FE203E3B3100FE7DAD /* SNOWAMBClient.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -67,6 +67,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4623EB08207586EE00C1D37D /* AMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		57C1054A204F72A30007740C /* UserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
 		8B5CF99B2034AC9C0020DF53 /* AuthNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthNotifications.swift; sourceTree = "<group>"; };
 		8B67BEF62037B72B008AAB18 /* OAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthManager.swift; sourceTree = "<group>"; };
@@ -103,7 +104,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B9842FC203E3B2B00FE7DAD /* SNOWAMBClient.framework in Frameworks */,
+				4623EB07207586EE00C1D37D /* AMBClient.framework in Frameworks */,
 				BE3BCB8B1FBA00270019A21A /* SnowChat.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -241,6 +242,7 @@
 		BE50E22A1FB934FF00948FBC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4623EB08207586EE00C1D37D /* AMBClient.framework */,
 				8B9842FD203E3B2B00FE7DAD /* SNOWAMBClient.framework */,
 				BE50E22C1FB934FF00948FBC /* SnowChat.framework */,
 			);

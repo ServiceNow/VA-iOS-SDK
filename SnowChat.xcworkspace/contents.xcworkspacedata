@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/aleksander.avseyev/source/now/SnowChat-iOS/SNOWAMBClient/AMBClient.xcodeproj">
+      location = "group:AMBClient/AMBClient.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:SnowChat.xcodeproj">
