@@ -248,6 +248,11 @@ extension ChatDataController: ChatDataListener {
         
         isBufferingEnabled = true
         
+        if controlData.count == 0 {
+            presentWelcomeMessage()
+            presentTopicPrompt()
+        }
+        
         changeListener?.controllerDidLoadContent(self)
     }
     
