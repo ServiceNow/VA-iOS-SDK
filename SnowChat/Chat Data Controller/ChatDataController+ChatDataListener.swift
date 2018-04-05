@@ -1,4 +1,3 @@
-
 //
 //  ChatDataController+ChatDataListener.swift
 //  SnowChat
