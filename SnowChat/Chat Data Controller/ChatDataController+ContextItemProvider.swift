@@ -24,7 +24,10 @@ extension ChatDataController: ContextItemProvider {
     fileprivate func newConversationMenuItem() -> ContextMenuItem {
         let menuItem = ContextMenuItem(withTitle: NSLocalizedString("New Conversation", comment: "Context Menu Item Title")) { viewController, sender in
             self.logger.logDebug("New Conversation menu selected")
-            self.chatterbox.cancelConversation()
+            
+            self.withConfirmationIfNeeded(presentingController: viewController, title: NSLocalizedString("Do you want to cancel the current conversation?", comment: "Alert title when about to end a conversation to transfer to an agent")) {
+                self.chatterbox.cancelConversation()
+            }
         }
         return menuItem
     }
@@ -64,7 +67,7 @@ extension ChatDataController: ContextItemProvider {
         return actionItem
     }
     
-    fileprivate func agentChatAction() -> UIAlertAction? {
+    fileprivate func agentChatAction(presentingController: UIViewController) -> UIAlertAction? {
         guard let brandingSettings = chatterbox.session?.settings?.brandingSettings,
               let supportQueueInfo = chatterbox.supportQueueInfo else { return nil }
         
@@ -79,7 +82,9 @@ extension ChatDataController: ContextItemProvider {
         }
         
         let actionItem = UIAlertAction(title: messageToUser, style: .default) { action in
-            self.chatterbox.transferToLiveAgent()
+            self.withConfirmationIfNeeded(presentingController: presentingController, title: NSLocalizedString("Do you want to cancel the current conversation?", comment: "Alert title when about to end a conversation to transfer to an agent")) {
+                self.chatterbox.transferToLiveAgent()
+            }
         }
         
         actionItem.isEnabled = supportQueueInfo.active
@@ -104,7 +109,7 @@ extension ChatDataController: ContextItemProvider {
         let alertController = UIAlertController(title: NSLocalizedString("Support Options", comment: "Title for support options popover"),
                                                 message: nil,
                                                 preferredStyle: .actionSheet)
-        if let agent = agentChatAction() {
+        if let agent = agentChatAction(presentingController: presentingController) {
             alertController.addAction(agent)
         }
         
@@ -124,5 +129,25 @@ extension ChatDataController: ContextItemProvider {
         alertController.addAction(cancel)
         alertController.popoverPresentationController?.barButtonItem = sender
         presentingController.present(alertController, animated: true, completion: nil)
+    }
+    
+    func withConfirmationIfNeeded(presentingController: UIViewController, title: String, execute: @escaping () -> Void ) {
+        if chatterbox.state == .agentConversation || chatterbox.state == .userConversation {
+            let alertController = UIAlertController(title: title,
+                                                    message:nil,
+                                                    preferredStyle: .alert)
+            
+            let OKAction = UIAlertAction(title: "Yes", style: .destructive) { action in
+                execute()
+            }
+            alertController.addAction(OKAction)
+            
+            let cancelAction = UIAlertAction(title: "No", style: .cancel) { action in }
+            alertController.addAction(cancelAction)
+            
+            presentingController.present(alertController, animated: true) { }
+        } else {
+            execute()
+        }
     }
 }
