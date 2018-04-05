@@ -57,7 +57,7 @@ extension Chatterbox {
             logger.logInfo("Live Agent session \(conversationId) is in progress")
             resumeLiveAgentTopic(conversation: conversation)
         case .completed, .error, .canceled:
-            logger.logInfo("Conversation is no longer in progress - ending current conversations")
+            logger.logInfo("No conversation in progress - finish the topic to mark it as completed")
             finishTopic(conversationId)
         case .unknown:
             logger.logError("Unknown conversation state in syncConversation!")

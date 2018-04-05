@@ -1,3 +1,4 @@
+
 //
 //  ChatDataController+ChatDataListener.swift
 //  SnowChat
@@ -244,12 +245,6 @@ extension ChatDataController: ChatDataListener {
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversationsForConsumerAccount consumerAccountId: String, forChat chatId: String) {
         logger.logInfo("History load completed for \(consumerAccountId) - re-enabling buffering.")
-        
-        // see if there are any controls to show - if not, add the welcome message
-        // 1 because we are showing typing indicator
-        if controlData.count <= 1 {
-            presentWelcomeMessage()
-        }
         
         isBufferingEnabled = true
         

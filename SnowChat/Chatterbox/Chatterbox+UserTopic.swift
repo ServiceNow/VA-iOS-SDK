@@ -81,6 +81,9 @@ extension Chatterbox {
     
     internal func finishTopic(_ conversationId: String) {
         let topicInfo = nullTopicInfo
+        
+        state = .topicSelection
+        
         notifyEventListeners { listener in
             listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
         }

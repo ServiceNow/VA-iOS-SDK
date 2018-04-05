@@ -426,7 +426,10 @@ class ChatDataController {
     func topicDidFinish() {
         conversationId = nil
         
+        flushControlBuffer()
+        
         pushEndOfTopicDividerIfNeeded()
+        presentWelcomeMessage()
         presentTopicPrompt()
     }
 
@@ -442,6 +445,7 @@ class ChatDataController {
     }
     
     func agentTopicDidFinish() {
+        flushControlBuffer()
         presentTopicPrompt()
     }
     
@@ -451,6 +455,7 @@ class ChatDataController {
         if let message = chatterbox.session?.settings?.generalSettings?.introMessage {
             let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
             bufferControlMessage(ChatMessageModel(model: completionTextControl, bubbleLocation: .left, theme: theme))
+            
             let completionActionButton = ButtonControlViewModel(id: ChatUtil.uuidString(), label: "View all Topics", value: ChatDataController.showAllTopicsAction)
             let buttonModel = ChatMessageModel(model: completionActionButton, bubbleLocation: .left, theme: theme)
             buttonModel.isAuxiliary = true
@@ -462,8 +467,7 @@ class ChatDataController {
         let message = chatterbox.session?.settings?.generalSettings?.welcomeMessage ?? NSLocalizedString("Welcome! What can we help you with?", comment: "Default welcome message")
         let welcomeTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
         
-        // NOTE: we do not buffer the welcome message currently - this is intentional
-        presentControlData(ChatMessageModel(model: welcomeTextControl, bubbleLocation: .left, theme: theme))
+        bufferControlMessage(ChatMessageModel(model: welcomeTextControl, bubbleLocation: .left, theme: theme))
     }
     
     func pushEndOfTopicDividerIfNeeded() {
@@ -541,6 +545,13 @@ class ChatDataController {
         
         if controlMessageBuffer.count > 0 {
             pushTypingIndicatorIfNeeded()
+        }
+    }
+    
+    fileprivate func flushControlBuffer() {
+        while controlMessageBuffer.count > 0 {
+            let control = controlMessageBuffer.remove(at: 0)
+            presentControlData(control)
         }
     }
 }
