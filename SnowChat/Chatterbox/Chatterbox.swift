@@ -254,9 +254,9 @@ class Chatterbox {
     
     internal func didReceiveSystemError(_ message: String) {
         switch state {
-        case .userConversation, .topicSelection:
+        case .userConversation:
             transferToLiveAgent()
-        case .waitingForAgent, .agentConversation:
+        case .waitingForAgent, .agentConversation, .topicSelection:
             // signal an end of conversation so the user can try a new conversation
             guard let sessionId = self.conversationContext.sessionId,
                 let conversationId = self.conversationContext.conversationId else { return }

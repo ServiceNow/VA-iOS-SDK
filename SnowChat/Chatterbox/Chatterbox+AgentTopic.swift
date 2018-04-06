@@ -14,27 +14,15 @@ extension Chatterbox {
     internal static let liveAgentTopicId: String = "brb"
     
     internal func transferToLiveAgent() {
-        guard let isActive = supportQueueInfo?.active, isActive == true else {
-            showLiveAgentUnavailableMessage()
+        guard let sessionId = session?.id, let conversationId = conversationContext.systemConversationId else {
+            logger.logError("Session must be initialized before transferToLiveAgent is called")
             return
         }
         
         cancelPendingExchangeIfNeeded()
         
-        if let sessionId = session?.id, let conversationId = conversationContext.systemConversationId {
-            messageHandler = startLiveAgentHandshakeHandler
-            
-            var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
-            startTopic.data.richControl?.value = "brb"
-            startTopic.data.direction = .fromClient
-            startTopic.data.richControl?.uiMetadata = contextualActions?.data.richControl?.uiMetadata
-            
-            logger.logDebug("*** Sending StartTopic message from client: conversationId=\(startTopic.data.conversationId ?? "NIL")")
-            
-            publishMessage(startTopic)
-        } else {
-            logger.logError("Session must be initialized before startTopic is called")
-        }
+        messageHandler = startLiveAgentHandshakeHandler
+        publishStartAgentChatMessage(sessionId, conversationId)
     }
     
     internal func endAgentConversation() {
@@ -77,14 +65,12 @@ extension Chatterbox {
                 return nil
             })
             
-            guard agentMessages.count > 0 else { return }
-            
-            self.state = .agentConversation
-        
-            let chatAgentInfo = self.agentInfo(fromMessages: agentMessages)
-            
-            self.notifyEventListeners { listener in
-                listener.chatterbox(self, didResumeAgentChat: chatAgentInfo, forChat: self.chatId)
+            if agentMessages.count > 0 {
+                self.state = .agentConversation
+                let chatAgentInfo = self.agentInfo(fromMessages: agentMessages)
+                self.notifyEventListeners { listener in
+                    listener.chatterbox(self, didResumeAgentChat: chatAgentInfo, forChat: self.chatId)
+                }
             }
         }
     }
@@ -135,20 +121,25 @@ extension Chatterbox {
                 
                 // send reponse message that we are ready
                 let startAgentChatReadyMessage = createStartAgentChatReadyMessage(fromMessage: startAgentChatMessage)
-                
-                logger.logDebug("*** ConnectToAgent Message response client: conversationId=\(startAgentChatReadyMessage.data.conversationId ?? "NIL") topicId=\(startAgentChatMessage.data.actionMessage.topicId) taskId=\(startAgentChatReadyMessage.data.taskId ?? "NIL")")
-                
                 publishMessage(startAgentChatReadyMessage)
             } else {
                 logger.logDebug("*** ConnectToAgent Message from client: Agent Topic Started!")
                 
-                // we got back out own start topic response, so we are now in the queue waiting for an 
+                // we got back out own start topic response, so we are now in the queue waiting for an agent
                 let conversationId = startAgentChatMessage.data.actionMessage.topicId
                 let topicId = startAgentChatMessage.data.actionMessage.topicId
                 let taskId = startAgentChatMessage.data.taskId
                 let topicInfo = TopicInfo(topicId: topicId, topicName: "agent", taskId: taskId, conversationId: conversationId)
                 startAgentTopic(topicInfo: topicInfo)
             }
+        } else if actionMessage.eventType == .cancelUserTopic,
+            let cancelTopicMessage = actionMessage as? CancelUserTopicMessage {
+            
+            // let the topic message handler manage the topic cancellation responses
+            installTopicMessageHandler()
+            
+            let cancelTopicReply = createCancelTopicReadyMessage(fromMessage: cancelTopicMessage)
+            publishMessage(cancelTopicReply)
         }
     }
     
@@ -196,6 +187,16 @@ extension Chatterbox {
         }
     }
     
+    private func publishStartAgentChatMessage(_ sessionId: String, _ conversationId: String) {
+        var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
+        startTopic.data.richControl?.value = "brb"
+        startTopic.data.direction = .fromClient
+        startTopic.data.richControl?.uiMetadata = contextualActions?.data.richControl?.uiMetadata
+        
+        logger.logDebug("*** Sending StartTopic message from client: conversationId=\(startTopic.data.conversationId ?? "NIL")")
+        publishMessage(startTopic)
+    }
+    
     private func createStartAgentChatReadyMessage(fromMessage message: StartAgentChatMessage) -> StartAgentChatMessage {
         var startChatReady = message
         
@@ -209,19 +210,14 @@ extension Chatterbox {
         return startChatReady
     }
     
-    private func showLiveAgentUnavailableMessage() {
-        if let email = session?.settings?.brandingSettings?.supportEmail,
-            let phone = session?.settings?.brandingSettings?.supportPhone,
-            let conversationId = conversationContext.conversationId,
-            let sessionId = conversationContext.sessionId {
+    private func createCancelTopicReadyMessage(fromMessage message: CancelUserTopicMessage) -> CancelUserTopicMessage {
+        var cancelReady = message
         
-            let taskId = conversationContext.taskId
-            let message = NSLocalizedString("I'm sorry, no agents are currently available. Please call us at \(phone), email us at \(email), or try again later.",
-                comment: "Message when no agents available during live agent transfer")
-            let textControl = OutputTextControlMessage(withValue: message, sessionId: sessionId, conversationId: conversationId, taskId: taskId, direction: MessageDirection.fromServer)
-            notifyDataListeners { listener in
-                listener.chatterbox(self, didReceiveControlMessage: textControl, forChat: chatId)
-            }
-        }
+        cancelReady.data.messageId = ChatUtil.uuidString()
+        cancelReady.data.sendTime = Date()
+        cancelReady.data.direction = .fromClient
+        cancelReady.data.actionMessage.ready = true
+        
+        return cancelReady
     }
 }
