@@ -18,7 +18,7 @@ class ControlsUtil {
         case .text:
             return TextControl(model: model)
         case .outputImage:
-            return OutputImageControl(model: model, imageDownloader: provider.imageDownloader)
+            return OutputImageControl(model: model, resourceProvider: provider)
         case .fileUpload:
             return FileUploadControl(model: model)
         case .outputLink:
@@ -32,7 +32,7 @@ class ControlsUtil {
         case .singleSelect:
             return SingleSelectControl(model: model)
         case .carousel:
-            return CarouselControl(model: model, imageDownloader: provider.imageDownloader)
+            return CarouselControl(model: model, resourceProvider: provider)
         case .typingIndicator:
             return TypingIndicatorControl()
         case .button:

@@ -12,7 +12,7 @@ import AlamofireImage
 class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ImageBrowserDelegate, ThemeableControl {
     
     weak var delegate: PickerViewControllerDelegate?
-    var imageDownloader: ImageDownloader?
+    var resourceProvider: ControlResourceProvider?
     
     private var collectionView: UICollectionView?
     private var gradientOverlayView = GradientView()
@@ -124,8 +124,8 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CarouselCollectionViewCell.cellIdentifier, for: indexPath) as! CarouselCollectionViewCell
         cell.contentView.backgroundColor = .clear
         let item = model.items[indexPath.row] as! CarouselItem
-        if let imageDownloader = imageDownloader {
-            cell.configure(withCarouselItem: item, imageDownloader: imageDownloader)
+        if let resourceProvider = resourceProvider {
+            cell.configure(withCarouselItem: item, resourceProvider: resourceProvider)
         }
         
         return cell
@@ -139,7 +139,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     }
     
     private func zoomIn(itemAt indexPath: IndexPath) {
-        guard let imageDownloader = imageDownloader else { return }
+        guard let imageDownloader = resourceProvider?.imageDownloader else { return }
         let urls = model.items.flatMap({ ($0 as? CarouselItem)?.attachment })
         let browserViewController = ImageBrowserViewController(photoURLs: urls, imageDownloader: imageDownloader, selectedImage: indexPath.row)
         browserViewController.delegate = self
