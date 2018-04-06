@@ -215,11 +215,9 @@ public class AMBClient {
         #endif
     }
     
-    // MARK: public methods
+    // MARK: - Public methods
     
     public func connect() {
-        cancelAllDataTasks()
-        connectDataTaskTime = nil
         sendBayeuxHandshakeMessage()
     }
     
@@ -287,12 +285,13 @@ public class AMBClient {
     
     public func tearDown() {
         cancelAllDataTasks()
+        self.postedMessages.removeAll()
         self.clientStatus = .disconnected
     }
 }
 
 //
-// MARK: Private methods
+// MARK: - Private methods
 //
 
 private extension AMBClient {
@@ -517,7 +516,7 @@ private extension AMBClient {
         }
     }
     
-    func handleDisconnectMessage(_ ambMessage : AMBMessage) {
+    func handleDisconnectMessage(_ ambMessage: AMBMessage) {
         if ambMessage.successful {
             cancelAllDataTasks()
             subscribedChannels.removeAll()
@@ -527,7 +526,7 @@ private extension AMBClient {
         }
     }
     
-    func handleSubscribeMessage(_ ambMessage : AMBMessage) {
+    func handleSubscribeMessage(_ ambMessage: AMBMessage) {
         if ambMessage.successful {
             guard let channel = ambMessage.subscription else {
                 return
@@ -552,7 +551,7 @@ private extension AMBClient {
         }
     }
     
-    func handleUnsubscribeMessage(_ ambMessage : AMBMessage) {
+    func handleUnsubscribeMessage(_ ambMessage: AMBMessage) {
         if ambMessage.successful {
             subscribedChannels.remove(ambMessage.channel)
             cleanupSubscriptions()
@@ -565,6 +564,10 @@ private extension AMBClient {
     // MARK: Bayeux messages
     
     func sendBayeuxHandshakeMessage() {
+        cancelAllDataTasks()
+        connectDataTaskTime = nil
+        self.postedMessages.removeAll()
+        
         let message = [
             "channel" : AMBChannel.handshake.name,
             "version" : bayeuxProtocolVersion,
@@ -589,7 +592,7 @@ private extension AMBClient {
             "supportedConnections" : bayeuxSupportedConnections
         ] as [String : Any]
         
-        var timeout : TimeInterval = self.longPollingInterval
+        var timeout: TimeInterval = self.longPollingInterval
         if self.clientStatus == .retrying {
             timeout = 10.0
         }
@@ -662,7 +665,7 @@ private extension AMBClient {
         postBayeuxMessage(bayeuxMessage, completion: handler)
     }
     
-    private func channelNameToPath(_ channel : String) -> String {
+    private func channelNameToPath(_ channel: String) -> String {
         var path = ""
         if channel.hasPrefix("/meta") {
             let parts = channel.split(separator: "/").map(String.init)
@@ -689,11 +692,9 @@ private extension AMBClient {
             }
         })
         
-        // should be timeouted already
-        self.postedMessages = postedMessages.filter({ (arg) -> Bool in
-            let (_, messageRecord) = arg
-            return Double(Int(Date().timeIntervalSince1970 - messageRecord.timestamp.timeIntervalSince1970)) < longPollingTimeout * 2
-        })
+        self.postedMessages = postedMessages.filter {
+            (Date().timeIntervalSince1970 - $1.timestamp.timeIntervalSince1970) < (longPollingTimeout / 1000 * 2)
+        }
     }
     
     @discardableResult func postBayeuxMessage(_ message: [String : Any],
@@ -702,13 +703,13 @@ private extension AMBClient {
         
         guard let channel = message["channel"] as? String else {
             delegate?.ambClient(self,
-                              didFailWithError:AMBError.httpRequestFailed(description: "message is missing a channel field"))
+                              didFailWithError: AMBError.httpRequestFailed(description: "message is missing a channel field"))
             return nil
         }
         
         var myMessage = message
         
-        myMessage["messageId"] = String(messageId)
+        myMessage["id"] = messageId
         messageId += 1
 
         let path = channelNameToPath(channel)
