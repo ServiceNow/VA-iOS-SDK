@@ -27,7 +27,7 @@ class CarouselControl: PickerControlProtocol {
     
     weak var delegate: ControlDelegate?
     
-    let imageDownloader: ImageDownloader
+    let resourceProvider: ControlResourceProvider
     
     // MARK: - Convenience properties
     
@@ -39,11 +39,11 @@ class CarouselControl: PickerControlProtocol {
         return model as! CarouselControlViewModel
     }
     
-    required init(model: ControlViewModel, imageDownloader: ImageDownloader) {
+    required init(model: ControlViewModel, resourceProvider: ControlResourceProvider) {
         self.model = model
         self.style = .carousel
-        self.imageDownloader = imageDownloader
-        carouselViewController.imageDownloader = imageDownloader
+        self.resourceProvider = resourceProvider
+        carouselViewController.resourceProvider = resourceProvider
     }
     
     func updateViewController(withModel model: ControlViewModel) {

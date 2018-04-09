@@ -13,21 +13,24 @@ class CarouselCollectionViewCell: UICollectionViewCell {
     
     static let cellIdentifier = "CarouselCollectionViewCellIdentifier"
     private var requestReceipt: RequestReceipt?
+    private var resourceProvider: ControlWebResourceProvider?
     private var imageDownloader: ImageDownloader?
     @IBOutlet private weak var imageView: UIImageView?
     
-    func configure(withCarouselItem item: CarouselItem, imageDownloader: ImageDownloader) {
-        if let attachmentURL = item.attachment {
-            self.imageDownloader = imageDownloader
-            let urlRequest = URLRequest(url: attachmentURL)
-            requestReceipt = imageDownloader.download(urlRequest) { [weak self] (response) in
-                
-                // TODO: Handle error / no image case
-                if response.error != nil {
-                    return
-                }
-                self?.imageView?.image = response.value
+    func configure(withCarouselItem item: CarouselItem, resourceProvider: ControlResourceProvider) {
+        guard let attachmentURL = item.attachment else { return }
+        
+        self.imageDownloader = resourceProvider.imageDownloader
+        guard let imageDownloader = self.imageDownloader else { return }
+        
+        let urlRequest = resourceProvider.authorizedRequest(with: attachmentURL)
+        requestReceipt = imageDownloader.download(urlRequest) { [weak self] (response) in
+            
+            // TODO: Handle error / no image case
+            if response.error != nil {
+                return
             }
+            self?.imageView?.image = response.value
         }
     }
     

@@ -14,7 +14,7 @@ class OutputImageControl: ControlProtocol {
     
     var viewController: UIViewController
     
-    let imageDownloader: ImageDownloader
+    let resourceProvider: ControlResourceProvider
     
     private var imageViewController: OutputImageViewController {
         return viewController as! OutputImageViewController
@@ -34,13 +34,13 @@ class OutputImageControl: ControlProtocol {
         }
     }
     
-    required init(model: ControlViewModel, imageDownloader: ImageDownloader) {
+    required init(model: ControlViewModel, resourceProvider: ControlResourceProvider) {
         guard let imageModel = model as? OutputImageViewModel else {
             fatalError("Wrong model class")
         }
         
         self.model = imageModel
-        self.imageDownloader = imageDownloader
+        self.resourceProvider = resourceProvider
         self.viewController = OutputImageViewController()
     }
     
@@ -50,7 +50,8 @@ class OutputImageControl: ControlProtocol {
     
     private func downloadImageIfNeeded() {
         let imageModel = self.imageModel
-        let urlRequest = URLRequest(url: imageModel.value)
+        let urlRequest = resourceProvider.authorizedRequest(with: imageModel.value)
+        let imageDownloader = resourceProvider.imageDownloader
         requestReceipt = imageDownloader.download(urlRequest) { [weak self] (response) in
             guard let currentModel = self?.model as? OutputImageViewModel,
                 imageModel.value == currentModel.value else {
@@ -58,8 +59,8 @@ class OutputImageControl: ControlProtocol {
             }
             
             // FIXME: Handle error / no image case
-            if response.error != nil {
-                Logger.default.logError("No image found for \(imageModel.value)")
+            if let error = response.error {
+                Logger.default.logError("No image downloaded for \(imageModel.value): error=\(error)")
                 return
             }
 
@@ -80,6 +81,7 @@ class OutputImageControl: ControlProtocol {
     
     func prepareForReuse() {
         if let receipt = requestReceipt {
+            let imageDownloader = resourceProvider.imageDownloader
             imageDownloader.cancelRequest(with: receipt)
             requestReceipt = nil
         }
