@@ -268,12 +268,21 @@ class Chatterbox {
     
     internal func didReceiveTopicFinishedAction(_ action: TopicFinishedMessage) {
         cancelPendingExchangeIfNeeded()
-        
         conversationContext.conversationId = nil
+        
+        let topicInfo: TopicInfo
+        
+        if let conversationId = action.data.conversationId,
+            let conversation = chatStore.conversation(forId: conversationId) {
+            
+            topicInfo = TopicInfo(topicId: conversation.topicId, topicName: conversation.topicTypeName, taskId: nil, conversationId: conversationId)
+            chatStore.endConversation(conversationId, withState: .completed)
+        } else {
+            topicInfo = nullTopicInfo
+        }
         
         saveDataToPersistence()
         
-        let topicInfo = nullTopicInfo
         notifyEventListeners { listener in
             listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
         }

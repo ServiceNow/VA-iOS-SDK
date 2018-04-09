@@ -169,6 +169,7 @@ extension Chatterbox {
         state = .userConversation
         
         setupForConversation(topicInfo: topicInfo)
+        
         notifyEventListeners { listener in
             listener.chatterbox(self, didStartTopic: topicInfo, forChat: chatId)
         }
@@ -177,8 +178,10 @@ extension Chatterbox {
     private func setupForConversation(topicInfo: TopicInfo) {
         conversationContext.conversationId = topicInfo.conversationId
         conversationContext.taskId = topicInfo.taskId
+
+        // create a new conversation for the user topic
+        _ = chatStore.findOrCreateConversation(topicInfo.conversationId, withName: topicInfo.topicName ?? "New Topic", withState: .inProgress)
         
-        logger.logDebug("*** Setting topic message handler")
         installTopicMessageHandler()
     }
     

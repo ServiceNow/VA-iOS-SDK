@@ -37,10 +37,10 @@ extension Chatterbox {
                 completion(0)
             } else {
                 // changes on the server - reload from saved state
-                strongSelf.clearAndReloadFromService(completionHandler: { (error) in
+                strongSelf.loadDataFromPersistence { (error) in
                     let count = strongSelf.chatStore.conversations.count
                     completion(count)
-                })
+                }
             }
         })
     }
@@ -180,22 +180,9 @@ extension Chatterbox {
         }
     }
     
-    internal func clearAndReloadFromService(completionHandler: @escaping (Error?) -> Void) {
-        chatStore.reset()
-        refreshConversations(skipSyncingState: true, completionHandler: completionHandler)
-    }
-    
     internal func loadDataFromPersistence(completionHandler: @escaping (Error?) -> Void) {
-        // TODO: load locally stored history and synchronize with the server
-        //       for now we just pull from server, no local store
-        /*
-         do {
-         let conversations = try chatStore.load()
-         } catch let error {
-         logger.logError("Exception loading chatStore: \(error)")
-         }
-         */
-        
+        // clear the local database and reload from service
+        chatStore.reset()
         refreshConversations(skipSyncingState: false, completionHandler: completionHandler)
     }
     
