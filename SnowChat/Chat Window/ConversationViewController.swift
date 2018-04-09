@@ -34,6 +34,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
 
     private var messageViewControllerCache = ChatMessageViewControllerCache()
     private var uiControlCache = ControlCache()
+    private var uiControlsToResize = [ControlProtocol]()
     
     private var canFetchOlderMessages = false
     private var timeLastHistoryFetch: Date = Date()
@@ -638,8 +639,37 @@ extension ConversationViewController: ControlDelegate {
     }
     
     func controlDidFinishLoading(_ control: ControlProtocol) {
-        tableView.beginUpdates()
-        tableView.endUpdates()
+        uiControlsToResize.append(control)
+        if tableView.isDragging || tableView.isDecelerating {
+            return
+        }
+        
+        animateRowHeightIfNeeded()
+    }
+    
+    override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        animateRowHeightIfNeeded()
+    }
+    
+    override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        animateRowHeightIfNeeded()
+    }
+    
+    private func animateRowHeightIfNeeded() {
+        let cell = tableView.visibleCells.first(where: { cell in
+            guard let uiControl = (cell as? ConversationViewCell)?.messageViewController?.uiControl else {
+                return false
+            }
+            
+            return uiControlsToResize.contains(where: { $0.model.id == uiControl.model.id })
+        })
+        
+        if cell != nil {
+            tableView.beginUpdates()
+            tableView.endUpdates()
+        }
+        
+        uiControlsToResize.removeAll()
     }
     
     override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
