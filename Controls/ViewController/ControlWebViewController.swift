@@ -106,6 +106,25 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
     // MARK: - WKNavigationDelegate
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        decisionHandler(.allow)
+        // show links in a full-screen webview
+        if navigationAction.navigationType == .linkActivated {
+            if let url = navigationAction.request.url {
+                presentInWebView(url)
+            }
+            decisionHandler(.cancel)
+        } else {
+            decisionHandler(.allow)
+        }
     }
+    
+    fileprivate func presentInWebView(_ url: URL) {
+        let webViewController = ControlWebViewController(url: url, resourceProvider: resourceProvider)
+        let localizedDoneString = NSLocalizedString("Done", comment: "Done button")
+        let doneButton = UIBarButtonItem(title: localizedDoneString, style: .done, target: webViewController, action: #selector(finishModalPresentation(_:)))
+        webViewController.navigationItem.leftBarButtonItem = doneButton
+        let navigationController = UINavigationController(rootViewController: webViewController)
+        navigationController.modalPresentationStyle = .overFullScreen
+        present(navigationController, animated: true, completion: nil)
+    }
+    
 }
