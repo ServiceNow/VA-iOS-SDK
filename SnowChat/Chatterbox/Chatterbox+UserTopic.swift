@@ -136,7 +136,7 @@ extension Chatterbox {
         return outgoingMessage
     }
     
-    private func startUserTopicHandshakeHandler(_ message: String) {
+    internal func startUserTopicHandshakeHandler(_ message: String) {
         let actionMessage = ChatDataFactory.actionFromJSON(message)
         guard actionMessage.direction == .fromServer else { return }
         
