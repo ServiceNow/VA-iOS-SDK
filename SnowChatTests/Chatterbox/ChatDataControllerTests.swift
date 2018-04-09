@@ -119,11 +119,11 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         XCTAssertEqual(2, controller?.controlCount())
         
         endConversation()
-        XCTAssertEqual(3, controller?.controlCount())
+        XCTAssertEqual(2, controller?.controlCount())
         
-        XCTAssertEqual(ControlType.typingIndicator, controller?.controlForIndex(0)?.controlModel?.type)
+        XCTAssertEqual(ChatMessageType.topicDivider, controller?.controlForIndex(0)?.type)
         XCTAssertEqual(ChatMessageType.control, controller?.controlForIndex(1)?.type)
-        XCTAssertEqual(ChatMessageType.topicDivider, controller?.controlForIndex(2)?.type)
+        XCTAssertEqual(ControlType.text, controller?.controlForIndex(1)?.controlModel?.type)
     }
     
     func startConversation() {
