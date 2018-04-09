@@ -113,10 +113,14 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         XCTAssertEqual(BubbleLocation(direction: MessageDirection.fromServer), controller?.controlForIndex(0)?.bubbleLocation)
     }
     
-    func testStartTopicDivider() {
+    func testEndTopicDivider() {
         XCTAssertEqual(0, controller?.controlCount())
         startConversation()
+        XCTAssertEqual(2, controller?.controlCount())
+        
+        endConversation()
         XCTAssertEqual(3, controller?.controlCount())
+        
         XCTAssertEqual(ControlType.typingIndicator, controller?.controlForIndex(0)?.controlModel?.type)
         XCTAssertEqual(ChatMessageType.control, controller?.controlForIndex(1)?.type)
         XCTAssertEqual(ChatMessageType.topicDivider, controller?.controlForIndex(2)?.type)
@@ -126,6 +130,10 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         // mimic a started conversation
         let topicInfo = TopicInfo(topicId: "f0760de6733a0300d63a566a4cf6a7b6", topicName: "Topic Name", taskId: nil, conversationId: "f0760de6733a0300d63a566a4cf6a7b6")
         controller?.topicDidStart(topicInfo)
+    }
+    
+    func endConversation() {
+        controller?.topicDidFinish()
     }
     
     func startConversationAndUpdateBooleanControl() {
