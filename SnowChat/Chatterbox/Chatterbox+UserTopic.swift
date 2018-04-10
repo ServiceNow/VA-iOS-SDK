@@ -80,10 +80,14 @@ extension Chatterbox {
     }
     
     internal func finishTopic(_ conversationId: String) {
-        let topicInfo = nullTopicInfo
-        
+        guard let conversation = chatStore.conversation(forId: conversationId) else {
+            logger.logError("Invalid conversationId in finishTopic: \(conversationId)")
+            return
+        }
+                
         state = .topicSelection
         
+        let topicInfo = TopicInfo(topicId: conversation.topicId, topicName: conversation.topicTypeName, taskId: nil, conversationId: conversationId)
         notifyEventListeners { listener in
             listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
         }

@@ -267,22 +267,21 @@ class Chatterbox {
     }
     
     internal func didReceiveTopicFinishedAction(_ action: TopicFinishedMessage) {
-        cancelPendingExchangeIfNeeded()
-        conversationContext.conversationId = nil
-        
-        let topicInfo: TopicInfo
-        
-        if let conversationId = action.data.conversationId,
-            let conversation = chatStore.conversation(forId: conversationId) {
-            
-            topicInfo = TopicInfo(topicId: conversation.topicId, topicName: conversation.topicTypeName, taskId: nil, conversationId: conversationId)
-            chatStore.endConversation(conversationId, withState: .completed)
-        } else {
-            topicInfo = nullTopicInfo
+        guard let conversationId = action.data.conversationId, let conversation = chatStore.conversation(forId: conversationId) else {
+            logger.logError("Invalid conversation in didReceiveTopicFinishedAction action message: \(action)")
+            return
         }
-        
+
+        // collapse and pending controls
+        cancelPendingExchangeIfNeeded()
+
+        // update conversation status and save
+        conversationContext.conversationId = nil
+        chatStore.endConversation(conversationId, withState: .completed)
         saveDataToPersistence()
         
+        // notify listeners
+        let topicInfo = TopicInfo(topicId: conversation.topicId, topicName: conversation.topicTypeName, taskId: nil, conversationId: conversationId)
         notifyEventListeners { listener in
             listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
         }
