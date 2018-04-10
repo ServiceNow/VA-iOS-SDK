@@ -40,6 +40,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     private var timeLastHistoryFetch: Date = Date()
     private var isLoading = false
     private var defaultMessageHeight: CGFloat?
+    private var maxMessageHeight: CGFloat?
     
     private var wasHistoryLoadedForUser: Bool = false
     
@@ -102,6 +103,16 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         // not calling super to override slack's behavior
         adjustContentInset()
         defaultMessageHeight = tableView.bounds.height * 0.3
+        
+        let bottomMargin: CGFloat
+        if #available(iOS 11.0, *) {
+            bottomMargin = tableView.safeAreaInsets.top
+        } else {
+            // Fallback on earlier versions
+            bottomMargin = topLayoutGuide.length
+        }
+        
+        maxMessageHeight = tableView.bounds.height - bottomMargin - 50
     }
     
     private func adjustContentInset() {
@@ -491,13 +502,15 @@ extension ConversationViewController {
     // MARK: - Special case for OutputHtmlViewModel..
     private func adjustModelSizeIfNeeded(_ messageModel: ChatMessageModel) {
         guard let outputHtmlModel = messageModel.controlModel as? OutputHtmlControlViewModel,
-            let messageHeight = defaultMessageHeight,
-            let size = outputHtmlModel.size,
-            size.height == UIViewNoIntrinsicMetric else {
+            let size = outputHtmlModel.size else {
                 return
         }
         
-        outputHtmlModel.size = CGSize(width: UIViewNoIntrinsicMetric, height: messageHeight)
+        if let messageHeight = defaultMessageHeight, size.height == UIViewNoIntrinsicMetric {
+            outputHtmlModel.size = CGSize(width: UIViewNoIntrinsicMetric, height: messageHeight)
+        } else if let messageHeight = maxMessageHeight, size.height > messageHeight {
+            outputHtmlModel.size = CGSize(width: UIViewNoIntrinsicMetric, height: messageHeight)
+        }
     }
     
     // MARK: - ChatMessageViewController reuse
