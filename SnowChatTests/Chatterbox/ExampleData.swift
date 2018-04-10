@@ -485,4 +485,32 @@ class ExampleData {
         """
         return ChatDataFactory.actionFromJSON(json) as! ShowTopicMessage
     }
+    
+    static func exampleTopicFinishedMessage() -> TopicFinishedMessage {
+        let json = """
+        {
+          "type" : "actionMessage",
+          "data" : {
+            "@class" : ".ActionMessageDto",
+            "messageId" : "7984912f73760300d63a566a4cf6a76a",
+            "sessionId" : "ce74996773760300d63a566a4cf6a7bc",
+            "conversationId" : "1f74912f73760300d63a566a4cf6a757",
+            "actionMessage" : {
+              "type" : "TopicFinished",
+              "systemActionName" : "TopicFinished"
+            },
+            "links" : [
+
+            ],
+            "direction" : "outbound",
+            "isAgent" : false,
+            "receiveTime" : 0,
+            "sendTime" : 1512771274122
+          },
+          "source" : "server"
+        }
+        """
+        
+        return ChatDataFactory.actionFromJSON(json) as! TopicFinishedMessage
+    }
 }

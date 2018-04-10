@@ -56,10 +56,8 @@ platform :ios do
   lane :ensure_certificates do |options|
     force = options.fetch(:force, false)
 
-    match(type: "adhoc", team_id: "AS2BZHDV7Q", force_for_new_devices: true, force: force)
-    match(type: "development", team_id: "AS2BZHDV7Q", force_for_new_devices: true, force: force)
-
-    match(type: "appstore", team_id: "AS2BZHDV7Q", force: force)
+    # Order matters… Enterprise match must come first in some cases (I wish we knew why…)
+    # Maybe due to some global state being set in match? Maybe just a bug?
 
     match(
       app_identifier: "com.servicenow.kangaroo-internal",
@@ -76,6 +74,11 @@ platform :ios do
       type: "development", 
       force: force
     )
+
+    match(type: "adhoc", team_id: "AS2BZHDV7Q", force_for_new_devices: true, force: force)
+    match(type: "development", team_id: "AS2BZHDV7Q", force_for_new_devices: true, force: force)
+
+    match(type: "appstore", team_id: "AS2BZHDV7Q", force: force)
   end
 
 end

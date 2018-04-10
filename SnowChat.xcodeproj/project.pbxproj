@@ -141,7 +141,6 @@
 		57EE77DF1FFEC2B1001F689A /* ChatMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */; };
 		57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F7B2531FE17823006D917C /* TextControlViewModel.swift */; };
 		8B0A1F67204080D400DE4D4C /* APIManager+ImageUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0A1F66204080D400DE4D4C /* APIManager+ImageUpload.swift */; };
-		8B8573DD203DE7410031A1F1 /* SNOWAMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B8573DE203DE7410031A1F1 /* SNOWAMBClient.framework */; };
 		8B98430F203FF31F00FE7DAD /* APIManager+RequestAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B98430E203FF31F00FE7DAD /* APIManager+RequestAuthorization.swift */; };
 		8BA70BB120250CCB0067EBF3 /* BaseAuthTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */; };
 		8BA70BB520250D2F0067EBF3 /* InstanceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB420250D2F0067EBF3 /* InstanceConfiguration.swift */; };
@@ -216,6 +215,8 @@
 		C4B6A9521FE22208007DBEED /* ChatDataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */; };
 		C4B8D3292021090900871B36 /* TransportStatusListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B8D3282021090900871B36 /* TransportStatusListener.swift */; };
 		C4B8D32B20210E1400871B36 /* ChatAuthListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B8D32A20210E1400871B36 /* ChatAuthListener.swift */; };
+		C4C6DD70207C171800A94322 /* TopicLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C6DD6F207C171700A94322 /* TopicLifecycleTests.swift */; };
+		C4C6DD71207C1A7B00A94322 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4C6DD72207C1A7B00A94322 /* AMBClient.framework */; };
 		C4CAFEA31FBCF2F8007007F5 /* ChatData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA21FBCF2F8007007F5 /* ChatData.swift */; };
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
 		C4CAFEA81FBD0912007007F5 /* ChatDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA71FBD0912007007F5 /* ChatDataFactory.swift */; };
@@ -437,6 +438,8 @@
 		C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataStoreTests.swift; sourceTree = "<group>"; };
 		C4B8D3282021090900871B36 /* TransportStatusListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportStatusListener.swift; sourceTree = "<group>"; };
 		C4B8D32A20210E1400871B36 /* ChatAuthListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatAuthListener.swift; sourceTree = "<group>"; };
+		C4C6DD6F207C171700A94322 /* TopicLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicLifecycleTests.swift; sourceTree = "<group>"; };
+		C4C6DD72207C1A7B00A94322 /* AMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4CAFEA21FBCF2F8007007F5 /* ChatData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatData.swift; sourceTree = "<group>"; };
 		C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataTests.swift; sourceTree = "<group>"; };
 		C4CAFEA71FBD0912007007F5 /* ChatDataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataFactory.swift; sourceTree = "<group>"; };
@@ -488,7 +491,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B8573DD203DE7410031A1F1 /* SNOWAMBClient.framework in Frameworks */,
+				C4C6DD71207C1A7B00A94322 /* AMBClient.framework in Frameworks */,
 				BEB6C8611FB92CD700B1D497 /* SnowChat.framework in Frameworks */,
 				C420ED821FC6031C002476C0 /* Alamofire.framework in Frameworks */,
 			);
@@ -741,6 +744,7 @@
 		BE50E2251FB9337D00948FBC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C4C6DD72207C1A7B00A94322 /* AMBClient.framework */,
 				4602490720744D3A005CA635 /* AMBClient.framework */,
 				4602490520744CCE005CA635 /* AMBClient.framework */,
 				8B8573DE203DE7410031A1F1 /* SNOWAMBClient.framework */,
@@ -993,8 +997,9 @@
 				BE3F1AB51FEC480D00DCC21B /* APIManagerChatTopicsTest.swift */,
 				C44FD9CA200010900079E107 /* ChatDataControllerTests.swift */,
 				C4FFCD4B20091B8D00B835C6 /* APIManagerChatSessionTests.swift */,
-				C483C17E2017DAD300C28E46 /* ExampleData.swift */,
 				C456300020599D2400B79688 /* ChatSessionTests.swift */,
+				C483C17E2017DAD300C28E46 /* ExampleData.swift */,
+				C4C6DD6F207C171700A94322 /* TopicLifecycleTests.swift */,
 			);
 			path = Chatterbox;
 			sourceTree = "<group>";
@@ -1483,6 +1488,7 @@
 				C483C17F2017DAD300C28E46 /* ExampleData.swift in Sources */,
 				C420ED7F1FC5F488002476C0 /* LoggerTests.swift in Sources */,
 				C44FD9CB200010900079E107 /* ChatDataControllerTests.swift in Sources */,
+				C4C6DD70207C171800A94322 /* TopicLifecycleTests.swift in Sources */,
 				46EBB01E2065E04300D3B3DF /* AMBTransportTests.swift in Sources */,
 				C4B6A9521FE22208007DBEED /* ChatDataStoreTests.swift in Sources */,
 				C4F29F57206D66FB0011754E /* UIColorHexValueTests.swift in Sources */,
