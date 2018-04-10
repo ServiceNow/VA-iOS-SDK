@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UIColor+HTMLColors.h"
+#import "NOW_UIColor.h"
 
 //! Project version number for SnowChat.
 FOUNDATION_EXPORT double SnowChatVersionNumber;

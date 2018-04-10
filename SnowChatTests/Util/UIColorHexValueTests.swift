@@ -14,7 +14,7 @@ class TestHexColors: XCTestCase {
     func testNormalHex() {
         let hex = "#FF00FF"
         
-        guard let color = UIColor(css: hex) else {
+        guard let color = NOW_UIColor.color(withCSS: hex) else {
                 XCTAssertTrue(false)
                 return
         }
@@ -30,7 +30,7 @@ class TestHexColors: XCTestCase {
     func testShortHex() {
         let hex = "#F0F"
         
-        guard let color = UIColor(css: hex) else {
+        guard let color = NOW_UIColor.color(withCSS: hex) else {
             XCTAssertTrue(false)
             return
         }
@@ -46,21 +46,21 @@ class TestHexColors: XCTestCase {
     func testHexNoPrefix() {
         let hex = "F0F0F0"
         
-        let color = UIColor(css: hex)
+        let color = NOW_UIColor.color(withCSS: hex)
         XCTAssertNil(color)
     }
 
     func testRandomString() {
         let value = "WeAreDEVO!"
         
-        let color = UIColor(css: value)
+        let color = NOW_UIColor.color(withCSS: value)
         XCTAssertNil(color)
     }
 
     func testEmptyString() {
         let value = ""
         
-        let color = UIColor(css: value)
+        let color = NOW_UIColor.color(withCSS: value)
         XCTAssertNil(color)
     }
 
