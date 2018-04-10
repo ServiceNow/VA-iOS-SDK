@@ -648,10 +648,18 @@ extension ConversationViewController: ControlDelegate {
     }
     
     override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        guard scrollView != autoCompletionView, decelerate == false else {
+            return
+        }
+        
         animateRowHeightIfNeeded()
     }
     
     override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        guard scrollView != autoCompletionView else {
+            return
+        }
+        
         animateRowHeightIfNeeded()
     }
     
