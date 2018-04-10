@@ -129,7 +129,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         // NOTE: making section header height very tiny as 0 make it default size in iOS11
         // see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
         tableView.sectionHeaderHeight = CGFloat(0.01)
-        tableView.estimatedRowHeight = 250
+        tableView.estimatedRowHeight = 50
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
         tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
@@ -639,51 +639,14 @@ extension ConversationViewController: ControlDelegate {
     }
     
     func controlDidFinishLoading(_ control: ControlProtocol) {
-        uiControlsToResize.append(control)
-        if tableView.isDragging || tableView.isDecelerating {
-            return
-        }
-        
-        animateRowHeightIfNeeded()
-    }
-    
-    override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        guard scrollView != autoCompletionView, decelerate == false else {
-            return
-        }
-        
-        animateRowHeightIfNeeded()
-    }
-    
-    override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        guard scrollView != autoCompletionView else {
-            return
-        }
-        
-        animateRowHeightIfNeeded()
-    }
-    
-    private func animateRowHeightIfNeeded() {
-        let cell = tableView.visibleCells.first(where: { cell in
-            guard let uiControl = (cell as? ConversationViewCell)?.messageViewController?.uiControl else {
-                return false
-            }
-            
-            return uiControlsToResize.contains(where: { $0.model.id == uiControl.model.id })
-        })
-        
-        if cell != nil {
-            tableView.beginUpdates()
-            tableView.endUpdates()
-        }
-        
-        uiControlsToResize.removeAll()
+        tableView.beginUpdates()
+        tableView.endUpdates()
     }
     
     override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         if let chatModel = dataController.controlForIndex(indexPath.row) {
             if chatModel.type == .topicDivider {
-                return 2
+                return 1
             }
             
             if let viewModel = chatModel.controlModel as? Resizable, let size = viewModel.size {
@@ -691,7 +654,7 @@ extension ConversationViewController: ControlDelegate {
             }
         }
         
-        return 200
+        return 50
     }
 }
 
