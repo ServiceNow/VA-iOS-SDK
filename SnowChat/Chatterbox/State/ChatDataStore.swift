@@ -67,6 +67,15 @@ class ChatDataStore {
         return foundIndex
     }
     
+    internal func endConversation(_ conversationId: String, withState state: Conversation.ConversationState) {
+        guard let index = conversations.index(where: { $0.conversationId == conversationId }) else {
+            Logger.default.logError("No conversation found for \(conversationId) in storeResponseData")
+            return
+        }
+        
+        conversations[index].state = state
+    }
+    
     // pendingMessage: get the last pendng message for a conversation, if any
     //
     func lastPendingMessage(forConversation conversationId: String) -> Storable? {

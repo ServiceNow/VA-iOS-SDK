@@ -88,7 +88,7 @@ extension Chatterbox {
         return agentInfo
     }
     
-    private func startLiveAgentHandshakeHandler(_ message: String) {
+    internal func startLiveAgentHandshakeHandler(_ message: String) {
         logger.logDebug("**** startLiveAgentHandshakeHandler received: \(message)")
         
         let controlMessage = ChatDataFactory.controlFromJSON(message)
@@ -129,7 +129,7 @@ extension Chatterbox {
                 let conversationId = startAgentChatMessage.data.actionMessage.topicId
                 let topicId = startAgentChatMessage.data.actionMessage.topicId
                 let taskId = startAgentChatMessage.data.taskId
-                let topicInfo = TopicInfo(topicId: topicId, topicName: "agent", taskId: taskId, conversationId: conversationId)
+                let topicInfo = TopicInfo(topicId: topicId, topicName: "Live Agent", taskId: taskId, conversationId: conversationId)
                 startAgentTopic(topicInfo: topicInfo)
             }
         } else if actionMessage.eventType == .cancelUserTopic,
@@ -148,6 +148,9 @@ extension Chatterbox {
         
         setupForAgentConversation(topicInfo: topicInfo)
         
+        // create a new conversation for the user topic
+        _ = chatStore.findOrCreateConversation(topicInfo.conversationId, withName: topicInfo.topicName ?? "New Topic", withState: .chatProgress)
+
         let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
         notifyEventListeners { listener in
             listener.chatterbox(self, willStartAgentChat: agentInfo, forChat: chatId)

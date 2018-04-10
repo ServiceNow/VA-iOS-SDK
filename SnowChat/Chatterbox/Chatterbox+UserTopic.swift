@@ -80,10 +80,14 @@ extension Chatterbox {
     }
     
     internal func finishTopic(_ conversationId: String) {
-        let topicInfo = nullTopicInfo
-        
+        guard let conversation = chatStore.conversation(forId: conversationId) else {
+            logger.logError("Invalid conversationId in finishTopic: \(conversationId)")
+            return
+        }
+                
         state = .topicSelection
         
+        let topicInfo = TopicInfo(topicId: conversation.topicId, topicName: conversation.topicTypeName, taskId: nil, conversationId: conversationId)
         notifyEventListeners { listener in
             listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
         }
@@ -136,7 +140,7 @@ extension Chatterbox {
         return outgoingMessage
     }
     
-    private func startUserTopicHandshakeHandler(_ message: String) {
+    internal func startUserTopicHandshakeHandler(_ message: String) {
         let actionMessage = ChatDataFactory.actionFromJSON(message)
         guard actionMessage.direction == .fromServer else { return }
         
@@ -169,6 +173,7 @@ extension Chatterbox {
         state = .userConversation
         
         setupForConversation(topicInfo: topicInfo)
+        
         notifyEventListeners { listener in
             listener.chatterbox(self, didStartTopic: topicInfo, forChat: chatId)
         }
@@ -177,8 +182,10 @@ extension Chatterbox {
     private func setupForConversation(topicInfo: TopicInfo) {
         conversationContext.conversationId = topicInfo.conversationId
         conversationContext.taskId = topicInfo.taskId
+
+        // create a new conversation for the user topic
+        _ = chatStore.findOrCreateConversation(topicInfo.conversationId, withName: topicInfo.topicName ?? "New Topic", withState: .inProgress)
         
-        logger.logDebug("*** Setting topic message handler")
         installTopicMessageHandler()
     }
     
