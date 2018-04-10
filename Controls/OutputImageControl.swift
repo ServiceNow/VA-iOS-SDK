@@ -57,30 +57,28 @@ class OutputImageControl: ControlProtocol {
         let imageDownloader = resourceProvider.imageDownloader
         requestReceipt = imageDownloader.download(urlRequest) { [weak self] (response) in
             
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
-                guard let currentModel = self?.model as? OutputImageViewModel,
-                    imageModel.value == currentModel.value else {
-                        return
-                }
-                
-                // FIXME: Handle error / no image case
-                if let error = response.error {
-                    Logger.default.logError("No image downloaded for \(imageModel.value): error=\(error)")
+            guard let currentModel = self?.model as? OutputImageViewModel,
+                imageModel.value == currentModel.value else {
                     return
-                }
-                
-                let image = response.value
-                guard let strongSelf = self, strongSelf.imageViewController.image != image else { return }
-                
-                // If we already fetched image before we don't need to call beginUpdate/endUpdate on tableView
-                // Which is called in didFinishImageDownload
-                strongSelf.imageViewController.image = image
-                let needsLayoutUpdate = strongSelf.imageModel.size == nil
-                if needsLayoutUpdate {
-                    strongSelf.imageModel.size = strongSelf.imageViewController.adjustedImageSize(for: image)
-                    strongSelf.delegate?.controlDidFinishLoading(strongSelf)
-                }
-//            })
+            }
+            
+            // FIXME: Handle error / no image case
+            if let error = response.error {
+                Logger.default.logError("No image downloaded for \(imageModel.value): error=\(error)")
+                return
+            }
+            
+            let image = response.value
+            guard let strongSelf = self, strongSelf.imageViewController.image != image else { return }
+            
+            // If we already fetched image before we don't need to call beginUpdate/endUpdate on tableView
+            // Which is called in didFinishImageDownload
+            strongSelf.imageViewController.image = image
+            let needsLayoutUpdate = strongSelf.imageModel.size == nil
+            if needsLayoutUpdate {
+                strongSelf.imageModel.size = strongSelf.imageViewController.adjustedImageSize(for: image)
+                strongSelf.delegate?.controlDidFinishLoading(strongSelf)
+            }
         }
     }
     
