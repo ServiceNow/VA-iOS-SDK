@@ -47,7 +47,7 @@ extension APIManager {
         guard let dictionary = result as?  [String: Any],
             let topicDictionaries = dictionary["root"] as? [[String: Any]] else { return [] }
         
-        let topics: [ChatTopic] = topicDictionaries.flatMap { topic in
+        let topics: [ChatTopic] = topicDictionaries.compactMap { topic in
             guard let title = topic["title"] as? String, let name = topic["topicName"] as? String else { return nil }
             return ChatTopic(title: title, name: name)
         }

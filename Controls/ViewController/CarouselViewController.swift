@@ -11,6 +11,7 @@ import AlamofireImage
 
 class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ImageBrowserDelegate, ThemeableControl {
     
+    //swiftlint:disable:next weak_delegate
     weak var delegate: PickerViewControllerDelegate?
     var resourceProvider: ControlResourceProvider?
     
@@ -140,7 +141,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     private func zoomIn(itemAt indexPath: IndexPath) {
         guard let imageDownloader = resourceProvider?.imageDownloader else { return }
-        let urls = model.items.flatMap({ ($0 as? CarouselItem)?.attachment })
+        let urls = model.items.compactMap({ ($0 as? CarouselItem)?.attachment })
         let browserViewController = ImageBrowserViewController(photoURLs: urls, imageDownloader: imageDownloader, selectedImage: indexPath.row)
         browserViewController.delegate = self
         browserViewController.pageControl.currentPageIndicatorTintColor = currentPageIndicatorTintColor
