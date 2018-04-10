@@ -213,7 +213,7 @@ class Theme {
     init(dictionary: [String : Any]? = nil) {
         dictionary?.keys.forEach { [weak self] key in
             if let value = dictionary?[key] as? String {
-                self?.colorPropertiesMap[key] = UIColor(hexValue: value)
+                self?.colorPropertiesMap[key] = UIColor(css: value)
             }
         }
     }

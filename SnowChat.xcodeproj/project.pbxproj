@@ -194,7 +194,6 @@
 		C43479EE1FE850D20091806D /* AutoCompleteHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */; };
 		C44FD9CB200010900079E107 /* ChatDataControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44FD9CA200010900079E107 /* ChatDataControllerTests.swift */; };
 		C4562FFD2058905B00B79688 /* EndAgentChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4562FFC2058905B00B79688 /* EndAgentChatMessage.swift */; };
-		C4562FFF2059859F00B79688 /* UIColor+HexValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4562FFE2059859F00B79688 /* UIColor+HexValue.swift */; };
 		C456300120599D2400B79688 /* ChatSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C456300020599D2400B79688 /* ChatSessionTests.swift */; };
 		C4666DCA205730DF00DABD1B /* ShowTopicMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4666DC9205730DF00DABD1B /* ShowTopicMessage.swift */; };
 		C4694A54203E3C18006A3C23 /* AgentTextControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4694A53203E3C18006A3C23 /* AgentTextControlMessage.swift */; };
@@ -217,6 +216,8 @@
 		C4B8D32B20210E1400871B36 /* ChatAuthListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B8D32A20210E1400871B36 /* ChatAuthListener.swift */; };
 		C4C6DD70207C171800A94322 /* TopicLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C6DD6F207C171700A94322 /* TopicLifecycleTests.swift */; };
 		C4C6DD71207C1A7B00A94322 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4C6DD72207C1A7B00A94322 /* AMBClient.framework */; };
+		C4C8E524207D510B00DF5CCC /* UIColor+HTMLColors.h in Headers */ = {isa = PBXBuildFile; fileRef = C4C8E523207D510B00DF5CCC /* UIColor+HTMLColors.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C4C8E526207D52E300DF5CCC /* UIColor+HTMLColors.m in Sources */ = {isa = PBXBuildFile; fileRef = C4C8E525207D52E300DF5CCC /* UIColor+HTMLColors.m */; };
 		C4CAFEA31FBCF2F8007007F5 /* ChatData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA21FBCF2F8007007F5 /* ChatData.swift */; };
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
 		C4CAFEA81FBD0912007007F5 /* ChatDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA71FBD0912007007F5 /* ChatDataFactory.swift */; };
@@ -417,7 +418,6 @@
 		C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoCompleteHandler.swift; sourceTree = "<group>"; };
 		C44FD9CA200010900079E107 /* ChatDataControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataControllerTests.swift; sourceTree = "<group>"; };
 		C4562FFC2058905B00B79688 /* EndAgentChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndAgentChatMessage.swift; sourceTree = "<group>"; };
-		C4562FFE2059859F00B79688 /* UIColor+HexValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+HexValue.swift"; sourceTree = "<group>"; };
 		C456300020599D2400B79688 /* ChatSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSessionTests.swift; sourceTree = "<group>"; };
 		C4666DC9205730DF00DABD1B /* ShowTopicMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowTopicMessage.swift; sourceTree = "<group>"; };
 		C4694A53203E3C18006A3C23 /* AgentTextControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentTextControlMessage.swift; sourceTree = "<group>"; };
@@ -440,6 +440,8 @@
 		C4B8D32A20210E1400871B36 /* ChatAuthListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatAuthListener.swift; sourceTree = "<group>"; };
 		C4C6DD6F207C171700A94322 /* TopicLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicLifecycleTests.swift; sourceTree = "<group>"; };
 		C4C6DD72207C1A7B00A94322 /* AMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4C8E523207D510B00DF5CCC /* UIColor+HTMLColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIColor+HTMLColors.h"; sourceTree = "<group>"; };
+		C4C8E525207D52E300DF5CCC /* UIColor+HTMLColors.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIColor+HTMLColors.m"; sourceTree = "<group>"; };
 		C4CAFEA21FBCF2F8007007F5 /* ChatData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatData.swift; sourceTree = "<group>"; };
 		C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataTests.swift; sourceTree = "<group>"; };
 		C4CAFEA71FBD0912007007F5 /* ChatDataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataFactory.swift; sourceTree = "<group>"; };
@@ -1016,8 +1018,9 @@
 		C4F3AF301FD601EA00B27B0D /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				C4C8E525207D52E300DF5CCC /* UIColor+HTMLColors.m */,
+				C4C8E523207D510B00DF5CCC /* UIColor+HTMLColors.h */,
 				C4F3AF311FD601FE00B27B0D /* Util.swift */,
-				C4562FFE2059859F00B79688 /* UIColor+HexValue.swift */,
 				C4EF7C3D2064190900E3904B /* ListenerList.swift */,
 			);
 			path = Util;
@@ -1031,6 +1034,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BEB6C8681FB92CD700B1D497 /* SnowChat.h in Headers */,
+				C4C8E524207D510B00DF5CCC /* UIColor+HTMLColors.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1469,7 +1473,7 @@
 				57D33BFB2049D37200CB606D /* AppContextManager.swift in Sources */,
 				5728D8F12048D74A0071EF9E /* UserDataManager.swift in Sources */,
 				C47B36412048C57A00559410 /* Chatterbox+SupportQueue.swift in Sources */,
-				C4562FFF2059859F00B79688 /* UIColor+HexValue.swift in Sources */,
+				C4C8E526207D52E300DF5CCC /* UIColor+HTMLColors.m in Sources */,
 				572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */,
 				5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */,
 				5728D8E820478C000071EF9E /* CarouselControlHeaderView.swift in Sources */,
@@ -1634,6 +1638,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1650,11 +1655,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1694,6 +1701,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1704,9 +1712,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";

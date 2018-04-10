@@ -15,8 +15,12 @@ class TestHexColors: XCTestCase {
         let hex = "#FF00FF"
         let hexNoPrefix = "FF00FF"
         
-        let color = UIColor(hexValue: hex)
-        let colorNoPrefix = UIColor(hexValue: hexNoPrefix)
+        guard let color = UIColor(css: hex),
+              let colorNoPrefix = UIColor(css: hexNoPrefix) else {
+                XCTAssertTrue(false)
+                return
+        }
+        
         
         XCTAssertEqual(color, colorNoPrefix)
         
@@ -31,7 +35,10 @@ class TestHexColors: XCTestCase {
     func testShortHex() {
         let hex = "#F0F"
         
-        let color = UIColor(hexValue: hex)
+        guard let color = UIColor(css: hex) else {
+            XCTAssertTrue(false)
+            return
+        }
         
         var red: CGFloat = 0.0
         var green: CGFloat = 0.0
@@ -44,8 +51,11 @@ class TestHexColors: XCTestCase {
     func testMalformedHex() {
         let hex = "#F0F0"
         
-        let color = UIColor(hexValue: hex)
-        
+        guard let color = UIColor(css: hex) else {
+            XCTAssertTrue(false)
+            return
+        }
+
         var red: CGFloat = 0.0
         var green: CGFloat = 0.0
         var blue: CGFloat = 0.0
