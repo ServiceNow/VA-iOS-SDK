@@ -13,17 +13,12 @@ class TestHexColors: XCTestCase {
     
     func testNormalHex() {
         let hex = "#FF00FF"
-        let hexNoPrefix = "FF00FF"
         
-        guard let color = UIColor(css: hex),
-              let colorNoPrefix = UIColor(css: hexNoPrefix) else {
+        guard let color = UIColor(css: hex) else {
                 XCTAssertTrue(false)
                 return
         }
-        
-        
-        XCTAssertEqual(color, colorNoPrefix)
-        
+    
         var red: CGFloat = 0.0
         var green: CGFloat = 0.0
         var blue: CGFloat = 0.0
@@ -48,21 +43,25 @@ class TestHexColors: XCTestCase {
         XCTAssert(red == 1.0 && green == 0 && blue == 1.0 && alpha == 1.0)
     }
     
-    func testMalformedHex() {
-        let hex = "#F0F0"
+    func testHexNoPrefix() {
+        let hex = "F0F0F0"
         
-        guard let color = UIColor(css: hex) else {
-            XCTAssertTrue(false)
-            return
-        }
-
-        var red: CGFloat = 0.0
-        var green: CGFloat = 0.0
-        var blue: CGFloat = 0.0
-        var alpha: CGFloat = 0.0
-        color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-        // make sure it is something
-        XCTAssert(red + green + blue > 1.0 && alpha == 1.0)
+        let color = UIColor(css: hex)
+        XCTAssertNil(color)
     }
-    
+
+    func testRandomString() {
+        let value = "WeAreDEVO!"
+        
+        let color = UIColor(css: value)
+        XCTAssertNil(color)
+    }
+
+    func testEmptyString() {
+        let value = ""
+        
+        let color = UIColor(css: value)
+        XCTAssertNil(color)
+    }
+
 }
