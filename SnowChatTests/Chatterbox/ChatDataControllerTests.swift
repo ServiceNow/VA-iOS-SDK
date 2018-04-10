@@ -47,35 +47,6 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
     var controller: ChatDataController?
     var mockChatterbox: MockChatterbox?
    
-    let jsonStartedTopic = """
-         {
-          "type" : "actionMessage",
-          "data" : {
-            "@class" : ".ActionMessageDto",
-            "messageId" : "6686092a733a0300d63a566a4cf6a703",
-            "sessionId" : "b47605e6733a0300d63a566a4cf6a77b",
-            "conversationId" : "f0760de6733a0300d63a566a4cf6a7b6",
-            "actionMessage" : {
-              "taskId" : "f8760de6733a0300d63a566a4cf6a7b6",
-              "vendorTopicId" : "ee86092a733a0300d63a566a4cf6a702",
-              "topicName" : "Create Incident",
-              "startStage" : "Finish",
-              "topicId" : "f0760de6733a0300d63a566a4cf6a7b6",
-              "type" : "StartedVendorTopic",
-              "ready" : true
-            },
-            "links" : [
-
-            ],
-            "direction" : "outbound",
-            "isAgent" : false,
-            "receiveTime" : 0,
-            "sendTime" : 0
-          },
-          "source" : "server"
-        }
-        """
-    
     override func setUp() {
         mockChatterbox = MockChatterbox(instance: ServerInstance(instanceURL: URL(fileURLWithPath: "/")))
         controller = ChatDataController(chatterbox: mockChatterbox!)
