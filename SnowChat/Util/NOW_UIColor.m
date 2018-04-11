@@ -406,7 +406,7 @@ static NSUInteger CMRParseHex(NSString *str, BOOL repeated)
     NSScanner *scanner = [NSScanner scannerWithString:str];
     [scanner scanHexInt:&ans];
     
-    NSInteger result = ans;
+    NSUInteger result = ans;
     return result;
 }
 
