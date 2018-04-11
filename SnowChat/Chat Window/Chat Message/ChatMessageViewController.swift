@@ -79,9 +79,12 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     }
     
     private func prepareControlForReuse() {
+        controlHeightConstraint?.isActive = false
+        controlHeightConstraint = nil
+        controlWidthConstraint?.isActive = false
+        controlWidthConstraint = nil
+        
         if let control = uiControl, isPresentingControl(control) {
-            controlHeightConstraint?.isActive = false
-            controlWidthConstraint?.isActive = false
             control.removeFromParent()
             
             if control.isReusable {
@@ -105,14 +108,16 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
             return
         }
         
+        let controlViewController = control.viewController
+        let controlView: UIView = controlViewController.view
+        controlView.removeFromSuperview()
+        
         // Remove current control if needed
         prepareControlForReuse()
         
         applyTheme(for: control, at: location)
-        let controlViewController = control.viewController
         controlViewController.willMove(toParentViewController: self)
         addChildViewController(controlViewController)
-        let controlView: UIView = controlViewController.view
 
         controlView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(controlView)

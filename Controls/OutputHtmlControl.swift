@@ -12,12 +12,6 @@ class OutputHtmlControl: ControlProtocol {
         didSet {
             // load new html
             outputHtmlViewController.load(outputHtmlModel.value)
-            
-            guard let oldHtmlModel = oldValue as? OutputHtmlControlViewModel else { return }
-            guard let newSize = outputHtmlModel.size, let oldSize = oldHtmlModel.size, !newSize.equalTo(oldSize) else { return }
-            
-            // if sizes are different, we have to update cell height. That's the way to do it.
-            delegate?.controlDidFinishLoading(self)
         }
     }
     
