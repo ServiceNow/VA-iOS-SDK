@@ -47,7 +47,6 @@ class OutputImageViewController: UIViewController {
         imageHeightConstraint?.isActive = true
         imageWidthConstraint = outputImageView.widthAnchor.constraint(equalToConstant: 100)
         imageWidthConstraint?.isActive = true
-        view.setContentCompressionResistancePriority(.veryHigh, for: .vertical)
         
         NSLayoutConstraint.activate(imageConstraints)
         updateImageConstraints()

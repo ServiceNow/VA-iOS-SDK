@@ -31,8 +31,6 @@ class OutputImageControl: ControlProtocol {
             if let size = imageModel.size {
                 imageViewController.prepareViewForImageWithSize(size)
                 delegate?.controlDidFinishLoading(self)
-            } else {
-                
             }
         }
     }
