@@ -30,7 +30,7 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "NOW_UIColor.h"
+#import "UIColor+NOW_HTMLColors.h"
 
 
 typedef struct {

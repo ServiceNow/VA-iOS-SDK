@@ -216,8 +216,8 @@
 		C4B8D3292021090900871B36 /* TransportStatusListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B8D3282021090900871B36 /* TransportStatusListener.swift */; };
 		C4B8D32B20210E1400871B36 /* ChatAuthListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B8D32A20210E1400871B36 /* ChatAuthListener.swift */; };
 		C4C6DD70207C171800A94322 /* TopicLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C6DD6F207C171700A94322 /* TopicLifecycleTests.swift */; };
-		C4C8E524207D510B00DF5CCC /* NOW_UIColor.h in Headers */ = {isa = PBXBuildFile; fileRef = C4C8E523207D510B00DF5CCC /* NOW_UIColor.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C4C8E526207D52E300DF5CCC /* NOW_UIColor.m in Sources */ = {isa = PBXBuildFile; fileRef = C4C8E525207D52E300DF5CCC /* NOW_UIColor.m */; };
+		C4C8E524207D510B00DF5CCC /* UIColor+NOW_HTMLColors.h in Headers */ = {isa = PBXBuildFile; fileRef = C4C8E523207D510B00DF5CCC /* UIColor+NOW_HTMLColors.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C4C8E526207D52E300DF5CCC /* UIColor+NOW_HTMLColors.m in Sources */ = {isa = PBXBuildFile; fileRef = C4C8E525207D52E300DF5CCC /* UIColor+NOW_HTMLColors.m */; };
 		C4CAFEA31FBCF2F8007007F5 /* ChatData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA21FBCF2F8007007F5 /* ChatData.swift */; };
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
 		C4CAFEA81FBD0912007007F5 /* ChatDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA71FBD0912007007F5 /* ChatDataFactory.swift */; };
@@ -443,8 +443,8 @@
 		C4B8D32A20210E1400871B36 /* ChatAuthListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatAuthListener.swift; sourceTree = "<group>"; };
 		C4C6DD6F207C171700A94322 /* TopicLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicLifecycleTests.swift; sourceTree = "<group>"; };
 		C4C6DD72207C1A7B00A94322 /* AMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C4C8E523207D510B00DF5CCC /* NOW_UIColor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NOW_UIColor.h; sourceTree = "<group>"; };
-		C4C8E525207D52E300DF5CCC /* NOW_UIColor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NOW_UIColor.m; sourceTree = "<group>"; };
+		C4C8E523207D510B00DF5CCC /* UIColor+NOW_HTMLColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIColor+NOW_HTMLColors.h"; sourceTree = "<group>"; };
+		C4C8E525207D52E300DF5CCC /* UIColor+NOW_HTMLColors.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIColor+NOW_HTMLColors.m"; sourceTree = "<group>"; };
 		C4CAFEA21FBCF2F8007007F5 /* ChatData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatData.swift; sourceTree = "<group>"; };
 		C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBDataTests.swift; sourceTree = "<group>"; };
 		C4CAFEA71FBD0912007007F5 /* ChatDataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDataFactory.swift; sourceTree = "<group>"; };
@@ -1024,8 +1024,8 @@
 		C4F3AF301FD601EA00B27B0D /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				C4C8E525207D52E300DF5CCC /* NOW_UIColor.m */,
-				C4C8E523207D510B00DF5CCC /* NOW_UIColor.h */,
+				C4C8E525207D52E300DF5CCC /* UIColor+NOW_HTMLColors.m */,
+				C4C8E523207D510B00DF5CCC /* UIColor+NOW_HTMLColors.h */,
 				C4F3AF311FD601FE00B27B0D /* Util.swift */,
 				C4EF7C3D2064190900E3904B /* ListenerList.swift */,
 			);
@@ -1040,7 +1040,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BEB6C8681FB92CD700B1D497 /* SnowChat.h in Headers */,
-				C4C8E524207D510B00DF5CCC /* NOW_UIColor.h in Headers */,
+				C4C8E524207D510B00DF5CCC /* UIColor+NOW_HTMLColors.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1477,7 +1477,7 @@
 				57D33BFB2049D37200CB606D /* AppContextManager.swift in Sources */,
 				5728D8F12048D74A0071EF9E /* UserDataManager.swift in Sources */,
 				C47B36412048C57A00559410 /* Chatterbox+SupportQueue.swift in Sources */,
-				C4C8E526207D52E300DF5CCC /* NOW_UIColor.m in Sources */,
+				C4C8E526207D52E300DF5CCC /* UIColor+NOW_HTMLColors.m in Sources */,
 				572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */,
 				5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */,
 				5728D8E820478C000071EF9E /* CarouselControlHeaderView.swift in Sources */,
