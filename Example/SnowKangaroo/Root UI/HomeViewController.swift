@@ -80,9 +80,9 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         
         if forceSessionSwitch.isOn {
             setupChatService()
-            statusLabel.text = "Forcing new Chat Session..."
+            statusLabel.text = "Establishing new Chat Session..."
         } else {
-            statusLabel.text = "Establishing Chat Session..."
+            statusLabel.text = "Resuming existing Chat Session..."
         }
         
         establishChatSession(credential: credential, logOutOnAuthFailure: true)
