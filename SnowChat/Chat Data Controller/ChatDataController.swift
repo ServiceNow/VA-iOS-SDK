@@ -211,7 +211,7 @@ class ChatDataController {
         applyModelChanges()
     }
     
-    fileprivate func isShowingTypingIndicator() -> Bool {
+    internal func isShowingTypingIndicator() -> Bool {
         guard controlData.count > 0, controlData[0].controlModel?.type == .typingIndicator else {
             return false
         }
@@ -480,29 +480,32 @@ class ChatDataController {
         presentControlData(ChatMessageModel(type: .topicDivider, theme: theme))
     }
     
-    func pushTopicTitle(topicInfo: TopicInfo) {
-        guard var message = topicInfo.topicName else {
-            return
-        }
-        
+    internal func chatModelFromTopicInfo(_ topicInfo: TopicInfo) -> ChatMessageModel {
+        var message = topicInfo.topicName ?? ""
         if message.count == 0 {
             message = NSLocalizedString("New Topic", comment: "Default text for new topic indicator, when topic has no name")
         }
         
         let titleTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
+        let messageModel = ChatMessageModel(model: titleTextControl, messageId: titleTextControl.id, bubbleLocation: .right, theme: theme)
+        
+        return messageModel
+    }
+    
+    func pushTopicTitle(topicInfo: TopicInfo) {
+        let messageModel = chatModelFromTopicInfo(topicInfo)
         
         // NOTE: we do not buffer the welcome message currently - this is intentional
-        presentControlData(ChatMessageModel(model: titleTextControl, bubbleLocation: .right, theme: theme))
+        presentControlData(messageModel)
     }
     
-    func appendTopicTitle(_ topicInfo: TopicInfo) {
-        guard let message = topicInfo.topicName else { return }
-        let titleTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
-        
-        addHistoryToCollection(ChatMessageModel(model: titleTextControl, bubbleLocation: .right, theme: theme))
+    func appendTopicTitle(topicInfo: TopicInfo) {
+        let messageModel = chatModelFromTopicInfo(topicInfo)
+
+        addHistoryToCollection(messageModel)
     }
     
-    func appendTopicStartDivider(_ topicInfo: TopicInfo) {
+    func appendTopicStartDivider(topicInfo: TopicInfo) {
         addHistoryToCollection(ChatMessageModel(type: .topicDivider, theme: theme))
     }
     
