@@ -49,47 +49,47 @@ static NSArray *CMRW3CColorNames(void);
 static NSDictionary *CMRW3CNamedColors(void);
 
 
-@implementation NOW_UIColor
+@implementation UIColor (HTMLColors)
 
 #pragma mark - Reading
 
-+ (UIColor *)colorWithCSS:(NSString *)cssColor
++ (UIColor *)now_colorWithCSS:(NSString *)cssColor
 {
     UIColor *color = nil;
     NSScanner *scanner = [NSScanner scannerWithString:cssColor];
-    [scanner scanCSSColor:&color];
+    [scanner now_scanCSSColor:&color];
     return (scanner.isAtEnd) ? color : nil;
 }
 
-+ (UIColor *)colorWithHexString:(NSString *)hexColor
++ (UIColor *)now_colorWithHexString:(NSString *)hexColor
 {
     UIColor *color = nil;
     NSScanner *scanner = [NSScanner scannerWithString:hexColor];
-    [scanner scanHexColor:&color];
+    [scanner now_scanHexColor:&color];
     return (scanner.isAtEnd) ? color : nil;
 }
 
-+ (UIColor *)colorWithRGBString:(NSString *)rgbColor
++ (UIColor *)now_colorWithRGBString:(NSString *)rgbColor
 {
     UIColor *color = nil;
     NSScanner *scanner = [NSScanner scannerWithString:rgbColor];
-    [scanner scanRGBColor:&color];
+    [scanner now_scanRGBColor:&color];
     return (scanner.isAtEnd) ? color : nil;
 }
 
-+ (UIColor *)colorWithHSLString:(NSString *)hslColor
++ (UIColor *)now_colorWithHSLString:(NSString *)hslColor
 {
     UIColor *color = nil;
     NSScanner *scanner = [NSScanner scannerWithString:hslColor];
-    [scanner scanHSLColor:&color];
+    [scanner now_scanHSLColor:&color];
     return (scanner.isAtEnd) ? color : nil;
 }
 
-+ (UIColor *)colorWithW3CNamedColor:(NSString *)namedColor
++ (UIColor *)now_colorWithW3CNamedColor:(NSString *)namedColor
 {
     UIColor *color = nil;
     NSScanner *scanner = [NSScanner scannerWithString:namedColor];
-    [scanner scanW3CNamedColor:&color];
+    [scanner now_scanW3CNamedColor:&color];
     return (scanner.isAtEnd) ? color : nil;
 }
 
@@ -101,7 +101,7 @@ static inline unsigned ToByte(CGFloat f)
     return (unsigned)round(f * 255);
 }
 
-- (NSString *)hexStringValue
+- (NSString *)now_hexStringValue
 {
     NSString *hex = nil;
     CGFloat red, green, blue, alpha;
@@ -112,7 +112,7 @@ static inline unsigned ToByte(CGFloat f)
     return hex;
 }
 
-- (NSString *)rgbStringValue
+- (NSString *)now_rgbStringValue
 {
     NSString *rgb = nil;
     CGFloat red, green, blue, alpha;
@@ -139,7 +139,7 @@ static inline unsigned ToPercentage(CGFloat f)
     return (unsigned)round(f * 100);
 }
 
-- (NSString *)hslStringValue
+- (NSString *)now_hslStringValue
 {
     NSString *hsl = nil;
     CGFloat hue, saturation, brightness, alpha;
@@ -197,7 +197,7 @@ static inline unsigned ToPercentage(CGFloat f)
     return NO;
 }
 
-+ (NSArray *)W3CColorNames
++ (NSArray *)now_W3CColorNames
 {
     return [[CMRW3CNamedColors() allKeys] sortedArrayUsingSelector:@selector(compare:)];
 }
@@ -207,16 +207,16 @@ static inline unsigned ToPercentage(CGFloat f)
 
 @implementation NSScanner (HTMLColors)
 
-- (BOOL)scanCSSColor:(UIColor **)color
+- (BOOL)now_scanCSSColor:(UIColor **)color
 {
-    return [self scanHexColor:color]
-        || [self scanRGBColor:color]
-        || [self scanHSLColor:color]
+    return [self now_scanHexColor:color]
+        || [self now_scanRGBColor:color]
+        || [self now_scanHSLColor:color]
         || [self cmr_scanTransparent:color]
-        || [self scanW3CNamedColor:color];
+        || [self now_scanW3CNamedColor:color];
 }
 
-- (BOOL)scanRGBColor:(UIColor **)color
+- (BOOL)now_scanRGBColor:(UIColor * __autoreleasing *)color
 {
     return [self cmr_caseInsensitiveWithCleanup:^BOOL{
         if ([self scanString:@"rgba" intoString:NULL]) {
@@ -248,7 +248,7 @@ static inline CGFloat CMRNormHue(CGFloat hue)
     return hue - floor(hue);
 }
 
-- (BOOL)scanHSLColor:(UIColor **)color
+- (BOOL)now_scanHSLColor:(UIColor * __autoreleasing *)color
 {
     return [self cmr_caseInsensitiveWithCleanup:^BOOL{
         if ([self scanString:@"hsla" intoString:NULL]) {
@@ -276,7 +276,7 @@ static inline CGFloat CMRNormHue(CGFloat hue)
     }];
 }
 
-- (BOOL)scanHexColor:(UIColor **)color
+- (BOOL)now_scanHexColor:(UIColor * __autoreleasing *)color
 {
     return [self cmr_resetScanLocationOnFailure:^BOOL{
         return [self scanString:@"#" intoString:NULL]
@@ -284,7 +284,7 @@ static inline CGFloat CMRNormHue(CGFloat hue)
     }];
 }
 
-- (BOOL)scanW3CNamedColor:(UIColor **)color
+- (BOOL)now_scanW3CNamedColor:(UIColor * __autoreleasing *)color
 {
     return [self cmr_caseInsensitiveWithCleanup:^BOOL{
         NSArray *colorNames = CMRW3CColorNames();
@@ -292,7 +292,7 @@ static inline CGFloat CMRNormHue(CGFloat hue)
         for (NSString *name in colorNames) {
             if ([self scanString:name intoString:NULL]) {
                 if (color) {
-                    *color = [self.class colorWithHexString:namedColors[name]];
+                    *color = [UIColor now_colorWithHexString:namedColors[name]];
                 }
                 return YES;
             }
@@ -399,13 +399,15 @@ static NSCharacterSet *CMRHexCharacters() {
 // We know we've got hex already, so assume this works
 static NSUInteger CMRParseHex(NSString *str, BOOL repeated)
 {
-    NSUInteger ans = 0;
+    unsigned int ans = 0;
     if (repeated) {
         str = [NSString stringWithFormat:@"%@%@", str, str];
     }
     NSScanner *scanner = [NSScanner scannerWithString:str];
     [scanner scanHexInt:&ans];
-    return ans;
+    
+    NSInteger result = ans;
+    return result;
 }
 
 // Scan FFF or FFFFFF, doesn't reset scan location on failure
@@ -435,7 +437,7 @@ static NSUInteger CMRParseHex(NSString *str, BOOL repeated)
 }
 
 // Scan "transparent"
-- (BOOL)cmr_scanTransparent:(UIColor **)color
+- (BOOL)cmr_scanTransparent:(UIColor * __autoreleasing *)color
 {
     return [self cmr_caseInsensitiveWithCleanup:^BOOL{
         if ([self scanString:@"transparent" intoString:NULL]) {

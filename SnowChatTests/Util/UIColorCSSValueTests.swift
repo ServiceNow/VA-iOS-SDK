@@ -9,12 +9,12 @@ import XCTest
 
 @testable import SnowChat
 
-class TestHexColors: XCTestCase {
+class TestCSSColors: XCTestCase {
     
     func testNormalHex() {
         let hex = "#FF00FF"
         
-        guard let color = NOW_UIColor.color(withCSS: hex) else {
+        guard let color = UIColor.now_color(withCSS: hex) else {
                 XCTAssertTrue(false)
                 return
         }
@@ -30,7 +30,7 @@ class TestHexColors: XCTestCase {
     func testShortHex() {
         let hex = "#F0F"
         
-        guard let color = NOW_UIColor.color(withCSS: hex) else {
+        guard let color = UIColor.now_color(withCSS: hex) else {
             XCTAssertTrue(false)
             return
         }
@@ -46,22 +46,30 @@ class TestHexColors: XCTestCase {
     func testHexNoPrefix() {
         let hex = "F0F0F0"
         
-        let color = NOW_UIColor.color(withCSS: hex)
+        let color = UIColor.now_color(withCSS: hex)
         XCTAssertNil(color)
+    }
+
+    func testNamedString() {
+        let value = "bisque"
+        
+        guard let color = UIColor.now_color(withCSS: value) else {
+            XCTAssertTrue(false)
+            return
+        }
+
+        var red: CGFloat = 0.0
+        var green: CGFloat = 0.0
+        var blue: CGFloat = 0.0
+        var alpha: CGFloat = 0.0
+        color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        XCTAssert(red + green + blue > 0.0 && alpha == 1.0)
     }
 
     func testRandomString() {
         let value = "WeAreDEVO!"
         
-        let color = NOW_UIColor.color(withCSS: value)
+        let color = UIColor.now_color(withCSS: value)
         XCTAssertNil(color)
-    }
-
-    func testEmptyString() {
-        let value = ""
-        
-        let color = NOW_UIColor.color(withCSS: value)
-        XCTAssertNil(color)
-    }
-
+    }    
 }
