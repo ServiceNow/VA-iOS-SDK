@@ -264,7 +264,6 @@
 		4602490520744CCE005CA635 /* AMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4602490720744D3A005CA635 /* AMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		463578992040CCE900947541 /* APIManager+AMB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIManager+AMB.swift"; sourceTree = "<group>"; };
-		46BC5779202EE97000FDDB43 /* SNOWAMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SNOWAMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		46EBB01D2065E04300D3B3DF /* AMBTransportTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AMBTransportTests.swift; sourceTree = "<group>"; };
 		57026186204E2B14003D56DE /* Handlers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Handlers.swift; sourceTree = "<group>"; };
 		57026188204E2B2B003D56DE /* ContextHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextHandler.swift; sourceTree = "<group>"; };
@@ -361,7 +360,6 @@
 		57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageModel.swift; sourceTree = "<group>"; };
 		57F7B2531FE17823006D917C /* TextControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControlViewModel.swift; sourceTree = "<group>"; };
 		8B0A1F66204080D400DE4D4C /* APIManager+ImageUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIManager+ImageUpload.swift"; sourceTree = "<group>"; };
-		8B8573DE203DE7410031A1F1 /* SNOWAMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SNOWAMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B98430E203FF31F00FE7DAD /* APIManager+RequestAuthorization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIManager+RequestAuthorization.swift"; sourceTree = "<group>"; };
 		8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseAuthTestCase.swift; sourceTree = "<group>"; };
 		8BA70BB420250D2F0067EBF3 /* InstanceConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstanceConfiguration.swift; sourceTree = "<group>"; };
@@ -747,8 +745,6 @@
 				C4C6DD72207C1A7B00A94322 /* AMBClient.framework */,
 				4602490720744D3A005CA635 /* AMBClient.framework */,
 				4602490520744CCE005CA635 /* AMBClient.framework */,
-				8B8573DE203DE7410031A1F1 /* SNOWAMBClient.framework */,
-				46BC5779202EE97000FDDB43 /* SNOWAMBClient.framework */,
 				BECBB6D7200D0F4C002EF5EC /* AlamofireImage.framework */,
 				BE29E0C81FDEF74C0029D1F0 /* SlackTextViewController.framework */,
 				BE50E2261FB9337D00948FBC /* Alamofire.framework */,
