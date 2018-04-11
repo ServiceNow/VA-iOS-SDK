@@ -216,7 +216,6 @@
 		C4B8D3292021090900871B36 /* TransportStatusListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B8D3282021090900871B36 /* TransportStatusListener.swift */; };
 		C4B8D32B20210E1400871B36 /* ChatAuthListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B8D32A20210E1400871B36 /* ChatAuthListener.swift */; };
 		C4C6DD70207C171800A94322 /* TopicLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C6DD6F207C171700A94322 /* TopicLifecycleTests.swift */; };
-		C4C6DD71207C1A7B00A94322 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4C6DD72207C1A7B00A94322 /* AMBClient.framework */; };
 		C4CAFEA31FBCF2F8007007F5 /* ChatData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA21FBCF2F8007007F5 /* ChatData.swift */; };
 		C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */; };
 		C4CAFEA81FBD0912007007F5 /* ChatDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CAFEA71FBD0912007007F5 /* ChatDataFactory.swift */; };
@@ -230,6 +229,7 @@
 		C4CBF2CB2045D9270038F120 /* Chatterbox+TransportNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CBF2CA2045D9270038F120 /* Chatterbox+TransportNotifications.swift */; };
 		C4CED93C1FD713AA008E3E25 /* StartUserTopicMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CED93B1FD713AA008E3E25 /* StartUserTopicMessage.swift */; };
 		C4CED93E1FD72544008E3E25 /* StartedUserTopicMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CED93D1FD72544008E3E25 /* StartedUserTopicMessage.swift */; };
+		C4E5A0A3207E5E870000EEC3 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4E5A0A2207E5E870000EEC3 /* AMBClient.framework */; };
 		C4EF7C3E2064190900E3904B /* ListenerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EF7C3D2064190900E3904B /* ListenerList.swift */; };
 		C4EF7C4120641DBC00E3904B /* ChatUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EF7C4020641DBC00E3904B /* ChatUtilTests.swift */; };
 		C4EF7C482065991300E3904B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C4EF7C472065991300E3904B /* Assets.xcassets */; };
@@ -451,6 +451,7 @@
 		C4CBF2CA2045D9270038F120 /* Chatterbox+TransportNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chatterbox+TransportNotifications.swift"; sourceTree = "<group>"; };
 		C4CED93B1FD713AA008E3E25 /* StartUserTopicMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartUserTopicMessage.swift; sourceTree = "<group>"; };
 		C4CED93D1FD72544008E3E25 /* StartedUserTopicMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartedUserTopicMessage.swift; sourceTree = "<group>"; };
+		C4E5A0A2207E5E870000EEC3 /* AMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4EF7C3D2064190900E3904B /* ListenerList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenerList.swift; sourceTree = "<group>"; };
 		C4EF7C4020641DBC00E3904B /* ChatUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUtilTests.swift; sourceTree = "<group>"; };
 		C4EF7C472065991300E3904B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -489,7 +490,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C4C6DD71207C1A7B00A94322 /* AMBClient.framework in Frameworks */,
+				C4E5A0A3207E5E870000EEC3 /* AMBClient.framework in Frameworks */,
 				BEB6C8611FB92CD700B1D497 /* SnowChat.framework in Frameworks */,
 				C420ED821FC6031C002476C0 /* Alamofire.framework in Frameworks */,
 			);
@@ -742,6 +743,7 @@
 		BE50E2251FB9337D00948FBC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C4E5A0A2207E5E870000EEC3 /* AMBClient.framework */,
 				C4C6DD72207C1A7B00A94322 /* AMBClient.framework */,
 				4602490720744D3A005CA635 /* AMBClient.framework */,
 				4602490520744CCE005CA635 /* AMBClient.framework */,
@@ -1283,12 +1285,10 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/AMBClient.framework",
 			);
 			name = "Copy Carthage Frameworks";
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Alamofire.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/AMBClient.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
