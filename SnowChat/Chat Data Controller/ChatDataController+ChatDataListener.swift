@@ -141,11 +141,21 @@ extension ChatDataController: ChatDataListener {
             var shouldReplaceLastControlWithResponse = true
             
             // By comparing ids we can distinguish between loading messages from the history and actual topic flow scenarios.
-            // In case when user selected a date during topic flow - we are presenting already question and dateTime picker in the chat (2 controls from one message). Hence we don't want to show question again. And that's what below `if` statement does.
+            // In case when user selected a date during topic flow - we are already presenting the question and the dateTime picker (2 controls from one message).
+            // Hence we don't want to show question again.
+            // During the history load the last control will not be for this message so we _do_ show the question
+            //
             // THIS is different from other didComplete methods, where we show just one control per message. In those cases we want to replace control with question and insert an answer.
-            // `shouldReplaceResponse` flag is set to `true` to indicate that we want to only replace last message (dateTimePicker in this case)
+
             if lastMessage.messageId != messageExchange.message.messageId {
-                replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme))
+                let chatMessage = ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme)
+                
+                if isShowingTypingIndicator() {
+                    replaceLastControl(with: chatMessage)
+                } else {
+                    presentControlData(chatMessage)
+                }
+                
                 shouldReplaceLastControlWithResponse = false
             }
             
@@ -164,8 +174,18 @@ extension ChatDataController: ChatDataListener {
         if let viewModels = controlsForDateOrTimePicker(from: messageExchange) {
             let lastMessage = controlData[0]
             var shouldReplaceLastControlWithResponse = true
+
+            // see comment above in didCompleteDateTimeExchange
+            
             if lastMessage.messageId != messageExchange.message.messageId {
-                replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme))
+                let chatMessage = ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme)
+                
+                if isShowingTypingIndicator() {
+                    replaceLastControl(with: chatMessage)
+                } else {
+                    presentControlData(chatMessage)
+                }
+                
                 shouldReplaceLastControlWithResponse = false
             }
             
@@ -224,8 +244,8 @@ extension ChatDataController: ChatDataListener {
             
             // NOTE: until the service delivers entire conversations this will cause the occasional extra-divider to appear...
             //       do not fix this as the service is suppossed to fix it
-            appendTopicTitle(topicInfo)
-            appendTopicStartDivider(topicInfo)
+            appendTopicTitle(topicInfo: topicInfo)
+            appendTopicStartDivider(topicInfo: topicInfo)
         }
     }
     
