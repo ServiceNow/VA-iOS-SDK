@@ -9,17 +9,16 @@ import XCTest
 
 @testable import SnowChat
 
-class TestHexColors: XCTestCase {
+class TestCSSColors: XCTestCase {
     
     func testNormalHex() {
         let hex = "#FF00FF"
-        let hexNoPrefix = "FF00FF"
         
-        let color = UIColor(hexValue: hex)
-        let colorNoPrefix = UIColor(hexValue: hexNoPrefix)
-        
-        XCTAssertEqual(color, colorNoPrefix)
-        
+        guard let color = UIColor.now_color(withCSS: hex) else {
+                XCTAssertTrue(false)
+                return
+        }
+    
         var red: CGFloat = 0.0
         var green: CGFloat = 0.0
         var blue: CGFloat = 0.0
@@ -31,7 +30,10 @@ class TestHexColors: XCTestCase {
     func testShortHex() {
         let hex = "#F0F"
         
-        let color = UIColor(hexValue: hex)
+        guard let color = UIColor.now_color(withCSS: hex) else {
+            XCTAssertTrue(false)
+            return
+        }
         
         var red: CGFloat = 0.0
         var green: CGFloat = 0.0
@@ -41,18 +43,33 @@ class TestHexColors: XCTestCase {
         XCTAssert(red == 1.0 && green == 0 && blue == 1.0 && alpha == 1.0)
     }
     
-    func testMalformedHex() {
-        let hex = "#F0F0"
+    func testHexNoPrefix() {
+        let hex = "F0F0F0"
         
-        let color = UIColor(hexValue: hex)
+        let color = UIColor.now_color(withCSS: hex)
+        XCTAssertNil(color)
+    }
+
+    func testNamedString() {
+        let value = "bisque"
         
+        guard let color = UIColor.now_color(withCSS: value) else {
+            XCTAssertTrue(false)
+            return
+        }
+
         var red: CGFloat = 0.0
         var green: CGFloat = 0.0
         var blue: CGFloat = 0.0
         var alpha: CGFloat = 0.0
         color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-        // make sure it is something
-        XCTAssert(red + green + blue > 1.0 && alpha == 1.0)
+        XCTAssert(red + green + blue > 0.0 && alpha == 1.0)
     }
-    
+
+    func testRandomString() {
+        let value = "WeAreDEVO!"
+        
+        let color = UIColor.now_color(withCSS: value)
+        XCTAssertNil(color)
+    }    
 }
