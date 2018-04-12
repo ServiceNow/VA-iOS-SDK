@@ -12,6 +12,10 @@ class OutputLinkControl: NSObject, ControlProtocol {
     
     let viewController: UIViewController
     
+    private var outputLinkViewController: OutputLinkViewController {
+        return viewController as! OutputLinkViewController
+    }
+    
     weak var delegate: ControlDelegate?
     
     private var outputLinkModel: OutputLinkControlViewModel {
@@ -28,8 +32,17 @@ class OutputLinkControl: NSObject, ControlProtocol {
         self.viewController = outputLinkVC
         outputLinkVC.loadViewIfNeeded()
         let label = outputLinkModel.label ?? outputLinkModel.value.absoluteString
-        let attributedString = NSAttributedString(string: label, attributes: [NSAttributedStringKey.link : outputLinkModel.value])
+        let attributedString = NSAttributedString(string: label, attributes: [NSAttributedStringKey.link: outputLinkModel.value.absoluteString,
+                                                                              NSAttributedStringKey.font: UIFont.preferredFont(forTextStyle: .body)])
         outputLinkVC.textView.attributedText = attributedString
         outputLinkVC.headerLabel.text = outputLinkModel.header
+    }
+    
+    // MARK: Theme
+    
+    func applyTheme(_ theme: ControlTheme?) {
+        outputLinkViewController.headerLabel.textColor = theme?.fontColor
+        outputLinkViewController.headerContainerView.backgroundColor = theme?.backgroundColor
+        outputLinkViewController.textView.linkTextAttributes = [NSAttributedStringKey.foregroundColor.rawValue: theme?.linkColor ?? .blue]
     }
 }

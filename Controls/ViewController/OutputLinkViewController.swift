@@ -10,6 +10,7 @@ class OutputLinkViewController: UIViewController, UITextViewDelegate {
     
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var headerLabel: UILabel!
+    @IBOutlet weak var headerContainerView: UIView!
     
     let resourceProvider: ControlWebResourceProvider
     
@@ -29,14 +30,9 @@ class OutputLinkViewController: UIViewController, UITextViewDelegate {
     }
     
     // MARK: UITextViewDelegate
+    
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        let webViewController = ControlWebViewController(url: URL, resourceProvider: resourceProvider)
-        let localizedDoneString = NSLocalizedString("Done", comment: "Done button")
-        let doneButton = UIBarButtonItem(title: localizedDoneString, style: .done, target: webViewController, action: #selector(finishModalPresentation(_:)))
-        webViewController.navigationItem.leftBarButtonItem = doneButton
-        let navigationController = UINavigationController(rootViewController: webViewController)
-        navigationController.modalPresentationStyle = .overFullScreen
-        present(navigationController, animated: true, completion: nil)
+        UIApplication.shared.open(URL, options: [:], completionHandler: nil)
         return false
     }
 }
