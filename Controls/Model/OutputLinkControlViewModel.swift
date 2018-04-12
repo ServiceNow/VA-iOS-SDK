@@ -9,6 +9,8 @@
 class OutputLinkControlViewModel: ControlViewModel {
     let label: String?
     
+    let header: String?
+    
     let isRequired: Bool = true
     
     let id: String
@@ -17,8 +19,9 @@ class OutputLinkControlViewModel: ControlViewModel {
     
     let value: URL
     
-    init(id: String, label: String? = nil, value: URL) {
+    init(id: String, label: String? = nil, header: String? = nil, value: URL) {
         self.label = label
+        self.header = header
         self.value = value
         self.id = id
     }

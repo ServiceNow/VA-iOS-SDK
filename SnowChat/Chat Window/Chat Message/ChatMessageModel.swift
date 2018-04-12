@@ -277,14 +277,16 @@ extension ChatMessageModel {
     }
     
     static func model(withMessage message: OutputLinkControlMessage, theme: Theme) -> ChatMessageModel? {
-        guard let value = message.data.richControl?.value else {
+        guard let value = message.data.richControl?.value,
+            let header = message.data.richControl?.uiMetadata?.header,
+            let label = message.data.richControl?.uiMetadata?.label else {
             return nil
         }
         
         let direction = message.direction
         
         guard let url = URL(string: value.action) else { return nil }
-        let outputLinkModel = OutputLinkControlViewModel(id: message.messageId, value: url)
+        let outputLinkModel = OutputLinkControlViewModel(id: message.messageId, label: label, header: header, value: url)
         let snowViewModel = ChatMessageModel(model: outputLinkModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
 
         if let avatarPath = message.sender?.avatarPath {

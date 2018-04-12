@@ -140,6 +140,8 @@
 		57E65F53202BA5AD0087E5DE /* OutputLinkControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E65F52202BA5AD0087E5DE /* OutputLinkControlMessage.swift */; };
 		57EE77DF1FFEC2B1001F689A /* ChatMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */; };
 		57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F7B2531FE17823006D917C /* TextControlViewModel.swift */; };
+		57FB5EB5207FAEAF00AECB59 /* OutputLinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB5EB4207FAEAF00AECB59 /* OutputLinkViewController.swift */; };
+		57FB5EB7207FAEE500AECB59 /* OutputLinkViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57FB5EB6207FAEE500AECB59 /* OutputLinkViewController.xib */; };
 		8B0A1F67204080D400DE4D4C /* APIManager+ImageUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0A1F66204080D400DE4D4C /* APIManager+ImageUpload.swift */; };
 		8B98430F203FF31F00FE7DAD /* APIManager+RequestAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B98430E203FF31F00FE7DAD /* APIManager+RequestAuthorization.swift */; };
 		8BA70BB120250CCB0067EBF3 /* BaseAuthTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */; };
@@ -360,6 +362,8 @@
 		57E65F52202BA5AD0087E5DE /* OutputLinkControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputLinkControlMessage.swift; sourceTree = "<group>"; };
 		57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageModel.swift; sourceTree = "<group>"; };
 		57F7B2531FE17823006D917C /* TextControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControlViewModel.swift; sourceTree = "<group>"; };
+		57FB5EB4207FAEAF00AECB59 /* OutputLinkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputLinkViewController.swift; sourceTree = "<group>"; };
+		57FB5EB6207FAEE500AECB59 /* OutputLinkViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OutputLinkViewController.xib; sourceTree = "<group>"; };
 		8B0A1F66204080D400DE4D4C /* APIManager+ImageUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIManager+ImageUpload.swift"; sourceTree = "<group>"; };
 		8B98430E203FF31F00FE7DAD /* APIManager+RequestAuthorization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIManager+RequestAuthorization.swift"; sourceTree = "<group>"; };
 		8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseAuthTestCase.swift; sourceTree = "<group>"; };
@@ -625,6 +629,8 @@
 				57DF7C33202C1066008D013A /* ControlWebViewController.swift */,
 				57B0861120465F0F00F009D2 /* CarouselViewController.swift */,
 				57ADE6A2205AB1BD00F5D57C /* ImageBrowserViewController.swift */,
+				57FB5EB4207FAEAF00AECB59 /* OutputLinkViewController.swift */,
+				57FB5EB6207FAEE500AECB59 /* OutputLinkViewController.xib */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -1180,6 +1186,7 @@
 				BE5974BF1FC38ECB00959406 /* Debug.storyboard in Resources */,
 				579479362031F60900C4C5C5 /* DateTimePickerViewController.xib in Resources */,
 				C4EF7C482065991300E3904B /* Assets.xcassets in Resources */,
+				57FB5EB7207FAEE500AECB59 /* OutputLinkViewController.xib in Resources */,
 				57B7E2C91FBA25A200196BA9 /* SelectableView.xib in Resources */,
 				BE50E2241FB9305C00948FBC /* Cartfile in Resources */,
 				57D997AB1FE5B00000394A6D /* ChatMessageViewController.xib in Resources */,
@@ -1406,6 +1413,7 @@
 				C40565F01FC491DA004BD28C /* ActionMessage.swift in Sources */,
 				57E65F53202BA5AD0087E5DE /* OutputLinkControlMessage.swift in Sources */,
 				C4F3AF341FD6144800B27B0D /* StartTopicMessage.swift in Sources */,
+				57FB5EB5207FAEAF00AECB59 /* OutputLinkViewController.swift in Sources */,
 				572C6BC1200C33BC00F142E2 /* ControlCache.swift in Sources */,
 				BE782DB81FEB205200F848F5 /* APIManager+ChatSession.swift in Sources */,
 				579479322031E44900C4C5C5 /* DateTimePickerControlMessage.swift in Sources */,
