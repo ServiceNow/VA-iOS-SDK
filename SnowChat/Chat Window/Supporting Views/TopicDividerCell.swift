@@ -10,6 +10,7 @@ import Foundation
 
 class TopicDividerCell: UITableViewCell, Themeable {
     static let cellIdentifier = "StartTopicDividerCell"
+    static let dividerHeight: CGFloat = 1
     
     var model: ChatMessageModel?
     let lineView = UIView()

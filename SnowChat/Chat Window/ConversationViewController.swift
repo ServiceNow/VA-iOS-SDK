@@ -20,6 +20,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     }
     
     private let bottomInset: CGFloat = 45
+    private let estimatedRowHeight: CGFloat = 50
     
     private var inputState = InputState.inTopicSelection {
         didSet {
@@ -140,7 +141,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         // NOTE: making section header height very tiny as 0 make it default size in iOS11
         // see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
         tableView.sectionHeaderHeight = CGFloat(0.01)
-        tableView.estimatedRowHeight = 50
+        tableView.estimatedRowHeight = estimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
         tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
@@ -659,7 +660,7 @@ extension ConversationViewController: ControlDelegate {
     override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         if let chatModel = dataController.controlForIndex(indexPath.row) {
             if chatModel.type == .topicDivider {
-                return 1
+                return TopicDividerCell.dividerHeight
             }
             
             if let viewModel = chatModel.controlModel as? Resizable, let size = viewModel.size {
@@ -667,7 +668,7 @@ extension ConversationViewController: ControlDelegate {
             }
         }
         
-        return 50
+        return estimatedRowHeight
     }
 }
 
