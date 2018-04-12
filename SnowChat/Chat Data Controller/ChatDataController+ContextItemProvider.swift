@@ -87,7 +87,10 @@ extension ChatDataController: ContextItemProvider {
             }
         }
         
-        actionItem.isEnabled = supportQueueInfo.active
+        let alreadyContactingAgent = chatterbox.state == .agentConversation || chatterbox.state == .waitingForAgent
+        
+        actionItem.isEnabled = supportQueueInfo.active && !alreadyContactingAgent
+        
         return actionItem
     }
     

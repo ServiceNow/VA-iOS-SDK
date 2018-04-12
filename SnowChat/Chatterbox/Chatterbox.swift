@@ -199,7 +199,9 @@ class Chatterbox {
         }
     }
     
-    internal func processControlMessage(_ control: ControlData) {
+    internal func processControlMessage(_ message: String) {
+        let control = ChatDataFactory.controlFromJSON(message)
+        
         guard control.controlType != .unknown else {
             logger.logInfo("Unknown control type: \(control)")
             return
@@ -267,7 +269,7 @@ class Chatterbox {
     }
     
     internal func didReceiveTopicFinishedAction(_ action: TopicFinishedMessage) {
-        guard let conversationId = action.data.conversationId, let conversation = chatStore.conversation(forId: conversationId) else {
+        guard let conversationId = action.data.conversationId else {
             logger.logError("Invalid conversation in didReceiveTopicFinishedAction action message: \(action)")
             return
         }
@@ -280,11 +282,7 @@ class Chatterbox {
         chatStore.endConversation(conversationId, withState: .completed)
         saveDataToPersistence()
         
-        // notify listeners
-        let topicInfo = TopicInfo(topicId: conversation.topicId, topicName: conversation.topicTypeName, taskId: nil, conversationId: conversationId)
-        notifyEventListeners { listener in
-            listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
-        }
+        finishTopic(conversationId)
     }
 
     internal func didReceiveSubscribeToSupportAction(_ subscribeMessage: SubscribeToSupportQueueMessage) {
