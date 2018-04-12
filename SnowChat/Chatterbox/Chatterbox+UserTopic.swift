@@ -197,9 +197,8 @@ extension Chatterbox {
     private func userTopicMessageHandler(_ message: String) {
         logger.logDebug("userTopicMessage received: \(message)")
         
-        if processEventMessage(message) != true {
-            let control = ChatDataFactory.controlFromJSON(message)
-            processControlMessage(control)
+        if processEventMessage(message) != true {            
+            processControlMessage(message)
         }
     }
     
