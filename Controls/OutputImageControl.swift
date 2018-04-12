@@ -30,6 +30,7 @@ class OutputImageControl: ControlProtocol {
         didSet {
             if let size = imageModel.size {
                 imageViewController.prepareViewForImageWithSize(size)
+                delegate?.controlDidFinishLoading(self)
             }
         }
     }
@@ -53,6 +54,7 @@ class OutputImageControl: ControlProtocol {
         let urlRequest = resourceProvider.authorizedRequest(with: imageModel.value)
         let imageDownloader = resourceProvider.imageDownloader
         requestReceipt = imageDownloader.download(urlRequest) { [weak self] (response) in
+            
             guard let currentModel = self?.model as? OutputImageViewModel,
                 imageModel.value == currentModel.value else {
                     return
@@ -63,17 +65,16 @@ class OutputImageControl: ControlProtocol {
                 Logger.default.logError("No image downloaded for \(imageModel.value): error=\(error)")
                 return
             }
-
+            
             let image = response.value
             guard let strongSelf = self, strongSelf.imageViewController.image != image else { return }
             
             // If we already fetched image before we don't need to call beginUpdate/endUpdate on tableView
             // Which is called in didFinishImageDownload
-            let needsLayoutUpdate = strongSelf.imageModel.size == nil
             strongSelf.imageViewController.image = image
-            strongSelf.imageModel.size = strongSelf.imageViewController.imageSize
-            
+            let needsLayoutUpdate = strongSelf.imageModel.size == nil
             if needsLayoutUpdate {
+                strongSelf.imageModel.size = strongSelf.imageViewController.adjustedImageSize(for: image)
                 strongSelf.delegate?.controlDidFinishLoading(strongSelf)
             }
         }

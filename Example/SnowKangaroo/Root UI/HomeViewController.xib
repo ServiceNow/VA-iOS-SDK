@@ -6,13 +6,16 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="HomeViewController" customModule="SnowKangaroo" customModuleProvider="target">
             <connections>
                 <outlet property="chatButton" destination="0uk-o0-ZvU" id="A5l-Mb-B99"/>
+                <outlet property="forceSessionSwitch" destination="VAt-ZP-fNA" id="uTh-f5-YIW"/>
                 <outlet property="statusLabel" destination="sOR-2o-VVs" id="ztq-c0-jQt"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -25,7 +28,7 @@
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0uk-o0-ZvU">
                     <rect key="frame" x="127" y="325.5" width="120" height="36"/>
                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                    <state key="normal" title="👋 Let's chat!"/>
+                    <state key="normal" title="💬 Let's chat!"/>
                     <connections>
                         <action selector="chatButtonTapped:" destination="-1" eventType="touchUpInside" id="fLP-Fe-CsV"/>
                     </connections>
@@ -36,11 +39,27 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <stackView opaque="NO" contentMode="scaleToFill" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="xO7-gb-UW8">
+                    <rect key="frame" x="105" y="399" width="165" height="31"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Force New Session" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r5f-QE-iEc">
+                            <rect key="frame" x="0.0" y="0.0" width="108" height="31"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="VAt-ZP-fNA">
+                            <rect key="frame" x="116" y="0.0" width="51" height="31"/>
+                        </switch>
+                    </subviews>
+                </stackView>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="sOR-2o-VVs" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="GOB-QY-q3E"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="sOR-2o-VVs" secondAttribute="bottom" constant="5" id="VqZ-ND-mTf"/>
+                <constraint firstItem="xO7-gb-UW8" firstAttribute="firstBaseline" secondItem="0uk-o0-ZvU" secondAttribute="baseline" constant="60" id="ZYT-BN-Nqo"/>
+                <constraint firstItem="xO7-gb-UW8" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="a4b-PG-y0h"/>
                 <constraint firstItem="0uk-o0-ZvU" firstAttribute="centerY" secondItem="fnl-2z-Ty3" secondAttribute="centerY" id="lXS-Mp-hLf"/>
                 <constraint firstItem="0uk-o0-ZvU" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="xMK-dJ-MG9"/>
             </constraints>
