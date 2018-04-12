@@ -269,11 +269,20 @@ class Chatterbox {
     }
     
     internal func didReceiveTopicFinishedAction(_ action: TopicFinishedMessage) {
-        guard let conversationId = action.data.conversationId else {
-            logger.logError("Invalid conversation in didReceiveTopicFinishedAction action message: \(action)")
+        guard let sessionId = conversationContext.sessionId,
+            let conversationId = action.data.conversationId,
+            let systemConversationId = conversationContext.systemConversationId,
+            let uiMetadata = contextualActions?.data.richControl?.uiMetadata else {
+            logger.logError("Invalid conversation state in didReceiveTopicFinishedAction")
             return
         }
-
+        
+        // have to issue the start topic again, to reset the chat server
+        var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: systemConversationId, uiMetadata: uiMetadata)
+        startTopic.data.richControl?.value = "startTopic"
+        startTopic.data.direction = .fromClient
+        publishMessage(startTopic)
+        
         // collapse and pending controls
         cancelPendingExchangeIfNeeded()
 
