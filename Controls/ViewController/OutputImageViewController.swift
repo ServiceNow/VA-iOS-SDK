@@ -17,7 +17,6 @@ class OutputImageViewController: UIViewController {
     
     private var imageConstraints = [NSLayoutConstraint]()
     private let outputImageView = UIImageView()
-    private(set) var imageSize: CGSize?
     
     var image: UIImage? {
         didSet {
@@ -54,53 +53,54 @@ class OutputImageViewController: UIViewController {
     }
     
     func prepareViewForImageWithSize(_ size: CGSize) {
-        imageSize = size
         imageHeightConstraint?.constant = size.height
         imageWidthConstraint?.constant = size.width
-        
-        UIView.performWithoutAnimation {
-            view.layoutIfNeeded()
-        }
     }
     
     private func updateImageConstraints() {
-        guard let image = image else {
-            return
-        }
-        
         // if image is in landscape - we will limit it horizontally. otherwise vertically.
         // set width/height proportion
+        let imageSize = adjustedImageSize(for: image)
+        imageHeightConstraint?.constant = imageSize.height
+        imageWidthConstraint?.constant = imageSize.width
+    }
+    
+    func adjustedImageSize(for image: UIImage?) -> CGSize {
+        guard let image = image else {
+            return CGSize(width: 100, height: 50)
+        }
+        
         if image.size.height > image.size.width {
-            adjustImageHeightIfNeeded()
+            return adjustedImageHeight(for: image)
         } else {
-            adjustImageWidthIfNeeded()
+            return adjustedImageWidth(for: image)
         }
-        
-        view.layoutIfNeeded()
     }
     
-    private func adjustImageHeightIfNeeded() {
-        guard let image = image, image.size.height > maxImageSize.height else {
-            return
+    private func adjustedImageHeight(for image: UIImage) -> CGSize {
+        let imageSize: CGSize
+        if image.size.height > maxImageSize.height {
+            let height = maxImageSize.height
+            let ratio = image.size.width / image.size.height
+            let width = height * ratio
+            imageSize = CGSize(width: width, height: height)
+        } else {
+            imageSize = image.size
         }
         
-        let height = maxImageSize.height
-        let ratio = image.size.width / image.size.height
-        let width = height * ratio
-        imageHeightConstraint?.constant = height
-        imageWidthConstraint?.constant = width
-        imageSize = CGSize(width: width, height: height)
+        return imageSize
     }
     
-    private func adjustImageWidthIfNeeded() {
-        guard let image = image, image.size.width > maxImageSize.width else {
-            return
+    private func adjustedImageWidth(for image: UIImage) -> CGSize {
+        let imageSize: CGSize
+        if image.size.width > maxImageSize.width {
+            let ratio = image.size.height / image.size.width
+            let height = maxImageSize.width * ratio
+            imageSize = CGSize(width: maxImageSize.width, height: height)
+        } else {
+            imageSize = image.size
         }
         
-        let ratio = image.size.height / image.size.width
-        let height = maxImageSize.width * ratio
-        imageHeightConstraint?.constant = height
-        imageWidthConstraint?.constant = maxImageSize.width
-        imageSize = CGSize(width: maxImageSize.width, height: height)
+        return imageSize
     }
 }

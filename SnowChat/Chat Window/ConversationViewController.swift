@@ -20,6 +20,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     }
     
     private let bottomInset: CGFloat = 45
+    private let estimatedRowHeight: CGFloat = 50
     
     private var inputState = InputState.inTopicSelection {
         didSet {
@@ -34,11 +35,13 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
 
     private var messageViewControllerCache = ChatMessageViewControllerCache()
     private var uiControlCache = ControlCache()
+    private var uiControlsToResize = [ControlProtocol]()
     
     private var canFetchOlderMessages = false
     private var timeLastHistoryFetch: Date = Date()
     private var isLoading = false
     private var defaultMessageHeight: CGFloat?
+    private var maxMessageHeight: CGFloat?
     
     private var wasHistoryLoadedForUser: Bool = false
     
@@ -101,6 +104,16 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         // not calling super to override slack's behavior
         adjustContentInset()
         defaultMessageHeight = tableView.bounds.height * 0.3
+        
+        let bottomMargin: CGFloat
+        if #available(iOS 11.0, *) {
+            bottomMargin = tableView.safeAreaInsets.top
+        } else {
+            // Fallback on earlier versions
+            bottomMargin = topLayoutGuide.length
+        }
+        
+        maxMessageHeight = tableView.bounds.height - bottomMargin - 50
     }
     
     private func adjustContentInset() {
@@ -128,7 +141,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         // NOTE: making section header height very tiny as 0 make it default size in iOS11
         // see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
         tableView.sectionHeaderHeight = CGFloat(0.01)
-        tableView.estimatedRowHeight = 250
+        tableView.estimatedRowHeight = estimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
         tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
@@ -490,13 +503,15 @@ extension ConversationViewController {
     // MARK: - Special case for OutputHtmlViewModel..
     private func adjustModelSizeIfNeeded(_ messageModel: ChatMessageModel) {
         guard let outputHtmlModel = messageModel.controlModel as? OutputHtmlControlViewModel,
-            let messageHeight = defaultMessageHeight,
-            let size = outputHtmlModel.size,
-            size.height == UIViewNoIntrinsicMetric else {
+            let size = outputHtmlModel.size else {
                 return
         }
         
-        outputHtmlModel.size = CGSize(width: UIViewNoIntrinsicMetric, height: messageHeight)
+        if let messageHeight = defaultMessageHeight, size.height == UIViewNoIntrinsicMetric {
+            outputHtmlModel.size = CGSize(width: UIViewNoIntrinsicMetric, height: messageHeight)
+        } else if let messageHeight = maxMessageHeight, size.height > messageHeight {
+            outputHtmlModel.size = CGSize(width: UIViewNoIntrinsicMetric, height: messageHeight)
+        }
     }
     
     // MARK: - ChatMessageViewController reuse
@@ -645,7 +660,7 @@ extension ConversationViewController: ControlDelegate {
     override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         if let chatModel = dataController.controlForIndex(indexPath.row) {
             if chatModel.type == .topicDivider {
-                return 2
+                return TopicDividerCell.dividerHeight
             }
             
             if let viewModel = chatModel.controlModel as? Resizable, let size = viewModel.size {
@@ -653,7 +668,7 @@ extension ConversationViewController: ControlDelegate {
             }
         }
         
-        return 200
+        return estimatedRowHeight
     }
 }
 
