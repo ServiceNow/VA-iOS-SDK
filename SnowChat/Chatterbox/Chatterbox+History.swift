@@ -300,6 +300,8 @@ extension Chatterbox {
     }
     
     internal func notifyMessage(_ message: ControlData) {
+        logger.logDebug("--> Notifying Message: \(message.controlType)")
+        
         guard chatDataListeners.count > 0 else {
             logger.logError("No ChatDataListener in NotifyControlReceived")
             return
