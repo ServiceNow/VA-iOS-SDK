@@ -186,7 +186,7 @@ class Chatterbox {
         }
     }
     
-    fileprivate func processResponseControlMessage(_ control: ControlData, forConversation conversationId: String) {
+    private func processResponseControlMessage(_ control: ControlData, forConversation conversationId: String) {
         if let lastExchange = chatStore.conversation(forId: conversationId)?.messageExchanges().last, !lastExchange.isComplete {
             if let updatedExchange = chatStore.storeResponseData(control, forConversation: conversationId) {
                 notifyDataListeners { listener in
@@ -235,12 +235,12 @@ class Chatterbox {
         }
     }
     
-    fileprivate func updateContextualActions(_ newContextualActions: ContextualActionMessage) {
+    private func updateContextualActions(_ newContextualActions: ContextualActionMessage) {
         logger.logInfo("Updating ContextualActions: \(newContextualActions.data.richControl?.uiMetadata?.inputControls ?? [])")
         contextualActions = newContextualActions
     }
     
-    fileprivate func updateContextIfNeeded(_ control: ControlData) {
+    private func updateContextIfNeeded(_ control: ControlData) {
         // keep our taskId and conversationID up to date with incoming messages
         
         if let taskId = control.taskId {
@@ -268,13 +268,25 @@ class Chatterbox {
         }
     }
     
+    private func sendStartTopic(forSession sessionId: String, forConversation systemConversationId: String, _ uiMetadata: ContextualActionMessage.ContextualActionMetadata) {
+        var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: systemConversationId, uiMetadata: uiMetadata, value: .startTopic)
+        startTopic.data.direction = .fromClient
+        publishMessage(startTopic)
+    }
+    
     internal func didReceiveTopicFinishedAction(_ action: TopicFinishedMessage) {
-        guard let conversationId = action.data.conversationId else {
-            logger.logError("Invalid conversation in didReceiveTopicFinishedAction action message: \(action)")
+        guard let sessionId = conversationContext.sessionId,
+            let conversationId = action.data.conversationId,
+            let systemConversationId = conversationContext.systemConversationId,
+            let uiMetadata = contextualActions?.data.richControl?.uiMetadata else {
+            
+            logger.logError("Invalid conversation state in didReceiveTopicFinishedAction")
             return
         }
-
-        // collapse and pending controls
+        
+        // have to issue the start topic again, to reset the chat server, or we cannot do subsequent live agent chats
+        sendStartTopic(forSession: sessionId, forConversation: systemConversationId, uiMetadata)
+        
         cancelPendingExchangeIfNeeded()
 
         // update conversation status and save
@@ -332,73 +344,73 @@ class Chatterbox {
         }
     }
     
-    fileprivate func updateRichControlData<T>(_ inputMessage: RichControlData<T>) -> RichControlData<T> {
+    private func updateRichControlData<T>(_ inputMessage: RichControlData<T>) -> RichControlData<T> {
         var message = inputMessage
         message.direction = .fromClient
         message.sendTime = Date()
         return message
     }
     
-    fileprivate func publishControlUpdate<T: ControlData>(_ message: T, forConversation conversationId: String) {
+    private func publishControlUpdate<T: ControlData>(_ message: T, forConversation conversationId: String) {
         publishMessage(message)
     }
     
-    fileprivate func updateBooleanControl(_ control: ControlData) {
+    private func updateBooleanControl(_ control: ControlData) {
         if var booleanControl = control as? BooleanControlMessage, let conversationId = booleanControl.data.conversationId {
             booleanControl.data = updateRichControlData(booleanControl.data)
             publishControlUpdate(booleanControl, forConversation: conversationId)
         }
     }
     
-    fileprivate func updateInputControl(_ control: ControlData) {
+    private func updateInputControl(_ control: ControlData) {
         if var inputControl = control as? InputControlMessage, let conversationId = inputControl.data.conversationId {
             inputControl.data = updateRichControlData(inputControl.data)
             publishControlUpdate(inputControl, forConversation: conversationId)
         }
     }
     
-    fileprivate func updatePickerControl(_ control: ControlData) {
+    private func updatePickerControl(_ control: ControlData) {
         if var pickerControl = control as? PickerControlMessage, let conversationId = pickerControl.data.conversationId {
             pickerControl.data = updateRichControlData(pickerControl.data)
             publishControlUpdate(pickerControl, forConversation: conversationId)
         }
     }
 
-    fileprivate func updateMultiSelectControl(_ control: ControlData) {
+    private func updateMultiSelectControl(_ control: ControlData) {
         if var multiSelectControl = control as? MultiSelectControlMessage, let conversationId = multiSelectControl.data.conversationId {
             multiSelectControl.data = updateRichControlData(multiSelectControl.data)
             publishControlUpdate(multiSelectControl, forConversation: conversationId)
         }
     }
     
-    fileprivate func updateMultiPartControl(_ control: ControlData) {
+    private func updateMultiPartControl(_ control: ControlData) {
         if var multiPartControl = control as? MultiPartControlMessage, let conversationId = multiPartControl.data.conversationId {
             multiPartControl.data = updateRichControlData(multiPartControl.data)
             publishControlUpdate(multiPartControl, forConversation: conversationId)
         }
     }
     
-    fileprivate func updateDateTimeControl(_ control: ControlData) {
+    private func updateDateTimeControl(_ control: ControlData) {
         if var dateTimeControl = control as? DateTimePickerControlMessage, let conversationId = dateTimeControl.data.conversationId {
             dateTimeControl.data = updateRichControlData(dateTimeControl.data)
             publishControlUpdate(dateTimeControl, forConversation: conversationId)
         }
     }
     
-    fileprivate func updateDateOrTimeControl(_ control: ControlData) {
+    private func updateDateOrTimeControl(_ control: ControlData) {
         if var dateTimeControl = control as? DateOrTimePickerControlMessage, let conversationId = dateTimeControl.data.conversationId {
             dateTimeControl.data = updateRichControlData(dateTimeControl.data)
             publishControlUpdate(dateTimeControl, forConversation: conversationId)
         }
     }
     
-    fileprivate func updateTextControl(_ control: ControlData) {
+    private func updateTextControl(_ control: ControlData) {
         if let textControl = control as? AgentTextControlMessage, let conversationId = textControl.conversationId {
             publishControlUpdate(textControl, forConversation: conversationId)
         }
     }
     
-    fileprivate func updateFileUploadControl(_ control: ControlData) {
+    private func updateFileUploadControl(_ control: ControlData) {
         if var fileUploadControl = control as? FileUploadControlMessage, let conversationId = fileUploadControl.data.conversationId {
             fileUploadControl.data = updateRichControlData(fileUploadControl.data)
             publishControlUpdate(fileUploadControl, forConversation: conversationId)
@@ -416,8 +428,7 @@ class Chatterbox {
                 return
         }
         
-        var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId, uiMetadata: uiMetadata)
-        startTopic.data.richControl?.value = "showTopic"
+        var startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId, uiMetadata: uiMetadata, value: .showTopic)
         startTopic.data.direction = .fromClient
         
         installShowTopicHandler {
