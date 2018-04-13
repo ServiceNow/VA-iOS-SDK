@@ -25,7 +25,7 @@ extension ChatDataController: ContextItemProvider {
         let menuItem = ContextMenuItem(withTitle: NSLocalizedString("New Conversation", comment: "Context Menu Item Title")) { viewController, sender in
             self.logger.logDebug("New Conversation menu selected")
             
-            self.withConfirmationIfNeeded(presentingController: viewController, title: NSLocalizedString("Do you want to cancel the current conversation?", comment: "Alert title when about to end a conversation to transfer to an agent")) {
+            self.cancelConversationWithConfirmationIfNeeded(presentingController: viewController, sender: sender) {
                 self.chatterbox.cancelConversation()
             }
         }
@@ -67,7 +67,7 @@ extension ChatDataController: ContextItemProvider {
         return actionItem
     }
     
-    fileprivate func agentChatAction(presentingController: UIViewController) -> UIAlertAction? {
+    fileprivate func agentChatAction(presentingController: UIViewController, sender: UIBarButtonItem) -> UIAlertAction? {
         guard let brandingSettings = chatterbox.session?.settings?.brandingSettings,
               let supportQueueInfo = chatterbox.supportQueueInfo else { return nil }
         
@@ -82,7 +82,7 @@ extension ChatDataController: ContextItemProvider {
         }
         
         let actionItem = UIAlertAction(title: messageToUser, style: .default) { action in
-            self.withConfirmationIfNeeded(presentingController: presentingController, title: NSLocalizedString("Do you want to cancel the current conversation?", comment: "Alert title when about to end a conversation to transfer to an agent")) {
+            self.cancelConversationWithConfirmationIfNeeded(presentingController: presentingController, sender: sender) {
                 self.chatterbox.transferToLiveAgent()
             }
         }
@@ -112,7 +112,7 @@ extension ChatDataController: ContextItemProvider {
         let alertController = UIAlertController(title: NSLocalizedString("Support Options", comment: "Title for support options popover"),
                                                 message: nil,
                                                 preferredStyle: .actionSheet)
-        if let agent = agentChatAction(presentingController: presentingController) {
+        if let agent = agentChatAction(presentingController: presentingController, sender: sender) {
             alertController.addAction(agent)
         }
         
@@ -134,20 +134,37 @@ extension ChatDataController: ContextItemProvider {
         presentingController.present(alertController, animated: true, completion: nil)
     }
     
-    func withConfirmationIfNeeded(presentingController: UIViewController, title: String, execute: @escaping () -> Void ) {
+    private func cancelConversationWithConfirmationIfNeeded(presentingController: UIViewController, sender: UIBarButtonItem, execute: @escaping () -> Void ) {
         if chatterbox.state == .agentConversation || chatterbox.state == .userConversation {
+            
+            let title = NSLocalizedString("Do you want to end the current conversation?", comment: "Alert title when about to end a conversation to transfer to an agent")
+            let affirmative = NSLocalizedString("End Conversation", comment: "Affirmative button for ending current conversation")
+            let negative = NSLocalizedString("Cancel", comment: "Negative button for ending current conversation")
+            
+            let style: UIAlertControllerStyle
+            let iPadRegular = presentingController.traitCollection.horizontalSizeClass == .regular && presentingController.traitCollection.verticalSizeClass == .regular
+            
+            // actionSheet does not work well for the iPad as it drops the 'cancel' option, and pins it to the button
+            // so we make it an alert there, otherwise actionSheet looks good
+            if iPadRegular {
+                style = .alert
+            } else {
+                style = .actionSheet
+            }
+            
             let alertController = UIAlertController(title: title,
                                                     message:nil,
-                                                    preferredStyle: .alert)
+                                                    preferredStyle: style)
             
-            let OKAction = UIAlertAction(title: "Yes", style: .destructive) { action in
+            let OKAction = UIAlertAction(title: affirmative, style: .destructive) { action in
                 execute()
             }
             alertController.addAction(OKAction)
             
-            let cancelAction = UIAlertAction(title: "No", style: .cancel) { action in }
+            let cancelAction = UIAlertAction(title: negative, style: .cancel) { action in }
             alertController.addAction(cancelAction)
             
+            alertController.popoverPresentationController?.barButtonItem = sender
             presentingController.present(alertController, animated: true) { }
         } else {
             execute()
