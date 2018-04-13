@@ -149,6 +149,10 @@ class TopicLifecycleTests: XCTestCase {
         super.setUp()
         
         chatterbox.chatStore.reset()
+        chatterbox.conversationContext.sessionId = "43e17fd373501300d63a566a4cf6a7ff"
+        chatterbox.conversationContext.systemConversationId = "f0760de6733a0300d63a566a4cf6a7b6"
+        
+        chatterbox.contextualActions = ExampleData.exampleContextualActionMessage()
     }
     
     override func tearDown() {
@@ -182,6 +186,7 @@ class TopicLifecycleTests: XCTestCase {
     
     func testStartAndEndTopicUpdatesChatterboxState() {
         chatterbox.startUserTopicHandshakeHandler(jsonStartedTopic)
+
         XCTAssertTrue(chatterbox.state == .userConversation)
         
         let handled = chatterbox.processEventMessage(jsonTopicFinished)
