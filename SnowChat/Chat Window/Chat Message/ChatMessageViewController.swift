@@ -202,7 +202,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         bubbleView.backgroundColor = controlTheme.backgroundColor
         
         // Make sure that a little tail in the bubble gets colored like picker background. now it is hardcoded to white but will need to get theme color
-        if control.viewController is PickerViewController {
+        if control.viewController is PickerViewController || control.viewController is OutputLinkViewController {
             bubbleView.backgroundColor = UIColor.white
         }
     }

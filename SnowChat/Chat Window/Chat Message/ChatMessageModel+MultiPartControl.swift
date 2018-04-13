@@ -11,11 +11,11 @@ extension ChatMessageModel {
     // MARK: Nested models for multi part control
     
     static func model(withMessage message: MultiPartControlMessage, theme: Theme) -> ChatMessageModel? {
-        guard let nestedControlValue = message.data.richControl?.content?.value,
+        guard let nestedControlValue = message.data.richControl?.content?.value?.rawValue,
             let nestedControlType = message.nestedControlType else {
                 return nil
         }
-        
+
         let direction = message.direction
         
         var chatMessageModel: ChatMessageModel?
@@ -32,8 +32,10 @@ extension ChatMessageModel {
                 chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
             }
         case .outputLink:
-            if let url = URL(string: nestedControlValue) {
-                let controlModel = OutputLinkControlViewModel(id: message.messageId, value: url)
+            if let url = URL(string: nestedControlValue),
+                let header = message.data.richControl?.content?.uiMetadata?.header {
+                let label = message.data.richControl?.content?.uiMetadata?.label
+                let controlModel = OutputLinkControlViewModel(id: message.messageId, label: label, header: header, value: url)
                 chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
             }
         case .unknown:
