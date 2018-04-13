@@ -32,8 +32,10 @@ extension ChatMessageModel {
                 chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
             }
         case .outputLink:
-            if let url = URL(string: nestedControlValue) {
-                let controlModel = OutputLinkControlViewModel(id: message.messageId, value: url)
+            if let url = URL(string: nestedControlValue),
+                let header = message.data.richControl?.uiMetadata?.header {
+                let label = message.data.richControl?.uiMetadata?.label
+                let controlModel = OutputLinkControlViewModel(id: message.messageId, label: label, header: header, value: url)
                 chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
             }
         case .unknown:

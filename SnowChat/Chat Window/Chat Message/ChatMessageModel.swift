@@ -278,11 +278,11 @@ extension ChatMessageModel {
     
     static func model(withMessage message: OutputLinkControlMessage, theme: Theme) -> ChatMessageModel? {
         guard let value = message.data.richControl?.value,
-            let header = message.data.richControl?.uiMetadata?.header,
-            let label = message.data.richControl?.uiMetadata?.label else {
+            let header = message.data.richControl?.uiMetadata?.header else {
             return nil
         }
         
+        let label = message.data.richControl?.uiMetadata?.label
         let direction = message.direction
         
         guard let url = URL(string: value.action) else { return nil }

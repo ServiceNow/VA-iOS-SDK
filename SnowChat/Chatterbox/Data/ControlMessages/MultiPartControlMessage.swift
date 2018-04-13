@@ -49,6 +49,8 @@ struct MultiPartControlMessage: Codable, ControlData {
     struct MultiFlowMetadata: Codable {
         var index: Int
         let navigationBtnLabel: String
+        var label: String?
+        var header: String?
     }
     
     let type: String = "consumerTextMessage"
