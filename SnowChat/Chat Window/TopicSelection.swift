@@ -53,8 +53,8 @@ class TopicSelectionHandler: AutoCompleteHandler {
     func heightForAutoCompletionView() -> CGFloat {
         let hasTopics = topics.count > 0
         
-        let cellHeight:CGFloat = TopicSelectionTableCell.estimatedCellHeight
-        let headerHeight: CGFloat = hasTopics ? TopicSelectionTableCell.estimatedHeaderHeight : cellHeight
+        let cellHeight = TopicSelectionTableCell.estimatedCellHeight
+        let headerHeight = hasTopics ? TopicSelectionTableCell.estimatedHeaderHeight : cellHeight
         return (cellHeight * CGFloat(topics.count)) + headerHeight
     }
     
@@ -164,7 +164,7 @@ class TopicSelectionHandler: AutoCompleteHandler {
     func showAllTopics() {
         chatterbox.apiManager.allTopics { topics in
             if topics.count == 0 {
-                self.topics = [ChatTopic(title: "No Topics Found", name: "")]
+                self.topics = [ChatTopic(title: NSLocalizedString("No Topics Found", comment: "Text to display when there are no topics matching the search phrase"), name: "")]
             } else {
                 self.topics = topics
             }
@@ -200,10 +200,14 @@ class TopicSelectionTableCell: UITableViewCell {
             topicLabel.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview(topicLabel)
             
+            // bottom-constraint has to be lower prioroty to get along with SlackVC constraints
+            let bottomConstraint = topicLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
+            bottomConstraint.priority = UILayoutPriority.defaultLow
+            
             NSLayoutConstraint.activate([topicLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
                                          topicLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 10),
                                          topicLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-                                         topicLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)])
+                                         bottomConstraint])
         }
     }
     
