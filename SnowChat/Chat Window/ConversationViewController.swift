@@ -302,8 +302,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
             }
         case .inTopicSelection, .inAgentConversation:
             isTextInputbarHidden = false
-        default:
-            Logger.default.logDebug("unhandled inputState in manageInputControl: \(inputState)")
+        case .waitingForAgent, .inSystemTopicSelection:
+            isTextInputbarHidden = true
         }
     }
 }

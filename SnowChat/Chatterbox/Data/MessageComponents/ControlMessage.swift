@@ -24,6 +24,7 @@ struct ControlWrapper<ValueType: Codable, MetadataType: Codable>: Codable {
 struct MultiPartContent<ValueType: Codable>: Codable {
     var uiType: String
     var value: ValueType?
+    var uiMetadata: UIMetadata?
 }
 
 struct ControlModel: Codable {

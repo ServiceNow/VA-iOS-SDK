@@ -502,13 +502,16 @@ extension ChatDataController: ChatDataListener {
     func controlForLink(from messageExchange: MessageExchange) -> OutputLinkControlViewModel? {
         guard messageExchange.isComplete,
             let outputLinkControl = messageExchange.message as? OutputLinkControlMessage,
-            let value = outputLinkControl.data.richControl?.value else {
+            let value = outputLinkControl.data.richControl?.value,
+            let header = outputLinkControl.data.richControl?.uiMetadata?.header else {
                 logger.logError("MessageExchange is not valid in outputLinkFromMessageExchange method - skipping!")
                 return nil
         }
         
+        let label = outputLinkControl.data.richControl?.uiMetadata?.label
+        
         if let url = URL(string: value.action) {
-            return OutputLinkControlViewModel(id: ChatUtil.uuidString(), value: url)
+            return OutputLinkControlViewModel(id: ChatUtil.uuidString(), label: label, header: header, value: url)
         }
         
         return nil

@@ -10,6 +10,11 @@ import Foundation
 
 struct ContextualActionMessage: Codable, ControlData {
 
+    enum ValueChoice : String {
+        case startTopic
+        case showTopic
+    }
+    
     var uniqueId: String {
         return id
     }

@@ -12,8 +12,6 @@ extension ChatDataController {
     
     func applyAppearance() {
         // For some elements we can just use UIAppearance..makes theming life easier
-        UIView.appearance(whenContainedInInstancesOf: [ChatMessageViewController.self]).backgroundColor = theme.backgroundColor
-        UIView.appearance(whenContainedInInstancesOf: [BubbleView.self, ChatMessageViewController.self]).backgroundColor = nil
         TopicSelectionTableCell.appearance(whenContainedInInstancesOf: [ConversationViewController.self]).backgroundColor = theme.buttonBackgroundColor
         UITableViewCell.appearance(whenContainedInInstancesOf: [BubbleView.self, ChatMessageViewController.self]).backgroundColor = theme.buttonBackgroundColor
         TopicDividerCell.appearance(whenContainedInInstancesOf: [ConversationViewController.self]).backgroundColor = theme.backgroundColor
