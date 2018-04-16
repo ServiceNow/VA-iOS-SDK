@@ -35,7 +35,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
 
     private var messageViewControllerCache = ChatMessageViewControllerCache()
     private var uiControlCache = ControlCache()
-    private var uiControlsToResize = [ControlProtocol]()
     
     private var canFetchOlderMessages = false
     private var timeLastHistoryFetch: Date = Date()
@@ -275,8 +274,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         setupInputForState()
         manageInputControl()
         updateTableView()
-        
         showActivityIndicator = false
+        
+        tableView.layoutIfNeeded()
     }
     
     private func updateTableView() {

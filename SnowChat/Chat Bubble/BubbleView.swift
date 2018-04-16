@@ -10,6 +10,8 @@ import UIKit
 
 class BubbleView: UIView {
     
+    private let cornerRadius: CGFloat = 10
+    
     enum ArrowDirection {
         case left
         case right
@@ -87,6 +89,9 @@ class BubbleView: UIView {
         insetConstraints.append(contentView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -contentViewInsets.right))
         insetConstraints.append(contentView.topAnchor.constraint(equalTo: topAnchor, constant: contentViewInsets.top))
         insetConstraints.append(contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -contentViewInsets.bottom))
+        
+        // minimum height is 2 * corner radius, so we at least see a bubble, not some UI glitch
+        insetConstraints.append(contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 2 * cornerRadius))
         NSLayoutConstraint.activate(insetConstraints)
     }
     
@@ -101,7 +106,7 @@ class BubbleView: UIView {
             return
         }
         
-        let bubblePath = chatBubblePath(forBounds: bounds, leftSide: (arrowDirection == .left))
+        let bubblePath = chatBubblePath(forBounds: bounds, radius: cornerRadius, leftSide: (arrowDirection == .left))
         (layer.mask as? CAShapeLayer)?.path = bubblePath
         layer.mask?.frame = bounds
         borderLayer.frame = bounds

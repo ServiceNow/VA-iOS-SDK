@@ -232,12 +232,9 @@ class ChatDataController {
             let button = lastControl.controlModel as? ButtonControlViewModel,
             button.value == ChatDataController.showAllTopicsAction else { return }
         
-        // remove the button and the prompt
+        // remove the button only - leave the prompts
         controlData.remove(at: 0)
         addModelChange(ModelChangeType.delete(index: 0))
-
-        controlData.remove(at: 0)
-        addModelChange(ModelChangeType.delete(index: 1))
         applyModelChanges()
     }
     
