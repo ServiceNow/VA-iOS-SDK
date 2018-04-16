@@ -1,5 +1,5 @@
 import XCTest
-@testable import SNOWAMBClient
+@testable import AMBClient
 
 import Foundation
 
@@ -21,6 +21,8 @@ class AMBClientTests: XCTestCase {
     }
     
     var testExpectations: [ExpectationType : XCTestExpectation] = [ : ]
+    
+    var subscription: AMBSubscription?
     
     let loggedInExpectation = XCTestExpectation(description: "Client logged in")
     
@@ -85,6 +87,8 @@ class AMBClientTests: XCTestCase {
     
     override func tearDown() {
         super.tearDown()
+        
+        self.subscription = nil
     }
     
     // MARK: - helpers
@@ -151,10 +155,19 @@ class AMBClientTests: XCTestCase {
     }
 
     @discardableResult func subscribeToTestChannel() -> AMBSubscription? {
-        let subscription = ambClient?.subscribe(channel: testChannelName, messageHandler: { [weak self] (result, subscription) in
+        subscription = ambClient?.subscribe(channel: testChannelName,
+                                            messageHandler: { [weak self] (result, subscription) in
             if result.isSuccess {
-                if let messageReceivedExpectation = self?.testExpectations[ExpectationType.messageReceived] {
-                    messageReceivedExpectation.fulfill()
+                if let message = result.value {
+                    if message.messageType == .dataMessage {
+                        if let messageReceivedExpectation = self?.testExpectations[ExpectationType.messageReceived] {
+                            messageReceivedExpectation.fulfill()
+                        }
+                    } else {
+                        if let subscribedExpectation = self?.testExpectations[ExpectationType.subscribed] {
+                            subscribedExpectation.fulfill()
+                        }
+                    }
                 }
             } else {
                 XCTFail("AMB message received with error")
@@ -220,8 +233,8 @@ class AMBClientTests: XCTestCase {
         ambClient?.delegate = self
         ambClient?.connect()
         
+        // TODO: figure out why glide session status is not set in the beginning as promised (alex a, 04-10-18)
         self.wait(for: [glideLoggedInExpectation], timeout: 10)
-        XCTAssert(subscription != nil, "AMB subcription subscription is nil")
     }
     
     func testPublishMessage() {
@@ -239,8 +252,10 @@ class AMBClientTests: XCTestCase {
         subscribeToTestChannel()
         
         self.wait(for: [subscribedExpectation], timeout: 10)
-        publishMessage()
-        self.wait(for: [publishedMessageExpectation], timeout: 10)
+        //publishMessage()
+        //!!!
+        print("************* publish()")
+        self.wait(for: [publishedMessageExpectation], timeout: 100)
     }
     
 }
