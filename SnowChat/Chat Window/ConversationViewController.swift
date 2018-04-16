@@ -507,7 +507,7 @@ extension ConversationViewController {
                 return
         }
         
-        if let messageHeight = defaultMessageHeight, size.height == UIViewNoIntrinsicMetric {
+        if let messageHeight = defaultMessageHeight, size.height == UIViewNoIntrinsicMetric || size.height < 1 {
             outputHtmlModel.size = CGSize(width: UIViewNoIntrinsicMetric, height: messageHeight)
         } else if let messageHeight = maxMessageHeight, size.height > messageHeight {
             outputHtmlModel.size = CGSize(width: UIViewNoIntrinsicMetric, height: messageHeight)
