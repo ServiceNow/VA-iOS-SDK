@@ -84,14 +84,10 @@ class BubbleView: UIView {
     private func updateContentViewConstraints() {
         NSLayoutConstraint.deactivate(insetConstraints)
         insetConstraints.removeAll()
-        
         insetConstraints.append(contentView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: contentViewInsets.left))
         insetConstraints.append(contentView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -contentViewInsets.right))
         insetConstraints.append(contentView.topAnchor.constraint(equalTo: topAnchor, constant: contentViewInsets.top))
         insetConstraints.append(contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -contentViewInsets.bottom))
-        
-        // minimum height is 2 * corner radius, so we at least see a bubble, not some UI glitch
-        insetConstraints.append(contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 2 * cornerRadius))
         NSLayoutConstraint.activate(insetConstraints)
     }
     
