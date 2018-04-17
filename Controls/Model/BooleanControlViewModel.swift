@@ -20,13 +20,16 @@ class BooleanControlViewModel: PickerControlViewModel, ValueRepresentable {
 
     let type: ControlType = .boolean
     
-    init(id: String, label: String? = nil, required: Bool, resultValue: Bool? = nil) {
+    let messageDate: Date?
+    
+    init(id: String, label: String? = nil, required: Bool, resultValue: Bool? = nil, messageDate: Date) {
         let items = [PickerItem.yesItem(), PickerItem.noItem()]
         self.id = id
         self.label = label
         self.isRequired = required
         self.isMultiSelect = false
         self.items = items
+        self.messageDate = messageDate
         
         if !required {
             self.items.append(PickerItem.skipItem())

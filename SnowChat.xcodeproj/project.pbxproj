@@ -142,6 +142,7 @@
 		57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F7B2531FE17823006D917C /* TextControlViewModel.swift */; };
 		57FB5EB5207FAEAF00AECB59 /* OutputLinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB5EB4207FAEAF00AECB59 /* OutputLinkViewController.swift */; };
 		57FB5EB7207FAEE500AECB59 /* OutputLinkViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57FB5EB6207FAEE500AECB59 /* OutputLinkViewController.xib */; };
+		7A1F085520858B9E004B8B0A /* TimeAgo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1F085420858B9E004B8B0A /* TimeAgo.swift */; };
 		8B0A1F67204080D400DE4D4C /* APIManager+ImageUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0A1F66204080D400DE4D4C /* APIManager+ImageUpload.swift */; };
 		8B98430F203FF31F00FE7DAD /* APIManager+RequestAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B98430E203FF31F00FE7DAD /* APIManager+RequestAuthorization.swift */; };
 		8BA70BB120250CCB0067EBF3 /* BaseAuthTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */; };
@@ -364,6 +365,7 @@
 		57F7B2531FE17823006D917C /* TextControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControlViewModel.swift; sourceTree = "<group>"; };
 		57FB5EB4207FAEAF00AECB59 /* OutputLinkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputLinkViewController.swift; sourceTree = "<group>"; };
 		57FB5EB6207FAEE500AECB59 /* OutputLinkViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OutputLinkViewController.xib; sourceTree = "<group>"; };
+		7A1F085420858B9E004B8B0A /* TimeAgo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAgo.swift; sourceTree = "<group>"; };
 		8B0A1F66204080D400DE4D4C /* APIManager+ImageUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIManager+ImageUpload.swift"; sourceTree = "<group>"; };
 		8B98430E203FF31F00FE7DAD /* APIManager+RequestAuthorization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIManager+RequestAuthorization.swift"; sourceTree = "<group>"; };
 		8BA70BB020250CCB0067EBF3 /* BaseAuthTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseAuthTestCase.swift; sourceTree = "<group>"; };
@@ -1030,6 +1032,7 @@
 				C4C8E523207D510B00DF5CCC /* UIColor+NOW_HTMLColors.h */,
 				C4F3AF311FD601FE00B27B0D /* Util.swift */,
 				C4EF7C3D2064190900E3904B /* ListenerList.swift */,
+				7A1F085420858B9E004B8B0A /* TimeAgo.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -1374,6 +1377,7 @@
 				C4F3AF361FD6291E00B27B0D /* SystemTopicPickerMessage.swift in Sources */,
 				57DF7C3A202CC416008D013A /* DateTimePickerControlViewModel.swift in Sources */,
 				57B0861020465E0200F009D2 /* CarouselControl.swift in Sources */,
+				7A1F085520858B9E004B8B0A /* TimeAgo.swift in Sources */,
 				C46A7D881FCE23D300DC12AC /* ActionMessageData.swift in Sources */,
 				572FAC1A1FC47B5600B0B956 /* MultiSelectControlViewModel.swift in Sources */,
 				C420ED7D1FC5F473002476C0 /* Logger.swift in Sources */,

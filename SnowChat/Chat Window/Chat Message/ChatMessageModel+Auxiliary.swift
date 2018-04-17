@@ -28,7 +28,7 @@ extension ChatMessageModel {
         }
         
         let direction = message.direction
-        let dateTimeViewModel = DateTimePickerControlViewModel(id: message.messageId, label: title, required: required)
+        let dateTimeViewModel = DateTimePickerControlViewModel(id: message.messageId, label: title, required: required, messageDate: message.messageTime)
         let snowViewModel = ChatMessageModel(model: dateTimeViewModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         snowViewModel.isAuxiliary = true
         return snowViewModel
@@ -45,9 +45,9 @@ extension ChatMessageModel {
         let dateTimeViewModel: DateTimePickerControlViewModel
         switch message.controlType {
         case .date:
-            dateTimeViewModel = DatePickerControlViewModel(id: message.messageId, label: title, required: required)
+            dateTimeViewModel = DatePickerControlViewModel(id: message.messageId, label: title, required: required, messageDate: message.messageTime)
         case .time:
-            dateTimeViewModel = TimePickerControlViewModel(id: message.messageId, label: title, required: required)
+            dateTimeViewModel = TimePickerControlViewModel(id: message.messageId, label: title, required: required, messageDate: message.messageTime)
         default:
             fatalError("Wrong type")
         }

@@ -353,13 +353,13 @@ extension ChatDataController: ChatDataListener {
         // an incomplete boolean results is just the question as a text message
         
         let label = message.data.richControl?.uiMetadata?.label ?? "???"
-        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label, messageDate: message.messageTime)
         
         let answerViewModel: TextControlViewModel?
         if let response = messageExchange.response as? BooleanControlMessage {
             let value = response.data.richControl?.value ?? false
             let valueString = (value ?? false) ? "Yes" : "No"
-            answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: valueString)
+            answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: valueString, messageDate: response.messageTime)
         } else {
             answerViewModel = nil
         }
@@ -373,7 +373,7 @@ extension ChatDataController: ChatDataListener {
                 logger.logError("MessageExchange is not valid in pickerControlsFromMessageExchange method - skipping!")
                 return nil
         }
-        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label, messageDate: message.messageTime)
         
         let answerViewModel: ControlViewModel?
         
@@ -395,9 +395,9 @@ extension ChatDataController: ChatDataListener {
                     url = URL(string: attachmentString, relativeTo: chatterbox.serverInstance.instanceURL) ?? url
                 }
                 
-                answerViewModel = OutputImageViewModel(id: ChatUtil.uuidString(), label: selectedOption?.label, value: url)
+                answerViewModel = OutputImageViewModel(id: ChatUtil.uuidString(), label: selectedOption?.label, value: url, messageDate: response.messageTime)
             } else {
-                answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: selectedOption?.label ?? value)
+                answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: selectedOption?.label ?? value, messageDate: response.messageTime)
             }
         } else {
             answerViewModel = nil
@@ -412,14 +412,14 @@ extension ChatDataController: ChatDataListener {
                 logger.logError("MessageExchange is not valid in multiSelectControlsFromMessageExchange method - skipping!")
                 return nil
         }
-        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label, messageDate: message.messageTime)
         
         let answerModel: TextControlViewModel?
         if let response = messageExchange.response as? MultiSelectControlMessage,
             let values: [String] = response.data.richControl?.value ?? [""] {
             let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
             let displayValue = options?.joinedWithCommaSeparator()
-            answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue ?? "")
+            answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue ?? "", messageDate: response.messageTime)
         } else {
             answerModel = nil
         }
@@ -433,13 +433,13 @@ extension ChatDataController: ChatDataListener {
                 logger.logError("MessageExchange is not valid in fileUploadControlsFromMessageExchange method - skipping!")
                 return nil
         }
-        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label, messageDate: message.messageTime)
         
         let answerModel: OutputImageViewModel?
         if let response = messageExchange.response as? FileUploadControlMessage,
             let value = response.data.richControl?.value ?? "",
             let url = URL(string: value) {
-            answerModel = OutputImageViewModel(id: ChatUtil.uuidString(), value: url)
+            answerModel = OutputImageViewModel(id: ChatUtil.uuidString(), value: url, messageDate: response.messageTime)
         } else {
             answerModel = nil
         }
@@ -458,8 +458,8 @@ extension ChatDataController: ChatDataListener {
         }
         
         let dateFormatter = DateFormatter.localDisplayFormatter(for: response.controlType)
-        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
-        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: dateFormatter.string(from: value))
+        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label, messageDate: message.messageTime)
+        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: dateFormatter.string(from: value), messageDate: response.messageTime)
         
         return (message: questionModel, response: answerModel)
     }
@@ -476,8 +476,8 @@ extension ChatDataController: ChatDataListener {
         
         // Takes string date or time and returns localized string (i.e. turns "2018-03-21" into Mar 21, 2018)
         let displayValue = DateFormatter.glideDisplayString(for: value, for: response.controlType)
-        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
-        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue)
+        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label, messageDate: message.messageTime)
+        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue, messageDate: response.messageTime)
         
         return (message: questionModel, response: answerModel)
     }
@@ -493,8 +493,8 @@ extension ChatDataController: ChatDataListener {
         }
         
         // a completed input exchange is two text controls, with the value of the message and the value of the response
-        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: messageValue)
-        let answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: responseValue)
+        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: messageValue, messageDate: message.messageTime)
+        let answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: responseValue, messageDate: response.messageTime)
         
         return (message: questionViewModel, response: answerViewModel)
     }
@@ -511,7 +511,7 @@ extension ChatDataController: ChatDataListener {
         let label = outputLinkControl.data.richControl?.uiMetadata?.label
         
         if let url = URL(string: value.action) {
-            return OutputLinkControlViewModel(id: ChatUtil.uuidString(), label: label, header: header, value: url)
+            return OutputLinkControlViewModel(id: ChatUtil.uuidString(), label: label, header: header, value: url, messageDate: outputLinkControl.messageTime)
         }
         
         return nil

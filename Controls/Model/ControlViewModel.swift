@@ -27,6 +27,8 @@ protocol ControlViewModel {
     var id: String { get }
     
     var type: ControlType { get }
+    
+    var messageDate: Date? { get }
 }
 
 protocol Resizable {

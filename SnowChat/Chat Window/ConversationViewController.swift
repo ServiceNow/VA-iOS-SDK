@@ -393,11 +393,11 @@ extension ConversationViewController {
         switch inputState {
         case .inConversation:
             // send the input as a control update
-            let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
+            let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText, messageDate: nil)
             dataController.updateControlData(model, isSkipped: false)
         case .inAgentConversation:
             // send the input as a straight-up data control (not an update)
-            let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
+            let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText, messageDate: nil)
             dataController.sendControlData(model)
             textView.text = ""
         default:
