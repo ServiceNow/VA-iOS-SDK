@@ -56,6 +56,8 @@ class ChatDataController {
 
     static internal let showAllTopicsAction = 999
     
+    private(set) var lastMessageDate: Date?
+    
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
         self.chatterbox.chatDataListeners.addListener(self)
@@ -185,6 +187,8 @@ class ChatDataController {
     }
     
     func presentControlData(_ data: ChatMessageModel) {
+        data.lastMessageDate = lastMessageDate
+        
         if isShowingTypingIndicator() {
             replaceLastControl(with: data)
         } else {
@@ -192,6 +196,11 @@ class ChatDataController {
             addModelChange(.insert(index: 0, model: data))
             applyModelChanges()
         }
+        
+        guard let lastMessageDate = data.controlModel?.messageDate else {
+            return
+        }
+        self.lastMessageDate = lastMessageDate
     }
     
     func presentAuxiliaryDataIfNeeded(forMessage message: ControlData) {
@@ -437,7 +446,7 @@ class ChatDataController {
     func agentTopicDidStart(agentInfo: AgentInfo) {
         let agentName = agentInfo.agentId == "" ? NSLocalizedString("An agent", comment: "placeholder for agent name when none is provided") : agentInfo.agentId
         let message = NSLocalizedString("\(agentName) is now taking your case.", comment: "Default agent responded message to show to user")
-        let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
+        let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message, messageDate: nil)
         bufferControlMessage(ChatMessageModel(model: completionTextControl, bubbleLocation: .left, theme: theme))
     }
     
@@ -450,10 +459,10 @@ class ChatDataController {
         // show the intro-message and a button the user can tap to get all topics
         
         if let message = chatterbox.session?.settings?.generalSettings?.introMessage {
-            let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
+            let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message, messageDate: nil)
             bufferControlMessage(ChatMessageModel(model: completionTextControl, bubbleLocation: .left, theme: theme))
             
-            let completionActionButton = ButtonControlViewModel(id: ChatUtil.uuidString(), label: "View all Topics", value: ChatDataController.showAllTopicsAction)
+            let completionActionButton = ButtonControlViewModel(id: ChatUtil.uuidString(), label: "View all Topics", value: ChatDataController.showAllTopicsAction, messageDate: nil)
             let buttonModel = ChatMessageModel(model: completionActionButton, bubbleLocation: .left, theme: theme)
             buttonModel.isAuxiliary = true
             bufferControlMessage(buttonModel)
@@ -462,8 +471,8 @@ class ChatDataController {
 
     func presentWelcomeMessage() {
         let message = chatterbox.session?.settings?.generalSettings?.welcomeMessage ?? NSLocalizedString("Welcome! What can we help you with?", comment: "Default welcome message")
-        let welcomeTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
-        
+        let welcomeTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message, messageDate: nil)
+
         bufferControlMessage(ChatMessageModel(model: welcomeTextControl, bubbleLocation: .left, theme: theme))
     }
     
@@ -483,7 +492,7 @@ class ChatDataController {
             message = NSLocalizedString("New Topic", comment: "Default text for new topic indicator, when topic has no name")
         }
         
-        let titleTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message)
+        let titleTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message, messageDate: nil)
         let messageModel = ChatMessageModel(model: titleTextControl, messageId: titleTextControl.id, bubbleLocation: .right, theme: theme)
         
         return messageModel
@@ -511,6 +520,7 @@ class ChatDataController {
     func bufferControlMessage(_ control: ChatMessageModel) {
         guard isBufferingEnabled else {
             presentControlData(control)
+            
             return
         }
         
@@ -542,7 +552,7 @@ class ChatDataController {
         
         let control = controlMessageBuffer.remove(at: 0)
         presentControlData(control)
-        
+
         if controlMessageBuffer.count > 0 {
             pushTypingIndicatorIfNeeded()
         }

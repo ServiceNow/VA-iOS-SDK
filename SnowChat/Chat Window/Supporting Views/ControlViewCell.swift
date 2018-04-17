@@ -17,7 +17,7 @@ class ControlViewCell: UITableViewCell, ControlPresentable {
     func configure(with model: ChatMessageModel, resourceProvider: ControlResourceProvider) {
         guard let controlModel = model.controlModel else { return }
         let control = ControlsUtil.controlForViewModel(controlModel, resourceProvider: resourceProvider)
-        addUIControl(control, at: .left)
+        addUIControl(control, at: .left, lastMessageDate: model.lastMessageDate)
         
         let controlTheme = model.isLiveAgentConversation ? model.theme.controlThemeForAgent() : model.theme.controlThemeForBot()
         control.applyTheme(controlTheme)
@@ -30,7 +30,7 @@ class ControlViewCell: UITableViewCell, ControlPresentable {
     
     // MARK: ControlPresentable
     
-    func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
+    func addUIControl(_ control: ControlProtocol, at location: BubbleLocation, lastMessageDate: Date?) {
         guard let controlView = control.viewController.view else { return }
         controlView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(controlView)

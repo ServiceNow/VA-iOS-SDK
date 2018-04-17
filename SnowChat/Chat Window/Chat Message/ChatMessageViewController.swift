@@ -17,6 +17,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     @IBOutlet private weak var bubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var bubbleTrailingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var agentImageTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var timestampLabel: UILabel!
     
     private var controlHeightConstraint: NSLayoutConstraint?
     private var controlWidthConstraint: NSLayoutConstraint?
@@ -37,6 +38,8 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         }
     }
     
+    private let timestampAgeSeconds: TimeInterval = 30.0
+    
     private func updateWithModel(_ model: ChatMessageModel) {
         guard let controlModel = model.controlModel,
             let resourceProvider = resourceProvider,
@@ -44,10 +47,10 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
             let control = controlCache?.control(forModel: controlModel, forResourceProvider: resourceProvider) else {
                 return
         }
-        
+
         // if previous uiControl had a delegate we will pass it over to a new control
         control.delegate = uiControl?.delegate
-        addUIControl(control, at: bubbleLocation)
+        addUIControl(control, at: bubbleLocation, lastMessageDate: model.lastMessageDate)
     }
     
     func configure(withChatMessageModel model: ChatMessageModel,
@@ -102,7 +105,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         agentImageView.image = nil
     }
     
-    internal func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
+    internal func addUIControl(_ control: ControlProtocol, at location: BubbleLocation, lastMessageDate: Date?) {
         guard uiControl?.model.id != control.model.id,
             uiControl?.model.type != control.model.type else {
             return
@@ -150,6 +153,8 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         view.layoutIfNeeded()
         
         uiControl = control
+        
+        updateTimestamp(messageDate: control.model.messageDate, lastMessageDate: lastMessageDate)
     }
     
     private func isPresentingControl(_ control: ControlProtocol?) -> Bool {
@@ -158,6 +163,36 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         }
         
         return uiControlView.superview == bubbleView.contentView
+    }
+    
+    // MARK: Timestamp
+
+    private func updateTimestamp(messageDate: Date?, lastMessageDate: Date?) {
+        guard let messageDate = messageDate else {
+            clearTimestamp()
+            return
+        }
+        
+        guard let lastMessageDate = lastMessageDate else {
+            updateTimestamp(messageDate: messageDate)
+            return
+        }
+        
+        let interval = messageDate.timeIntervalSince(lastMessageDate)
+        
+        if interval > timestampAgeSeconds {
+            updateTimestamp(messageDate: messageDate)
+        } else {
+            clearTimestamp()
+        }
+    }
+
+    private func updateTimestamp(messageDate: Date) {
+        timestampLabel.text = DateFormatter.now_timeAgoSince(messageDate)
+    }
+    
+    private func clearTimestamp() {
+        timestampLabel.text = ""
     }
     
     // MARK: - Update Constraints
@@ -205,5 +240,8 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         if control.viewController is PickerViewController || control.viewController is OutputLinkViewController {
             bubbleView.backgroundColor = UIColor.white
         }
-    }
+        
+        timestampLabel.textColor = theme.timestampColor
+        timestampLabel.textAlignment = NSTextAlignment.center
+    }    
 }

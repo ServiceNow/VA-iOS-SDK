@@ -7,5 +7,5 @@
 //
 
 protocol ControlPresentable {
-    func addUIControl(_ control: ControlProtocol, at location: BubbleLocation)
+    func addUIControl(_ control: ControlProtocol, at location: BubbleLocation, lastMessageDate: Date?)
 }

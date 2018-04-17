@@ -25,11 +25,14 @@ class ButtonControlViewModel: ControlViewModel, ValueRepresentable {
     var displayValue: String? {
         return nil
     }
+
+    let messageDate: Date?
     
-    init(id: String, label: String? = nil, value: Int) {
+    init(id: String, label: String? = nil, value: Int, messageDate: Date?) {
         self.id = id
         self.label = label
         self.value = value
+        self.messageDate = messageDate
     }
 }
 

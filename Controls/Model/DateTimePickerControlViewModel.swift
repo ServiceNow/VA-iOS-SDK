@@ -47,11 +47,14 @@ class DateTimePickerControlViewModel: ControlViewModel, ValueRepresentable {
         return dateFormatter.string(from: value)
     }
     
-    init(id: String, label: String? = nil, required: Bool, resultValue: Date? = nil) {
+    var messageDate: Date?
+    
+    init(id: String, label: String? = nil, required: Bool, resultValue: Date? = nil, messageDate: Date) {
         self.label = label
         self.id = id
         self.isRequired = required
         self.value = resultValue
+        self.messageDate = messageDate
     }
 }
 

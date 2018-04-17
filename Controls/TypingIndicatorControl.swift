@@ -8,7 +8,6 @@
 
 // this control's model wont come from Chatterbox. It is predefined and only "direction" property might be changed
 class TypingIndicatorViewModel: ControlViewModel {
-    
     var label: String?
     
     let isRequired: Bool = true
@@ -16,6 +15,8 @@ class TypingIndicatorViewModel: ControlViewModel {
     let id: String = "typing_indicator"
     
     let type: ControlType = .typingIndicator
+    
+    var messageDate: Date?
 }
 
 class TypingIndicatorControl: ControlProtocol {
