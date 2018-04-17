@@ -141,6 +141,12 @@ class ChatDataStore {
 
 struct Conversation: Storable, Codable {
 
+    enum DeviceType: String, Codable {
+        case iOS = "ios"
+        case android = "android"
+        case web = "mweb"
+    }
+    
     var uniqueId: String {
         return id
     }
@@ -149,16 +155,18 @@ struct Conversation: Storable, Codable {
     internal var state: ConversationState
     internal(set) var topicTypeName: String
     internal var topicId: String
+    internal var deviceType: DeviceType?
     internal var conversationId: String {
         return topicId
     }
     private var exchanges = [MessageExchange]()
     
-    init(withConversationId conversationId: String, withTopic topicName: String = "UNKNOWN", withState state: ConversationState = .inProgress) {
+    init(withConversationId conversationId: String, withTopic topicName: String = "UNKNOWN", withState state: ConversationState = .inProgress, deviceType: DeviceType? = Conversation.DeviceType.iOS) {
         id = ChatUtil.uuidString()
         self.topicId = conversationId
         self.state = state
         self.topicTypeName = topicName
+        self.deviceType = deviceType
     }
     
     func isForSystemTopic() -> Bool {
