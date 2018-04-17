@@ -14,7 +14,7 @@ extension DateFormatter {
         let calendar = Calendar.current
         let now = Date()
         let subset: Set<Calendar.Component> = [.second, .minute, .hour, .day, .weekOfYear, .month, .year]
-        let components = calendar.dateComponents(subset, from: now)
+        let components = calendar.dateComponents(subset, from: date, to: now)
         
         if let year = components.year, year >= 2 {
             return NSLocalizedString("\(year) years ago", comment: "A date that's N years ago")
