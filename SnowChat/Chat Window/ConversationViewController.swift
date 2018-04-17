@@ -181,7 +181,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         setTextInputbarHidden(false, animated: true)
         
         textView.text = ""
-        textView.placeholder = NSLocalizedString("Type your question here...", comment: "Placeholder text for input field when user is selecting a topic")
+        textView.placeholder = NSLocalizedString("Type your question...", comment: "Placeholder text for input field when user is selecting a topic")
     }
     
     fileprivate func setupTextViewForConversation() {
