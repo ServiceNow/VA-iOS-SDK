@@ -226,7 +226,7 @@ extension Chatterbox {
                     
                     var conversation = conversation
                     let isLastConversation = conversation.conversationId == lastConversation.conversationId
-                    let isInProgress = isLastConversation && conversation.state.isInProgress
+                    let isInProgress = isLastConversation && conversation.state.isInProgress && strongSelf.isWhitelisted(conversation.deviceType)
                     
                     if isInProgress {
                         guard isLastConversation else { fatalError("inProgress conversation MUST be the last conversation!") }
@@ -262,6 +262,12 @@ extension Chatterbox {
             logger.logError("No consumer Account ID, cannot load data from service")
             completionHandler(ChatterboxError.invalidParameter(details: "No ConsumerAccountId set in refreshConversations"))
         }
+    }
+    
+    internal func isWhitelisted(_ deviceType: Conversation.DeviceType?) -> Bool {
+        guard let deviceType = deviceType else { return false }
+        
+        return deviceType == .iOS
     }
     
     internal func storeHistoryAndPublish(_ exchange: MessageExchange, forConversation conversationId: String) {
