@@ -150,7 +150,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     }
     
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        super.gestureRecognizerShouldBegin(gestureRecognizer)
+        guard gestureRecognizer.isKind(of: UITapGestureRecognizer.self) else {
+            return super.gestureRecognizerShouldBegin(gestureRecognizer)
+        }
         
         if isAutoCompleting {
             showAutoCompletionView(false)
