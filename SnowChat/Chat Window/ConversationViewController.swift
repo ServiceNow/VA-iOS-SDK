@@ -267,7 +267,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     
     func controllerWillLoadContent(_ dataController: ChatDataController) {
         isLoading = true
-        
+
         // For initial load we show activity indicator in the center of the view. Then we show it in the footer (visually header, since the table view is inverted)
         if !viewDidPerformInitialHistoryLoad {
             viewDidPerformInitialHistoryLoad = true
@@ -281,7 +281,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         isLoading = false
         tableFooterView.isLoading = false
         canFetchOlderMessages = true
-
         setupInputForState()
         manageInputControl()
         updateTableView()
@@ -336,7 +335,7 @@ extension ConversationViewController {
     
     func fetchOlderMessagesIfPossible() {
         guard canFetchOlderMessages,
-            Date().timeIntervalSince(timeLastHistoryFetch) > 5.0 else {
+            Date().timeIntervalSince(timeLastHistoryFetch) > 1.0 else {
                 Logger.default.logDebug("Skipping fetch of older messages - last one was \(Date().timeIntervalSince(timeLastHistoryFetch)) ago")
                 return
         }

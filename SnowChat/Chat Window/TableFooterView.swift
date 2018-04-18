@@ -18,8 +18,10 @@ class TableFooterView: UIView {
         didSet {
             if isLoading == true {
                 tableView?.tableFooterView = self
+                activityIndicator.startAnimating()
             } else {
                 tableView?.tableFooterView = emptyView
+                activityIndicator.stopAnimating()
             }
         }
     }
@@ -31,7 +33,7 @@ class TableFooterView: UIView {
     }
     
     init(tableView: UITableView) {
-        super.init(frame: CGRect(x: 0, y: 0, width: 500, height: 50))
+        super.init(frame: CGRect(x: 0, y: 0, width: 1, height: 50))
         self.tableView = tableView
         setupActivityIndicator()
     }
