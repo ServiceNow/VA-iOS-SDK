@@ -150,15 +150,11 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     }
     
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard gestureRecognizer.isKind(of: UITapGestureRecognizer.self) else {
-            return super.gestureRecognizerShouldBegin(gestureRecognizer)
+        if isAutoCompleting, gestureRecognizer is UITapGestureRecognizer {
+            showAutoCompletionView(false)
         }
         
-        if isAutoCompleting {
-            showAutoCompletionView(false)
-            return true
-        }
-        return false
+        return super.gestureRecognizerShouldBegin(gestureRecognizer)
     }
     
     func applyTheme(_ theme: Theme) {
