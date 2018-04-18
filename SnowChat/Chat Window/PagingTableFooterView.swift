@@ -1,5 +1,5 @@
 //
-//  TableFooterView.swift
+//  PagingTableFooterView.swift
 //  SnowChat
 //
 //  Created by Michael Borowiec on 4/17/18.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-class TableFooterView: UIView {
+class PagingTableFooterView: UIView {
     
     private let emptyView = UIView()
     private weak var tableView: UITableView?
@@ -26,8 +26,8 @@ class TableFooterView: UIView {
         }
     }
     
-    static func footerView(for tableView: UITableView) -> TableFooterView {
-        let tableFooterView = TableFooterView(tableView: tableView)
+    static func footerView(for tableView: UITableView) -> PagingTableFooterView {
+        let tableFooterView = PagingTableFooterView(tableView: tableView)
         tableView.tableFooterView = tableFooterView.emptyView
         return tableFooterView
     }
@@ -47,8 +47,6 @@ class TableFooterView: UIView {
         addSubview(activityIndicator)
         activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        activityIndicator.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        activityIndicator.widthAnchor.constraint(equalToConstant: 20).isActive = true
         activityIndicator.startAnimating()
     }
 }

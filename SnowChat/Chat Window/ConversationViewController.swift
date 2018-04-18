@@ -41,7 +41,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     private var isLoading = false
     private var defaultMessageHeight: CGFloat?
     private var maxMessageHeight: CGFloat?
-    private var tableFooterView: TableFooterView!
+    private var tableFooterView: PagingTableFooterView!
     
     private var wasHistoryLoadedForUser: Bool = false
     private var viewDidPerformInitialHistoryLoad = false
@@ -147,7 +147,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
         tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
         tableView.register(TopicDividerCell.self, forCellReuseIdentifier: TopicDividerCell.cellIdentifier)
-        tableFooterView = TableFooterView.footerView(for: tableView)
+        tableFooterView = PagingTableFooterView.footerView(for: tableView)
     }
     
     func applyTheme(_ theme: Theme) {

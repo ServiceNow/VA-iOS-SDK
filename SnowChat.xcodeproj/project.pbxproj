@@ -103,7 +103,7 @@
 		579652A72022D32500B61665 /* ControlPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579652A62022D32500B61665 /* ControlPresentable.swift */; };
 		5796E4481FD0B3E0009D2035 /* CGPath+Bubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5796E4471FD0B3E0009D2035 /* CGPath+Bubble.swift */; };
 		579A48F220125039007CF338 /* PickerMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579A48F120125039007CF338 /* PickerMetadata.swift */; };
-		57AD485920868FB5006F4927 /* TableFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AD485820868FB5006F4927 /* TableFooterView.swift */; };
+		57AD485920868FB5006F4927 /* PagingTableFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AD485820868FB5006F4927 /* PagingTableFooterView.swift */; };
 		57ADE69F2059F7DC00F5D57C /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57ADE69E2059F7DC00F5D57C /* Theme.swift */; };
 		57ADE6A3205AB1BD00F5D57C /* ImageBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57ADE6A2205AB1BD00F5D57C /* ImageBrowserViewController.swift */; };
 		57B0861020465E0200F009D2 /* CarouselControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B0860F20465E0200F009D2 /* CarouselControl.swift */; };
@@ -326,7 +326,7 @@
 		579652A62022D32500B61665 /* ControlPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlPresentable.swift; sourceTree = "<group>"; };
 		5796E4471FD0B3E0009D2035 /* CGPath+Bubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPath+Bubble.swift"; sourceTree = "<group>"; };
 		579A48F120125039007CF338 /* PickerMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerMetadata.swift; sourceTree = "<group>"; };
-		57AD485820868FB5006F4927 /* TableFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableFooterView.swift; sourceTree = "<group>"; };
+		57AD485820868FB5006F4927 /* PagingTableFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagingTableFooterView.swift; sourceTree = "<group>"; };
 		57ADE69E2059F7DC00F5D57C /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		57ADE6A2205AB1BD00F5D57C /* ImageBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserViewController.swift; sourceTree = "<group>"; };
 		57B0860F20465E0200F009D2 /* CarouselControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselControl.swift; sourceTree = "<group>"; };
@@ -722,7 +722,7 @@
 				573F78FB202288860008391D /* Supporting Views */,
 				BE29E0CB1FDEFA5B0029D1F0 /* ChatViewController.swift */,
 				BE876FDE1FDF5177008EEF04 /* ConversationViewController.swift */,
-				57AD485820868FB5006F4927 /* TableFooterView.swift */,
+				57AD485820868FB5006F4927 /* PagingTableFooterView.swift */,
 				C43479EB1FE460700091806D /* TopicSelection.swift */,
 				C43479ED1FE850D20091806D /* AutoCompleteHandler.swift */,
 				579652A62022D32500B61665 /* ControlPresentable.swift */,
@@ -1429,7 +1429,7 @@
 				C4CAFEA31FBCF2F8007007F5 /* ChatData.swift in Sources */,
 				57ADE6A3205AB1BD00F5D57C /* ImageBrowserViewController.swift in Sources */,
 				C4AF7793200E7B0B0029598A /* ViewDataChangeListener.swift in Sources */,
-				57AD485920868FB5006F4927 /* TableFooterView.swift in Sources */,
+				57AD485920868FB5006F4927 /* PagingTableFooterView.swift in Sources */,
 				8B0A1F67204080D400DE4D4C /* APIManager+ImageUpload.swift in Sources */,
 				C47B3643204DB38200559410 /* ChatSessionSettings.swift in Sources */,
 				C4CED93E1FD72544008E3E25 /* StartedUserTopicMessage.swift in Sources */,
