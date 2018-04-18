@@ -41,8 +41,10 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     private var isLoading = false
     private var defaultMessageHeight: CGFloat?
     private var maxMessageHeight: CGFloat?
+    private var tableFooterView: TableFooterView!
     
     private var wasHistoryLoadedForUser: Bool = false
+    private var viewDidPerformInitialHistoryLoad = false
     
     override var tableView: UITableView {
         // swiftlint:disable:next force_unwrapping
@@ -145,6 +147,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
         tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
         tableView.register(TopicDividerCell.self, forCellReuseIdentifier: TopicDividerCell.cellIdentifier)
+        tableFooterView = TableFooterView.footerView(for: tableView)
     }
     
     func applyTheme(_ theme: Theme) {
@@ -264,11 +267,19 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     
     func controllerWillLoadContent(_ dataController: ChatDataController) {
         isLoading = true
-        showActivityIndicator = true
+        
+        // For initial load we show activity indicator in the center of the view. Then we show it in the footer (visually header, since the table view is inverted)
+        if !viewDidPerformInitialHistoryLoad {
+            viewDidPerformInitialHistoryLoad = true
+            showActivityIndicator = true
+        } else {
+            tableFooterView.isLoading = true
+        }
     }
     
     func controllerDidLoadContent(_ dataController: ChatDataController) {
         isLoading = false
+        tableFooterView.isLoading = false
         canFetchOlderMessages = true
 
         setupInputForState()

@@ -11,7 +11,7 @@ import Alamofire
 
 extension APIManager {
     
-    static let defaultMessageFetchLimit = 100
+    static let defaultMessageFetchLimit = 10
     
     // MARK: - Session
     
