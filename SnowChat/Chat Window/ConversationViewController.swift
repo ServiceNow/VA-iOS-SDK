@@ -137,6 +137,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     private func setupTableView() {
         tableView.separatorStyle = .none
         
+        tableView.keyboardDismissMode = .onDrag
+        
         // NOTE: making section header height very tiny as 0 make it default size in iOS11
         // see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
         tableView.sectionHeaderHeight = CGFloat(0.01)
@@ -145,6 +147,16 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
         tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
         tableView.register(TopicDividerCell.self, forCellReuseIdentifier: TopicDividerCell.cellIdentifier)
+    }
+    
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        super.gestureRecognizerShouldBegin(gestureRecognizer)
+        
+        if isAutoCompleting {
+            showAutoCompletionView(false)
+            return true
+        }
+        return false
     }
     
     func applyTheme(_ theme: Theme) {
