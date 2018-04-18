@@ -141,6 +141,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         
         tableView.keyboardDismissMode = .onDrag
         
+        shouldScrollToBottomAfterKeyboardShows = true
+        
         // NOTE: making section header height very tiny as 0 make it default size in iOS11
         // see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
         tableView.sectionHeaderHeight = CGFloat(0.01)
