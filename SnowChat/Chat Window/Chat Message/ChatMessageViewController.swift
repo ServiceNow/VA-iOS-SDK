@@ -27,6 +27,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     var controlCache: ControlCache?
     var resourceProvider: ControlResourceProvider?
+    private var requestReceipt: RequestReceipt?
     
     private(set) var uiControl: ControlProtocol?
     
@@ -69,16 +70,25 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     }
     
     private func loadAvatar() {
-        if let provider = resourceProvider {
+        guard let provider = resourceProvider,
+            let avatarURL = model?.avatarURL ?? theme.avatarUrl else { return }
+        
+        let downloader = provider.imageDownloader
+        let request = provider.authorizedRequest(with: avatarURL)
+        
+        requestReceipt = downloader.download(request, completion: { [weak self] response in
+            guard let strongSelf = self else { return }
             
-            agentImageView.af_imageDownloader = provider.imageDownloader
-            
-            if let avatarURL = model?.avatarURL ?? theme.avatarUrl {
-                agentImageView.af_setImage(withURL: avatarURL)
+            if let error = response.error {
+                Logger.default.logError("Error loading avatar image: \(error)")
+                return
             }
             
-            agentImageView.addCircleMaskIfNeeded()
-        }
+            let image = response.value
+            strongSelf.agentImageView.image = image
+        })
+        
+        agentImageView.addCircleMaskIfNeeded()
     }
     
     private func prepareControlForReuse() {
@@ -101,8 +111,13 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         model = nil
         uiControl = nil
         resourceProvider = nil
-        agentImageView.af_cancelImageRequest()
         agentImageView.image = nil
+        
+        if let receipt = requestReceipt,
+            let imageDownloader = resourceProvider?.imageDownloader {
+            imageDownloader.cancelRequest(with: receipt)
+            requestReceipt = nil
+        }
     }
     
     internal func addUIControl(_ control: ControlProtocol, at location: BubbleLocation, lastMessageDate: Date?) {
