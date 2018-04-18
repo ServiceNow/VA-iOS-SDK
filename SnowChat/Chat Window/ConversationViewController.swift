@@ -41,7 +41,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     private var isLoading = false
     private var defaultMessageHeight: CGFloat?
     private var maxMessageHeight: CGFloat?
-    private var tableFooterView: PagingTableFooterView!
+    private var tableFooterView: PagingTableFooterView?
     
     private var wasHistoryLoadedForUser: Bool = false
     private var viewDidPerformInitialHistoryLoad = false
@@ -273,13 +273,13 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
             viewDidPerformInitialHistoryLoad = true
             showActivityIndicator = true
         } else {
-            tableFooterView.isLoading = true
+            tableFooterView?.isLoading = true
         }
     }
     
     func controllerDidLoadContent(_ dataController: ChatDataController) {
         isLoading = false
-        tableFooterView.isLoading = false
+        tableFooterView?.isLoading = false
         canFetchOlderMessages = true
         setupInputForState()
         manageInputControl()
