@@ -630,7 +630,6 @@
 				5760C8CD1FBF4C920055B73D /* PickerViewController.swift */,
 				579479332031F44F00C4C5C5 /* DateTimePickerViewController.swift */,
 				579479352031F60900C4C5C5 /* DateTimePickerViewController.xib */,
-				575566A8200FAF1D000953F7 /* PickerHeaderFooterView.swift */,
 				57D1DB781FEC88D200082F78 /* OutputImageViewController.swift */,
 				57DF7C33202C1066008D013A /* ControlWebViewController.swift */,
 				57B0861120465F0F00F009D2 /* CarouselViewController.swift */,
@@ -654,6 +653,7 @@
 				5728D8E520475C300071EF9E /* CarouselControlViewLayout.swift */,
 				5728D8E720478C000071EF9E /* CarouselControlHeaderView.swift */,
 				573BDA922062B5E000AC6C2D /* CarouselControlFooterView.swift */,
+				575566A8200FAF1D000953F7 /* PickerHeaderFooterView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
