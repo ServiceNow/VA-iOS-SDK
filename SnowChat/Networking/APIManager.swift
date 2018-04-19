@@ -42,10 +42,16 @@ class APIManager: NSObject, AMBClientDelegate {
     internal weak var transportListener: TransportStatusListener?
     
     private(set) internal lazy var imageDownloader: ImageDownloader = {
-        // TODO: Find out if images need to be authenticated. If not we don't have to use our sessionManager.
-        // IF we do have to use a sessionManager - there's behavior where ImageDownloader sets `startRequestsImmediately` flag of session manager to `false`
+        // We do have to use our sessionManager to get authorized images, however there's behavior
+        // where ImageDownloader sets `startRequestsImmediately` flag of session manager to `false`
         // and causes bug, where request are not being resumed. That breaks all our API requests.
-        return ImageDownloader()
+        // So, we reset it to `true` immediately.
+        // the issue has been posted to Alamofire: https://github.com/Alamofire/AlamofireImage/issues/312
+        
+        let downloader = ImageDownloader(sessionManager: sessionManager)
+        sessionManager.startRequestsImmediately = true
+        
+        return downloader
     }()
     
     internal let ambClient: AMBClient
