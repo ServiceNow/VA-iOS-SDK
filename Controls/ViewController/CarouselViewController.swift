@@ -97,8 +97,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         NSLayoutConstraint.activate([collectionView.leadingAnchor.constraint(equalTo: fullSizeContainer.leadingAnchor),
                                      collectionView.trailingAnchor.constraint(equalTo: fullSizeContainer.trailingAnchor),
                                      collectionView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
-                                     collectionView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor),
-                                     collectionView.heightAnchor.constraint(equalToConstant: 300)])
+                                     collectionView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor)])
         
         self.collectionView = collectionView
         collectionView.showsHorizontalScrollIndicator = false

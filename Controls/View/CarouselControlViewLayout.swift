@@ -30,12 +30,12 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
     private var itemCount: Int = 0
     let headerHeight: CGFloat = 50
     let footerHeight: CGFloat = 50
+    private var supplementaryInfo = [String : UICollectionViewLayoutAttributes]()
     
     override init() {
         super.init()
-        minimumLineSpacing = 10
+        
         scrollDirection = .horizontal
-        itemSize = CGSize(width: 150, height: 160)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -52,11 +52,18 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
             return
         }
         
-        itemCount = collectionView.numberOfItems(inSection: 0)
-        headerReferenceSize = CGSize(width: 1, height: headerHeight)
-        footerReferenceSize = CGSize(width: 1, height: footerHeight)
-        collectionView.decelerationRate = UIScrollViewDecelerationRateFast
+        supplementaryInfo.removeAll()
+        let headerAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, with: IndexPath(row: 0, section: 0))
+        headerAttributes.frame = CGRect(x: 0, y: 0, width: collectionView.frame.width, height: headerHeight)
+        supplementaryInfo[UICollectionElementKindSectionHeader] = headerAttributes
         
+        let footerAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, with: IndexPath(row: 0, section: 0))
+        footerAttributes.frame = CGRect(x: 0, y: 0, width: collectionView.frame.width, height: footerHeight)
+        supplementaryInfo[UICollectionElementKindSectionFooter] = footerAttributes
+        
+        itemSize = CGSize(width: 150, height: 160)
+        itemCount = collectionView.numberOfItems(inSection: 0)
+        collectionView.decelerationRate = UIScrollViewDecelerationRateFast
         let horizontalContentInset = collectionView.frame.width * 0.5 - itemSize.width * 0.5
         collectionView.contentInset = UIEdgeInsets(top: 0, left: horizontalContentInset, bottom: 0, right: horizontalContentInset)
     }
@@ -66,9 +73,10 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
             return super.collectionViewContentSize
         }
         
-        var collectionViewContentSize = super.collectionViewContentSize
-        collectionViewContentSize.height = collectionView.frame.height
-        return collectionViewContentSize
+        let collectionViewHeight: CGFloat = 320
+        let width = itemCount * Int(itemSize.width) + ((itemCount - 1) * 10)
+        let collectionViewWidth = CGFloat(2 * Int(collectionView.contentInset.left) + width)
+        return CGSize(width: collectionViewWidth, height: collectionViewHeight)
     }
     
     override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
@@ -76,18 +84,20 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
             return super.layoutAttributesForSupplementaryView(ofKind: elementKind, at: indexPath)
         }
         
-        let attributes = super.layoutAttributesForSupplementaryView(ofKind: elementKind, at: indexPath)?.copy() as! UICollectionViewLayoutAttributes
-        
+        guard let attributes = supplementaryInfo[elementKind] else {
+            return super.layoutAttributesForSupplementaryView(ofKind: elementKind, at: indexPath)
+        }
+
         var frame = attributes.frame
         frame.origin.x = collectionView.contentOffset.x
         frame.size.width = collectionView.bounds.width
         
         if elementKind == UICollectionElementKindSectionHeader {
             frame.origin.y = -collectionView.contentInset.top
-            frame.size.height = headerReferenceSize.height
+            frame.size.height = headerHeight
         } else if elementKind == UICollectionElementKindSectionFooter {
-            frame.origin.y = collectionView.bounds.height - footerReferenceSize.height
-            frame.size.height = footerReferenceSize.height
+            frame.origin.y = collectionView.bounds.height - footerHeight
+            frame.size.height = footerHeight
         } else {
             return super.layoutAttributesForSupplementaryView(ofKind: elementKind, at: indexPath)
         }
@@ -97,21 +107,19 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
     }
     
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        guard let attributes = super.layoutAttributesForElements(in: rect)?.map({ $0.copy() as! UICollectionViewLayoutAttributes }),
+        guard var attributes = super.layoutAttributesForElements(in: rect)?.map({ $0.copy() as! UICollectionViewLayoutAttributes }),
             let collectionView = collectionView else {
             return super.layoutAttributesForElements(in: rect)
         }
         
         // update header position
-        if let headerAttributes = attributes.first(where: { $0.representedElementKind == UICollectionElementKindSectionHeader }),
-            let calculatedHeaderAttributes = layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader, at: headerAttributes.indexPath) {
-            headerAttributes.frame = calculatedHeaderAttributes.frame
+        if let calculatedHeaderAttributes = layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader, at: IndexPath(row: 0, section: 0)) {
+            attributes.append(calculatedHeaderAttributes)
         }
         
         // update footer position
-        if let footerAttributes = attributes.first(where: { $0.representedElementKind == UICollectionElementKindSectionFooter }),
-            let calculatedFooterAttributes = layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionFooter, at: footerAttributes.indexPath) {
-            footerAttributes.frame = calculatedFooterAttributes.frame
+        if let calculatedFooterAttributes = layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionFooter, at: IndexPath(row: 0, section: 0)) {
+            attributes.append(calculatedFooterAttributes)
         }
         
         let collectionViewCenter = CGPoint(x: collectionView.frame.width * 0.5, y: collectionView.frame.height * 0.5)
