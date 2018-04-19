@@ -569,6 +569,9 @@ extension ConversationViewController: ChatEventListener {
         inputState = .waitingForAgent
         
         dataController.agentTopicWillStart()
+        
+        // scroll to bottom to show the agent-waiting message
+        scrollToBottom()
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
@@ -625,7 +628,7 @@ extension ConversationViewController: ChatEventListener {
         guard self.chatterbox.id == chatterbox.id else {
                 return
         }
-
+        
         dataController.topicDidStart(topicInfo)
         
         inputState = .inConversation
@@ -650,10 +653,18 @@ extension ConversationViewController: ChatEventListener {
         dataController.topicDidFinish()
         
         inputState = .inTopicSelection
+
+        // scroll to bottom so topic selection button is visible
+        scrollToBottom()
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {
         // TODO: is there anything to do here to help the user deal with loss of connectivity?
+    }
+    
+    func scrollToBottom() {
+        // our tableView is inverted, so `.top` is `.bottom`...
+        tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: UITableViewScrollPosition.top, animated: false)
     }
 }
 
