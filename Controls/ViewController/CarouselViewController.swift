@@ -22,6 +22,8 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     private let pageIndicatorTintColor = UIColor(red: 174 / 255, green: 213 / 255, blue: 255 / 255, alpha: 1)
     
     private let cellSize = CGSize(width: 150, height: 160)
+    private var gradientOverlayTopConstraint: NSLayoutConstraint?
+    private var gradientOverlayBottomConstraint: NSLayoutConstraint?
     
     private var carouselControlViewLayout: CarouselControlViewLayout {
         return collectionView?.collectionViewLayout as! CarouselControlViewLayout
@@ -61,17 +63,21 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     }
     
     private func setupGradientOverlay() {
-        guard let collectionViewLayout = collectionView?.collectionViewLayout as? CarouselControlViewLayout else { return }
         gradientOverlayView.colors = [.white, .clear, .clear, .white]
         gradientOverlayView.locations = [0, 0.15, 0.85, 1]
         gradientOverlayView.isUserInteractionEnabled = false
         gradientOverlayView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(gradientOverlayView)
+        let gradientOverlayTop = gradientOverlayView.topAnchor.constraint(equalTo: view.topAnchor)
+        let gradientOverlayBottom = gradientOverlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         NSLayoutConstraint.activate([gradientOverlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                                      gradientOverlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     gradientOverlayView.topAnchor.constraint(equalTo: view.topAnchor, constant: collectionViewLayout.headerHeight),
-                                     gradientOverlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -collectionViewLayout.footerHeight)])
+                                     gradientOverlayTop,
+                                     gradientOverlayBottom])
         view.bringSubview(toFront: gradientOverlayView)
+        
+        gradientOverlayTopConstraint = gradientOverlayTop
+        gradientOverlayBottomConstraint = gradientOverlayBottom
     }
     
     private func setupCollectionView() {
@@ -117,6 +123,10 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         // center on the focused index path. When we first launch Carousel we want to center the first item
         let focusedIndexPath = (collectionView?.collectionViewLayout as? CarouselControlViewLayout)?.focusedIndexPath ?? IndexPath(item: 0, section: 0)
         collectionView?.selectItem(at: focusedIndexPath, animated: false, scrollPosition: .centeredHorizontally)
+        
+        // Adjust top and bottom constraints for overlay view. Initially collectionView was not layed out yet so it was causing constraints warnings.
+        gradientOverlayTopConstraint?.constant = carouselControlViewLayout.headerHeight
+        gradientOverlayBottomConstraint?.constant = -carouselControlViewLayout.footerHeight
     }
     
     // MARK: UICollectionViewDataSource
