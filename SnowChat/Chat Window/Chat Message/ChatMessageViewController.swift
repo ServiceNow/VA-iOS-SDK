@@ -203,10 +203,12 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     }
 
     private func updateTimestamp(messageDate: Date) {
+        timestampLabel.isHidden = false
         timestampLabel.text = DateFormatter.now_timeAgoSince(messageDate)
     }
     
     private func clearTimestamp() {
+        timestampLabel.isHidden = true
         timestampLabel.text = ""
     }
     
