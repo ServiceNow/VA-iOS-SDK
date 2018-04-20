@@ -21,15 +21,16 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     private let currentPageIndicatorTintColor = UIColor(red: 0, green: 122 / 255, blue: 255 / 255, alpha: 1)
     private let pageIndicatorTintColor = UIColor(red: 174 / 255, green: 213 / 255, blue: 255 / 255, alpha: 1)
     
+    private let cellSize = CGSize(width: 150, height: 160)
+    
     private var carouselControlViewLayout: CarouselControlViewLayout {
         return collectionView?.collectionViewLayout as! CarouselControlViewLayout
     }
     
     var model: CarouselControlViewModel {
         didSet {
-            let layout = CarouselControlViewLayout()
-            collectionView?.collectionViewLayout = layout
             collectionView?.reloadData()
+            carouselControlViewLayout.invalidateLayout()
         }
     }
     
@@ -85,7 +86,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         } else {
             automaticallyAdjustsScrollViewInsets = false
         }
-        
+        collectionView.decelerationRate = UIScrollViewDecelerationRateFast
         let bundle = Bundle(for: CarouselCollectionViewCell.self)
         collectionView.register(UINib(nibName: "CarouselCollectionViewCell", bundle: bundle), forCellWithReuseIdentifier: CarouselCollectionViewCell.cellIdentifier)
         collectionView.register(CarouselControlHeaderView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CarouselControlHeaderView.headerIdentifier)
@@ -103,6 +104,11 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.backgroundColor = .white
         collectionView.reloadData()
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        carouselControlViewLayout.invalidateLayout()
     }
     
     override func viewDidLayoutSubviews() {
@@ -180,6 +186,10 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         default:
             fatalError("Unexpected kind: \(kind)")
         }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: cellSize.width, height: min(cellSize.height, collectionView.bounds.height))
     }
     
     @objc func doneButtonSelected(_ sender: UIButton) {

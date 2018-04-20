@@ -34,7 +34,6 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
     
     override init() {
         super.init()
-        
         scrollDirection = .horizontal
     }
     
@@ -60,10 +59,12 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         let footerAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, with: IndexPath(row: 0, section: 0))
         footerAttributes.frame = CGRect(x: 0, y: 0, width: collectionView.frame.width, height: footerHeight)
         supplementaryInfo[UICollectionElementKindSectionFooter] = footerAttributes
-        
-        itemSize = CGSize(width: 150, height: 160)
+    
         itemCount = collectionView.numberOfItems(inSection: 0)
-        collectionView.decelerationRate = UIScrollViewDecelerationRateFast
+        if let size = (collectionView.delegate as? UICollectionViewDelegateFlowLayout)?.collectionView?(collectionView, layout: self, sizeForItemAt: IndexPath(row: 0, section: 0)) {
+            itemSize = size
+        }
+        
         let horizontalContentInset = collectionView.frame.width * 0.5 - itemSize.width * 0.5
         collectionView.contentInset = UIEdgeInsets(top: 0, left: horizontalContentInset, bottom: 0, right: horizontalContentInset)
     }
