@@ -114,6 +114,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
+        
         carouselControlViewLayout.invalidateLayout()
     }
     
@@ -123,10 +124,18 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         // center on the focused index path. When we first launch Carousel we want to center the first item
         let focusedIndexPath = (collectionView?.collectionViewLayout as? CarouselControlViewLayout)?.focusedIndexPath ?? IndexPath(item: 0, section: 0)
         collectionView?.selectItem(at: focusedIndexPath, animated: false, scrollPosition: .centeredHorizontally)
-        
+        updateGradientOverlayConstraints()
+    }
+    
+    private func updateGradientOverlayConstraints() {
         // Adjust top and bottom constraints for overlay view. Initially collectionView was not layed out yet so it was causing constraints warnings.
-        gradientOverlayTopConstraint?.constant = carouselControlViewLayout.headerHeight
-        gradientOverlayBottomConstraint?.constant = -carouselControlViewLayout.footerHeight
+        if let headerAttr = collectionView?.layoutAttributesForSupplementaryElement(ofKind: UICollectionElementKindSectionHeader, at: IndexPath(row: 0, section: 0)) {
+            gradientOverlayTopConstraint?.constant = headerAttr.frame.height
+        }
+        
+        if let footerAttr = collectionView?.layoutAttributesForSupplementaryElement(ofKind: UICollectionElementKindSectionFooter, at: IndexPath(row: 0, section: 0)) {
+            gradientOverlayBottomConstraint?.constant = -footerAttr.frame.height
+        }
     }
     
     // MARK: UICollectionViewDataSource
@@ -198,9 +207,9 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: cellSize.width, height: min(cellSize.height, collectionView.bounds.height))
-    }
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+//        return CGSize(width: cellSize.width, height: min(cellSize.height, collectionView.bounds.height))
+//    }
     
     @objc func doneButtonSelected(_ sender: UIButton) {
         let selectedIndexPath = carouselControlViewLayout.focusedIndexPath

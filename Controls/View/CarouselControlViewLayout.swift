@@ -26,14 +26,17 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         return indexPath
     }
     
+    private let cellSize = CGSize(width: 150, height: 160)
     private var lastContentOffset = CGPoint.zero
     private var itemCount: Int = 0
-    let headerHeight: CGFloat = 50
-    let footerHeight: CGFloat = 50
+    var headerHeight: CGFloat = 0
+    var footerHeight: CGFloat = 50
+    
     private var supplementaryInfo = [String : UICollectionViewLayoutAttributes]()
     
     override init() {
         super.init()
+        itemSize = CGSize(width: 5, height: 5)
         scrollDirection = .horizontal
     }
     
@@ -41,14 +44,12 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
-        return true
-    }
-    
-    override func prepare() {
-        super.prepare()
-        guard let collectionView = collectionView else {
-            return
+    private func setupHeaderFooterAttributes() {
+        guard let collectionView = collectionView else { return }
+        
+        if let headerView = collectionView.visibleSupplementaryViews(ofKind: UICollectionElementKindSectionHeader).first as? CarouselControlHeaderView,
+            let headerTitle = headerView.titleLabel.text {
+            headerHeight = CarouselControlHeaderView.height(forTitle: headerTitle, labelWidth: headerView.frame.width)
         }
         
         supplementaryInfo.removeAll()
@@ -59,11 +60,19 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         let footerAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, with: IndexPath(row: 0, section: 0))
         footerAttributes.frame = CGRect(x: 0, y: 0, width: collectionView.frame.width, height: footerHeight)
         supplementaryInfo[UICollectionElementKindSectionFooter] = footerAttributes
+    }
     
+    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
+        return true
+    }
+    
+    override func prepare() {
+        super.prepare()
+        guard let collectionView = collectionView else { return }
+        
+        setupHeaderFooterAttributes()
+        itemSize = CGSize(width: cellSize.width, height: min(cellSize.height, collectionView.bounds.height))
         itemCount = collectionView.numberOfItems(inSection: 0)
-        if let size = (collectionView.delegate as? UICollectionViewDelegateFlowLayout)?.collectionView?(collectionView, layout: self, sizeForItemAt: IndexPath(row: 0, section: 0)) {
-            itemSize = size
-        }
         
         let horizontalContentInset = collectionView.frame.width * 0.5 - itemSize.width * 0.5
         collectionView.contentInset = UIEdgeInsets(top: 0, left: horizontalContentInset, bottom: 0, right: horizontalContentInset)
@@ -74,8 +83,8 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
             return super.collectionViewContentSize
         }
         
-        let collectionViewHeight: CGFloat = 320
-        let width = itemCount * Int(itemSize.width) + ((itemCount - 1) * 10)
+        let collectionViewHeight: CGFloat = cellSize.height + footerHeight + headerHeight + 20
+        let width = itemCount * Int(cellSize.width) + ((itemCount - 1) * 10)
         let collectionViewWidth = CGFloat(2 * Int(collectionView.contentInset.left) + width)
         return CGSize(width: collectionViewWidth, height: collectionViewHeight)
     }
@@ -113,20 +122,8 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
             return super.layoutAttributesForElements(in: rect)
         }
         
-        // update header position
-        if let calculatedHeaderAttributes = layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader, at: IndexPath(row: 0, section: 0)) {
-            attributes.append(calculatedHeaderAttributes)
-        }
-        
-        // update footer position
-        if let calculatedFooterAttributes = layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionFooter, at: IndexPath(row: 0, section: 0)) {
-            attributes.append(calculatedFooterAttributes)
-        }
-        
         let collectionViewCenter = CGPoint(x: collectionView.frame.width * 0.5, y: collectionView.frame.height * 0.5)
         let centerAttribute = attributes.first(where: { attribute in
-            
-            // we only want to scale items, not headers or footers
             guard attribute.representedElementKind != UICollectionElementKindSectionHeader && attribute.representedElementKind != UICollectionElementKindSectionFooter else {
                 return false
             }
@@ -137,9 +134,29 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
             return translatedAttributeFrame.contains(collectionViewCenter)
         })
         
+        attributes.forEach({ attribute in
+            guard attribute.representedElementKind != UICollectionElementKindSectionHeader && attribute.representedElementKind != UICollectionElementKindSectionFooter else {
+                return
+            }
+            
+            var frame = attribute.frame
+            frame.origin.y = headerHeight + 10
+            attribute.frame = frame
+        })
         // TODO: Add nice animation here
         centerAttribute?.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
         centerAttribute?.zIndex = 100
+        
+        // update header position
+        if let calculatedHeaderAttributes = layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader, at: IndexPath(row: 0, section: 0)) {
+            attributes.append(calculatedHeaderAttributes)
+        }
+        
+        // update footer position
+        if let calculatedFooterAttributes = layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionFooter, at: IndexPath(row: 0, section: 0)) {
+            attributes.append(calculatedFooterAttributes)
+        }
+        
         return attributes
     }
     
