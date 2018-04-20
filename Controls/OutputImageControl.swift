@@ -51,7 +51,7 @@ class OutputImageControl: ControlProtocol {
     
     private func downloadImageIfNeeded() {
         let imageModel = self.imageModel
-        let urlRequest = resourceProvider.authorizedRequest(with: imageModel.value)
+        let urlRequest = resourceProvider.authorizedImageRequest(with: imageModel.value)
         let imageDownloader = resourceProvider.imageDownloader
         requestReceipt = imageDownloader.download(urlRequest) { [weak self] (response) in
             

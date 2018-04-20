@@ -14,10 +14,7 @@ protocol ControlResourceProvider: ControlWebResourceProvider {
 }
 
 protocol ControlWebResourceProvider {
-    func authorizedRequest(with url: URL) -> URLRequest
+    func authorizedRESTRequest(with url: URL) -> URLRequest
+    func authorizedImageRequest(with url: URL) -> URLRequest
     var webViewConfiguration: WKWebViewConfiguration { get }
-}
-
-extension APIManager: ControlResourceProvider {
-
 }

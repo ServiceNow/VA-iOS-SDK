@@ -18,7 +18,7 @@ enum APIManagerError: Error {
     case invalidUser(message: String)
 }
 
-class APIManager: NSObject, AMBClientDelegate {
+class APIManager: NSObject, AMBClientDelegate, ControlResourceProvider {
     
     internal enum AuthStatus {
         case loggedIn(User)

@@ -20,16 +20,16 @@ class CarouselCollectionViewCell: UICollectionViewCell {
     func configure(withCarouselItem item: CarouselItem, resourceProvider: ControlResourceProvider) {
         guard let attachmentURL = item.attachment else { return }
         
-        self.imageDownloader = resourceProvider.imageDownloader
-        guard let imageDownloader = self.imageDownloader else { return }
+        imageDownloader = resourceProvider.imageDownloader
         
-        let urlRequest = resourceProvider.authorizedRequest(with: attachmentURL)
-        requestReceipt = imageDownloader.download(urlRequest) { [weak self] (response) in
+        let urlRequest = resourceProvider.authorizedImageRequest(with: attachmentURL)
+        requestReceipt = imageDownloader?.download(urlRequest) { [weak self] (response) in
             
-            // TODO: Handle error / no image case
-            if response.error != nil {
+            guard response.error == nil else {
+                // TODO: Handle error / no image case: placeholder?
                 return
             }
+
             self?.imageView?.image = response.value
         }
     }
