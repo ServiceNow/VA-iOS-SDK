@@ -31,11 +31,11 @@ class ChatDataController {
     
     private let chatbotDisplayThrottleDefault = 1.5
     
-    internal var chatbotDisplayThrottle: Double {
+    internal var chatbotDisplayThrottle: TimeInterval {
         guard let delayMS = chatterbox.session?.settings?.generalSettings?.messageDelay else { return
             chatbotDisplayThrottleDefault
         }
-        return Double(delayMS) / 1000.0
+        return TimeInterval(delayMS) / 1000.0
     }
 
     internal let chatterbox: Chatterbox
@@ -536,6 +536,13 @@ class ChatDataController {
             guard bufferProcessingTimer == nil else { return }
             
             bufferProcessingTimer = Timer.scheduledTimer(withTimeInterval: chatbotDisplayThrottle, repeats: true, block: { [weak self] timer in
+                guard let strongSelf = self else { return }
+                
+                guard strongSelf.controlMessageBuffer.count > 0 else {
+                    strongSelf.enableBufferControlProcessing(false)
+                    return
+                }
+                
                 self?.presentOneControlFromControlBuffer()
             })
         } else {
@@ -545,12 +552,6 @@ class ChatDataController {
     }
 
     fileprivate func presentOneControlFromControlBuffer() {
-        guard controlMessageBuffer.count > 0 else {
-            // disable processing the buffer when it is empty - is re-enabled when something is added to buffer (bufferControlMessage)
-            enableBufferControlProcessing(false)
-            return
-        }
-        
         let control = controlMessageBuffer.remove(at: 0)
         presentControlData(control)
 
