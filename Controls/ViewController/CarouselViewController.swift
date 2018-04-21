@@ -9,7 +9,7 @@
 import UIKit
 import AlamofireImage
 
-class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ImageBrowserDelegate, ThemeableControl {
+class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ImageBrowserDelegate, ThemeableControl, CarouselLayoutDelegate {
     
     weak var delegate: PickerViewControllerDelegate?
     var resourceProvider: ControlResourceProvider?
@@ -82,6 +82,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     private func setupCollectionView() {
         let layout = CarouselControlViewLayout()
+        layout.carouselDelegate = self
         let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -114,7 +115,6 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        
         carouselControlViewLayout.invalidateLayout()
     }
     
@@ -129,12 +129,12 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     private func updateGradientOverlayConstraints() {
         // Adjust top and bottom constraints for overlay view. Initially collectionView was not layed out yet so it was causing constraints warnings.
-        if let headerAttr = collectionView?.layoutAttributesForSupplementaryElement(ofKind: UICollectionElementKindSectionHeader, at: IndexPath(row: 0, section: 0)) {
-            gradientOverlayTopConstraint?.constant = headerAttr.frame.height
+        if let headerView = collectionView?.supplementaryView(forElementKind: UICollectionElementKindSectionHeader, at: IndexPath(row: 0, section: 0)) {
+            gradientOverlayTopConstraint?.constant = headerView.frame.height
         }
         
-        if let footerAttr = collectionView?.layoutAttributesForSupplementaryElement(ofKind: UICollectionElementKindSectionFooter, at: IndexPath(row: 0, section: 0)) {
-            gradientOverlayBottomConstraint?.constant = -footerAttr.frame.height
+        if let footerView = collectionView?.supplementaryView(forElementKind: UICollectionElementKindSectionFooter, at: IndexPath(row: 0, section: 0)) {
+            gradientOverlayBottomConstraint?.constant = -footerView.frame.height
         }
     }
     
@@ -207,10 +207,6 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         }
     }
     
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        return CGSize(width: cellSize.width, height: min(cellSize.height, collectionView.bounds.height))
-//    }
-    
     @objc func doneButtonSelected(_ sender: UIButton) {
         let selectedIndexPath = carouselControlViewLayout.focusedIndexPath
         model.selectItem(at: selectedIndexPath.row)
@@ -227,5 +223,11 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     func imageBrowser(_ browser: ImageBrowserViewController, didSelectImageAt index: Int) {
         carouselControlViewLayout.selectItem(at: IndexPath(row: index, section: 0))
+    }
+    
+    func carouselLayoutHeaderHeight(_ layout: CarouselControlViewLayout) -> CGFloat {
+        guard let title = model.label else { return 0 }
+        let height = CarouselControlHeaderView.height(forTitle: title, labelWidth: view.frame.width)
+        return height
     }
 }

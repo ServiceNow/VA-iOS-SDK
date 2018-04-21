@@ -8,8 +8,13 @@
 
 import UIKit
 
+protocol CarouselLayoutDelegate: AnyObject {
+    func carouselLayoutHeaderHeight(_ layout: CarouselControlViewLayout) -> CGFloat
+}
+
 class CarouselControlViewLayout: UICollectionViewFlowLayout {
     
+    weak var carouselDelegate: CarouselLayoutDelegate?
     private(set) var focusedIndexPath = IndexPath(item: 0, section: 0)
     
     private var nextIndexPath: IndexPath {
@@ -32,11 +37,11 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
     var headerHeight: CGFloat = 0
     var footerHeight: CGFloat = 50
     
-    private var supplementaryInfo = [String : UICollectionViewLayoutAttributes]()
+    private var supplementaryInformation = [String : UICollectionViewLayoutAttributes]()
     
     override init() {
         super.init()
-        itemSize = CGSize(width: 5, height: 5)
+        itemSize = CGSize(width: 1, height: 1)
         scrollDirection = .horizontal
     }
     
@@ -44,22 +49,17 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupHeaderFooterAttributes() {
+    private func prepareSupplementaryInformation() {
         guard let collectionView = collectionView else { return }
         
-        if let headerView = collectionView.visibleSupplementaryViews(ofKind: UICollectionElementKindSectionHeader).first as? CarouselControlHeaderView,
-            let headerTitle = headerView.titleLabel.text {
-            headerHeight = CarouselControlHeaderView.height(forTitle: headerTitle, labelWidth: headerView.frame.width)
-        }
-        
-        supplementaryInfo.removeAll()
+        supplementaryInformation.removeAll()
         let headerAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, with: IndexPath(row: 0, section: 0))
         headerAttributes.frame = CGRect(x: 0, y: 0, width: collectionView.frame.width, height: headerHeight)
-        supplementaryInfo[UICollectionElementKindSectionHeader] = headerAttributes
+        supplementaryInformation[UICollectionElementKindSectionHeader] = headerAttributes
         
         let footerAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, with: IndexPath(row: 0, section: 0))
         footerAttributes.frame = CGRect(x: 0, y: 0, width: collectionView.frame.width, height: footerHeight)
-        supplementaryInfo[UICollectionElementKindSectionFooter] = footerAttributes
+        supplementaryInformation[UICollectionElementKindSectionFooter] = footerAttributes
     }
     
     override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
@@ -70,8 +70,10 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         super.prepare()
         guard let collectionView = collectionView else { return }
         
-        setupHeaderFooterAttributes()
-        itemSize = CGSize(width: cellSize.width, height: min(cellSize.height, collectionView.bounds.height))
+        prepareSupplementaryInformation()
+        let collectionViewHeight = collectionView.frame.height
+        let itemHeight = min(cellSize.height, max(collectionViewHeight - headerHeight - footerHeight, 1))
+        itemSize = CGSize(width: cellSize.width, height: itemHeight)
         itemCount = collectionView.numberOfItems(inSection: 0)
         
         let horizontalContentInset = collectionView.frame.width * 0.5 - itemSize.width * 0.5
@@ -83,6 +85,10 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
             return super.collectionViewContentSize
         }
         
+        if let height = carouselDelegate?.carouselLayoutHeaderHeight(self) {
+            headerHeight = height
+        }
+        
         let collectionViewHeight: CGFloat = cellSize.height + footerHeight + headerHeight + 20
         let width = itemCount * Int(cellSize.width) + ((itemCount - 1) * 10)
         let collectionViewWidth = CGFloat(2 * Int(collectionView.contentInset.left) + width)
@@ -90,12 +96,9 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
     }
     
     override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        guard let collectionView = collectionView else {
-            return super.layoutAttributesForSupplementaryView(ofKind: elementKind, at: indexPath)
-        }
-        
-        guard let attributes = supplementaryInfo[elementKind] else {
-            return super.layoutAttributesForSupplementaryView(ofKind: elementKind, at: indexPath)
+        guard let collectionView = collectionView,
+            let attributes = supplementaryInformation[elementKind] else {
+                return super.layoutAttributesForSupplementaryView(ofKind: elementKind, at: indexPath)
         }
 
         var frame = attributes.frame
