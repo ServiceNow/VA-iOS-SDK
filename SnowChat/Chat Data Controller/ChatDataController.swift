@@ -158,11 +158,13 @@ class ChatDataController {
             return
         }
         
+        setLastMessageDate(to: model)
         // last control is really the first... our list is reversed
         let prevModel = controlData[0]
         controlData[0] = model
         addModelChange(.update(index: 0, oldModel: prevModel, model: model))
         applyModelChanges()
+        updateLastMessageDate(from: model)        
     }
     
     fileprivate func addControlToCollection(_ data: ChatMessageModel) {
@@ -187,17 +189,23 @@ class ChatDataController {
     }
     
     func presentControlData(_ data: ChatMessageModel) {
-        data.lastMessageDate = lastMessageDate
-        
         if isShowingTypingIndicator() {
             replaceLastControl(with: data)
         } else {
+            setLastMessageDate(to: data)
             addControlToCollection(data)
             addModelChange(.insert(index: 0, model: data))
             applyModelChanges()
+            updateLastMessageDate(from: data)
         }
-        
-        guard let lastMessageDate = data.controlModel?.messageDate else {
+    }
+    
+    func setLastMessageDate(to model: ChatMessageModel) {
+        model.lastMessageDate = self.lastMessageDate
+    }
+    
+    func updateLastMessageDate(from model: ChatMessageModel) {
+        guard let lastMessageDate = model.controlModel?.messageDate else {
             return
         }
         self.lastMessageDate = lastMessageDate
