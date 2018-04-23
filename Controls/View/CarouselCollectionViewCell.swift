@@ -23,7 +23,7 @@ class CarouselCollectionViewCell: UICollectionViewCell {
         self.imageDownloader = resourceProvider.imageDownloader
         guard let imageDownloader = self.imageDownloader else { return }
         
-        let urlRequest = resourceProvider.authorizedRequest(with: attachmentURL)
+        let urlRequest = URLRequest(url: attachmentURL)
         requestReceipt = imageDownloader.download(urlRequest) { [weak self] (response) in
             
             // TODO: Handle error / no image case
