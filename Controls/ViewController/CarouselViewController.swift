@@ -14,6 +14,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var fullSizeContainerView: FullSizeScrollViewContainerView!
     @IBOutlet weak var carouselControlViewLayout: CarouselControlViewLayout!
+    
     @IBOutlet weak var gradientOverlayView: GradientView!
     @IBOutlet weak var headerContainerView: UIView!
     @IBOutlet weak var headerLabel: UILabel!
@@ -21,6 +22,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var footerSeperator: UIView!
     
+    weak var delegate: PickerViewControllerDelegate?
     var resourceProvider: ControlResourceProvider?
     
     private var theme: ControlTheme?
