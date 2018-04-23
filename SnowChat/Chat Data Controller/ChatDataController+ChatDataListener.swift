@@ -17,17 +17,13 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if let messageModel = chatMessageModel(withMessage: message) {
-            bufferControlMessage(messageModel)
-            
-            guard let conversationId = message.conversationId,
-                let conversation = chatterbox.conversation(forId: conversationId) else { return }
-        
-            presentAuxiliaryDataIfNeeded(forMessage: message, inConversation: conversation)
-            
-        } else {
+        guard let messageModel = chatMessageModel(withMessage: message)  else {
             dataConversionError(controlId: message.uniqueId, controlType: message.controlType)
+            return
         }
+        
+        bufferControlMessage(messageModel)
+        presentAuxiliaryDataIfNeeded(forMessage: message)
     }
     
     private func dataConversionError(controlId: String, controlType: ChatterboxControlType) {
