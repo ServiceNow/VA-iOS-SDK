@@ -72,16 +72,6 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
             translatedAttributeFrame.origin.x = currentItemXPosition
             return translatedAttributeFrame.contains(collectionViewCenter)
         })
-
-        attributes.forEach({ attribute in
-            guard attribute.representedElementKind != UICollectionElementKindSectionHeader && attribute.representedElementKind != UICollectionElementKindSectionFooter else {
-                return
-            }
-
-            var frame = attribute.frame
-//            frame.origin.y = headerHeight + 10
-            attribute.frame = frame
-        })
         
         // TODO: Add nice animation here
         centerAttribute?.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
@@ -91,11 +81,6 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
     }
     
     override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint, withScrollingVelocity velocity: CGPoint) -> CGPoint {
-        lastContentOffset = targetContentOffset(forProposedContentOffset: proposedContentOffset)
-        return lastContentOffset
-    }
-    
-    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
         guard let collectionView = self.collectionView else { return CGPoint.zero }
         // Find next indexPath for proposed contentOffset. Check for boundary conditions
         let nextIndexPathToFocus: IndexPath
@@ -107,7 +92,13 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
             nextIndexPathToFocus = focusedIndexPath
         }
         
-        return targetContentOffset(for: nextIndexPathToFocus)
+        lastContentOffset = targetContentOffset(for: nextIndexPathToFocus)
+        return lastContentOffset
+    }
+    
+    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+        lastContentOffset = targetContentOffset(for: focusedIndexPath)
+        return lastContentOffset
     }
     
     func selectNextItem() {
@@ -131,8 +122,9 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
     private func targetContentOffset(for indexPath: IndexPath) -> CGPoint {
         guard let collectionView = self.collectionView else { return CGPoint.zero }
         guard let cell = collectionView.cellForItem(at: indexPath) else {
-            Logger.default.logError("Couldn't find collection cell!")
-            return CGPoint(x: collectionView.contentInset.left, y: collectionView.contentOffset.y)
+            Logger.default.logError("Couldn't find a collection cell!")
+            focusedIndexPath = IndexPath(row: 0, section: 0)
+            return CGPoint(x: -collectionView.contentInset.left, y: collectionView.contentOffset.y)
         }
         
         let cellMinX = cell.frame.minX
