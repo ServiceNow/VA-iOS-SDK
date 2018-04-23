@@ -31,6 +31,7 @@ class PublicAPISessionTests: BaseAuthTestCase {
                     
                     ensureSession()
             }
+            .resume()
         }
         
         func ensureSession() {
@@ -41,6 +42,7 @@ class PublicAPISessionTests: BaseAuthTestCase {
                     ensureSessionExpectation.fulfill()
                     print("Finished ensure session.")
             }
+            .resume()
         }
         
         logIn()
@@ -78,6 +80,7 @@ class PublicAPISessionTests: BaseAuthTestCase {
                 publicAPIExpectation.fulfill()
                 print("Finished public API call.")
         }
+        .resume()
         
         self.wait(for: [publicAPIExpectation], timeout: 5)
     }
@@ -98,6 +101,7 @@ class PublicAPISessionTests: BaseAuthTestCase {
                 publicAPIExpectation.fulfill()
                 print("Finished public API call.")
         }
+        .resume()
         
         self.wait(for: [publicAPIExpectation], timeout: 5)
     }

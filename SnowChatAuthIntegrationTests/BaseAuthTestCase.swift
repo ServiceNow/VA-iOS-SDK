@@ -46,6 +46,7 @@ class BaseAuthTestCase: XCTestCase {
                     
                     fetchToken(secret: secret)
             }
+            .resume()
         }
         
         func fetchToken(secret: String) {
@@ -71,6 +72,7 @@ class BaseAuthTestCase: XCTestCase {
                     
                     expectation.fulfill()
             }
+            .resume()
         }
         
         fetchSecret()

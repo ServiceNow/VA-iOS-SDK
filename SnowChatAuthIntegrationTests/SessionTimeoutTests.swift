@@ -42,6 +42,7 @@ class SessionTimeoutTests: BaseAuthTestCase {
                     
                     ensureSession()
             }
+            .resume()
         }
         
         func ensureSession() {
@@ -52,6 +53,7 @@ class SessionTimeoutTests: BaseAuthTestCase {
                     print("Finished ensure session.")
                     ensureExpiredSessionAfterDelay()
             }
+            .resume()
         }
         
         func ensureExpiredSessionAfterDelay() {
@@ -64,7 +66,7 @@ class SessionTimeoutTests: BaseAuthTestCase {
                         esnureExpiredSessionExpectation.fulfill()
                         print("Finished ensure expired session.")
                 }
-                
+                .resume()
             }
         }
         
@@ -105,6 +107,7 @@ class SessionTimeoutTests: BaseAuthTestCase {
                     
                     ensureUISession()
             }
+            .resume()
         }
         
         func ensureUISession() {
@@ -116,6 +119,7 @@ class SessionTimeoutTests: BaseAuthTestCase {
                     print("Upgraded to UI session.")
                     fetchCSRF()
             }
+            .resume()
         }
         
         func fetchCSRF() {
@@ -129,7 +133,8 @@ class SessionTimeoutTests: BaseAuthTestCase {
                     XCTAssertFalse(newToken.isEmpty)
                     print("Got CSRF token.")
                     ensureSessionStillValidAfterIntegrationSessionTimeout(csrf: newToken)
-                }
+            }
+            .resume()
         }
         
         func ensureSessionStillValidAfterIntegrationSessionTimeout(csrf: String) {
@@ -144,7 +149,7 @@ class SessionTimeoutTests: BaseAuthTestCase {
                         print("Finished ensure valid session after delay.")
                         ensureExpiredSessionAfterUISessionTimeout(csrf: csrf)
                 }
-                
+                .resume()
             }
         }
         
@@ -160,7 +165,7 @@ class SessionTimeoutTests: BaseAuthTestCase {
                         esnureExpiredSessionExpectation.fulfill()
                         print("Finished ensure expired session.")
                 }
-                
+                .resume()
             }
         }
         
@@ -199,6 +204,7 @@ class SessionTimeoutTests: BaseAuthTestCase {
                     
                     fetchCSRF()
             }
+            .resume()
         }
         
         func fetchCSRF() {
@@ -214,6 +220,7 @@ class SessionTimeoutTests: BaseAuthTestCase {
                     print("Got CSRF token.")
                     ensureSession(csrf: newToken)
             }
+            .resume()
         }
         
         func ensureSession(csrf: String) {
@@ -244,7 +251,7 @@ class SessionTimeoutTests: BaseAuthTestCase {
                         print("Finished ensure valid session after delay.")
                         ensureExpiredSessionAfterUISessionTimeout(csrf: csrf)
                 }
-                
+                .resume()
             }
         }
         
@@ -260,7 +267,7 @@ class SessionTimeoutTests: BaseAuthTestCase {
                         esnureExpiredSessionExpectation.fulfill()
                         print("Finished ensure expired session.")
                 }
-                
+                .resume()
             }
         }
         

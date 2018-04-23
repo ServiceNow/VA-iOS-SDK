@@ -84,7 +84,7 @@ class OAuthManager: NSObject {
                 
                 completion(.success(credential))
         }
-        
+        .resume()
     }
     
 }

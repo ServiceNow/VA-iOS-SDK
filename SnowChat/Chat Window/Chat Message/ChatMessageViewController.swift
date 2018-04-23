@@ -74,7 +74,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
             let avatarURL = model?.avatarURL ?? theme.avatarUrl else { return }
         
         let downloader = provider.imageDownloader
-        let request = provider.authorizedRequest(with: avatarURL)
+        let request = URLRequest(url: avatarURL)
         
         requestReceipt = downloader.download(request, completion: { [weak self] response in
             guard let strongSelf = self else { return }

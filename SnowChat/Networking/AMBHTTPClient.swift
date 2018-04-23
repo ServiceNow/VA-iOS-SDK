@@ -42,7 +42,9 @@ class AMBHTTPClient: SNOWHTTPSessionClientProtocol {
                 return nil
         }
         
-        let dataRequest = sessionManager.request(url, method: .post, parameters: params, encoding: JSONEncoding.default, headers: nil).validate().responseJSON { response in
+        let dataRequest = sessionManager.request(url, method: .post, parameters: params, encoding: JSONEncoding.default, headers: nil)
+            .validate()
+            .responseJSON { response in
             if let error = response.error {
                 failure(error)
             } else {
@@ -51,6 +53,7 @@ class AMBHTTPClient: SNOWHTTPSessionClientProtocol {
         }
         
         if let task = dataRequest.task as? URLSessionDataTask {
+            task.resume()
             return task
         }
         

@@ -51,6 +51,7 @@ class AMBTransportTests: XCTestCase {
                 
                 self?.apiManager?.ambClient.connect()
         }
+        .resume()
     }
     
     func testSubscription() {

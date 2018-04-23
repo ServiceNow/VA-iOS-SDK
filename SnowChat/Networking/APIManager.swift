@@ -42,10 +42,8 @@ class APIManager: NSObject, AMBClientDelegate {
     internal weak var transportListener: TransportStatusListener?
     
     private(set) internal lazy var imageDownloader: ImageDownloader = {
-        // TODO: Find out if images need to be authenticated. If not we don't have to use our sessionManager.
-        // IF we do have to use a sessionManager - there's behavior where ImageDownloader sets `startRequestsImmediately` flag of session manager to `false`
-        // and causes bug, where request are not being resumed. That breaks all our API requests.
-        return ImageDownloader()
+        // use our session manager so we do not create a new session for images
+        return ImageDownloader(sessionManager: sessionManager)
     }()
     
     internal let ambClient: AMBClient
@@ -139,6 +137,7 @@ class APIManager: NSObject, AMBClientDelegate {
                 
                 completion(.success(user))
         }
+        .resume()
     }
     
     private func clearAllCookies() {
@@ -277,6 +276,7 @@ class APIManager: NSObject, AMBClientDelegate {
                     Logger.default.logInfo("Successfully repaired auth session for AMB")
                 }
         }
+        .resume()
     }
     
     // MARK: - AMB Listener
