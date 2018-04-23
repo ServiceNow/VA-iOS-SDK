@@ -34,8 +34,16 @@ class APIManager: NSObject, AMBClientDelegate {
     
     internal let instance: ServerInstance
     
-    // Each API Manager instance has a private session. That's why we use an ephemeral configuration.
-    internal let sessionManager = SessionManager(configuration: .ephemeral)
+    internal let sessionManager: SessionManager = {
+        // Each API Manager instance has a private session. That's why we use an ephemeral configuration.
+        let sessionManager = SessionManager(configuration: .ephemeral)
+
+        // We also explicitly set startRequestImmediately to false since the ImageDownloder will do this anyway,
+        // and we want consistent behavior
+        sessionManager.startRequestsImmediately = false
+        
+        return sessionManager
+    }()
     
     internal let reachabilityManager = NetworkReachabilityManager()
     

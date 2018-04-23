@@ -53,7 +53,7 @@ class AMBHTTPClient: SNOWHTTPSessionClientProtocol {
         }
         
         if let task = dataRequest.task as? URLSessionDataTask {
-            task.resume()
+            dataRequest.resume()
             return task
         }
         

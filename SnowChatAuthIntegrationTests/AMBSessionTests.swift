@@ -60,7 +60,6 @@ class AMBSessionTests: BaseAuthTestCase {
                     
                     ensureSession()
             }
-            .resume()
         }
         
         // Verify cookie works
@@ -74,7 +73,6 @@ class AMBSessionTests: BaseAuthTestCase {
                     
                     handshake()
             }
-            .resume()
         }
         
         // Setup the AMB dance!
@@ -110,7 +108,6 @@ class AMBSessionTests: BaseAuthTestCase {
                     print("Finished handshake.")
                     subscribe()
             }
-            .resume()
         }
         
         // Subscribe to the AMB channel
@@ -139,7 +136,6 @@ class AMBSessionTests: BaseAuthTestCase {
                     print("Finished subscribe.")
                     connect()
             }
-            .resume()
         }
         
         func connect() {
@@ -192,7 +188,6 @@ class AMBSessionTests: BaseAuthTestCase {
                         connectLoopFinishedExpectation.fulfill()
                     }
             }
-            .resume()
         }
         
         func publishMessage() {
@@ -226,7 +221,6 @@ class AMBSessionTests: BaseAuthTestCase {
                         connectLoopFinishedExpectation.fulfill()
                     }
             }
-            .resume()
         }
         
         logIn()
@@ -278,7 +272,6 @@ class AMBSessionTests: BaseAuthTestCase {
                     
                     ensureSession()
             }
-            .resume()
         }
         
         // Verify cookie works
@@ -292,7 +285,6 @@ class AMBSessionTests: BaseAuthTestCase {
                     
                     handshake()
             }
-            .resume()
         }
         
         // Setup the AMB dance!
@@ -326,7 +318,6 @@ class AMBSessionTests: BaseAuthTestCase {
                     print("Finished handshake.")
                     connect()
             }
-            .resume()
         }
         
         func connect() {
@@ -358,7 +349,6 @@ class AMBSessionTests: BaseAuthTestCase {
                     })
                     connectFinishedExpectation.fulfill()
             }
-            .resume()
         }
         
         logIn()
@@ -427,7 +417,6 @@ class AMBSessionTests: BaseAuthTestCase {
                     
                     ensureSession()
             }
-            .resume()
         }
         
         // Verify cookie works
@@ -441,7 +430,6 @@ class AMBSessionTests: BaseAuthTestCase {
                     
                     handshake()
             }
-            .resume()
         }
         
         // Setup the AMB dance!
@@ -478,7 +466,6 @@ class AMBSessionTests: BaseAuthTestCase {
                     print("Finished handshake.")
                     subscribe()
             }
-            .resume()
         }
         
         // Subscribe to the AMB channel
@@ -506,7 +493,6 @@ class AMBSessionTests: BaseAuthTestCase {
                     print("Finished subscribe.")
                     connect()
             }
-            .resume()
         }
         
         func connect() {
@@ -566,7 +552,6 @@ class AMBSessionTests: BaseAuthTestCase {
                         connectLoopFinishedExpectation.fulfill()
                     }
             }
-            .resume()
         }
         
         func deleteNewRecordAsITILUser() {
