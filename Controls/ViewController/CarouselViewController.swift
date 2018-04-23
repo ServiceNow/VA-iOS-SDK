@@ -79,6 +79,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     private func setupHeaderFooterViews() {
         headerLabel.text = model.label
+        doneButton.setTitle(NSLocalizedString("Select", comment: "Completed selection action"), for: .normal)
         doneButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
     }
     
