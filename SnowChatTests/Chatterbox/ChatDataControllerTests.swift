@@ -116,7 +116,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         mockChatterbox?.pendingControlMessage = boolMessage
         
         // now update it
-        let modelChanged = BooleanControlViewModel(id: boolMessage.messageId, label: "", required: true, resultValue: true)
+        let modelChanged = BooleanControlViewModel(id: boolMessage.messageId, label: "", required: true, resultValue: true, messageDate: Date())
         controller?.updateControlData(modelChanged)
     }
 
