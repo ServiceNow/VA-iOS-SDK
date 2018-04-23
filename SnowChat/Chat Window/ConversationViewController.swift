@@ -677,19 +677,19 @@ extension ConversationViewController: ControlDelegate {
         tableView.endUpdates()
     }
     
-    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        if let chatModel = dataController.controlForIndex(indexPath.row) {
-            if chatModel.type == .topicDivider {
-                return TopicDividerCell.dividerHeight
-            }
-            
-            if let viewModel = chatModel.controlModel as? Resizable, let size = viewModel.size {
-                return size.height
-            }
-        }
-        
-        return estimatedRowHeight
-    }
+//    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+//        if let chatModel = dataController.controlForIndex(indexPath.row) {
+//            if chatModel.type == .topicDivider {
+//                return TopicDividerCell.dividerHeight
+//            }
+//            
+//            if let viewModel = chatModel.controlModel as? Resizable, let size = viewModel.size {
+//                return size.height
+//            }
+//        }
+//        
+//        return estimatedRowHeight
+//    }
 }
 
 extension ConversationViewController: ContextItemProvider {

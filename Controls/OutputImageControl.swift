@@ -30,7 +30,7 @@ class OutputImageControl: ControlProtocol {
         didSet {
             if let size = imageModel.size {
                 imageViewController.prepareViewForImageWithSize(size)
-                delegate?.controlDidFinishLoading(self)
+//                delegate?.controlDidFinishLoading(self)
             }
         }
     }

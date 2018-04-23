@@ -44,6 +44,7 @@ class OutputImageViewController: UIViewController {
                                              outputImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
         
         imageHeightConstraint = outputImageView.heightAnchor.constraint(equalToConstant: 50)
+        imageHeightConstraint?.priority = .veryHigh
         imageHeightConstraint?.isActive = true
         imageWidthConstraint = outputImageView.widthAnchor.constraint(equalToConstant: 100)
         imageWidthConstraint?.isActive = true
