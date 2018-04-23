@@ -20,11 +20,10 @@ extension ChatDataController: ChatDataListener {
         if let messageModel = chatMessageModel(withMessage: message) {
             bufferControlMessage(messageModel)
             
-            if isBufferingEnabled {
-                // Only some controls have auxiliary data. They might appear as part of the conversation table view or on the bottom.
-                // NOTE: we do not show the aux-controls if we are not buffering
-                presentAuxiliaryDataIfNeeded(forMessage: message)
-            }
+            guard let conversationId = message.conversationId,
+                let conversation = chatterbox.conversation(forId: conversationId) else { return }
+        
+            presentAuxiliaryDataIfNeeded(forMessage: message, inConversation: conversation)
             
         } else {
             dataConversionError(controlId: message.uniqueId, controlType: message.controlType)
@@ -108,9 +107,12 @@ extension ChatDataController: ChatDataListener {
     }
     
     private func didCompleteInputExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        if let viewModels = controlsForInput(from: messageExchange), let response = viewModels.response {
-            // message is already shown
-            presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
+        if let viewModels = controlsForInput(from: messageExchange) {
+            replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
+            
+            if let response = viewModels.response {
+                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
+            }
         }
     }
     
