@@ -362,10 +362,10 @@ extension ConversationViewController {
                 // TODO: need to provide indices for the updated rows...
                 strongSelf.tableView.reloadData()
             }
+            
+            strongSelf.canFetchOlderMessages = true
+            strongSelf.timeLastHistoryFetch = Date()
         }
-
-        canFetchOlderMessages = true
-        timeLastHistoryFetch = Date()
     }
     
     override func didChangeAutoCompletionPrefix(_ prefix: String, andWord word: String) {
