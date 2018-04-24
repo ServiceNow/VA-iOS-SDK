@@ -17,6 +17,8 @@
                 <outlet property="agentImageTopConstraint" destination="lSH-w5-aR5" id="Y1S-Lg-Imz"/>
                 <outlet property="agentImageView" destination="TbH-h7-fly" id="8mh-hQ-bMB"/>
                 <outlet property="bubbleLeadingConstraint" destination="BYk-kB-HH3" id="Jv7-KW-Q6y"/>
+                <outlet property="bubbleToSuperviewTopConstraint" destination="33E-TJ-g3x" id="ArW-cQ-Juj"/>
+                <outlet property="bubbleToTimestampTopConstraint" destination="O6u-rh-ilx" id="Z3k-eW-jd1"/>
                 <outlet property="bubbleTrailingConstraint" destination="xMf-vP-2K3" id="gBR-fD-Nt2"/>
                 <outlet property="bubbleView" destination="zQD-cm-Q41" id="xUj-pT-jtt"/>
                 <outlet property="timestampLabel" destination="HFI-cm-AqK" id="tWS-KF-HZQ"/>
@@ -49,8 +51,9 @@
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
             <constraints>
+                <constraint firstItem="zQD-cm-Q41" firstAttribute="top" secondItem="D7e-qt-X1x" secondAttribute="top" priority="1" constant="8" id="33E-TJ-g3x"/>
                 <constraint firstItem="zQD-cm-Q41" firstAttribute="leading" secondItem="sE2-NG-Z0e" secondAttribute="leading" priority="250" constant="10" id="BYk-kB-HH3"/>
-                <constraint firstItem="zQD-cm-Q41" firstAttribute="top" secondItem="HFI-cm-AqK" secondAttribute="bottom" constant="8" id="O6u-rh-ilx"/>
+                <constraint firstItem="zQD-cm-Q41" firstAttribute="top" secondItem="HFI-cm-AqK" secondAttribute="bottom" priority="999" constant="8" id="O6u-rh-ilx"/>
                 <constraint firstAttribute="bottom" secondItem="zQD-cm-Q41" secondAttribute="bottom" constant="8" id="Poo-kv-ccW"/>
                 <constraint firstItem="HFI-cm-AqK" firstAttribute="leading" secondItem="sE2-NG-Z0e" secondAttribute="leading" constant="20" id="Rhw-SZ-lVF"/>
                 <constraint firstItem="TbH-h7-fly" firstAttribute="bottom" secondItem="D7e-qt-X1x" secondAttribute="bottom" constant="-8" id="VIa-ku-AGG"/>
