@@ -43,7 +43,7 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         guard let collectionView = collectionView else { return }
         itemSize = CGSize(width: 150, height: 160)
         itemCount = collectionView.numberOfItems(inSection: 0)
-        sectionInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        sectionInset = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0)
         let horizontalContentInset = collectionView.frame.width * 0.5 - itemSize.width * 0.5
         collectionView.contentInset = UIEdgeInsets(top: 0, left: horizontalContentInset, bottom: 0, right: horizontalContentInset)
     }
