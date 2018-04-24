@@ -445,13 +445,15 @@ class ChatDataController {
         
     }
     
-    func topicDidFinish() {
+    func topicDidFinish(_ completion: (() -> Void)? = nil) {
         conversationId = nil
         
         flushControlBuffer { [weak self] in
             self?.pushEndOfTopicDividerIfNeeded()
             self?.presentWelcomeMessage()
             self?.presentTopicPrompt()
+            
+            completion?()
         }
     }
 
