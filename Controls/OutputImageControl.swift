@@ -26,13 +26,7 @@ class OutputImageControl: ControlProtocol {
     
     private var requestReceipt: RequestReceipt?
     
-    var model: ControlViewModel {
-        didSet {
-            if let size = imageModel.size {
-                imageViewController.prepareViewForImageWithSize(size)
-            }
-        }
-    }
+    var model: ControlViewModel
     
     required init(model: ControlViewModel, resourceProvider: ControlResourceProvider) {
         guard let imageModel = model as? OutputImageViewModel else {
@@ -65,17 +59,9 @@ class OutputImageControl: ControlProtocol {
                 return
             }
             
+            guard let strongSelf = self else { return }
             let image = response.value
-            guard let strongSelf = self, strongSelf.imageViewController.image != image else { return }
-            
-            // If we already fetched image before we don't need to call beginUpdate/endUpdate on tableView
-            // Which is called in didFinishImageDownload
             strongSelf.imageViewController.image = image
-            let needsLayoutUpdate = strongSelf.imageModel.size == nil
-            if needsLayoutUpdate {
-                strongSelf.imageModel.size = strongSelf.imageViewController.adjustedImageSize(for: image)
-                strongSelf.delegate?.controlDidFinishLoading(strongSelf)
-            }
         }
     }
     
