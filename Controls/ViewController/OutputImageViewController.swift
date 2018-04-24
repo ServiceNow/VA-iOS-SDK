@@ -16,6 +16,7 @@ class OutputImageViewController: UIViewController {
     
     private var imageConstraints = [NSLayoutConstraint]()
     private let outputImageView = UIImageView()
+    private let tapGestureRecognizer = UITapGestureRecognizer()
     
     var image: UIImage? {
         didSet {
@@ -47,6 +48,22 @@ class OutputImageViewController: UIViewController {
         imageWidthConstraint?.isActive = true
         
         NSLayoutConstraint.activate(imageConstraints)
+        
+        tapGestureRecognizer.addTarget(self, action: #selector(tappedImageView(_:)))
+        outputImageView.addGestureRecognizer(tapGestureRecognizer)
+        outputImageView.isUserInteractionEnabled = true
+    }
+    
+    @objc private func tappedImageView(_ gesture: UITapGestureRecognizer) {
+        zoomIn()
+    }
+    
+    private func zoomIn() {
+        guard let image = image else { return }
+        let browserViewController = ImageBrowserViewController(images: [image])
+        let navigationController = UINavigationController(rootViewController: browserViewController)
+        navigationController.modalPresentationStyle = .overFullScreen
+        present(navigationController, animated: true, completion: nil)
     }
     
     private func updateImageConstraints() {
