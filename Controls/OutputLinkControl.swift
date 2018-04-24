@@ -8,7 +8,11 @@
 
 class OutputLinkControl: NSObject, ControlProtocol {
     
-    var model: ControlViewModel
+    var model: ControlViewModel {
+        didSet {
+            updateOutputLinkViewController()
+        }
+    }
     
     let viewController: UIViewController
     
@@ -31,11 +35,16 @@ class OutputLinkControl: NSObject, ControlProtocol {
         let outputLinkVC = OutputLinkViewController(resourceProvider: resourceProvider)
         self.viewController = outputLinkVC
         outputLinkVC.loadViewIfNeeded()
+        super.init()
+        updateOutputLinkViewController()
+    }
+    
+    private func updateOutputLinkViewController() {
         let label = outputLinkModel.label ?? outputLinkModel.value.absoluteString
         let attributedString = NSAttributedString(string: label, attributes: [NSAttributedStringKey.link: outputLinkModel.value.absoluteString,
                                                                               NSAttributedStringKey.font: UIFont.preferredFont(forTextStyle: .body)])
-        outputLinkVC.textView.attributedText = attributedString
-        outputLinkVC.headerLabel.text = outputLinkModel.header
+        outputLinkViewController.textView.attributedText = attributedString
+        outputLinkViewController.headerLabel.text = outputLinkModel.header
     }
     
     // MARK: Theme
