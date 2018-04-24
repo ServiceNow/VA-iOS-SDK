@@ -58,6 +58,8 @@ class ChatDataController {
     
     private(set) var lastMessageDate: Date?
     
+    private var reachedBeginningOfHistory = false
+    
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
         self.chatterbox.chatDataListeners.addListener(self)
@@ -129,8 +131,17 @@ class ChatDataController {
     func fetchOlderMessages(_ completion: @escaping (Int) -> Void) {
         logger.logDebug("Fetching older messages...")
         
-        chatterbox.fetchOlderMessages { count in
-            self.logger.logDebug("Fetch complete with \(count) messages")
+        // if we already reach the beginning, no need to try again
+        guard reachedBeginningOfHistory == false else {
+            completion(0)
+            return
+        }
+        
+        chatterbox.fetchOlderMessages { [weak self] count in
+            self?.logger.logDebug("Fetch complete with \(count) messages")
+            
+            self?.reachedBeginningOfHistory = (count == 0)
+            
             completion(count)
         }
     }
@@ -445,13 +456,15 @@ class ChatDataController {
         
     }
     
-    func topicDidFinish() {
+    func topicDidFinish(_ completion: (() -> Void)? = nil) {
         conversationId = nil
         
         flushControlBuffer { [weak self] in
             self?.pushEndOfTopicDividerIfNeeded()
             self?.presentWelcomeMessage()
             self?.presentTopicPrompt()
+            
+            completion?()
         }
     }
 

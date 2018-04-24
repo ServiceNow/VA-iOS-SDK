@@ -89,12 +89,13 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         startConversation()
         XCTAssertEqual(2, controller?.controlCount())
         
-        endConversation()
-        XCTAssertEqual(2, controller?.controlCount())
-        
-        XCTAssertEqual(ChatMessageType.topicDivider, controller?.controlForIndex(0)?.type)
-        XCTAssertEqual(ChatMessageType.control, controller?.controlForIndex(1)?.type)
-        XCTAssertEqual(ControlType.text, controller?.controlForIndex(1)?.controlModel?.type)
+        endConversation {
+            XCTAssertEqual(2, self.controller?.controlCount())
+            
+            XCTAssertEqual(ChatMessageType.topicDivider, self.controller?.controlForIndex(0)?.type)
+            XCTAssertEqual(ChatMessageType.control, self.controller?.controlForIndex(1)?.type)
+            XCTAssertEqual(ControlType.text, self.controller?.controlForIndex(1)?.controlModel?.type)
+        }
     }
     
     func startConversation() {
@@ -103,8 +104,8 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         controller?.topicDidStart(topicInfo)
     }
     
-    func endConversation() {
-        controller?.topicDidFinish()
+    func endConversation(_ completion: @escaping () -> Void) {
+        controller?.topicDidFinish(completion)
     }
     
     func startConversationAndUpdateBooleanControl() {

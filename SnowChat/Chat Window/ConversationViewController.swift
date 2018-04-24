@@ -39,6 +39,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     private var canFetchOlderMessages = false
     private var timeLastHistoryFetch: Date = Date()
     private var isLoading = false
+    
     private var defaultMessageHeight: CGFloat?
     private var maxMessageHeight: CGFloat?
     private var tableFooterView: PagingTableFooterView?
@@ -348,7 +349,7 @@ extension ConversationViewController {
     func fetchOlderMessagesIfPossible() {
         guard canFetchOlderMessages,
             Date().timeIntervalSince(timeLastHistoryFetch) > 1.0 else {
-                Logger.default.logDebug("Skipping fetch of older messages - last one was \(Date().timeIntervalSince(timeLastHistoryFetch)) ago")
+                Logger.default.logDebug("Skipping fetch of older messages")
                 return
         }
             
