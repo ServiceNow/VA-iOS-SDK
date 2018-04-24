@@ -10,6 +10,7 @@ extension ChatMessageModel {
     
     // MARK: Nested models for multi part control
     
+    //swiftlint:disable:next cyclomatic_complexity
     static func model(withMessage message: MultiPartControlMessage, theme: Theme) -> ChatMessageModel? {
         guard let nestedControlValue = message.data.richControl?.content?.value?.rawValue,
             let nestedControlType = message.nestedControlType else {
@@ -25,6 +26,14 @@ extension ChatMessageModel {
             chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         case .outputHtml:
             let controlModel = OutputHtmlControlViewModel(id: message.messageId, value: nestedControlValue, messageDate: message.messageTime)
+            var size = CGSize(width: UIViewNoIntrinsicMetric, height: UIViewNoIntrinsicMetric)
+            if let width = message.data.richControl?.content?.uiMetadata?.width {
+                size.width = CGFloat(width)
+            }
+            if let height = message.data.richControl?.content?.uiMetadata?.height {
+                size.height = CGFloat(height)
+            }
+            controlModel.size = size
             chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         case .outputImage:
             if let url = URL(string: nestedControlValue) {
