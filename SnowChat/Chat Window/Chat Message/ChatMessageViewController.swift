@@ -16,6 +16,8 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     @IBOutlet private weak var agentBubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var bubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var bubbleTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var bubbleToSuperviewTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var bubbleToTimestampTopConstraint: NSLayoutConstraint!
     @IBOutlet private weak var agentImageTopConstraint: NSLayoutConstraint!
     @IBOutlet private weak var timestampLabel: UILabel!
     
@@ -203,11 +205,15 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     }
 
     private func updateTimestamp(messageDate: Date) {
+        bubbleToSuperviewTopConstraint.priority = .lowest
+        bubbleToTimestampTopConstraint.priority = .veryHigh
         timestampLabel.isHidden = false
         timestampLabel.text = DateFormatter.now_timeAgoSince(messageDate)
     }
     
     private func clearTimestamp() {
+        bubbleToSuperviewTopConstraint.priority = .veryHigh
+        bubbleToTimestampTopConstraint.priority = .lowest
         timestampLabel.isHidden = true
         timestampLabel.text = ""
     }
