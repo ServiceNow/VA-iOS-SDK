@@ -48,8 +48,9 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
         super.viewDidLoad()
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Done", comment: ""), style: .plain, target: self, action: #selector(doneButtonTapped(_:)))
         view.backgroundColor = .white
-        
-        setupPageControl()
+        if photoURLs.count > 1 {
+            setupPageControl()
+        }
         setupScrollView()
         updateContentOffset(forCurrentImage: currentImage)
     }
