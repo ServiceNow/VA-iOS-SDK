@@ -43,6 +43,7 @@ extension APIManager {
                     completion(.failure(ChatterboxError.unknown(details: "malformed server response")))
                 }
         }
+        .resume()
     }
 
     private func initializeChatSession(_ sessionData: [String: Any], welcomeMessage: String?) -> ChatSession? {
@@ -83,6 +84,7 @@ extension APIManager {
                 }
                 completionHandler(conversation)
         }
+        .resume()
     }
     
     func fetchConversations(forConsumer consumerId: String, completionHandler: @escaping ([Conversation]) -> Void) {
@@ -125,6 +127,7 @@ extension APIManager {
             }
             completionHandler(conversations)
         }
+        .resume()
     }
     
     // MARK: - Response Parsing

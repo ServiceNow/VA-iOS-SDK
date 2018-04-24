@@ -16,6 +16,8 @@ extension Chatterbox {
         self.userContextData = contextData
         self.vendor = vendor
         
+        logger.logDebug("--> Preparing session for user with token: \(token)")
+        
         apiManager.prepareUserSession(token: token) { [weak self] result in
             guard let strongSelf = self else { return }
             guard result.error == nil else {

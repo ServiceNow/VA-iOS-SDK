@@ -92,7 +92,7 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
             let scaledHTML = viewportDirective + html
             webView.loadHTMLString(scaledHTML, baseURL: nil)
         case let .url(url):
-            let request = resourceProvider.authorizedRequest(with: url)
+            let request = resourceProvider.authorizedWebViewInitialRequest(with: url)
             webView.load(request)
         }
     }

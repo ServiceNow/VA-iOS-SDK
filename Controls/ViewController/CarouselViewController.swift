@@ -11,36 +11,39 @@ import AlamofireImage
 
 class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ImageBrowserDelegate, ThemeableControl {
     
+    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var fullSizeContainerView: FullSizeScrollViewContainerView!
+    @IBOutlet weak var carouselControlViewLayout: CarouselControlViewLayout!
+    
+    @IBOutlet weak var gradientOverlayView: GradientView!
+    @IBOutlet weak var headerContainerView: UIView!
+    @IBOutlet weak var headerLabel: UILabel!
+    @IBOutlet weak var headerSeperator: UIView!
+    @IBOutlet weak var doneButton: UIButton!
+    @IBOutlet weak var footerSeperator: UIView!
+    
     weak var delegate: PickerViewControllerDelegate?
     var resourceProvider: ControlResourceProvider?
     
-    private var collectionView: UICollectionView?
-    private var gradientOverlayView = GradientView()
     private var theme: ControlTheme?
     
     private let currentPageIndicatorTintColor = UIColor(red: 0, green: 122 / 255, blue: 255 / 255, alpha: 1)
     private let pageIndicatorTintColor = UIColor(red: 174 / 255, green: 213 / 255, blue: 255 / 255, alpha: 1)
     
-    private var carouselControlViewLayout: CarouselControlViewLayout {
-        return collectionView?.collectionViewLayout as! CarouselControlViewLayout
-    }
-    
     var model: CarouselControlViewModel {
         didSet {
-            let layout = CarouselControlViewLayout()
-            collectionView?.collectionViewLayout = layout
-            collectionView?.reloadData()
+            collectionView.reloadData()
+            carouselControlViewLayout.invalidateLayout()
         }
     }
-    
-    private let fullSizeContainer = FullSizeScrollViewContainerView()
     
     // MARK: - Initialization
     
     init(model: PickerControlViewModel) {
         guard let carouselModel = model as? CarouselControlViewModel else { fatalError("Wrong model assigned to CarouselViewController") }
         self.model = carouselModel
-        super.init(nibName: nil, bundle: nil)
+        let bundle = Bundle(for: CarouselViewController.self)
+        super.init(nibName: "CarouselViewController", bundle: bundle)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -49,69 +52,40 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     // MARK: - View Life Cycle
     
-    override func loadView() {
-        self.view = fullSizeContainer
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCollectionView()
         setupGradientOverlay()
+        setupHeaderFooterViews()
     }
     
     private func setupGradientOverlay() {
-        guard let collectionViewLayout = collectionView?.collectionViewLayout as? CarouselControlViewLayout else { return }
         gradientOverlayView.colors = [.white, .clear, .clear, .white]
         gradientOverlayView.locations = [0, 0.15, 0.85, 1]
         gradientOverlayView.isUserInteractionEnabled = false
         gradientOverlayView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(gradientOverlayView)
-        NSLayoutConstraint.activate([gradientOverlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                     gradientOverlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     gradientOverlayView.topAnchor.constraint(equalTo: view.topAnchor, constant: collectionViewLayout.headerHeight),
-                                     gradientOverlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -collectionViewLayout.footerHeight)])
-        view.bringSubview(toFront: gradientOverlayView)
+        fullSizeContainerView.bringSubview(toFront: gradientOverlayView)
     }
     
     private func setupCollectionView() {
-        let layout = CarouselControlViewLayout()
-        let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         collectionView.delegate = self
         collectionView.dataSource = self
-        
-        // Scroll view inside scroll view is...pretty ugly. Especially when adjustment is on!
-        if #available(iOS 11.0, *) {
-            collectionView.contentInsetAdjustmentBehavior = .never
-        } else {
-            automaticallyAdjustsScrollViewInsets = false
-        }
-        
+        collectionView.decelerationRate = UIScrollViewDecelerationRateFast
         let bundle = Bundle(for: CarouselCollectionViewCell.self)
         collectionView.register(UINib(nibName: "CarouselCollectionViewCell", bundle: bundle), forCellWithReuseIdentifier: CarouselCollectionViewCell.cellIdentifier)
-        collectionView.register(CarouselControlHeaderView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CarouselControlHeaderView.headerIdentifier)
-        collectionView.register(CarouselControlFooterView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: CarouselControlFooterView.footerIdentifier)
-        
-        fullSizeContainer.scrollView = collectionView
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        fullSizeContainer.addSubview(collectionView)
-        NSLayoutConstraint.activate([collectionView.leadingAnchor.constraint(equalTo: fullSizeContainer.leadingAnchor),
-                                     collectionView.trailingAnchor.constraint(equalTo: fullSizeContainer.trailingAnchor),
-                                     collectionView.topAnchor.constraint(equalTo: fullSizeContainer.topAnchor),
-                                     collectionView.bottomAnchor.constraint(equalTo: fullSizeContainer.bottomAnchor),
-                                     collectionView.heightAnchor.constraint(equalToConstant: 300)])
-        
-        self.collectionView = collectionView
-        collectionView.showsHorizontalScrollIndicator = false
-        collectionView.backgroundColor = .white
+        fullSizeContainerView.scrollView = collectionView
         collectionView.reloadData()
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        // center on the focused index path. When we first launch Carousel we want to center the first item
-        let focusedIndexPath = (collectionView?.collectionViewLayout as? CarouselControlViewLayout)?.focusedIndexPath ?? IndexPath(item: 0, section: 0)
-        collectionView?.selectItem(at: focusedIndexPath, animated: false, scrollPosition: .centeredHorizontally)
+    private func setupHeaderFooterViews() {
+        headerLabel.text = model.label
+        doneButton.setTitle(NSLocalizedString("Select", comment: "Completed selection action"), for: .normal)
+        doneButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        carouselControlViewLayout.invalidateLayout()
     }
     
     // MARK: UICollectionViewDataSource
@@ -162,27 +136,6 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        switch kind {
-        case UICollectionElementKindSectionHeader:
-            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CarouselControlHeaderView.headerIdentifier, for: indexPath) as! CarouselControlHeaderView
-            headerView.backgroundColor = theme?.backgroundColor
-            headerView.titleLabel.backgroundColor = theme?.backgroundColor
-            headerView.dividerView.backgroundColor = theme?.dividerColor
-            headerView.configure(with: model)
-            return headerView
-        case UICollectionElementKindSectionFooter:
-            let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionFooter, withReuseIdentifier: CarouselControlFooterView.footerIdentifier, for: indexPath) as! CarouselControlFooterView
-            footerView.backgroundColor = theme?.backgroundColor
-            footerView.selectButton.setTitleColor(theme?.actionFontColor, for: .normal)
-            footerView.selectButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
-            footerView.dividerView.backgroundColor = theme?.dividerColor
-            return footerView
-        default:
-            fatalError("Unexpected kind: \(kind)")
-        }
-    }
-    
     @objc func doneButtonSelected(_ sender: UIButton) {
         let selectedIndexPath = carouselControlViewLayout.focusedIndexPath
         model.selectItem(at: selectedIndexPath.row)
@@ -193,6 +146,13 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     func applyTheme(_ theme: ControlTheme?) {
         self.theme = theme
+        headerContainerView.backgroundColor = theme?.backgroundColor
+        headerLabel.backgroundColor = theme?.backgroundColor
+        headerSeperator.backgroundColor = theme?.dividerColor
+        
+        doneButton.backgroundColor = theme?.backgroundColor
+        doneButton.setTitleColor(theme?.actionFontColor, for: .normal)
+        footerSeperator.backgroundColor = theme?.dividerColor
     }
     
     // MARK: - ImageBrowserDelegate

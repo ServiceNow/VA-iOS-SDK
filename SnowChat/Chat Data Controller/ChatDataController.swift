@@ -31,11 +31,11 @@ class ChatDataController {
     
     private let chatbotDisplayThrottleDefault = 1.5
     
-    internal var chatbotDisplayThrottle: Double {
+    internal var chatbotDisplayThrottle: TimeInterval {
         guard let delayMS = chatterbox.session?.settings?.generalSettings?.messageDelay else { return
             chatbotDisplayThrottleDefault
         }
-        return Double(delayMS / 1000)
+        return TimeInterval(delayMS) / 1000.0
     }
 
     internal let chatterbox: Chatterbox
@@ -212,7 +212,15 @@ class ChatDataController {
     }
     
     func presentAuxiliaryDataIfNeeded(forMessage message: ControlData) {
-        guard let auxiliaryModel = ChatMessageModel.auxiliaryModel(withMessage: message, theme: theme) else { return }
+        // Only some controls have auxiliary data. They might appear as part of the conversation table view or on the bottom.
+        // If a control does have auxiliary data we only show it if the conversation is in-progress and it is the last control
+
+        guard let conversationId = message.conversationId,
+            let conversation = chatterbox.conversation(forId: conversationId),
+            conversation.state.isInProgress,
+            conversation.lastPendingExchange()?.message.messageId == message.messageId,
+            let auxiliaryModel = ChatMessageModel.auxiliaryModel(withMessage: message, theme: theme) else { return }
+
         bufferControlMessage(auxiliaryModel)
     }
     
@@ -440,11 +448,11 @@ class ChatDataController {
     func topicDidFinish() {
         conversationId = nil
         
-        flushControlBuffer()
-        
-        pushEndOfTopicDividerIfNeeded()
-        presentWelcomeMessage()
-        presentTopicPrompt()
+        flushControlBuffer { [weak self] in
+            self?.pushEndOfTopicDividerIfNeeded()
+            self?.presentWelcomeMessage()
+            self?.presentTopicPrompt()
+        }
     }
 
     func agentTopicWillStart() {
@@ -459,8 +467,9 @@ class ChatDataController {
     }
     
     func agentTopicDidFinish() {
-        flushControlBuffer()
-        presentTopicPrompt()
+        flushControlBuffer { [weak self] in
+            self?.presentTopicPrompt()
+        }
     }
     
     func presentTopicPrompt() {
@@ -543,7 +552,14 @@ class ChatDataController {
             guard bufferProcessingTimer == nil else { return }
             
             bufferProcessingTimer = Timer.scheduledTimer(withTimeInterval: chatbotDisplayThrottle, repeats: true, block: { [weak self] timer in
-                self?.processControlBuffer()
+                guard let strongSelf = self else { return }
+                
+                guard strongSelf.controlMessageBuffer.count > 0 else {
+                    strongSelf.enableBufferControlProcessing(false)
+                    return
+                }
+                
+                self?.presentOneControlFromControlBuffer()
             })
         } else {
             bufferProcessingTimer?.invalidate()
@@ -551,13 +567,7 @@ class ChatDataController {
         }
     }
 
-    fileprivate func processControlBuffer() {
-        guard controlMessageBuffer.count > 0 else {
-            // disable processing the buffer when it is empty - is re-enabled when something is added to buffer (bufferControlMessage)
-            enableBufferControlProcessing(false)
-            return
-        }
-        
+    fileprivate func presentOneControlFromControlBuffer() {
         let control = controlMessageBuffer.remove(at: 0)
         presentControlData(control)
 
@@ -566,10 +576,21 @@ class ChatDataController {
         }
     }
     
-    fileprivate func flushControlBuffer() {
-        while controlMessageBuffer.count > 0 {
-            let control = controlMessageBuffer.remove(at: 0)
-            presentControlData(control)
-        }
+    fileprivate func flushControlBuffer(immediate: Bool = false, completion: @escaping () -> Void) {
+        // disable existing buffer processing
+        enableBufferControlProcessing(false)
+        
+        let interval = immediate ? 0.0 : chatbotDisplayThrottle
+        
+        Timer.scheduledTimer(withTimeInterval: interval, repeats: true, block: { [weak self] timer in
+            guard let strongSelf = self else { return }
+            
+            if strongSelf.controlMessageBuffer.count > 0 {
+                strongSelf.presentOneControlFromControlBuffer()
+            } else {
+                timer.invalidate()
+                completion()
+            }
+        })
     }
 }

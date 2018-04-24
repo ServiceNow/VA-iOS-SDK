@@ -56,7 +56,6 @@
 		5728D8E2204759480071EF9E /* CarouselCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728D8E1204759480071EF9E /* CarouselCollectionViewCell.swift */; };
 		5728D8E4204759740071EF9E /* CarouselCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5728D8E3204759740071EF9E /* CarouselCollectionViewCell.xib */; };
 		5728D8E620475C300071EF9E /* CarouselControlViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728D8E520475C300071EF9E /* CarouselControlViewLayout.swift */; };
-		5728D8E820478C000071EF9E /* CarouselControlHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728D8E720478C000071EF9E /* CarouselControlHeaderView.swift */; };
 		5728D8EA20485BB30071EF9E /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728D8E920485BB30071EF9E /* Context.swift */; };
 		5728D8F12048D74A0071EF9E /* UserDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728D8F02048D74A0071EF9E /* UserDataManager.swift */; };
 		5728D8F42048D9200071EF9E /* ContextData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5728D8F32048D9200071EF9E /* ContextData.swift */; };
@@ -70,7 +69,6 @@
 		573BDA8A20614F0000AC6C2D /* Theme+Controls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BDA8920614F0000AC6C2D /* Theme+Controls.swift */; };
 		573BDA8C206153D500AC6C2D /* Theme+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BDA8B206153D500AC6C2D /* Theme+Defaults.swift */; };
 		573BDA8E206162BE00AC6C2D /* DateOrTimePickerControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BDA8D206162BE00AC6C2D /* DateOrTimePickerControlMessage.swift */; };
-		573BDA932062B5E000AC6C2D /* CarouselControlFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BDA922062B5E000AC6C2D /* CarouselControlFooterView.swift */; };
 		573F78F7202275000008391D /* ButtonControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573F78F6202275000008391D /* ButtonControl.swift */; };
 		573F78FD202288F40008391D /* ControlViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573F78FC202288F40008391D /* ControlViewCell.swift */; };
 		5740F431202269E90060B349 /* MultiPartControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5740F430202269E90060B349 /* MultiPartControlMessage.swift */; };
@@ -141,6 +139,7 @@
 		57E65F53202BA5AD0087E5DE /* OutputLinkControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E65F52202BA5AD0087E5DE /* OutputLinkControlMessage.swift */; };
 		57EE77DF1FFEC2B1001F689A /* ChatMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */; };
 		57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F7B2531FE17823006D917C /* TextControlViewModel.swift */; };
+		57F9E085208D98F90012709F /* CarouselViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57F9E084208D98F90012709F /* CarouselViewController.xib */; };
 		57FB5EB5207FAEAF00AECB59 /* OutputLinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57FB5EB4207FAEAF00AECB59 /* OutputLinkViewController.swift */; };
 		57FB5EB7207FAEE500AECB59 /* OutputLinkViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57FB5EB6207FAEE500AECB59 /* OutputLinkViewController.xib */; };
 		7A1F085520858B9E004B8B0A /* TimeAgo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1F085420858B9E004B8B0A /* TimeAgo.swift */; };
@@ -281,7 +280,6 @@
 		5728D8E1204759480071EF9E /* CarouselCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselCollectionViewCell.swift; sourceTree = "<group>"; };
 		5728D8E3204759740071EF9E /* CarouselCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CarouselCollectionViewCell.xib; sourceTree = "<group>"; };
 		5728D8E520475C300071EF9E /* CarouselControlViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselControlViewLayout.swift; sourceTree = "<group>"; };
-		5728D8E720478C000071EF9E /* CarouselControlHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselControlHeaderView.swift; sourceTree = "<group>"; };
 		5728D8E920485BB30071EF9E /* Context.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
 		5728D8F02048D74A0071EF9E /* UserDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataManager.swift; sourceTree = "<group>"; };
 		5728D8F32048D9200071EF9E /* ContextData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextData.swift; sourceTree = "<group>"; };
@@ -295,7 +293,6 @@
 		573BDA8920614F0000AC6C2D /* Theme+Controls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+Controls.swift"; sourceTree = "<group>"; };
 		573BDA8B206153D500AC6C2D /* Theme+Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+Defaults.swift"; sourceTree = "<group>"; };
 		573BDA8D206162BE00AC6C2D /* DateOrTimePickerControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateOrTimePickerControlMessage.swift; sourceTree = "<group>"; };
-		573BDA922062B5E000AC6C2D /* CarouselControlFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselControlFooterView.swift; sourceTree = "<group>"; };
 		573F78F6202275000008391D /* ButtonControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonControl.swift; sourceTree = "<group>"; };
 		573F78FC202288F40008391D /* ControlViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlViewCell.swift; sourceTree = "<group>"; };
 		5740F430202269E90060B349 /* MultiPartControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPartControlMessage.swift; sourceTree = "<group>"; };
@@ -366,6 +363,7 @@
 		57E65F52202BA5AD0087E5DE /* OutputLinkControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputLinkControlMessage.swift; sourceTree = "<group>"; };
 		57EE77DE1FFEC2B1001F689A /* ChatMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageModel.swift; sourceTree = "<group>"; };
 		57F7B2531FE17823006D917C /* TextControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextControlViewModel.swift; sourceTree = "<group>"; };
+		57F9E084208D98F90012709F /* CarouselViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CarouselViewController.xib; sourceTree = "<group>"; };
 		57FB5EB4207FAEAF00AECB59 /* OutputLinkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputLinkViewController.swift; sourceTree = "<group>"; };
 		57FB5EB6207FAEE500AECB59 /* OutputLinkViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OutputLinkViewController.xib; sourceTree = "<group>"; };
 		7A1F085420858B9E004B8B0A /* TimeAgo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAgo.swift; sourceTree = "<group>"; };
@@ -630,10 +628,10 @@
 				5760C8CD1FBF4C920055B73D /* PickerViewController.swift */,
 				579479332031F44F00C4C5C5 /* DateTimePickerViewController.swift */,
 				579479352031F60900C4C5C5 /* DateTimePickerViewController.xib */,
-				575566A8200FAF1D000953F7 /* PickerHeaderFooterView.swift */,
 				57D1DB781FEC88D200082F78 /* OutputImageViewController.swift */,
 				57DF7C33202C1066008D013A /* ControlWebViewController.swift */,
 				57B0861120465F0F00F009D2 /* CarouselViewController.swift */,
+				57F9E084208D98F90012709F /* CarouselViewController.xib */,
 				57ADE6A2205AB1BD00F5D57C /* ImageBrowserViewController.swift */,
 				57FB5EB4207FAEAF00AECB59 /* OutputLinkViewController.swift */,
 				57FB5EB6207FAEE500AECB59 /* OutputLinkViewController.xib */,
@@ -652,8 +650,7 @@
 				5728D8E3204759740071EF9E /* CarouselCollectionViewCell.xib */,
 				5728D8E1204759480071EF9E /* CarouselCollectionViewCell.swift */,
 				5728D8E520475C300071EF9E /* CarouselControlViewLayout.swift */,
-				5728D8E720478C000071EF9E /* CarouselControlHeaderView.swift */,
-				573BDA922062B5E000AC6C2D /* CarouselControlFooterView.swift */,
+				575566A8200FAF1D000953F7 /* PickerHeaderFooterView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1198,6 +1195,7 @@
 				C4EF7C482065991300E3904B /* Assets.xcassets in Resources */,
 				57FB5EB7207FAEE500AECB59 /* OutputLinkViewController.xib in Resources */,
 				57B7E2C91FBA25A200196BA9 /* SelectableView.xib in Resources */,
+				57F9E085208D98F90012709F /* CarouselViewController.xib in Resources */,
 				BE50E2241FB9305C00948FBC /* Cartfile in Resources */,
 				57D997AB1FE5B00000394A6D /* ChatMessageViewController.xib in Resources */,
 				5728D8E4204759740071EF9E /* CarouselCollectionViewCell.xib in Resources */,
@@ -1354,7 +1352,6 @@
 				57026187204E2B14003D56DE /* Handlers.swift in Sources */,
 				C43479EC1FE460700091806D /* TopicSelection.swift in Sources */,
 				8BD222292037FC550040B657 /* HTTPURLResponse+Auth.swift in Sources */,
-				573BDA932062B5E000AC6C2D /* CarouselControlFooterView.swift in Sources */,
 				C48441C8202CB6C600D67757 /* SystemErrorControlMessage.swift in Sources */,
 				C4694A54203E3C18006A3C23 /* AgentTextControlMessage.swift in Sources */,
 				57532BAD1FD777FA001D674C /* TextControl.swift in Sources */,
@@ -1496,7 +1493,6 @@
 				C4C8E526207D52E300DF5CCC /* UIColor+NOW_HTMLColors.m in Sources */,
 				572A4E3C1FCE0AC20081318D /* FullSizeScrollViewContainerView.swift in Sources */,
 				5788B2A71FBB38FD00846F33 /* ControlViewModel.swift in Sources */,
-				5728D8E820478C000071EF9E /* CarouselControlHeaderView.swift in Sources */,
 				C43479EE1FE850D20091806D /* AutoCompleteHandler.swift in Sources */,
 				C4A774AD1FE0607D00B6DF68 /* ChatServiceDelegate.swift in Sources */,
 			);

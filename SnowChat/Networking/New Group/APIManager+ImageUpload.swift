@@ -17,11 +17,13 @@ extension APIManager {
         }, to: url, encodingCompletion: { encodingResult in
             switch encodingResult {
             case .success(request: let upload, streamingFromDisk: _, streamFileURL: _):
-                upload.responseJSON(completionHandler: { response in
+                upload.responseJSON { response in
                     let dictionary = response.result.value as? [String : Any] ?? [:]
                     let result = dictionary["result"] as? String
                     completion(result)
-                })
+                }
+                .resume()
+                
             case .failure(let error):
                 print("Error: \(error)")
             }

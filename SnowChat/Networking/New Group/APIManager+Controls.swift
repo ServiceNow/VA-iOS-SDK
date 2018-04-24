@@ -14,7 +14,7 @@ protocol ControlResourceProvider: ControlWebResourceProvider {
 }
 
 protocol ControlWebResourceProvider {
-    func authorizedRequest(with url: URL) -> URLRequest
+    func authorizedWebViewInitialRequest(with url: URL) -> URLRequest
     var webViewConfiguration: WKWebViewConfiguration { get }
 }
 
