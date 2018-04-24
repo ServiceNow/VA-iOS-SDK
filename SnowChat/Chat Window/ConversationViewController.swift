@@ -38,7 +38,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     
     private var canFetchOlderMessages = false
     private var timeLastHistoryFetch: Date = Date()
-    private var atBeginningOfHistory = false
     private var isLoading = false
     
     private var defaultMessageHeight: CGFloat?
@@ -349,7 +348,6 @@ extension ConversationViewController {
     
     func fetchOlderMessagesIfPossible() {
         guard canFetchOlderMessages,
-            !atBeginningOfHistory,
             Date().timeIntervalSince(timeLastHistoryFetch) > 1.0 else {
                 Logger.default.logDebug("Skipping fetch of older messages")
                 return
@@ -360,15 +358,14 @@ extension ConversationViewController {
         dataController.fetchOlderMessages { [weak self] count in
             guard let strongSelf = self else { return }
             
-            strongSelf.atBeginningOfHistory = (count == 0)
-            
-            guard count > 0 else { return }
-            
-            // TODO: need to provide indices for the updated rows...
-            strongSelf.tableView.reloadData()
-            strongSelf.canFetchOlderMessages = true
-            strongSelf.timeLastHistoryFetch = Date()
+            if count > 0 {
+                // TODO: need to provide indices for the updated rows...
+                strongSelf.tableView.reloadData()
+            }
         }
+
+        canFetchOlderMessages = true
+        timeLastHistoryFetch = Date()
     }
     
     override func didChangeAutoCompletionPrefix(_ prefix: String, andWord word: String) {
