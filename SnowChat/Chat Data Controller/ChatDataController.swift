@@ -212,7 +212,15 @@ class ChatDataController {
     }
     
     func presentAuxiliaryDataIfNeeded(forMessage message: ControlData) {
-        guard let auxiliaryModel = ChatMessageModel.auxiliaryModel(withMessage: message, theme: theme) else { return }
+        // Only some controls have auxiliary data. They might appear as part of the conversation table view or on the bottom.
+        // If a control does have auxiliary data we only show it if the conversation is in-progress and it is the last control
+
+        guard let conversationId = message.conversationId,
+            let conversation = chatterbox.conversation(forId: conversationId),
+            conversation.state.isInProgress,
+            conversation.lastPendingExchange()?.message.messageId == message.messageId,
+            let auxiliaryModel = ChatMessageModel.auxiliaryModel(withMessage: message, theme: theme) else { return }
+
         bufferControlMessage(auxiliaryModel)
     }
     
