@@ -10,6 +10,7 @@ import Foundation
 
 class TopicDividerCell: UITableViewCell, Themeable {
     static let cellIdentifier = "StartTopicDividerCell"
+    static let dividerHeight: CGFloat = 1
     
     var model: ChatMessageModel?
     let lineView = UIView()
@@ -43,7 +44,7 @@ class TopicDividerCell: UITableViewCell, Themeable {
         NSLayoutConstraint.activate([lineView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5.0),
                                      lineView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5.0),
                                      lineView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10.0),
-                                     lineView.heightAnchor.constraint(equalToConstant: 1.0),
+                                     lineView.heightAnchor.constraint(equalToConstant: TopicDividerCell.dividerHeight),
                                      contentView.bottomAnchor.constraint(equalTo: lineView.bottomAnchor, constant: 10.0)])
     }
     

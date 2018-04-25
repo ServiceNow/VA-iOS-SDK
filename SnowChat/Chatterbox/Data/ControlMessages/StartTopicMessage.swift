@@ -9,7 +9,7 @@
 import Foundation
 
 struct StartTopicMessage: Codable, ControlData {
-
+    
     var uniqueId: String {
         return id
     }
@@ -48,9 +48,13 @@ struct StartTopicMessage: Codable, ControlData {
         // nothing more to add for this one
     }
     
-    init(withSessionId: String, withConversationId: String, uiMetadata: ContextualActionMessage.ContextualActionMetadata? = nil) {
+    init(withSessionId: String, withConversationId: String, uiMetadata: ContextualActionMessage.ContextualActionMetadata? = nil, value: ContextualActionMessage.ValueChoice = .startTopic) {
         type = "consumerTextMessage"
-        let controlData: StartTopicWrapper = ControlWrapper(model: ControlModel(type: "task", name: nil), uiType: "ContextualAction", uiMetadata: uiMetadata, value: "startTopic", content: nil)
+        let controlData: StartTopicWrapper = ControlWrapper(model: ControlModel(type: "task", name: nil),
+                                                            uiType: "ContextualAction",
+                                                            uiMetadata: uiMetadata,
+                                                            value: value.rawValue,
+                                                            content: nil)
         data = RichControlData<StartTopicWrapper>(sessionId: withSessionId, conversationId: withConversationId, direction: .fromClient, controlData: controlData)
     }
     

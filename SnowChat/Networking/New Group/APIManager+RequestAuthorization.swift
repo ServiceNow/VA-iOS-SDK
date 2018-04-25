@@ -11,7 +11,7 @@ import Alamofire
 
 extension APIManager {
     
-    func authorizedRequest(with url: URL) -> URLRequest {
+    func authorizedWebViewInitialRequest(with url: URL) -> URLRequest {
         let request = URLRequest(url: url)
         
         guard let authorizedRequest = (try? sessionManager.adapter?.adapt(request)) as? URLRequest else {

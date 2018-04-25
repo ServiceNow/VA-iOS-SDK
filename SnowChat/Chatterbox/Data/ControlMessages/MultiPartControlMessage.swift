@@ -52,7 +52,7 @@ struct MultiPartControlMessage: Codable, ControlData {
     }
     
     let type: String = "consumerTextMessage"
-    var data: RichControlData<ControlWrapper<String, MultiFlowMetadata>>
+    var data: RichControlData<ControlWrapper<MultiPartContentValue, MultiFlowMetadata>>
     
     // define the properties that we decode / encode
     private enum CodingKeys: String, CodingKey {
@@ -60,12 +60,43 @@ struct MultiPartControlMessage: Codable, ControlData {
         case data
     }
     
-    init(withData: RichControlData<ControlWrapper<String, MultiFlowMetadata>>) {
+    init(withData: RichControlData<ControlWrapper<MultiPartContentValue, MultiFlowMetadata>>) {
         data = withData
     }
     
     init(fromMessage message: MultiPartControlMessage) {
         data = message.data
         data.sendTime = Date()
+    }
+}
+
+struct MultiPartContentValue: Codable {
+    var rawValue: String?
+    private var isDictionary = false
+    
+    private enum CodingKeys: String, CodingKey {
+        case action
+    }
+    
+    init(from decoder: Decoder) throws {
+        if let stringValue = try? decoder.singleValueContainer().decode(String.self) {
+            rawValue = stringValue
+            return
+        }
+        
+        if let actionValue = try? decoder.container(keyedBy: CodingKeys.self).decodeIfPresent(String.self, forKey: .action) {
+            isDictionary = true
+            rawValue = actionValue
+            return
+        }
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        if isDictionary {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encodeIfPresent(rawValue, forKey: .action)
+        } else {
+            try rawValue?.encode(to: encoder)
+        }
     }
 }

@@ -33,6 +33,6 @@ class FileUploadViewModel: SingleSelectControlViewModel {
             items.append(contentsOf: [PickerItem.takePhotoItem(), PickerItem.photoLibraryItem()])
         }
         
-        super.init(id: id, label: label, required: required, items: items)
+        super.init(id: id, label: label, required: required, items: items, messageDate: nil)
     }
 }

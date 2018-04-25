@@ -1,5 +1,4 @@
-github "Alamofire/Alamofire" = 4.5.1
-github "Alamofire/AlamofireImage" = 3.3.0
+github "Alamofire/Alamofire" ~> 4.5
+github "Alamofire/AlamofireImage" ~> 3.3
 
-github "slackhq/SlackTextViewController" = 1.9.6
-
+github "slackhq/SlackTextViewController" ~> 1.9

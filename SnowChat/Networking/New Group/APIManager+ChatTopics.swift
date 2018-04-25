@@ -25,6 +25,7 @@ extension APIManager {
                 }
                 completionHandler(topics)
         }
+        .resume()
     }
     
     func allTopics(completionHandler: @escaping ([ChatTopic]) -> Void) {
@@ -39,6 +40,7 @@ extension APIManager {
                 }
                 completionHandler(topics)
         }
+        .resume()
     }
     
     // MARK: - Response Parsing

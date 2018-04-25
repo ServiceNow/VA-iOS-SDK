@@ -11,13 +11,12 @@ import UIKit
 class OutputImageViewController: UIViewController {
     
     // Putting these constraints on image for now
-    private let maxImageSize = CGSize(width: 250, height: 250)
+    private let imageSize = CGSize(width: 160, height: 160)
     private var imageWidthConstraint: NSLayoutConstraint?
-    private var imageHeightConstraint: NSLayoutConstraint?
     
     private var imageConstraints = [NSLayoutConstraint]()
     private let outputImageView = UIImageView()
-    private(set) var imageSize: CGSize?
+    private let tapGestureRecognizer = UITapGestureRecognizer()
     
     var image: UIImage? {
         didSet {
@@ -42,65 +41,49 @@ class OutputImageViewController: UIViewController {
         imageConstraints.append(contentsOf: [outputImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                                              outputImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                                              outputImageView.topAnchor.constraint(equalTo: view.topAnchor),
-                                             outputImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
+                                             outputImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                                             outputImageView.heightAnchor.constraint(equalToConstant: imageSize.height)])
         
-        imageHeightConstraint = outputImageView.heightAnchor.constraint(equalToConstant: 50)
-        imageHeightConstraint?.isActive = true
-        imageWidthConstraint = outputImageView.widthAnchor.constraint(equalToConstant: 100)
+        imageWidthConstraint = outputImageView.widthAnchor.constraint(equalToConstant: imageSize.width)
         imageWidthConstraint?.isActive = true
         
         NSLayoutConstraint.activate(imageConstraints)
-        updateImageConstraints()
+        
+        tapGestureRecognizer.addTarget(self, action: #selector(tappedImageView(_:)))
+        outputImageView.addGestureRecognizer(tapGestureRecognizer)
+        outputImageView.isUserInteractionEnabled = true
     }
     
-    func prepareViewForImageWithSize(_ size: CGSize) {
-        imageSize = size
-        imageHeightConstraint?.constant = size.height
-        imageWidthConstraint?.constant = size.width
-        
-        UIView.performWithoutAnimation {
-            view.layoutIfNeeded()
-        }
+    @objc private func tappedImageView(_ gesture: UITapGestureRecognizer) {
+        zoomIn()
+    }
+    
+    private func zoomIn() {
+        guard let image = image else { return }
+        let browserViewController = ImageBrowserViewController(images: [image])
+        let navigationController = UINavigationController(rootViewController: browserViewController)
+        navigationController.modalPresentationStyle = .overFullScreen
+        present(navigationController, animated: true, completion: nil)
     }
     
     private func updateImageConstraints() {
+        let imageSize = adjustedImageSize(for: image)
+        imageWidthConstraint?.constant = imageSize.width
+    }
+    
+    func adjustedImageSize(for image: UIImage?) -> CGSize {
         guard let image = image else {
-            return
+            return imageSize
         }
         
-        // if image is in landscape - we will limit it horizontally. otherwise vertically.
-        // set width/height proportion
-        if image.size.height > image.size.width {
-            adjustImageHeightIfNeeded()
-        } else {
-            adjustImageWidthIfNeeded()
-        }
-        
-        view.layoutIfNeeded()
+        return adjustedImageWidth(for: image)
     }
     
-    private func adjustImageHeightIfNeeded() {
-        guard let image = image, image.size.height > maxImageSize.height else {
-            return
-        }
-        
-        let height = maxImageSize.height
+    private func adjustedImageWidth(for image: UIImage) -> CGSize {
+        let adjustedImageSize: CGSize
         let ratio = image.size.width / image.size.height
-        let width = height * ratio
-        imageHeightConstraint?.constant = height
-        imageWidthConstraint?.constant = width
-        imageSize = CGSize(width: width, height: height)
-    }
-    
-    private func adjustImageWidthIfNeeded() {
-        guard let image = image, image.size.width > maxImageSize.width else {
-            return
-        }
-        
-        let ratio = image.size.height / image.size.width
-        let height = maxImageSize.width * ratio
-        imageHeightConstraint?.constant = height
-        imageWidthConstraint?.constant = maxImageSize.width
-        imageSize = CGSize(width: maxImageSize.width, height: height)
+        let width = imageSize.height * ratio
+        adjustedImageSize = CGSize(width: min(width, 250), height: imageSize.height)
+        return adjustedImageSize
     }
 }

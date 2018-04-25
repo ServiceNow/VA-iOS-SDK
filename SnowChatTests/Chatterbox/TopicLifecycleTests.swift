@@ -93,6 +93,34 @@ class TopicLifecycleTests: XCTestCase {
     }
     """
     
+    let jsonAgentMessage = """
+    {
+      "type" : "systemTextMessage",
+      "data" : {
+        "@class" : ".MessageDto",
+        "messageId" : "c012b7e3c31013009cbbdccdf3d3ae1e",
+        "sendTime" : 1519255021414,
+        "conversationId" : "42f17fd373501300d63a566a4cf6a7d6",
+        "receiveTime" : 0,
+        "links" : [
+
+        ],
+        "agent" : true,
+        "sessionId" : "43e17fd373501300d63a566a4cf6a7ff",
+        "text" : "sdfsf",
+        "taskId" : "e6f177e3c31013009cbbdccdf3d3ae1a",
+        "isAgent" : true,
+        "sender" : {
+          "sysId" : "46d44a23a9fe19810012d100cca80666",
+          "name" : "Beth Anglin",
+          "avatarPath" : "ee4eebf30a0004d963b5c5ac0d734dc4.iix?t=small"
+        },
+        "direction" : "outbound"
+      },
+      "source" : "server"
+    }
+    """
+    
     let jsonChatFinished = """
     {
           "type" : "actionMessage",
@@ -121,6 +149,10 @@ class TopicLifecycleTests: XCTestCase {
         super.setUp()
         
         chatterbox.chatStore.reset()
+        chatterbox.conversationContext.sessionId = "43e17fd373501300d63a566a4cf6a7ff"
+        chatterbox.conversationContext.systemConversationId = "f0760de6733a0300d63a566a4cf6a7b6"
+        
+        chatterbox.contextualActions = ExampleData.exampleContextualActionMessage()
     }
     
     override func tearDown() {
@@ -144,13 +176,22 @@ class TopicLifecycleTests: XCTestCase {
         chatterbox.startUserTopicHandshakeHandler(jsonStartedTopic)
         
         let handled = chatterbox.processEventMessage(jsonTopicFinished)
-
         XCTAssertTrue(handled)
         
         let conversation = chatterbox.conversation(forId: "ee86092a733a0300d63a566a4cf6a702")
         XCTAssertNotNil(conversation)
         XCTAssertEqual(Conversation.ConversationState.completed, conversation?.state)
         XCTAssertEqual("Create Incident", conversation?.topicTypeName)
+    }
+    
+    func testStartAndEndTopicUpdatesChatterboxState() {
+        chatterbox.startUserTopicHandshakeHandler(jsonStartedTopic)
+
+        XCTAssertTrue(chatterbox.state == .userConversation)
+        
+        let handled = chatterbox.processEventMessage(jsonTopicFinished)
+        XCTAssertTrue(handled)
+        XCTAssertTrue(chatterbox.state == .topicSelection)
     }
     
     func testStartedAgentTopicMessageInitializesComnversation() {
@@ -175,5 +216,17 @@ class TopicLifecycleTests: XCTestCase {
         XCTAssertNotNil(conversation)
         XCTAssertEqual(Conversation.ConversationState.completed, conversation?.state)
         XCTAssertEqual("Live Agent", conversation?.topicTypeName)
+    }
+    
+    func testStartAndEndAgentChatUpdatesChatterboxState() {
+        chatterbox.startLiveAgentHandshakeHandler(jsonStartedAgentConversation)
+        XCTAssertTrue(chatterbox.state == .waitingForAgent)
+
+        chatterbox.processControlMessage(jsonAgentMessage)
+        XCTAssertTrue(chatterbox.state == .agentConversation)
+        
+        let handled = chatterbox.processEventMessage(jsonChatFinished)
+        XCTAssertTrue(handled)
+        XCTAssertTrue(chatterbox.state == .topicSelection)
     }
 }

@@ -37,6 +37,8 @@ class ChatMessageModel {
     var isLiveAgentConversation: Bool
     var isAuxiliary = false
     
+    var lastMessageDate: Date?
+    
     init(model: ControlViewModel, messageId: String? = nil, bubbleLocation: BubbleLocation, requiresInput: Bool = false, theme: Theme, isAgentMessage: Bool = false) {
         self.type = .control
         self.controlModel = model
@@ -121,7 +123,7 @@ extension ChatMessageModel {
                 return nil
         }
         
-        let booleanModel = BooleanControlViewModel(id: message.messageId, label: title, required: required)
+        let booleanModel = BooleanControlViewModel(id: message.messageId, label: title, required: required, messageDate: message.messageTime)
         let direction = message.direction
         let snowViewModel = ChatMessageModel(model: booleanModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         return snowViewModel
@@ -170,10 +172,10 @@ extension ChatMessageModel {
         let pickerModel: PickerControlViewModel
         if message.data.richControl?.uiMetadata?.style == .carousel {
             let items = carouselItemsFromOptions(options, theme)
-            pickerModel = CarouselControlViewModel(id: message.messageId, label: title, required: required, items: items)
+            pickerModel = CarouselControlViewModel(id: message.messageId, label: title, required: required, items: items, messageDate: message.messageTime)
         } else {
             let items = options.map { PickerItem(label: $0.label, value: $0.value) }
-            pickerModel = SingleSelectControlViewModel(id: message.messageId, label: title, required: required, items: items)
+            pickerModel = SingleSelectControlViewModel(id: message.messageId, label: title, required: required, items: items, messageDate: message.messageTime)
         }
         
         let snowViewModel = ChatMessageModel(model: pickerModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
@@ -190,7 +192,7 @@ extension ChatMessageModel {
         
         let options = message.data.richControl?.uiMetadata?.options ?? []
         let items = options.map { PickerItem(label: $0.label, value: $0.value) }
-        let multiSelectModel = MultiSelectControlViewModel(id: message.messageId, label: title, required: required, items: items)
+        let multiSelectModel = MultiSelectControlViewModel(id: message.messageId, label: title, required: required, items: items, messageDate: message.messageTime)
         let snowViewModel = ChatMessageModel(model: multiSelectModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         return snowViewModel
     }
@@ -202,7 +204,7 @@ extension ChatMessageModel {
         
         let direction = message.direction
         
-        let textViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: title)
+        let textViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: title, messageDate: message.messageTime)
         let snowViewModel = ChatMessageModel(model: textViewModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         return snowViewModel
     }
@@ -214,7 +216,7 @@ extension ChatMessageModel {
         
         let direction = message.direction
         
-        let textViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: title)
+        let textViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: title, messageDate: message.messageTime)
         let snowViewModel = ChatMessageModel(model: textViewModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         return snowViewModel
     }
@@ -225,7 +227,7 @@ extension ChatMessageModel {
         }
         
         let direction = message.direction
-        let textModel = TextControlViewModel(id: message.messageId, value: value)
+        let textModel = TextControlViewModel(id: message.messageId, value: value, messageDate: message.messageTime)
         let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         return snowViewModel
     }
@@ -233,7 +235,7 @@ extension ChatMessageModel {
     static func model(withMessage message: AgentTextControlMessage, theme: Theme) -> ChatMessageModel? {
         let value = message.data.text
         let direction = message.direction
-        let textModel = TextControlViewModel(id: message.messageId, value: value)
+        let textModel = TextControlViewModel(id: message.messageId, value: value, messageDate: message.messageTime)
         let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme, isAgentMessage: true)
 
         if let avatarPath = message.sender?.avatarPath {
@@ -250,7 +252,7 @@ extension ChatMessageModel {
         
         let direction = message.direction
         
-        let textModel = TextControlViewModel(id: message.messageId, value: value)
+        let textModel = TextControlViewModel(id: message.messageId, value: value, messageDate: message.messageTime)
         let snowViewModel = ChatMessageModel(model: textModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), requiresInput: true, theme: theme)
         return snowViewModel
     }
@@ -266,7 +268,7 @@ extension ChatMessageModel {
             return nil
         }
         
-        let outputImageModel = OutputImageViewModel(id: message.messageId, value: url)
+        let outputImageModel = OutputImageViewModel(id: message.messageId, value: url, messageDate: message.messageTime)
         let snowViewModel = ChatMessageModel(model: outputImageModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         
         if let avatarPath = message.sender?.avatarPath {
@@ -277,14 +279,16 @@ extension ChatMessageModel {
     }
     
     static func model(withMessage message: OutputLinkControlMessage, theme: Theme) -> ChatMessageModel? {
-        guard let value = message.data.richControl?.value else {
+        guard let value = message.data.richControl?.value,
+            let header = message.data.richControl?.uiMetadata?.header else {
             return nil
         }
         
+        let label = message.data.richControl?.uiMetadata?.label
         let direction = message.direction
         
         guard let url = URL(string: value.action) else { return nil }
-        let outputLinkModel = OutputLinkControlViewModel(id: message.messageId, value: url)
+        let outputLinkModel = OutputLinkControlViewModel(id: message.messageId, label: label, header: header, value: url, messageDate: message.messageTime)
         let snowViewModel = ChatMessageModel(model: outputLinkModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
 
         if let avatarPath = message.sender?.avatarPath {
@@ -300,7 +304,7 @@ extension ChatMessageModel {
         }
         
         let direction = message.direction
-        let outputHtmlModel = OutputHtmlControlViewModel(id: message.messageId, value: value)
+        let outputHtmlModel = OutputHtmlControlViewModel(id: message.messageId, value: value, messageDate: message.messageTime)
         var size = CGSize(width: UIViewNoIntrinsicMetric, height: UIViewNoIntrinsicMetric)
         if let width = message.data.richControl?.uiMetadata?.width {
             size.width = CGFloat(width)
@@ -323,7 +327,7 @@ extension ChatMessageModel {
         
         let direction = message.direction
         
-        let outputTextModel = TextControlViewModel(id: message.messageId, value: "\(value)\n\(instruction)")
+        let outputTextModel = TextControlViewModel(id: message.messageId, value: "\(value)\n\(instruction)", messageDate: message.messageTime)
         let textChatModel = ChatMessageModel(model: outputTextModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         
         return textChatModel
@@ -332,7 +336,7 @@ extension ChatMessageModel {
     static func model(withMessage message: ControlDataUnknown, theme: Theme) -> ChatMessageModel? {
         let value = message.label ?? ""
         let direction = message.direction
-        let outputTextModel = TextControlViewModel(id: ChatUtil.uuidString(), value: "Unsupported control: \(value)")
+        let outputTextModel = TextControlViewModel(id: ChatUtil.uuidString(), value: "Unsupported control: \(value)", messageDate: message.messageTime)
         let textChatModel = ChatMessageModel(model: outputTextModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         
         return textChatModel

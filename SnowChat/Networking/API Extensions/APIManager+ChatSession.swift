@@ -43,6 +43,7 @@ extension APIManager {
                     completion(.failure(ChatterboxError.unknown(details: "malformed server response")))
                 }
         }
+        .resume()
     }
 
     private func initializeChatSession(_ sessionData: [String: Any], welcomeMessage: String?) -> ChatSession? {
@@ -83,6 +84,7 @@ extension APIManager {
                 }
                 completionHandler(conversation)
         }
+        .resume()
     }
     
     func fetchConversations(forConsumer consumerId: String, completionHandler: @escaping ([Conversation]) -> Void) {
@@ -125,6 +127,7 @@ extension APIManager {
             }
             completionHandler(conversations)
         }
+        .resume()
     }
     
     // MARK: - Response Parsing
@@ -139,9 +142,17 @@ extension APIManager {
         
                 let status = conversationDictionary["status"] as? String ?? "UNKNOWN"
                 let topicTypeName = conversationDictionary["topicTypeName"] as? String ?? "UNKNOWN"
+                
+                let deviceType: Conversation.DeviceType?
+                if let deviceTypeString = conversationDictionary["deviceType"] as? String {
+                    deviceType = Conversation.DeviceType(rawValue: deviceTypeString)
+                } else {
+                    deviceType = nil
+                }
+                
                 let messages = APIManager.messagesFromResult(messagesDictionary, assumeMessagesReversed: assumeMessagesReversed)
                 let state = Conversation.ConversationState(rawValue: status) ?? .completed
-                var conversation = Conversation(withConversationId: conversationId, withTopic: topicTypeName, withState: state)
+                var conversation = Conversation(withConversationId: conversationId, withTopic: topicTypeName, withState: state, deviceType: deviceType)
                 
                 messages.forEach({ (message) in
                     if let lastPending = conversation.lastPendingMessage() as? ControlData,

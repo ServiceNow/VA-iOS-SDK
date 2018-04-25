@@ -26,13 +26,7 @@ class OutputImageControl: ControlProtocol {
     
     private var requestReceipt: RequestReceipt?
     
-    var model: ControlViewModel {
-        didSet {
-            if let size = imageModel.size {
-                imageViewController.prepareViewForImageWithSize(size)
-            }
-        }
-    }
+    var model: ControlViewModel
     
     required init(model: ControlViewModel, resourceProvider: ControlResourceProvider) {
         guard let imageModel = model as? OutputImageViewModel else {
@@ -50,9 +44,10 @@ class OutputImageControl: ControlProtocol {
     
     private func downloadImageIfNeeded() {
         let imageModel = self.imageModel
-        let urlRequest = resourceProvider.authorizedRequest(with: imageModel.value)
         let imageDownloader = resourceProvider.imageDownloader
+        let urlRequest = URLRequest(url:imageModel.value)
         requestReceipt = imageDownloader.download(urlRequest) { [weak self] (response) in
+            
             guard let currentModel = self?.model as? OutputImageViewModel,
                 imageModel.value == currentModel.value else {
                     return
@@ -63,19 +58,10 @@ class OutputImageControl: ControlProtocol {
                 Logger.default.logError("No image downloaded for \(imageModel.value): error=\(error)")
                 return
             }
-
+            
+            guard let strongSelf = self else { return }
             let image = response.value
-            guard let strongSelf = self, strongSelf.imageViewController.image != image else { return }
-            
-            // If we already fetched image before we don't need to call beginUpdate/endUpdate on tableView
-            // Which is called in didFinishImageDownload
-            let needsLayoutUpdate = strongSelf.imageModel.size == nil
             strongSelf.imageViewController.image = image
-            strongSelf.imageModel.size = strongSelf.imageViewController.imageSize
-            
-            if needsLayoutUpdate {
-                strongSelf.delegate?.controlDidFinishLoading(strongSelf)
-            }
         }
     }
     

@@ -16,7 +16,10 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     @IBOutlet private weak var agentBubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var bubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var bubbleTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var bubbleToSuperviewTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var bubbleToTimestampTopConstraint: NSLayoutConstraint!
     @IBOutlet private weak var agentImageTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var timestampLabel: UILabel!
     
     private var controlHeightConstraint: NSLayoutConstraint?
     private var controlWidthConstraint: NSLayoutConstraint?
@@ -26,6 +29,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     var controlCache: ControlCache?
     var resourceProvider: ControlResourceProvider?
+    private var requestReceipt: RequestReceipt?
     
     private(set) var uiControl: ControlProtocol?
     
@@ -37,6 +41,8 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         }
     }
     
+    private let timestampAgeSeconds: TimeInterval = 30.0
+    
     private func updateWithModel(_ model: ChatMessageModel) {
         guard let controlModel = model.controlModel,
             let resourceProvider = resourceProvider,
@@ -44,10 +50,10 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
             let control = controlCache?.control(forModel: controlModel, forResourceProvider: resourceProvider) else {
                 return
         }
-        
+
         // if previous uiControl had a delegate we will pass it over to a new control
         control.delegate = uiControl?.delegate
-        addUIControl(control, at: bubbleLocation)
+        addUIControl(control, at: bubbleLocation, lastMessageDate: model.lastMessageDate)
     }
     
     func configure(withChatMessageModel model: ChatMessageModel,
@@ -66,22 +72,34 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     }
     
     private func loadAvatar() {
-        if let provider = resourceProvider {
+        guard let provider = resourceProvider,
+            let avatarURL = model?.avatarURL ?? theme.avatarUrl else { return }
+        
+        let downloader = provider.imageDownloader
+        let request = URLRequest(url: avatarURL)
+        
+        requestReceipt = downloader.download(request, completion: { [weak self] response in
+            guard let strongSelf = self else { return }
             
-            agentImageView.af_imageDownloader = provider.imageDownloader
-            
-            if let avatarURL = model?.avatarURL ?? theme.avatarUrl {
-                agentImageView.af_setImage(withURL: avatarURL)
+            if let error = response.error {
+                Logger.default.logError("Error loading avatar image: \(error)")
+                return
             }
             
-            agentImageView.addCircleMaskIfNeeded()
-        }
+            let image = response.value
+            strongSelf.agentImageView.image = image
+        })
+        
+        agentImageView.addCircleMaskIfNeeded()
     }
     
     private func prepareControlForReuse() {
+        controlHeightConstraint?.isActive = false
+        controlHeightConstraint = nil
+        controlWidthConstraint?.isActive = false
+        controlWidthConstraint = nil
+        
         if let control = uiControl, isPresentingControl(control) {
-            controlHeightConstraint?.isActive = false
-            controlWidthConstraint?.isActive = false
             control.removeFromParent()
             
             if control.isReusable {
@@ -95,24 +113,31 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         model = nil
         uiControl = nil
         resourceProvider = nil
-        agentImageView.af_cancelImageRequest()
         agentImageView.image = nil
+        
+        if let receipt = requestReceipt,
+            let imageDownloader = resourceProvider?.imageDownloader {
+            imageDownloader.cancelRequest(with: receipt)
+            requestReceipt = nil
+        }
     }
     
-    internal func addUIControl(_ control: ControlProtocol, at location: BubbleLocation) {
+    internal func addUIControl(_ control: ControlProtocol, at location: BubbleLocation, lastMessageDate: Date?) {
         guard uiControl?.model.id != control.model.id,
             uiControl?.model.type != control.model.type else {
             return
         }
         
+        let controlViewController = control.viewController
+        let controlView: UIView = controlViewController.view
+        controlView.removeFromSuperview()
+        
         // Remove current control if needed
         prepareControlForReuse()
         
         applyTheme(for: control, at: location)
-        let controlViewController = control.viewController
         controlViewController.willMove(toParentViewController: self)
         addChildViewController(controlViewController)
-        let controlView: UIView = controlViewController.view
 
         controlView.translatesAutoresizingMaskIntoConstraints = false
         bubbleView.contentView.addSubview(controlView)
@@ -145,6 +170,8 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         view.layoutIfNeeded()
         
         uiControl = control
+        
+        updateTimestamp(messageDate: control.model.messageDate, lastMessageDate: lastMessageDate)
     }
     
     private func isPresentingControl(_ control: ControlProtocol?) -> Bool {
@@ -153,6 +180,42 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         }
         
         return uiControlView.superview == bubbleView.contentView
+    }
+    
+    // MARK: Timestamp
+
+    private func updateTimestamp(messageDate: Date?, lastMessageDate: Date?) {
+        guard let messageDate = messageDate else {
+            clearTimestamp()
+            return
+        }
+        
+        guard let lastMessageDate = lastMessageDate else {
+            updateTimestamp(messageDate: messageDate)
+            return
+        }
+        
+        let interval = messageDate.timeIntervalSince(lastMessageDate)
+        
+        if interval > timestampAgeSeconds {
+            updateTimestamp(messageDate: messageDate)
+        } else {
+            clearTimestamp()
+        }
+    }
+
+    private func updateTimestamp(messageDate: Date) {
+        bubbleToSuperviewTopConstraint.priority = .lowest
+        bubbleToTimestampTopConstraint.priority = .veryHigh
+        timestampLabel.isHidden = false
+        timestampLabel.text = DateFormatter.now_timeAgoSince(messageDate)
+    }
+    
+    private func clearTimestamp() {
+        bubbleToSuperviewTopConstraint.priority = .veryHigh
+        bubbleToTimestampTopConstraint.priority = .lowest
+        timestampLabel.isHidden = true
+        timestampLabel.text = ""
     }
     
     // MARK: - Update Constraints
@@ -197,8 +260,11 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         bubbleView.backgroundColor = controlTheme.backgroundColor
         
         // Make sure that a little tail in the bubble gets colored like picker background. now it is hardcoded to white but will need to get theme color
-        if control.viewController is PickerViewController {
+        if control.viewController is PickerViewController || control.viewController is OutputLinkViewController {
             bubbleView.backgroundColor = UIColor.white
         }
-    }
+        
+        timestampLabel.textColor = theme.timestampColor
+        timestampLabel.textAlignment = NSTextAlignment.center
+    }    
 }

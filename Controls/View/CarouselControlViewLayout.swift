@@ -9,7 +9,6 @@
 import UIKit
 
 class CarouselControlViewLayout: UICollectionViewFlowLayout {
-    
     private(set) var focusedIndexPath = IndexPath(item: 0, section: 0)
     
     private var nextIndexPath: IndexPath {
@@ -28,100 +27,46 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
     
     private var lastContentOffset = CGPoint.zero
     private var itemCount: Int = 0
-    let headerHeight: CGFloat = 50
-    let footerHeight: CGFloat = 50
-    
-    override init() {
-        super.init()
-        minimumLineSpacing = 10
-        scrollDirection = .horizontal
-        itemSize = CGSize(width: 150, height: 160)
-    }
-    
+
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
+        itemSize = CGSize(width: 1, height: 1)
+        scrollDirection = .horizontal
     }
     
     override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         return true
     }
-    
+
     override func prepare() {
         super.prepare()
-        guard let collectionView = collectionView else {
-            return
-        }
-        
+        guard let collectionView = collectionView else { return }
+        itemSize = CGSize(width: 150, height: 160)
         itemCount = collectionView.numberOfItems(inSection: 0)
-        headerReferenceSize = CGSize(width: 1, height: headerHeight)
-        footerReferenceSize = CGSize(width: 1, height: footerHeight)
-        collectionView.decelerationRate = UIScrollViewDecelerationRateFast
-        
+        sectionInset = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0)
         let horizontalContentInset = collectionView.frame.width * 0.5 - itemSize.width * 0.5
         collectionView.contentInset = UIEdgeInsets(top: 0, left: horizontalContentInset, bottom: 0, right: horizontalContentInset)
     }
-    
+
     override var collectionViewContentSize: CGSize {
         guard let collectionView = collectionView else {
             return super.collectionViewContentSize
         }
-        
-        var collectionViewContentSize = super.collectionViewContentSize
-        collectionViewContentSize.height = collectionView.frame.height
-        return collectionViewContentSize
+
+        let collectionViewHeight: CGFloat = itemSize.height + sectionInset.top + sectionInset.bottom
+        let width = itemCount * Int(itemSize.width) + ((itemCount - 1) * 10)
+        let collectionViewWidth = CGFloat(2 * Int(collectionView.contentInset.left) + width)
+        return CGSize(width: collectionViewWidth, height: collectionViewHeight)
     }
-    
-    override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        guard let collectionView = collectionView else {
-            return super.layoutAttributesForSupplementaryView(ofKind: elementKind, at: indexPath)
-        }
-        
-        let attributes = super.layoutAttributesForSupplementaryView(ofKind: elementKind, at: indexPath)?.copy() as! UICollectionViewLayoutAttributes
-        
-        var frame = attributes.frame
-        frame.origin.x = collectionView.contentOffset.x
-        frame.size.width = collectionView.bounds.width
-        
-        if elementKind == UICollectionElementKindSectionHeader {
-            frame.origin.y = -collectionView.contentInset.top
-            frame.size.height = headerReferenceSize.height
-        } else if elementKind == UICollectionElementKindSectionFooter {
-            frame.origin.y = collectionView.bounds.height - footerReferenceSize.height
-            frame.size.height = footerReferenceSize.height
-        } else {
-            return super.layoutAttributesForSupplementaryView(ofKind: elementKind, at: indexPath)
-        }
-        
-        attributes.frame = frame
-        return attributes
-    }
-    
+
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         guard let attributes = super.layoutAttributesForElements(in: rect)?.map({ $0.copy() as! UICollectionViewLayoutAttributes }),
             let collectionView = collectionView else {
             return super.layoutAttributesForElements(in: rect)
         }
-        
-        // update header position
-        if let headerAttributes = attributes.first(where: { $0.representedElementKind == UICollectionElementKindSectionHeader }),
-            let calculatedHeaderAttributes = layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionHeader, at: headerAttributes.indexPath) {
-            headerAttributes.frame = calculatedHeaderAttributes.frame
-        }
-        
-        // update footer position
-        if let footerAttributes = attributes.first(where: { $0.representedElementKind == UICollectionElementKindSectionFooter }),
-            let calculatedFooterAttributes = layoutAttributesForSupplementaryView(ofKind: UICollectionElementKindSectionFooter, at: footerAttributes.indexPath) {
-            footerAttributes.frame = calculatedFooterAttributes.frame
-        }
-        
+
         let collectionViewCenter = CGPoint(x: collectionView.frame.width * 0.5, y: collectionView.frame.height * 0.5)
         let centerAttribute = attributes.first(where: { attribute in
-            
-            // we only want to scale items, not headers or footers
-            guard attribute.representedElementKind != UICollectionElementKindSectionHeader && attribute.representedElementKind != UICollectionElementKindSectionFooter else {
-                return false
-            }
-            
             let currentItemXPosition = attribute.frame.origin.x - collectionView.contentOffset.x
             var translatedAttributeFrame = attribute.frame
             translatedAttributeFrame.origin.x = currentItemXPosition
@@ -131,15 +76,11 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         // TODO: Add nice animation here
         centerAttribute?.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
         centerAttribute?.zIndex = 100
+
         return attributes
     }
     
     override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint, withScrollingVelocity velocity: CGPoint) -> CGPoint {
-        lastContentOffset = targetContentOffset(forProposedContentOffset: proposedContentOffset)
-        return lastContentOffset
-    }
-    
-    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
         guard let collectionView = self.collectionView else { return CGPoint.zero }
         // Find next indexPath for proposed contentOffset. Check for boundary conditions
         let nextIndexPathToFocus: IndexPath
@@ -151,7 +92,13 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
             nextIndexPathToFocus = focusedIndexPath
         }
         
-        return targetContentOffset(for: nextIndexPathToFocus)
+        lastContentOffset = targetContentOffset(for: nextIndexPathToFocus)
+        return lastContentOffset
+    }
+    
+    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+        lastContentOffset = targetContentOffset(for: focusedIndexPath)
+        return lastContentOffset
     }
     
     func selectNextItem() {
@@ -175,8 +122,9 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
     private func targetContentOffset(for indexPath: IndexPath) -> CGPoint {
         guard let collectionView = self.collectionView else { return CGPoint.zero }
         guard let cell = collectionView.cellForItem(at: indexPath) else {
-            Logger.default.logError("Couldn't find collection cell!")
-            return CGPoint(x: collectionView.contentInset.left, y: collectionView.contentOffset.y)
+            Logger.default.logError("Couldn't find a collection cell!")
+            focusedIndexPath = IndexPath(row: 0, section: 0)
+            return CGPoint(x: -collectionView.contentInset.left, y: collectionView.contentOffset.y)
         }
         
         let cellMinX = cell.frame.minX

@@ -20,9 +20,12 @@ class OutputImageViewModel: ControlViewModel, Resizable {
     
     let value: URL
     
-    init(id: String, label: String? = nil, value: URL) {
+    let messageDate: Date?
+    
+    init(id: String, label: String? = nil, value: URL, messageDate: Date) {
         self.label = label
         self.value = value
         self.id = id
+        self.messageDate = messageDate
     }
 }

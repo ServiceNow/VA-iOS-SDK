@@ -22,11 +22,14 @@ class SingleSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
         return .singleSelect
     }
     
-    init(id: String, label: String? = nil, required: Bool, items: [PickerItem], resultValue: String? = nil) {
+    let messageDate: Date?
+    
+    init(id: String, label: String? = nil, required: Bool, items: [PickerItem], resultValue: String? = nil, messageDate: Date?) {
         self.id = id
         self.label = label
         self.isRequired = required
         self.items = items
+        self.messageDate = messageDate
         
         if !required {
             self.items.append(PickerItem.skipItem())

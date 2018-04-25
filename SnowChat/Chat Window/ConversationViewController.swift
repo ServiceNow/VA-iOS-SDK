@@ -20,6 +20,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     }
     
     private let bottomInset: CGFloat = 45
+    private let estimatedRowHeight: CGFloat = 50
     
     private var inputState = InputState.inTopicSelection {
         didSet {
@@ -38,9 +39,13 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     private var canFetchOlderMessages = false
     private var timeLastHistoryFetch: Date = Date()
     private var isLoading = false
+    
     private var defaultMessageHeight: CGFloat?
+    private var maxMessageHeight: CGFloat?
+    private var tableFooterView: PagingTableFooterView?
     
     private var wasHistoryLoadedForUser: Bool = false
+    private var viewDidPerformInitialHistoryLoad = false
     
     override var tableView: UITableView {
         // swiftlint:disable:next force_unwrapping
@@ -101,6 +106,16 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         // not calling super to override slack's behavior
         adjustContentInset()
         defaultMessageHeight = tableView.bounds.height * 0.3
+        
+        let bottomMargin: CGFloat
+        if #available(iOS 11.0, *) {
+            bottomMargin = tableView.safeAreaInsets.top
+        } else {
+            // Fallback on earlier versions
+            bottomMargin = topLayoutGuide.length
+        }
+        
+        maxMessageHeight = tableView.bounds.height - bottomMargin - 50
     }
     
     private func adjustContentInset() {
@@ -125,14 +140,27 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     private func setupTableView() {
         tableView.separatorStyle = .none
         
+        tableView.keyboardDismissMode = .onDrag
+        
+        shouldScrollToBottomAfterKeyboardShows = true
+        
         // NOTE: making section header height very tiny as 0 make it default size in iOS11
         // see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
         tableView.sectionHeaderHeight = CGFloat(0.01)
-        tableView.estimatedRowHeight = 250
+        tableView.estimatedRowHeight = estimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
         tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
         tableView.register(TopicDividerCell.self, forCellReuseIdentifier: TopicDividerCell.cellIdentifier)
+        tableFooterView = PagingTableFooterView.footerView(for: tableView)
+    }
+    
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if isAutoCompleting, gestureRecognizer is UITapGestureRecognizer {
+            showAutoCompletionView(false)
+        }
+        
+        return super.gestureRecognizerShouldBegin(gestureRecognizer)
     }
     
     func applyTheme(_ theme: Theme) {
@@ -169,7 +197,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         setTextInputbarHidden(false, animated: true)
         
         textView.text = ""
-        textView.placeholder = NSLocalizedString("Type your question here...", comment: "Placeholder text for input field when user is selecting a topic")
+        textView.placeholder = NSLocalizedString("Type your question...", comment: "Placeholder text for input field when user is selecting a topic")
     }
     
     fileprivate func setupTextViewForConversation() {
@@ -205,6 +233,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
             return
         }
         
+        adjustModelSizeIfNeeded(model)
         cell.messageViewController?.configure(withChatMessageModel: model,
                                               controlCache: uiControlCache,
                                               controlDelegate: self,
@@ -226,11 +255,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 case .update(let index, let oldModel, let model):
-                    guard model.controlModel != nil,
-                          oldModel.controlModel != nil else { fatalError("Only control-types allowed in didChangeModel udpates!") }
-                    
-                    if model.type != oldModel.type || model.isAuxiliary != oldModel.isAuxiliary {
-                        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    if model.controlModel == nil || oldModel.controlModel == nil ||
+                       model.type != oldModel.type || model.isAuxiliary != oldModel.isAuxiliary {
+                        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)                        
                     } else {
                         updateModel(model, atIndex: index)
                     }
@@ -252,18 +279,26 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     
     func controllerWillLoadContent(_ dataController: ChatDataController) {
         isLoading = true
-        showActivityIndicator = true
+
+        // For initial load we show activity indicator in the center of the view. Then we show it in the footer (visually header, since the table view is inverted)
+        if !viewDidPerformInitialHistoryLoad {
+            viewDidPerformInitialHistoryLoad = true
+            showActivityIndicator = true
+        } else {
+            tableFooterView?.isLoading = true
+        }
     }
     
     func controllerDidLoadContent(_ dataController: ChatDataController) {
         isLoading = false
+        tableFooterView?.isLoading = false
         canFetchOlderMessages = true
-
         setupInputForState()
         manageInputControl()
         updateTableView()
-        
         showActivityIndicator = false
+        
+        tableView.layoutIfNeeded()
     }
     
     private func updateTableView() {
@@ -289,8 +324,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
             }
         case .inTopicSelection, .inAgentConversation:
             isTextInputbarHidden = false
-        default:
-            Logger.default.logDebug("unhandled inputState in manageInputControl: \(inputState)")
+        case .waitingForAgent, .inSystemTopicSelection:
+            isTextInputbarHidden = true
         }
     }
 }
@@ -312,8 +347,8 @@ extension ConversationViewController {
     
     func fetchOlderMessagesIfPossible() {
         guard canFetchOlderMessages,
-            Date().timeIntervalSince(timeLastHistoryFetch) > 5.0 else {
-                Logger.default.logDebug("Skipping fetch of older messages - last one was \(Date().timeIntervalSince(timeLastHistoryFetch)) ago")
+            Date().timeIntervalSince(timeLastHistoryFetch) > 1.0 else {
+                Logger.default.logDebug("Skipping fetch of older messages")
                 return
         }
             
@@ -380,11 +415,11 @@ extension ConversationViewController {
         switch inputState {
         case .inConversation:
             // send the input as a control update
-            let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
+            let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText, messageDate: nil)
             dataController.updateControlData(model, isSkipped: false)
         case .inAgentConversation:
             // send the input as a straight-up data control (not an update)
-            let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText)
+            let model = TextControlViewModel(id: ChatUtil.uuidString(), value: inputText, messageDate: nil)
             dataController.sendControlData(model)
             textView.text = ""
         default:
@@ -490,13 +525,19 @@ extension ConversationViewController {
     // MARK: - Special case for OutputHtmlViewModel..
     private func adjustModelSizeIfNeeded(_ messageModel: ChatMessageModel) {
         guard let outputHtmlModel = messageModel.controlModel as? OutputHtmlControlViewModel,
-            let messageHeight = defaultMessageHeight,
-            let size = outputHtmlModel.size,
-            size.height == UIViewNoIntrinsicMetric else {
+            let size = outputHtmlModel.size else {
                 return
         }
         
-        outputHtmlModel.size = CGSize(width: UIViewNoIntrinsicMetric, height: messageHeight)
+        if let messageHeight = defaultMessageHeight, size.height == UIViewNoIntrinsicMetric || size.height < 1 {
+            outputHtmlModel.size?.height = messageHeight
+        } else if let messageHeight = maxMessageHeight {
+            outputHtmlModel.size?.height = min(size.height, messageHeight)
+        }
+        
+        if size.width < 1 {
+            outputHtmlModel.size?.width = UIViewNoIntrinsicMetric
+        }
     }
     
     // MARK: - ChatMessageViewController reuse
@@ -532,6 +573,9 @@ extension ConversationViewController: ChatEventListener {
         inputState = .waitingForAgent
         
         dataController.agentTopicWillStart()
+        
+        // scroll to bottom to show the agent-waiting message
+        scrollToBottom()
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didStartAgentChat agentInfo: AgentInfo, forChat chatId: String) {
@@ -577,21 +621,37 @@ extension ConversationViewController: ChatEventListener {
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
+        guard self.chatterbox.id == chatterbox.id else {
+            return
+        }
+
         initializeSessionIfNeeded()
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didRestoreUserSession sessionId: String, forChat chatId: String ) {
+        guard self.chatterbox.id == chatterbox.id else {
+            return
+        }
+
         initializeSessionIfNeeded()
+    }
+
+    func chatterbox(_ chatterbox: Chatterbox, willStartTopic topicInfo: TopicInfo, forChat chatId: String) {
+        guard self.chatterbox.id == chatterbox.id else {
+            return
+        }
+        
+        inputState = .inConversation
+
+        dataController.topicWillStart(topicInfo)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didStartTopic topicInfo: TopicInfo, forChat chatId: String) {
         guard self.chatterbox.id == chatterbox.id else {
                 return
         }
-
-        dataController.topicDidStart(topicInfo)
         
-        inputState = .inConversation
+        dataController.topicDidStart(topicInfo)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didResumeTopic topicInfo: TopicInfo, forChat chatId: String) {
@@ -613,10 +673,18 @@ extension ConversationViewController: ChatEventListener {
         dataController.topicDidFinish()
         
         inputState = .inTopicSelection
+
+        // scroll to bottom so topic selection button is visible
+        scrollToBottom()
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didReceiveTransportStatus transportStatus: TransportStatus, forChat chatId: String) {
         // TODO: is there anything to do here to help the user deal with loss of connectivity?
+    }
+    
+    func scrollToBottom() {
+        // our tableView is inverted, so `.top` is `.bottom`...
+        tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: UITableViewScrollPosition.top, animated: false)
     }
 }
 
@@ -640,20 +708,6 @@ extension ConversationViewController: ControlDelegate {
     func controlDidFinishLoading(_ control: ControlProtocol) {
         tableView.beginUpdates()
         tableView.endUpdates()
-    }
-    
-    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        if let chatModel = dataController.controlForIndex(indexPath.row) {
-            if chatModel.type == .topicDivider {
-                return 2
-            }
-            
-            if let viewModel = chatModel.controlModel as? Resizable, let size = viewModel.size {
-                return size.height
-            }
-        }
-        
-        return 200
     }
 }
 

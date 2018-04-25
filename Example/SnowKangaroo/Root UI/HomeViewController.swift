@@ -15,6 +15,7 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     
     @IBOutlet weak var chatButton: UIButton!
     @IBOutlet private weak var statusLabel: UILabel!
+    @IBOutlet weak var forceSessionSwitch: UISwitch!
     
     // MARK: - View Life Cycle
     
@@ -34,15 +35,20 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         setupStatusLabel()
 
         chatButton.isEnabled = true
+        
+        forceSessionSwitch.isOn = false
+        
+        if chatService?.isConnected ?? false {
+            forceSessionSwitch.isEnabled = true
+        } else {
+            forceSessionSwitch.isOn = true
+            forceSessionSwitch.isEnabled = false
+        }
     }
     
     // MARK: - UI Setup
     
     private func setupChatService() {
-        guard self.chatService == nil else {
-            NSLog("ChatService already setup!")
-            return
-        }
         guard let instanceURL = InstanceSettings.shared.instanceURL else {
             NSLog("No instance URL defined: cannot setup ChatService")
             return
@@ -71,7 +77,14 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         }
 
         chatButton.isEnabled = false
-        statusLabel.text = "Establishing Chat Session..."
+        
+        if forceSessionSwitch.isOn {
+            setupChatService()
+            statusLabel.text = "Establishing new Chat Session..."
+        } else {
+            statusLabel.text = "Resuming existing Chat Session..."
+        }
+        
         establishChatSession(credential: credential, logOutOnAuthFailure: true)
     }
     

@@ -226,17 +226,9 @@ extension Chatterbox {
                     
                     var conversation = conversation
                     let isLastConversation = conversation.conversationId == lastConversation.conversationId
-                    let isInProgress = isLastConversation && conversation.state.isInProgress
+                    let isInProgress = isLastConversation && conversation.state.isInProgress && strongSelf.canResumeConversation(conversation)
                     
-                    if isInProgress {
-                        guard isLastConversation else { fatalError("inProgress conversation MUST be the last conversation!") }
-                        
-                        // if we are on an in-progress conversation, then signal that history loading is done and process
-                        // the in-progress conversation as a live-one, not a historical one
-                        strongSelf.notifyDataListeners { listener in
-                            listener.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
-                        }
-                    } else {
+                    if !isInProgress {
                         // normalize the completion state (error, canceled, completed all become completed)
                         conversation.state = .completed
                     }
@@ -245,10 +237,8 @@ extension Chatterbox {
                     
                     if isLastConversation {
                         // notify that load is complete, unless we already did (for the in-progress conversation)
-                        if !isInProgress {
-                            strongSelf.notifyDataListeners { listener in
-                                listener.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
-                            }
+                        strongSelf.notifyDataListeners { listener in
+                            listener.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
                         }
                         
                         if !skipSyncingState {
@@ -262,6 +252,16 @@ extension Chatterbox {
             logger.logError("No consumer Account ID, cannot load data from service")
             completionHandler(ChatterboxError.invalidParameter(details: "No ConsumerAccountId set in refreshConversations"))
         }
+    }
+    
+    internal func canResumeConversation(_ conversation: Conversation) -> Bool {
+        guard let deviceType = conversation.deviceType else { return false }
+        
+        // we only resume iOS-originated conversations.
+        // EXCEPT live-agent conversations are always marked 'web' so we resume them regardless of deviceType
+        
+        let topicName = conversation.topicTypeName
+        return deviceType == .iOS || topicName == "_live_agent_support_"
     }
     
     internal func storeHistoryAndPublish(_ exchange: MessageExchange, forConversation conversationId: String) {
@@ -289,7 +289,8 @@ extension Chatterbox {
         
         conversation.messageExchanges().forEach { exchange in
             let outputOnlyMessage = exchange.message.isOutputOnly || exchange.message.controlType == .multiPart
-            let inputPending = exchange.isComplete == false && conversation.state.isInProgress
+            let inProgress = conversation.state.isInProgress
+            let inputPending = exchange.isComplete == false && inProgress
             
             if outputOnlyMessage || inputPending {
                 notifyMessage(exchange.message)
@@ -300,6 +301,8 @@ extension Chatterbox {
     }
     
     internal func notifyMessage(_ message: ControlData) {
+        logger.logDebug("--> Notifying Message: \(message.controlType)")
+        
         guard chatDataListeners.count > 0 else {
             logger.logError("No ChatDataListener in NotifyControlReceived")
             return

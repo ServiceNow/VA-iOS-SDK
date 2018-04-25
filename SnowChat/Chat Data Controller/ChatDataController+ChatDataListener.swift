@@ -17,18 +17,13 @@ extension ChatDataController: ChatDataListener {
             return
         }
         
-        if let messageModel = chatMessageModel(withMessage: message) {
-            bufferControlMessage(messageModel)
-            
-            if isBufferingEnabled {
-                // Only some controls have auxiliary data. They might appear as part of the conversation table view or on the bottom.
-                // NOTE: we do not show the aux-controls if we are not buffering
-                presentAuxiliaryDataIfNeeded(forMessage: message)
-            }
-            
-        } else {
+        guard let messageModel = chatMessageModel(withMessage: message)  else {
             dataConversionError(controlId: message.uniqueId, controlType: message.controlType)
+            return
         }
+        
+        bufferControlMessage(messageModel)
+        presentAuxiliaryDataIfNeeded(forMessage: message)
     }
     
     private func dataConversionError(controlId: String, controlType: ChatterboxControlType) {
@@ -108,9 +103,12 @@ extension ChatDataController: ChatDataListener {
     }
     
     private func didCompleteInputExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        if let viewModels = controlsForInput(from: messageExchange), let response = viewModels.response {
-            // message is already shown
-            presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
+        if let viewModels = controlsForInput(from: messageExchange) {
+            replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
+            
+            if let response = viewModels.response {
+                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
+            }
         }
     }
     
@@ -141,11 +139,21 @@ extension ChatDataController: ChatDataListener {
             var shouldReplaceLastControlWithResponse = true
             
             // By comparing ids we can distinguish between loading messages from the history and actual topic flow scenarios.
-            // In case when user selected a date during topic flow - we are presenting already question and dateTime picker in the chat (2 controls from one message). Hence we don't want to show question again. And that's what below `if` statement does.
+            // In case when user selected a date during topic flow - we are already presenting the question and the dateTime picker (2 controls from one message).
+            // Hence we don't want to show question again.
+            // During the history load the last control will not be for this message so we _do_ show the question
+            //
             // THIS is different from other didComplete methods, where we show just one control per message. In those cases we want to replace control with question and insert an answer.
-            // `shouldReplaceResponse` flag is set to `true` to indicate that we want to only replace last message (dateTimePicker in this case)
+
             if lastMessage.messageId != messageExchange.message.messageId {
-                replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme))
+                let chatMessage = ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme)
+                
+                if isShowingTypingIndicator() {
+                    replaceLastControl(with: chatMessage)
+                } else {
+                    presentControlData(chatMessage)
+                }
+                
                 shouldReplaceLastControlWithResponse = false
             }
             
@@ -164,8 +172,18 @@ extension ChatDataController: ChatDataListener {
         if let viewModels = controlsForDateOrTimePicker(from: messageExchange) {
             let lastMessage = controlData[0]
             var shouldReplaceLastControlWithResponse = true
+
+            // see comment above in didCompleteDateTimeExchange
+            
             if lastMessage.messageId != messageExchange.message.messageId {
-                replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme))
+                let chatMessage = ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme)
+                
+                if isShowingTypingIndicator() {
+                    replaceLastControl(with: chatMessage)
+                } else {
+                    presentControlData(chatMessage)
+                }
+                
                 shouldReplaceLastControlWithResponse = false
             }
             
@@ -204,14 +222,14 @@ extension ChatDataController: ChatDataListener {
         let topicName = conversation.topicTypeName
         let topicId = conversationId
         let topicInfo = TopicInfo(topicId: topicId, topicName: topicName, taskId: nil, conversationId: conversationId)
-        pushTopicTitle(topicInfo: topicInfo)
+        presentTopicTitle(topicInfo: topicInfo)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
         logger.logInfo("Conversation \(conversationId) did load")
         
         if let conversation = chatterbox.conversation(forId: conversationId), !conversation.state.isInProgress {
-            pushEndOfTopicDividerIfNeeded()
+            presentEndOfTopicDividerIfNeeded()
         }
     }
     
@@ -224,8 +242,8 @@ extension ChatDataController: ChatDataListener {
             
             // NOTE: until the service delivers entire conversations this will cause the occasional extra-divider to appear...
             //       do not fix this as the service is suppossed to fix it
-            appendTopicTitle(topicInfo)
-            appendTopicStartDivider(topicInfo)
+            appendTopicTitle(topicInfo: topicInfo)
+            appendTopicStartDivider(topicInfo: topicInfo)
         }
     }
     
@@ -333,13 +351,13 @@ extension ChatDataController: ChatDataListener {
         // an incomplete boolean results is just the question as a text message
         
         let label = message.data.richControl?.uiMetadata?.label ?? "???"
-        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label, messageDate: message.messageTime)
         
         let answerViewModel: TextControlViewModel?
         if let response = messageExchange.response as? BooleanControlMessage {
             let value = response.data.richControl?.value ?? false
             let valueString = (value ?? false) ? "Yes" : "No"
-            answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: valueString)
+            answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: valueString, messageDate: response.messageTime)
         } else {
             answerViewModel = nil
         }
@@ -353,7 +371,7 @@ extension ChatDataController: ChatDataListener {
                 logger.logError("MessageExchange is not valid in pickerControlsFromMessageExchange method - skipping!")
                 return nil
         }
-        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label, messageDate: message.messageTime)
         
         let answerViewModel: ControlViewModel?
         
@@ -375,9 +393,9 @@ extension ChatDataController: ChatDataListener {
                     url = URL(string: attachmentString, relativeTo: chatterbox.serverInstance.instanceURL) ?? url
                 }
                 
-                answerViewModel = OutputImageViewModel(id: ChatUtil.uuidString(), label: selectedOption?.label, value: url)
+                answerViewModel = OutputImageViewModel(id: ChatUtil.uuidString(), label: selectedOption?.label, value: url, messageDate: response.messageTime)
             } else {
-                answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: selectedOption?.label ?? value)
+                answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: selectedOption?.label ?? value, messageDate: response.messageTime)
             }
         } else {
             answerViewModel = nil
@@ -392,14 +410,14 @@ extension ChatDataController: ChatDataListener {
                 logger.logError("MessageExchange is not valid in multiSelectControlsFromMessageExchange method - skipping!")
                 return nil
         }
-        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label, messageDate: message.messageTime)
         
         let answerModel: TextControlViewModel?
         if let response = messageExchange.response as? MultiSelectControlMessage,
             let values: [String] = response.data.richControl?.value ?? [""] {
             let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
             let displayValue = options?.joinedWithCommaSeparator()
-            answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue ?? "")
+            answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue ?? "", messageDate: response.messageTime)
         } else {
             answerModel = nil
         }
@@ -413,13 +431,13 @@ extension ChatDataController: ChatDataListener {
                 logger.logError("MessageExchange is not valid in fileUploadControlsFromMessageExchange method - skipping!")
                 return nil
         }
-        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
+        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label, messageDate: message.messageTime)
         
         let answerModel: OutputImageViewModel?
         if let response = messageExchange.response as? FileUploadControlMessage,
             let value = response.data.richControl?.value ?? "",
             let url = URL(string: value) {
-            answerModel = OutputImageViewModel(id: ChatUtil.uuidString(), value: url)
+            answerModel = OutputImageViewModel(id: ChatUtil.uuidString(), value: url, messageDate: response.messageTime)
         } else {
             answerModel = nil
         }
@@ -438,8 +456,8 @@ extension ChatDataController: ChatDataListener {
         }
         
         let dateFormatter = DateFormatter.localDisplayFormatter(for: response.controlType)
-        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
-        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: dateFormatter.string(from: value))
+        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label, messageDate: message.messageTime)
+        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: dateFormatter.string(from: value), messageDate: response.messageTime)
         
         return (message: questionModel, response: answerModel)
     }
@@ -456,8 +474,8 @@ extension ChatDataController: ChatDataListener {
         
         // Takes string date or time and returns localized string (i.e. turns "2018-03-21" into Mar 21, 2018)
         let displayValue = DateFormatter.glideDisplayString(for: value, for: response.controlType)
-        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label)
-        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue)
+        let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label, messageDate: message.messageTime)
+        let answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue, messageDate: response.messageTime)
         
         return (message: questionModel, response: answerModel)
     }
@@ -473,8 +491,8 @@ extension ChatDataController: ChatDataListener {
         }
         
         // a completed input exchange is two text controls, with the value of the message and the value of the response
-        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: messageValue)
-        let answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: responseValue)
+        let questionViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: messageValue, messageDate: message.messageTime)
+        let answerViewModel = TextControlViewModel(id: ChatUtil.uuidString(), value: responseValue, messageDate: response.messageTime)
         
         return (message: questionViewModel, response: answerViewModel)
     }
@@ -482,13 +500,16 @@ extension ChatDataController: ChatDataListener {
     func controlForLink(from messageExchange: MessageExchange) -> OutputLinkControlViewModel? {
         guard messageExchange.isComplete,
             let outputLinkControl = messageExchange.message as? OutputLinkControlMessage,
-            let value = outputLinkControl.data.richControl?.value else {
+            let value = outputLinkControl.data.richControl?.value,
+            let header = outputLinkControl.data.richControl?.uiMetadata?.header else {
                 logger.logError("MessageExchange is not valid in outputLinkFromMessageExchange method - skipping!")
                 return nil
         }
         
+        let label = outputLinkControl.data.richControl?.uiMetadata?.label
+        
         if let url = URL(string: value.action) {
-            return OutputLinkControlViewModel(id: ChatUtil.uuidString(), value: url)
+            return OutputLinkControlViewModel(id: ChatUtil.uuidString(), label: label, header: header, value: url, messageDate: outputLinkControl.messageTime)
         }
         
         return nil

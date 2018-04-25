@@ -19,10 +19,13 @@ class OutputHtmlControlViewModel: ControlViewModel, Resizable {
     let type: ControlType = .outputHtml
     
     let value: String
+
+    let messageDate: Date?
     
-    init(id: String, label: String? = nil, value: String) {
+    init(id: String, label: String? = nil, value: String, messageDate: Date) {
         self.label = label
         self.value = value
         self.id = id
+        self.messageDate = messageDate
     }
 }
