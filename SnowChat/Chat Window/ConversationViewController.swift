@@ -254,11 +254,12 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 case .update(let index, let oldModel, let model):
-                    guard model.controlModel != nil,
-                          oldModel.controlModel != nil else { fatalError("Only control-types allowed in didChangeModel udpates!") }
-                    
-                    if model.type != oldModel.type || model.isAuxiliary != oldModel.isAuxiliary {
+                    if model.controlModel == nil || oldModel.controlModel == nil {
                         self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                        
+                    } else if model.type != oldModel.type || model.isAuxiliary != oldModel.isAuxiliary {
+                        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                        
                     } else {
                         updateModel(model, atIndex: index)
                     }
@@ -618,11 +619,29 @@ extension ConversationViewController: ChatEventListener {
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
+        guard self.chatterbox.id == chatterbox.id else {
+            return
+        }
+
         initializeSessionIfNeeded()
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didRestoreUserSession sessionId: String, forChat chatId: String ) {
+        guard self.chatterbox.id == chatterbox.id else {
+            return
+        }
+
         initializeSessionIfNeeded()
+    }
+
+    func chatterbox(_ chatterbox: Chatterbox, willStartTopic topicInfo: TopicInfo, forChat chatId: String) {
+        guard self.chatterbox.id == chatterbox.id else {
+            return
+        }
+        
+        inputState = .inConversation
+
+        dataController.topicWillStart(topicInfo)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didStartTopic topicInfo: TopicInfo, forChat chatId: String) {
@@ -631,8 +650,6 @@ extension ConversationViewController: ChatEventListener {
         }
         
         dataController.topicDidStart(topicInfo)
-        
-        inputState = .inConversation
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didResumeTopic topicInfo: TopicInfo, forChat chatId: String) {

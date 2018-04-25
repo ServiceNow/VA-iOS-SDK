@@ -222,14 +222,14 @@ extension ChatDataController: ChatDataListener {
         let topicName = conversation.topicTypeName
         let topicId = conversationId
         let topicInfo = TopicInfo(topicId: topicId, topicName: topicName, taskId: nil, conversationId: conversationId)
-        pushTopicTitle(topicInfo: topicInfo)
+        presentTopicTitle(topicInfo: topicInfo)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
         logger.logInfo("Conversation \(conversationId) did load")
         
         if let conversation = chatterbox.conversation(forId: conversationId), !conversation.state.isInProgress {
-            pushEndOfTopicDividerIfNeeded()
+            presentEndOfTopicDividerIfNeeded()
         }
     }
     
