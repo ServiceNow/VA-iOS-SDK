@@ -74,6 +74,7 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     private func setupScrollView() {
         scrollView.isPagingEnabled = true
         scrollView.delegate = self
+        scrollView.maximumZoomScale = 1.2
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.showsHorizontalScrollIndicator = false
         view.addSubview(scrollView)
@@ -97,24 +98,35 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     private func setupImageViewsForImages() {
         guard let images = self.images else { return }
         images.forEach({ image in
+            
             let imageView = UIImageView(image: image)
             imageView.contentMode = .scaleAspectFit
             imageView.backgroundColor = .white
             imageView.translatesAutoresizingMaskIntoConstraints = false
-            scrollView.addSubview(imageView)
+            
+            let containerView = UIView()
+            containerView.translatesAutoresizingMaskIntoConstraints = false
+            containerView.addSubview(imageView)
+            
+            NSLayoutConstraint.activate([imageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+                                         imageView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+                                         imageView.widthAnchor.constraint(lessThanOrEqualTo: containerView.widthAnchor, multiplier: 1),
+                                         imageView.heightAnchor.constraint(lessThanOrEqualTo: containerView.heightAnchor, multiplier: 1)])
+
+            scrollView.addSubview(containerView)
             if let previousView = imageViews.last {
-                NSLayoutConstraint.activate([imageView.leadingAnchor.constraint(equalTo: previousView.trailingAnchor)])
+                NSLayoutConstraint.activate([containerView.leadingAnchor.constraint(equalTo: previousView.trailingAnchor)])
             } else {
-                NSLayoutConstraint.activate([imageView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor)])
+                NSLayoutConstraint.activate([containerView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor)])
             }
             
-            NSLayoutConstraint.activate([imageView.topAnchor.constraint(equalTo: view.topAnchor),
-                                         imageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-                                         imageView.widthAnchor.constraint(equalTo: view.widthAnchor)])
+            NSLayoutConstraint.activate([containerView.topAnchor.constraint(equalTo: view.topAnchor),
+                                         containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                                         containerView.widthAnchor.constraint(equalTo: view.widthAnchor)])
             
             // adding last image
             if imageViews.count == images.count - 1 {
-                NSLayoutConstraint.activate([imageView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor)])
+                NSLayoutConstraint.activate([containerView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor)])
             }
             
             imageViews.append(imageView)
@@ -128,20 +140,30 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
             imageView.contentMode = .scaleAspectFit
             imageView.backgroundColor = .white
             imageView.translatesAutoresizingMaskIntoConstraints = false
-            scrollView.addSubview(imageView)
+            
+            let containerView = UIView()
+            containerView.translatesAutoresizingMaskIntoConstraints = false
+            containerView.addSubview(imageView)
+            
+            NSLayoutConstraint.activate([imageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+                                         imageView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+                                         imageView.widthAnchor.constraint(lessThanOrEqualTo: containerView.widthAnchor, multiplier: 1),
+                                         imageView.heightAnchor.constraint(lessThanOrEqualTo: containerView.heightAnchor, multiplier: 1)])
+            
+            scrollView.addSubview(containerView)
             if let previousView = imageViews.last {
-                NSLayoutConstraint.activate([imageView.leadingAnchor.constraint(equalTo: previousView.trailingAnchor)])
+                NSLayoutConstraint.activate([containerView.leadingAnchor.constraint(equalTo: previousView.trailingAnchor)])
             } else {
-                NSLayoutConstraint.activate([imageView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor)])
+                NSLayoutConstraint.activate([containerView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor)])
             }
             
-            NSLayoutConstraint.activate([imageView.topAnchor.constraint(equalTo: view.topAnchor),
-                                         imageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-                                         imageView.widthAnchor.constraint(equalTo: view.widthAnchor)])
+            NSLayoutConstraint.activate([containerView.topAnchor.constraint(equalTo: view.topAnchor),
+                                         containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                                         containerView.widthAnchor.constraint(equalTo: view.widthAnchor)])
             
             // adding last image
             if imageViews.count == photoURLs.count - 1 {
-                NSLayoutConstraint.activate([imageView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor)])
+                NSLayoutConstraint.activate([containerView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor)])
             }
             
             imageViews.append(imageView)
@@ -174,6 +196,14 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     }
     
     // MARK: - UIScrollViewDelegate
+    
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        guard imageViews.count > currentImage else {
+            return nil
+        }
+        
+        return imageViews[currentImage]
+    }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         currentImage = Int(scrollView.bounds.midX / scrollView.bounds.width)
