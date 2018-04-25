@@ -25,6 +25,7 @@ extension ChatMessageModel {
             chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         case .outputHtml:
             let controlModel = OutputHtmlControlViewModel(id: message.messageId, value: nestedControlValue, messageDate: message.messageTime)
+            controlModel.size = ChatMessageModel.adjustedModelSize(for: message)
             chatMessageModel = ChatMessageModel(model: controlModel, messageId: message.messageId, bubbleLocation: BubbleLocation(direction: direction), theme: theme)
         case .outputImage:
             if let url = URL(string: nestedControlValue) {
@@ -48,6 +49,18 @@ extension ChatMessageModel {
         }
         
         return chatMessageModel
+    }
+    
+    static func adjustedModelSize(for message: MultiPartControlMessage) -> CGSize {
+        var size = CGSize(width: UIViewNoIntrinsicMetric, height: UIViewNoIntrinsicMetric)
+        if let width = message.data.richControl?.content?.uiMetadata?.width {
+            size.width = CGFloat(width)
+        }
+        if let height = message.data.richControl?.content?.uiMetadata?.height {
+            size.height = CGFloat(height)
+        }
+        
+        return size
     }
     
     static func buttonModel(withMessage message: MultiPartControlMessage, theme: Theme) -> ChatMessageModel? {
