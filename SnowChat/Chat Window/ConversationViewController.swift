@@ -255,12 +255,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 case .update(let index, let oldModel, let model):
-                    if model.controlModel == nil || oldModel.controlModel == nil {
-                        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-                        
-                    } else if model.type != oldModel.type || model.isAuxiliary != oldModel.isAuxiliary {
-                        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-                        
+                    if model.controlModel == nil || oldModel.controlModel == nil ||
+                       model.type != oldModel.type || model.isAuxiliary != oldModel.isAuxiliary {
+                        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)                        
                     } else {
                         updateModel(model, atIndex: index)
                     }
