@@ -233,6 +233,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
             return
         }
         
+        adjustModelSizeIfNeeded(model)
         cell.messageViewController?.configure(withChatMessageModel: model,
                                               controlCache: uiControlCache,
                                               controlDelegate: self,
@@ -531,9 +532,13 @@ extension ConversationViewController {
         }
         
         if let messageHeight = defaultMessageHeight, size.height == UIViewNoIntrinsicMetric || size.height < 1 {
-            outputHtmlModel.size = CGSize(width: UIViewNoIntrinsicMetric, height: messageHeight)
-        } else if let messageHeight = maxMessageHeight, size.height > messageHeight {
-            outputHtmlModel.size = CGSize(width: UIViewNoIntrinsicMetric, height: messageHeight)
+            outputHtmlModel.size?.height = messageHeight
+        } else if let messageHeight = maxMessageHeight {
+            outputHtmlModel.size?.height = min(size.height, messageHeight)
+        }
+        
+        if size.width < 1 {
+            outputHtmlModel.size?.width = UIViewNoIntrinsicMetric
         }
     }
     
