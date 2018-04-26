@@ -259,10 +259,7 @@ struct Conversation: Storable, Codable {
     }
 
     mutating func removeLastExchange() {
-        let lastIndex = exchanges.count - 1
-        if lastIndex >= 0 {
-            exchanges.remove(at: lastIndex)
-        }
+        exchanges.removeLast()
     }
     
     @discardableResult

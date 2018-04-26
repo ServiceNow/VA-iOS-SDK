@@ -135,7 +135,7 @@ extension ChatDataController: ChatDataListener {
         if let viewModels = controlsForDateTimePicker(from: messageExchange) {
             
             // We need to check the last displayed control. In case of regular topic flow we will have TextControl and DateTimeControl as a seperate controls but they will represent one message coming from the server.
-            let lastMessage = controlData[0]
+            let lastMessage = controlData.first
             var shouldReplaceLastControlWithResponse = true
             
             // By comparing ids we can distinguish between loading messages from the history and actual topic flow scenarios.
@@ -145,7 +145,7 @@ extension ChatDataController: ChatDataListener {
             //
             // THIS is different from other didComplete methods, where we show just one control per message. In those cases we want to replace control with question and insert an answer.
 
-            if lastMessage.messageId != messageExchange.message.messageId {
+            if lastMessage == nil || lastMessage?.messageId != messageExchange.message.messageId {
                 let chatMessage = ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme)
                 
                 if isShowingTypingIndicator() {
@@ -170,12 +170,12 @@ extension ChatDataController: ChatDataListener {
     
     private func didCompleteDateOrTimeExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForDateOrTimePicker(from: messageExchange) {
-            let lastMessage = controlData[0]
+            let lastMessage = controlData.first
             var shouldReplaceLastControlWithResponse = true
 
             // see comment above in didCompleteDateTimeExchange
             
-            if lastMessage.messageId != messageExchange.message.messageId {
+            if lastMessage == nil || lastMessage?.messageId != messageExchange.message.messageId {
                 let chatMessage = ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme)
                 
                 if isShowingTypingIndicator() {
@@ -281,41 +281,41 @@ extension ChatDataController: ChatDataListener {
         switch historyExchange.message.controlType {
         case .boolean:
             if let viewModels = controlsForBoolean(from: historyExchange) {
-                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+                addHistoryToCollection(withViewModels: (message: viewModels.message, response: viewModels.response))
             }
         case .picker:
             if let viewModels = controlsForPicker(from: historyExchange) {
-                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+                addHistoryToCollection(withViewModels: (message: viewModels.message, response: viewModels.response))
             }
         case .multiSelect:
             if let viewModels = controlsForMultiSelect(from: historyExchange) {
-                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+                addHistoryToCollection(withViewModels: (message: viewModels.message, response: viewModels.response))
             }
         case .dateTime:
             if let viewModels = controlsForDateTimePicker(from: historyExchange) {
-                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+                addHistoryToCollection(withViewModels: (message: viewModels.message, response: viewModels.response))
             }
         case .date, .time:
             if let viewModels = controlsForDateOrTimePicker(from: historyExchange) {
-                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+                addHistoryToCollection(withViewModels: (message: viewModels.message, response: viewModels.response))
             }
         case .input:
             if let viewModels = controlsForInput(from: historyExchange) {
-                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+                addHistoryToCollection(withViewModels: (message: viewModels.message, response: viewModels.response))
             }
         case .fileUpload:
             if let viewModels = controlsForFileUpload(from: historyExchange) {
-                addHistoryToCollection((message: viewModels.message, response: viewModels.response))
+                addHistoryToCollection(withViewModels: (message: viewModels.message, response: viewModels.response))
             }
         case .text:
             if let messageModel = chatMessageModel(withMessage: historyExchange.message) {
-                addHistoryToCollection(messageModel)
+                addHistoryToCollection(withChatModel: messageModel)
             }
             
         // MARK: - output-only
         case .outputLink:
             if let viewModel = controlForLink(from: historyExchange) {
-                addHistoryToCollection(viewModel)
+                addHistoryToCollection(withViewModel: viewModel)
             }
             
         case .outputImage,
@@ -324,11 +324,11 @@ extension ChatDataController: ChatDataListener {
              .agentText,
              .systemError:
             if let messageModel = chatMessageModel(withMessage: historyExchange.message) {
-                addHistoryToCollection(messageModel)
+                addHistoryToCollection(withChatModel: messageModel)
             }
         case .unknown:
-            if let viewModel = chatMessageModel(withMessage: historyExchange.message) {
-                addHistoryToCollection(viewModel)
+            if let messageModel = chatMessageModel(withMessage: historyExchange.message) {
+                addHistoryToCollection(withChatModel: messageModel)
             }
             
         // MARK: - unrendered

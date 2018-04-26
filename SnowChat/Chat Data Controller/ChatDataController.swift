@@ -189,23 +189,22 @@ class ChatDataController {
         updateLastMessageDate(from: messageModel)
     }
     
-    func addHistoryToCollection(_ viewModels: (message: ControlViewModel, response: ControlViewModel?)) {
+    func addHistoryToCollection(withViewModels viewModels: (message: ControlViewModel, response: ControlViewModel?)) {
         // add response, then message, to the tail-end of the control data
         if let response = viewModels.response {
-            let responseMessage = ChatMessageModel(model: response, messageId: response.id, bubbleLocation: .right, theme: theme)
-            appendControlData(modelWithUpdatedAvatarURL(model: responseMessage, withInstance: chatterbox.serverInstance))
+            addHistoryToCollection(withViewModel: response, location: .right)
         }
         
-        let message = ChatMessageModel(model: viewModels.message, messageId: viewModels.message.id, bubbleLocation: .left, theme: theme)
-        appendControlData(modelWithUpdatedAvatarURL(model: message, withInstance: chatterbox.serverInstance))
+        addHistoryToCollection(withViewModel: viewModels.message, location: .left)
     }
     
-    func addHistoryToCollection(_ viewModel: ControlViewModel, location: BubbleLocation = .left) {
+    func addHistoryToCollection(withViewModel viewModel: ControlViewModel, location: BubbleLocation = .left) {
         let message = ChatMessageModel(model: viewModel, messageId: viewModel.id, bubbleLocation: location, theme: theme)
-        addHistoryToCollection(modelWithUpdatedAvatarURL(model: message, withInstance: chatterbox.serverInstance))
+        updatedAvatarURL(model: message, withInstance: chatterbox.serverInstance)
+        addHistoryToCollection(withChatModel: message)
     }
 
-    func addHistoryToCollection(_ chatModel: ChatMessageModel) {
+    func addHistoryToCollection(withChatModel chatModel: ChatMessageModel) {
         appendControlData(chatModel)
     }
     
@@ -429,19 +428,16 @@ class ChatDataController {
         }
     }
 
-    internal func modelWithUpdatedAvatarURL(model: ChatMessageModel, withInstance instance: ServerInstance) -> ChatMessageModel {
+    internal func updatedAvatarURL(model: ChatMessageModel, withInstance instance: ServerInstance) {
         if let path = model.avatarURL?.absoluteString {
             let updatedURL = URL(string: path, relativeTo: instance.instanceURL)
-            let newModel = model
-            newModel.avatarURL = updatedURL
-            return newModel
+            model.avatarURL = updatedURL
         }
-        return model
     }
 
     internal func chatMessageModel(withMessage message: ControlData) -> ChatMessageModel? {
-        if var messageModel = ChatMessageModel.model(withMessage: message, theme: theme) {
-            messageModel = modelWithUpdatedAvatarURL(model: messageModel, withInstance: chatterbox.serverInstance)
+        if let messageModel = ChatMessageModel.model(withMessage: message, theme: theme) {
+            updatedAvatarURL(model: messageModel, withInstance: chatterbox.serverInstance)
             return messageModel
         }
         return nil
@@ -541,11 +537,11 @@ class ChatDataController {
     func appendTopicTitle(topicInfo: TopicInfo) {
         let messageModel = chatModelFromTopicInfo(topicInfo)
 
-        addHistoryToCollection(messageModel)
+        addHistoryToCollection(withChatModel: messageModel)
     }
     
     func appendTopicStartDivider(topicInfo: TopicInfo) {
-        addHistoryToCollection(ChatMessageModel(type: .topicDivider, theme: theme))
+        addHistoryToCollection(withChatModel: ChatMessageModel(type: .topicDivider, theme: theme))
     }
     
     private func replaceTopicPromptWithTypingIndicator() {
