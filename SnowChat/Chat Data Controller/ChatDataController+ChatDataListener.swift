@@ -216,18 +216,20 @@ extension ChatDataController: ChatDataListener {
     
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversation conversationId: String, forChat chatId: String) {
         guard let conversation = chatterbox.conversation(forId: conversationId) else { fatalError("Conversation cannot be found for id \(conversationId)") }
-        
         logger.logInfo("Conversation will load: topicName=\(conversation.topicTypeName) conversationId=\(conversationId) state=\(conversation.state)")
         
-        let topicName = conversation.topicTypeName
-        let topicId = conversationId
-        let topicInfo = TopicInfo(topicId: topicId, topicName: topicName, taskId: nil, conversationId: conversationId)
-        presentTopicTitle(topicInfo: topicInfo)
+        if !conversation.isPartial {
+            let topicName = conversation.topicTypeName
+            let topicId = conversationId
+            let topicInfo = TopicInfo(topicId: topicId, topicName: topicName, taskId: nil, conversationId: conversationId)
+            presentTopicTitle(topicInfo: topicInfo)
+        }
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
-        logger.logInfo("Conversation \(conversationId) did load")
-        
+        guard let conversation = chatterbox.conversation(forId: conversationId) else { fatalError("Conversation cannot be found for id \(conversationId)") }
+        logger.logInfo("Conversation did load: topicName=\(conversation.topicTypeName) conversationId=\(conversationId) state=\(conversation.state)")
+
         if let conversation = chatterbox.conversation(forId: conversationId), !conversation.state.isInProgress {
             presentEndOfTopicDividerIfNeeded()
         }
@@ -235,20 +237,20 @@ extension ChatDataController: ChatDataListener {
     
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversationHistory conversationId: String, forChat chatId: String) {
         logger.logInfo("Conversation \(conversationId) will load from history")
-        
-        if let conversation = chatterbox.conversation(forId: conversationId) {
-            let topicId = conversationId
-            let topicInfo = TopicInfo(topicId: topicId, topicName: conversation.topicTypeName, taskId: nil, conversationId: conversationId)
-            
-            // NOTE: until the service delivers entire conversations this will cause the occasional extra-divider to appear...
-            //       do not fix this as the service is suppossed to fix it
-            appendTopicTitle(topicInfo: topicInfo)
-            appendTopicStartDivider(topicInfo: topicInfo)
-        }
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversationHistory conversationId: String, forChat chatId: String) {
         logger.logInfo("Conversation \(conversationId) did load from history")
+
+        if let conversation = chatterbox.conversation(forId: conversationId) {
+            
+            if !conversation.isPartial {
+                let topicId = conversationId
+                let topicInfo = TopicInfo(topicId: topicId, topicName: conversation.topicTypeName, taskId: nil, conversationId: conversationId)
+                appendTopicTitle(topicInfo: topicInfo)
+                appendTopicStartDivider(topicInfo: topicInfo)
+            }
+        }
     }
     
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversationsForConsumerAccount consumerAccountId: String, forChat chatId: String) {
@@ -306,9 +308,8 @@ extension ChatDataController: ChatDataListener {
                 addHistoryToCollection((message: viewModels.message, response: viewModels.response))
             }
         case .text:
-            if let messageModel = chatMessageModel(withMessage: historyExchange.message),
-                let controlModel = messageModel.controlModel {
-                addHistoryToCollection(controlModel)
+            if let messageModel = chatMessageModel(withMessage: historyExchange.message) {
+                addHistoryToCollection(messageModel)
             }
             
         // MARK: - output-only
@@ -322,9 +323,8 @@ extension ChatDataController: ChatDataListener {
              .outputHtml,
              .agentText,
              .systemError:
-            if let messageModel = chatMessageModel(withMessage: historyExchange.message),
-                let controlModel = messageModel.controlModel {
-                addHistoryToCollection(controlModel)
+            if let messageModel = chatMessageModel(withMessage: historyExchange.message) {
+                addHistoryToCollection(messageModel)
             }
         case .unknown:
             if let viewModel = chatMessageModel(withMessage: historyExchange.message) {

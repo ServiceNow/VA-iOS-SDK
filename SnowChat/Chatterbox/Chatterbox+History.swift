@@ -125,19 +125,29 @@ extension Chatterbox {
             
             var count = 0
             
-            conversations.forEach({ [weak self] conversation in
-                guard let strongSelf = self else { return }
-                guard !conversation.isForSystemTopic() else {
-                    strongSelf.logger.logError("Unexpected SystemTopic conversation in fetchOlderMessages!!! skipping...")
-                    return
-                }
-
-                let conversationId = conversation.conversationId
-                let conversationName = conversation.topicTypeName
-                _ = strongSelf.chatStore.findOrCreateConversation(conversationId, withName: conversationName, withState: conversation.state)
+            let reversedConversations = conversations.reversed()
+            
+            if let lastConversation = reversedConversations.last {
                 
-                count += strongSelf.loadConversationHistory(conversation)
-            })
+                reversedConversations.forEach { [weak self] conversation in
+                    guard let strongSelf = self else { return }
+                    
+                    guard !conversation.isForSystemTopic() else {
+                        strongSelf.logger.logError("Unexpected SystemTopic conversation in fetchOlderMessages!!! skipping...")
+                        return
+                    }
+                    
+                    var conversation = conversation
+
+                    strongSelf.chatStore.findOrCreateConversation(conversation.conversationId, withName: conversation.topicTypeName, withState: conversation.state, isPartial: conversation.isPartial)
+                    
+                    if conversation.conversationId != lastConversation.conversationId {
+                        conversation = strongSelf.completeConversationIfNeeded(conversation)
+                    }
+
+                    count += strongSelf.loadConversationHistory(conversation)
+                }
+            }
             
             strongSelf.notifyDataListeners { listener in
                 listener.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
@@ -155,16 +165,50 @@ extension Chatterbox {
             listener.chatterbox(self, willLoadConversationHistory: conversationId, forChat: chatId)
         }
         
-        conversation.messageExchanges().reversed().forEach({ exchange in
-            self.storeHistoryAndPublish(exchange, forConversation: conversationId)
-            count += (exchange.response != nil ? 2 : 1)
-        })
+        let reversedMessages = conversation.messageExchanges().reversed()
+        if let lastExchange = reversedMessages.last {
+            
+            reversedMessages.forEach { exchange in
+                
+                var shouldStore: Bool
+                if conversation.isPartial && exchange.message.messageId == lastExchange.message.messageId {
+                    // if this is the last exchange, and the conversation is partially loaded,
+                    // make sure it is complete before we store it
+                    shouldStore = exchange.isComplete
+                } else {
+                    shouldStore = true
+                }
+                
+                if shouldStore {
+                    self.storeHistoryAndPublish(exchange, forConversation: conversationId)
+                    count += (exchange.response != nil ? 2 : 1)
+                } else {
+                    logger.logDebug("Skipping history load of incomplete exchange: \(exchange)")
+                }
+            }
+        }
         
         notifyDataListeners { listener in
            listener.chatterbox(self, didLoadConversationHistory: conversationId, forChat: chatId)
         }
         
         return count
+    }
+
+    fileprivate func completeConversationIfNeeded( _ conversation: Conversation) -> Conversation {
+        // if the conversation are marked as partial it is because we are completing a previous partial conversation
+        // so we will update it to `complete` (non-partial)
+        var updatedConversation = conversation
+        let conversationId = conversation.conversationId
+        
+        if let existingConversation = self.conversation(forId: conversationId),
+            existingConversation.isPartial {
+            logger.logDebug("Completing partial conversation: \(existingConversation.topicTypeName)")
+            
+            chatStore.completeConversation(conversationId)
+            updatedConversation.isPartial = false
+        }
+        return updatedConversation
     }
 }
 
@@ -233,6 +277,10 @@ extension Chatterbox {
                         conversation.state = .completed
                     }
                     
+                    if conversation.isPartial {
+                        strongSelf.logger.logDebug("conversation is incomplete: \(conversation.topicTypeName)")
+                    }
+                    
                     strongSelf.storeConversationAndPublish(conversation)
                     
                     if isLastConversation {
@@ -272,6 +320,16 @@ extension Chatterbox {
     }
     
     internal func storeConversationAndPublish(_ conversation: Conversation) {
+
+        var conversation = conversation
+        
+        // filter out incomplete exchanges if the conversation is partial
+        if conversation.isPartial {
+            if let last = conversation.messageExchanges().last, !last.isComplete {
+                conversation.removeLastExchange()
+            }
+        }
+        
         chatStore.storeConversation(conversation)
         
         notifyDataListeners { listener in

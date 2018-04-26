@@ -140,6 +140,8 @@ extension Chatterbox {
             notifyWillStartTopic(outgoingMessage)
 
             publishMessage(outgoingMessage)
+        } else {
+            logger.logError("StartTopicMessageHandler expected UserTopicMessage but got \(controlMessage)")
         }
     }
     
@@ -196,8 +198,8 @@ extension Chatterbox {
         conversationContext.conversationId = topicInfo.conversationId
         conversationContext.taskId = topicInfo.taskId
 
-        // create a new conversation for the user topic
-        _ = chatStore.findOrCreateConversation(topicInfo.conversationId, withName: topicInfo.topicName ?? "New Topic", withState: .inProgress)
+        // create a new conversation for the user topic if there isn't one already
+        chatStore.findOrCreateConversation(topicInfo.conversationId, withName: topicInfo.topicName ?? "New Topic", withState: .inProgress)
         
         installTopicMessageHandler()
     }

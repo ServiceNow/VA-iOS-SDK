@@ -183,20 +183,30 @@ class ChatDataController {
         controlData = [data] + controlData
     }
     
+    fileprivate func appendControlData(_ messageModel: ChatMessageModel) {
+        setLastMessageDate(to: messageModel)
+        controlData.append(messageModel)
+        updateLastMessageDate(from: messageModel)
+    }
+    
     func addHistoryToCollection(_ viewModels: (message: ControlViewModel, response: ControlViewModel?)) {
         // add response, then message, to the tail-end of the control data
         if let response = viewModels.response {
-            controlData.append(ChatMessageModel(model: response, messageId: response.id, bubbleLocation: .right, theme: theme))
+            let responseMessage = ChatMessageModel(model: response, messageId: response.id, bubbleLocation: .right, theme: theme)
+            appendControlData(modelWithUpdatedAvatarURL(model: responseMessage, withInstance: chatterbox.serverInstance))
         }
-        controlData.append(ChatMessageModel(model: viewModels.message, messageId: viewModels.message.id, bubbleLocation: .left, theme: theme))
+        
+        let message = ChatMessageModel(model: viewModels.message, messageId: viewModels.message.id, bubbleLocation: .left, theme: theme)
+        appendControlData(modelWithUpdatedAvatarURL(model: message, withInstance: chatterbox.serverInstance))
     }
     
     func addHistoryToCollection(_ viewModel: ControlViewModel, location: BubbleLocation = .left) {
-        addHistoryToCollection(ChatMessageModel(model: viewModel, messageId: viewModel.id, bubbleLocation: location, theme: theme))
+        let message = ChatMessageModel(model: viewModel, messageId: viewModel.id, bubbleLocation: location, theme: theme)
+        addHistoryToCollection(modelWithUpdatedAvatarURL(model: message, withInstance: chatterbox.serverInstance))
     }
 
     func addHistoryToCollection(_ chatModel: ChatMessageModel) {
-        controlData.append(chatModel)
+        appendControlData(chatModel)
     }
     
     func presentControlData(_ data: ChatMessageModel) {
@@ -212,7 +222,8 @@ class ChatDataController {
     }
     
     func setLastMessageDate(to model: ChatMessageModel) {
-        model.lastMessageDate = self.lastMessageDate
+        guard let lastMessageDate = self.lastMessageDate else { return }
+        model.lastMessageDate = lastMessageDate
     }
     
     func updateLastMessageDate(from model: ChatMessageModel) {
@@ -418,18 +429,17 @@ class ChatDataController {
         }
     }
 
-    internal func chatMessageModel(withMessage message: ControlData) -> ChatMessageModel? {
-        
-        func modelWithUpdatedAvatarURL(model: ChatMessageModel, withInstance instance: ServerInstance) -> ChatMessageModel {
-            if let path = model.avatarURL?.absoluteString {
-                let updatedURL = URL(string: path, relativeTo: instance.instanceURL)
-                let newModel = model
-                newModel.avatarURL = updatedURL
-                return newModel
-            }
-            return model
+    internal func modelWithUpdatedAvatarURL(model: ChatMessageModel, withInstance instance: ServerInstance) -> ChatMessageModel {
+        if let path = model.avatarURL?.absoluteString {
+            let updatedURL = URL(string: path, relativeTo: instance.instanceURL)
+            let newModel = model
+            newModel.avatarURL = updatedURL
+            return newModel
         }
-        
+        return model
+    }
+
+    internal func chatMessageModel(withMessage message: ControlData) -> ChatMessageModel? {
         if var messageModel = ChatMessageModel.model(withMessage: message, theme: theme) {
             messageModel = modelWithUpdatedAvatarURL(model: messageModel, withInstance: chatterbox.serverInstance)
             return messageModel

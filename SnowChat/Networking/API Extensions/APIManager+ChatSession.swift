@@ -11,7 +11,7 @@ import Alamofire
 
 extension APIManager {
     
-    static let defaultMessageFetchLimit = 100
+    static let defaultMessageFetchLimit = 7
     
     // MARK: - Session
     
@@ -142,7 +142,8 @@ extension APIManager {
         
                 let status = conversationDictionary["status"] as? String ?? "UNKNOWN"
                 let topicTypeName = conversationDictionary["topicTypeName"] as? String ?? "UNKNOWN"
-                
+                let isPartial = conversationDictionary["partial"] as? Bool ?? false
+
                 let deviceType: Conversation.DeviceType?
                 if let deviceTypeString = conversationDictionary["deviceType"] as? String {
                     deviceType = Conversation.DeviceType(rawValue: deviceTypeString)
@@ -152,8 +153,8 @@ extension APIManager {
                 
                 let messages = APIManager.messagesFromResult(messagesDictionary, assumeMessagesReversed: assumeMessagesReversed)
                 let state = Conversation.ConversationState(rawValue: status) ?? .completed
-                var conversation = Conversation(withConversationId: conversationId, withTopic: topicTypeName, withState: state, deviceType: deviceType)
-                
+                var conversation = Conversation(withConversationId: conversationId, withTopic: topicTypeName, withState: state, deviceType: deviceType, partial: isPartial)
+                                
                 messages.forEach({ (message) in
                     if let lastPending = conversation.lastPendingMessage() as? ControlData,
                        lastPending.controlType == message.controlType {
