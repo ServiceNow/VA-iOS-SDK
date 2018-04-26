@@ -146,7 +146,6 @@ public class AMBClient {
     private var retryAttempt = 0
     private var reopenChannelsAfterSuccessfulConnectMessages = true
     private var dataTasks = [URLSessionDataTask]()
-    private var unsubscribeLock = false
     
     private var scheduledConnectTask: DispatchWorkItem?
     private var connectDataTask: URLSessionDataTask?
@@ -258,12 +257,6 @@ public class AMBClient {
     }
     
     public func unsubscribe(subscription: AMBSubscription) {
-        // unsubscribe() may be called from AMBSubscription.deinit() and when we update subscriptions inside
-        // this method.
-        // It may cause race condition which we want to avoid by using this lock.
-        guard !self.unsubscribeLock else { return }
-        self.unsubscribeLock = true
-        
         cleanupSubscriptions()
 
         guard var subscriptions = subscriptionsByChannel[subscription.channel],
@@ -288,8 +281,6 @@ public class AMBClient {
         if subscriptions.isEmpty {
             sendBayeuxUnsubscribeMessage(channel: subscription.channel)
         }
-        
-        self.unsubscribeLock = false
     }
     
     public func tearDown() {
