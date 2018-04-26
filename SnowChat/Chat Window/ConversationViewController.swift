@@ -130,7 +130,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         
         // we are inverted so top is really a bottom
         contentInset.top = bottomInset
-        
         tableView.contentInset = contentInset
         tableView.scrollIndicatorInsets = contentInset
     }

@@ -27,6 +27,8 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     
     private let scrollView = UIScrollView()
     private var imageViews = [UIImageView]()
+    private var isZoomed: Bool = false
+    private let doubleTapGestureRecognizer = UITapGestureRecognizer()
     let pageControl = UIPageControl()
     
     init(photoURLs: [URL], imageDownloader: ImageDownloader, selectedImage index: Int = 0) {
@@ -95,8 +97,19 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
             automaticallyAdjustsScrollViewInsets = false
         }
         
+        scrollView.addGestureRecognizer(doubleTapGestureRecognizer)
+        doubleTapGestureRecognizer.numberOfTapsRequired = 2
+        doubleTapGestureRecognizer.addTarget(self, action: #selector(doubleTappedView(_:)))
+        
         // forcing layout subviews so we can navigate to preselected page right away
         view.layoutIfNeeded()
+    }
+    
+    @objc func doubleTappedView(_ gesture: UITapGestureRecognizer) {
+        isZoomed = !isZoomed
+        if let containerImageView = imageViews[currentImage].superview as? UIScrollView {
+            containerImageView.setZoomScale(isZoomed ? 2 : 1, animated: true)
+        }
     }
     
     private func setupPageControl() {
@@ -118,7 +131,6 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     }
     
     private func setupImageViews() {
-        
         if let images = self.images {
             images.forEach({ image in
                 let imageView = UIImageView(image: image)
@@ -189,10 +201,6 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
         
         let imageView = imageViews[currentImage]
         return imageView
-    }
-    
-    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-        scrollView.setZoomScale(1, animated: true)
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
