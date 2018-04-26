@@ -28,6 +28,9 @@ public class AMBSubscription {
         client.unsubscribe(subscription: self)
     }
     
+    deinit {
+        unsubscribe()
+    }
 }
 
 public class AMBSubscriptionWeakWrapper {
