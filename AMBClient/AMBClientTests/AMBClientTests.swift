@@ -252,9 +252,7 @@ class AMBClientTests: XCTestCase {
         subscribeToTestChannel()
         
         self.wait(for: [subscribedExpectation], timeout: 10)
-        //publishMessage()
-        //!!!
-        print("************* publish()")
+        publishMessage()
         self.wait(for: [publishedMessageExpectation], timeout: 100)
     }
     
