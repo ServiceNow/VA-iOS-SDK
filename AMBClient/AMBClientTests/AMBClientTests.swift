@@ -1,5 +1,5 @@
 import XCTest
-@testable import SNOWAMBClient
+@testable import AMBClient
 
 import Foundation
 
@@ -27,7 +27,7 @@ class AMBClientTests: XCTestCase {
     let session = URLSession(configuration: .default)
     let baseURL = URL(string: "https://snowchat.service-now.com")
     let username = "admin"
-    let password = "snow2004"
+    let password = "DemoQ2@NOW"
     let testChannelName = "C3E4C47D16AC4B8ABB424F59B7C29FF3"
     var ambHTTPClient: SNOWTestHTTPClient?
     var ambClient: AMBClient?
@@ -79,12 +79,15 @@ class AMBClientTests: XCTestCase {
         ambHTTPClient = SNOWTestHTTPClient(baseURL: baseURL!)
         // swiftlint:disable:next force_unwrapping
         ambClient = AMBClient(httpClient: ambHTTPClient!)
+        ambClient?.delegate = self
         
         login()
     }
     
     override func tearDown() {
         super.tearDown()
+        
+        ambClient?.tearDown()
     }
     
     // MARK: - helpers
@@ -175,12 +178,10 @@ class AMBClientTests: XCTestCase {
         testExpectations[ExpectationType.handshaken] = handshakenExpectation
         testExpectations[ExpectationType.glideInitialState] = glideInitialStateSetExpectation
         
-        ambClient?.delegate = self
         ambClient?.connect()
 
         self.wait(for: [handshakenExpectation], timeout: 10)
         self.wait(for: [glideInitialStateSetExpectation], timeout: 10)
-        ambClient?.tearDown()
     }
     
     func testSubscribeUnubscribe() {
@@ -206,7 +207,6 @@ class AMBClientTests: XCTestCase {
         subscription?.unsubscribe()
         self.wait(for: [unsubscribedExpectation], timeout: 10)
         
-        ambClient?.tearDown()
     }
     
     func testGlideStateLoggedIn() {
@@ -217,11 +217,9 @@ class AMBClientTests: XCTestCase {
         testExpectations.removeAll()
         testExpectations[ExpectationType.glideLoggedIn] = glideLoggedInExpectation
 
-        ambClient?.delegate = self
         ambClient?.connect()
         
         self.wait(for: [glideLoggedInExpectation], timeout: 10)
-        XCTAssert(subscription != nil, "AMB subcription subscription is nil")
     }
     
     func testPublishMessage() {
@@ -230,17 +228,32 @@ class AMBClientTests: XCTestCase {
         let publishedMessageExpectation = XCTestExpectation(description: "AMB published message")
         let subscribedExpectation = XCTestExpectation(description: "AMB subscribed to test channel")
         
-        testExpectations.removeAll()
         testExpectations[ExpectationType.subscribed] = subscribedExpectation
         testExpectations[ExpectationType.published] = publishedMessageExpectation
         
-        ambClient?.delegate = self
         ambClient?.connect()
-        subscribeToTestChannel()
+        let subscription = subscribeToTestChannel()
+        XCTAssert(subscription != nil, "subscription object is nil")
         
         self.wait(for: [subscribedExpectation], timeout: 10)
         publishMessage()
         self.wait(for: [publishedMessageExpectation], timeout: 10)
+    }
+    
+    func testDoubleSubscriptions() {
+        waitForLogin()
+        
+        ambClient?.connect()
+        let subscription1 = subscribeToTestChannel()
+        XCTAssert(subscription1 != nil, "subscription object is nil")
+        let subscription2 = subscribeToTestChannel()
+        XCTAssert(subscription2 != nil, "subscription object is nil")
+        
+        let subscribedExpectation = XCTestExpectation(description: "AMB subscribed to test channel")
+        testExpectations[ExpectationType.subscribed] = subscribedExpectation
+        self.wait(for: [subscribedExpectation], timeout: 10)
+        XCTAssert(subscription1!.subscribed, "subscription object should be subscribed")
+        XCTAssert(subscription2!.subscribed, "subscription object should be subscribed")
     }
     
 }

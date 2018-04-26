@@ -9,7 +9,7 @@ class AMBTransportTests: XCTestCase {
     var serverInstance: ServerInstance?
     let privateRESTAPI = "mobile/app_bootstrap/post_auth"
     let username = "admin"
-    let password = "snow2004"
+    let password = "DemoQ2@NOW"
     let testChannelName = "C3E4C47D16AC4B8ABB424F59B7C29FF3"
     
     var basicAuthHeaders: HTTPHeaders {
