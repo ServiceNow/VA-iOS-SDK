@@ -439,16 +439,14 @@ class ChatDataController {
 
     // MARK: - Topic Notifications
     
+    func topicWillStart(_ topicInfo: TopicInfo) {
+        replaceTopicPromptWithTypingIndicator()
+    }
+    
     func topicDidStart(_ topicInfo: TopicInfo) {
         conversationId = topicInfo.conversationId
-    
-        removeTopicPromptIfPresent()
-
-        if topicInfo.topicName != nil {
-            pushTopicTitle(topicInfo: topicInfo)
-        }
         
-        pushTypingIndicatorIfNeeded()
+        presentTopicTitle(topicInfo: topicInfo)
     }
 
     func topicDidResume(_ topicInfo: TopicInfo) {
@@ -460,7 +458,7 @@ class ChatDataController {
         conversationId = nil
         
         flushControlBuffer { [weak self] in
-            self?.pushEndOfTopicDividerIfNeeded()
+            self?.presentEndOfTopicDividerIfNeeded()
             self?.presentWelcomeMessage()
             self?.presentTopicPrompt()
             
@@ -506,13 +504,9 @@ class ChatDataController {
         bufferControlMessage(ChatMessageModel(model: welcomeTextControl, bubbleLocation: .left, theme: theme))
     }
     
-    func pushEndOfTopicDividerIfNeeded() {
+    func presentEndOfTopicDividerIfNeeded() {
         guard let lastControl = controlData.first, lastControl.type != .topicDivider else { return }
         
-        // if there is a typing indicator we want to remove that first
-        popTypingIndicator()
-        
-        // NOTE: we do not buffer the divider currently - this is intentional
         presentControlData(ChatMessageModel(type: .topicDivider, theme: theme))
     }
     
@@ -528,10 +522,9 @@ class ChatDataController {
         return messageModel
     }
     
-    func pushTopicTitle(topicInfo: TopicInfo) {
+    func presentTopicTitle(topicInfo: TopicInfo) {
         let messageModel = chatModelFromTopicInfo(topicInfo)
         
-        // NOTE: we do not buffer the welcome message currently - this is intentional
         presentControlData(messageModel)
     }
     
@@ -543,6 +536,15 @@ class ChatDataController {
     
     func appendTopicStartDivider(topicInfo: TopicInfo) {
         addHistoryToCollection(ChatMessageModel(type: .topicDivider, theme: theme))
+    }
+    
+    private func replaceTopicPromptWithTypingIndicator() {
+        guard let lastControl = controlData.first,
+            let button = lastControl.controlModel as? ButtonControlViewModel,
+            button.value == ChatDataController.showAllTopicsAction else { return }
+        
+        let model = ChatMessageModel(model: typingIndicator, bubbleLocation: .left, theme: theme)
+        replaceLastControl(with: model)
     }
     
     // MARK: - Control Buffer

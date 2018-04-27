@@ -118,6 +118,16 @@ extension Chatterbox {
         }
     }
     
+    fileprivate func notifyWillStartTopic(_ outgoingMessage: UserTopicPickerMessage) {
+        let topicName = outgoingMessage.data.richControl?.value ?? ""
+        let conversationId = conversationContext.systemConversationId ?? ""
+        let topicInfo = TopicInfo(topicId: nil, topicName: topicName, taskId: nil, conversationId: conversationId)
+        
+        notifyEventListeners { listener in
+            listener.chatterbox(self, willStartTopic: topicInfo, forChat: chatId)
+        }
+    }
+    
     private func startTopicMessageHandler(_ message: String) {
         let controlMessage = ChatDataFactory.controlFromJSON(message)
         guard controlMessage.direction == .fromServer else { return }
@@ -126,6 +136,9 @@ extension Chatterbox {
             messageHandler = startUserTopicHandshakeHandler
             
             let outgoingMessage = selectedTopicPickerMessage(from: topicPicker)
+            
+            notifyWillStartTopic(outgoingMessage)
+
             publishMessage(outgoingMessage)
         }
     }

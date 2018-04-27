@@ -123,6 +123,10 @@ public class ChatViewController: UIViewController {
 
 extension ChatViewController: ChatEventListener {
     
+    func chatterbox(_ chatterbox: Chatterbox, willStartTopic topicInfo: TopicInfo, forChat chatId: String) {
+        Logger.default.logInfo("ChatEventListener.willStartTopic: \(topicInfo)")
+    }
+
     func chatterbox(_ chatterbox: Chatterbox, didStartTopic topicInfo: TopicInfo, forChat chatId: String) {
         Logger.default.logInfo("ChatEventListener.didStartTopic: \(topicInfo)")
     }

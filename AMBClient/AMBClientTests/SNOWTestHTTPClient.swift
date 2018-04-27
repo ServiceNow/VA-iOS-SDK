@@ -1,5 +1,5 @@
 import Foundation
-import SNOWAMBClient
+import AMBClient
 
 class SNOWTestHTTPClient: SNOWHTTPSessionClientProtocol {
 
