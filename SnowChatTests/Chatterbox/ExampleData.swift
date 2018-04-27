@@ -128,6 +128,47 @@ class ExampleData {
         return ChatDataFactory.controlFromJSON(jsonPicker) as! PickerControlMessage
     }
     
+    static func exampleDateControlMessage() -> DateOrTimePickerControlMessage {
+        let json = """
+        {
+            "type" : "systemTextMessage",
+            "data" : {
+                "hidden": false,
+                "messageId": "3fb5f11adb651300f7f29cb8db96194e",
+                "conversationId": "13a5b11adb651300f7f29cb8db96193a",
+                "taskId": "17a5b11adb651300f7f29cb8db96193a",
+                "consumerAccountId": "8cb76619db291300416e769e0f96192e",
+                "direction": "outbound",
+                "sendTime": 1524255596000,
+                "receiveTime": 0,
+                "links": [
+
+                ],
+                "richControl": {
+                    "uiType": "Date",
+                    "model": {
+                        "type": "field",
+                        "name": "date"
+                    },
+                    "uiMetadata": {
+                        "label": "date?",
+                        "required": true
+                    }
+                },
+                "isAgent": false,
+                "sender": {
+                    "name": null,
+                    "sysId": null,
+                    "avatarPath": "bafaaf05c31113009cbbdccdf3d3ae9c.iix?t=small"
+                },
+                "sequence": "162e4b6a1bc0000001"
+            }
+        }
+        """
+        
+        return ChatDataFactory.controlFromJSON(json) as! DateOrTimePickerControlMessage
+    }
+    
     static func exampleOutputTextControlMessage() -> OutputTextControlMessage {
         let jsonOutputText = """
         {

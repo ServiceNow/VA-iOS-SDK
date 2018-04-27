@@ -51,7 +51,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         mockChatterbox = MockChatterbox(instance: ServerInstance(instanceURL: URL(fileURLWithPath: "/")))
         controller = ChatDataController(chatterbox: mockChatterbox!)
         controller?.setChangeListener(self)
-
+        
         mockChatterbox?.updatedControl = nil
     }
     
@@ -65,7 +65,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         XCTAssertNil(controller?.conversationId)
     }
     
-    func testAddControl() {
+    func testDidReceiveControlMessage() {
         let boolMessage = ExampleData.exampleBooleanControlMessage()
         expectation = expectation(description: "Expect model changed delegate to be called")
         
@@ -157,6 +157,72 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
         XCTAssertEqual(value, (controller?.controlForIndex(1)?.controlModel as! TextControlViewModel).value)
         XCTAssertEqual(label, (controller?.controlForIndex(2)?.controlModel as! TextControlViewModel).value)
 
+    }
+    
+    func testDateRendersTextAndHasAuxiliary() {
+        startConversation()
+
+        let initialCount = controller?.controlCount()
+        controller?.isBufferingEnabled = false
+        
+        let dateMessage = ExampleData.exampleDateControlMessage()
+        
+        controller?.chatterbox(mockChatterbox!, didReceiveControlMessage: dateMessage, forChat: "chatID")
+
+        // make sure the text control is added for the label
+        XCTAssertEqual(initialCount! + 1, controller?.controlCount())
+        XCTAssertEqual(ControlType.text, controller?.controlForIndex(1)?.controlModel?.type)
+        
+        let chatMessage = controller?.controlData[0]
+        let controlModel = chatMessage?.controlModel as! TextControlViewModel
+        XCTAssertEqual(dateMessage.data.richControl?.uiMetadata?.label, controlModel.value)
+      
+        // actual UI date picker control is created in the ConversationViewController layer based on the underlying model
+        // - this just tests that that logic is correct for getting the auxiliary model based on the chatterbox-message
+        let auxiliaryModel = ChatMessageModel.auxiliaryModel(withMessage: dateMessage, theme: Theme(dictionary:[:]))
+        XCTAssertNotNil(auxiliaryModel)
+        XCTAssertTrue(auxiliaryModel!.isAuxiliary)
+        XCTAssertEqual(auxiliaryModel?.controlModel?.type, .date)
+        XCTAssertEqual(auxiliaryModel?.controlModel?.label, "date?")
+    }
+    
+    func testRepliedDateRendersTwoText() {
+        startConversation()
+        
+        let initialCount = controller?.controlCount()
+
+        // first add the initial boolean message as if it came from Chatterbox
+        let dateMessage = ExampleData.exampleDateControlMessage()
+        controller?.chatterbox(mockChatterbox!, didReceiveControlMessage: dateMessage, forChat: "chatID")
+        mockChatterbox?.pendingControlMessage = dateMessage
+        
+        // now update it
+        let now = Date()
+        let modelChanged = DatePickerControlViewModel(id: dateMessage.messageId, label: "", required: true, resultValue: now, messageDate: Date())
+        controller?.updateControlData(modelChanged)
+        
+        // now mimic chatterbox sending out the notification of the update
+        let message = mockChatterbox?.pendingControlMessage
+        var me = MessageExchange(withMessage: message!)
+        me.response = mockChatterbox?.updatedControl
+        
+        controller?.chatterbox(mockChatterbox!, didCompleteMessageExchange: me, forChat: "ChatID")
+        
+        // make sure 2 controls were added
+        XCTAssertEqual(initialCount! + 3, controller?.controlCount())
+        XCTAssertEqual(ControlType.text, controller?.controlForIndex(1)?.controlModel?.type)
+        XCTAssertEqual(ControlType.text, controller?.controlForIndex(2)?.controlModel?.type)
+        
+        // typing indicator gets put as first control after a response is entered
+        XCTAssertEqual(ControlType.typingIndicator, controller?.controlForIndex(0)?.controlModel?.type)
+        
+        // make sure the label and value are correct
+        let response = me.response as! DateOrTimePickerControlMessage
+        let responseValue = response.data.richControl!.value!
+        let label = dateMessage.data.richControl?.uiMetadata?.label
+        let value = DateFormatter.glideDisplayString(for: responseValue!, for: .date)
+        XCTAssertEqual(value, (controller?.controlForIndex(1)?.controlModel as! TextControlViewModel).value)
+        XCTAssertEqual(label, (controller?.controlForIndex(2)?.controlModel as! TextControlViewModel).value)
     }
 }
 
