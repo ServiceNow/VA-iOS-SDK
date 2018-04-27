@@ -156,6 +156,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
             
             if preferredControlSize.height != UIViewNoIntrinsicMetric {
                 controlHeightConstraint = controlView.heightAnchor.constraint(equalToConstant: preferredControlSize.height)
+                controlHeightConstraint?.priority = .defaultHigh
                 controlHeightConstraint?.isActive = true
             }
         }
