@@ -56,6 +56,15 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         
         let chatService = ChatService(instanceURL: instanceURL, delegate: self)
         self.chatService = chatService
+        
+        ChatService.loggers().forEach { (logger) in
+            switch logger.category {
+            case "Chatterbox", "DataController":
+                logger.logLevel = .error
+            default:
+                logger.logLevel = .fatal
+            }
+        }
     }
     
     private func setupNavigationBarButtons() {
