@@ -38,10 +38,21 @@ public final class ChatService {
         self.chatterbox = Chatterbox(instance: instance)
         self.delegate = delegate
         self.chatterbox.chatAuthListeners.addListener(self)
-        
+
+        ChatService.defaultLogLevels()
+    }
+    
+    public static func loggers() -> [Logger] {
+        return [Logger.logger(for: "Chatterbox"),
+                Logger.logger(for: "ChatDataController"),
+                Logger.default]
+    }
+    
+    public static func defaultLogLevels() {
         // Set default log levels for debugging
-        Logger.logger(for: "AMBClient").logLevel = .error
         Logger.logger(for: "Chatterbox").logLevel = .debug
+        Logger.logger(for: "ChatDataController").logLevel = .debug
+        Logger.default.logLevel = .debug
     }
     
     // start a chat, providing a view-controller for the application to manage
