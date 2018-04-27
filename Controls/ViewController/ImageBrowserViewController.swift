@@ -22,6 +22,13 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     private var currentImage: Int {
         didSet {
             pageControl.currentPage = currentImage
+            if oldValue != currentImage, let scrollView = imageViews[oldValue].superview as? UIScrollView {
+                let image = imageViews[oldValue]
+                
+                // setting scale to anything but 1 changes transform scale propery on the view. So we need to reset it.
+                image.transform = CGAffineTransform.identity
+                scrollView.setZoomScale(1, animated: false)
+            }
         }
     }
     
@@ -99,16 +106,17 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
         
         scrollView.addGestureRecognizer(doubleTapGestureRecognizer)
         doubleTapGestureRecognizer.numberOfTapsRequired = 2
-        doubleTapGestureRecognizer.addTarget(self, action: #selector(doubleTappedView(_:)))
+        doubleTapGestureRecognizer.addTarget(self, action: #selector(doubleTappedImageView(_:)))
         
         // forcing layout subviews so we can navigate to preselected page right away
         view.layoutIfNeeded()
     }
     
-    @objc func doubleTappedView(_ gesture: UITapGestureRecognizer) {
+    @objc func doubleTappedImageView(_ gesture: UITapGestureRecognizer) {
         isZoomed = !isZoomed
         if let containerImageView = imageViews[currentImage].superview as? UIScrollView {
-            containerImageView.setZoomScale(isZoomed ? 2 : 1, animated: true)
+            let maxZoomScale = containerImageView.maximumZoomScale
+            containerImageView.setZoomScale(isZoomed ? maxZoomScale : 1, animated: true)
         }
     }
     
@@ -193,6 +201,10 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     }
     
     // MARK: - UIScrollViewDelegate
+    
+    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        
+    }
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         guard self.scrollView != scrollView, imageViews.count > currentImage else {
