@@ -86,8 +86,11 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
     
     func testEndTopicDivider() {
         XCTAssertEqual(0, controller?.controlCount())
+        
         startConversation()
-        XCTAssertEqual(2, controller?.controlCount())
+        
+        // should have topic title only
+        XCTAssertEqual(1, controller?.controlCount())
         
         endConversation {
             XCTAssertEqual(2, self.controller?.controlCount())
