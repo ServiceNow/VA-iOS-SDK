@@ -890,6 +890,7 @@
 		BEB6C8641FB92CD700B1D497 /* SnowChatTests */ = {
 			isa = PBXGroup;
 			children = (
+				C482C388209263C100A8CD9E /* ChatDataController */,
 				46EBB01A2065DFD700D3B3DF /* APIManager */,
 				C4EF7C3F20641DAB00E3904B /* Util */,
 				5778CF961FDEE6A6004F77D8 /* Controls */,
@@ -962,6 +963,14 @@
 			name = Logger;
 			sourceTree = "<group>";
 		};
+		C482C388209263C100A8CD9E /* ChatDataController */ = {
+			isa = PBXGroup;
+			children = (
+				C44FD9CA200010900079E107 /* ChatDataControllerTests.swift */,
+			);
+			path = ChatDataController;
+			sourceTree = "<group>";
+		};
 		C4CAFE9C1FBCF018007007F5 /* Chatterbox */ = {
 			isa = PBXGroup;
 			children = (
@@ -1010,7 +1019,6 @@
 				C4CAFEA51FBCF4A7007007F5 /* CBDataTests.swift */,
 				C4B6A9511FE22208007DBEED /* ChatDataStoreTests.swift */,
 				BE3F1AB51FEC480D00DCC21B /* APIManagerChatTopicsTest.swift */,
-				C44FD9CA200010900079E107 /* ChatDataControllerTests.swift */,
 				C4FFCD4B20091B8D00B835C6 /* APIManagerChatSessionTests.swift */,
 				C456300020599D2400B79688 /* ChatSessionTests.swift */,
 				C483C17E2017DAD300C28E46 /* ExampleData.swift */,
