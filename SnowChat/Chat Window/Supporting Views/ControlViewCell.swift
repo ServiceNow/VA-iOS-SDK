@@ -14,13 +14,18 @@ class ControlViewCell: UITableViewCell, ControlPresentable {
     
     private(set) var control: ControlProtocol?
     
+    fileprivate func applyTheme(_ model: ChatMessageModel, _ control: ControlProtocol) {
+        let controlTheme = model.isLiveAgentConversation ? model.theme.controlThemeForAgent() : model.theme.controlThemeForBot()
+        control.applyTheme(controlTheme)
+        backgroundColor = model.theme.backgroundColor
+    }
+    
     func configure(with model: ChatMessageModel, resourceProvider: ControlResourceProvider) {
         guard let controlModel = model.controlModel else { return }
         let control = ControlsUtil.controlForViewModel(controlModel, resourceProvider: resourceProvider)
         addUIControl(control, at: .left, lastMessageDate: model.lastMessageDate)
         
-        let controlTheme = model.isLiveAgentConversation ? model.theme.controlThemeForAgent() : model.theme.controlThemeForBot()
-        control.applyTheme(controlTheme)
+        applyTheme(model, control)
     }
     
     override func prepareForReuse() {
