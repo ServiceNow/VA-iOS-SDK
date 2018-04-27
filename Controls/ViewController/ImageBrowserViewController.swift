@@ -16,18 +16,15 @@ protocol ImageBrowserDelegate: AnyObject {
 class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     
     weak var delegate: ImageBrowserDelegate?
+    private var zoomTransform: CGAffineTransform?
     private var photoURLs: [URL]?
     private var images: [UIImage]?
     private var imageDownloader: ImageDownloader?
     private var currentImage: Int {
         didSet {
             pageControl.currentPage = currentImage
-            if oldValue != currentImage, let scrollView = imageViews[oldValue].superview as? UIScrollView {
-                let image = imageViews[oldValue]
-                
-                // setting scale to anything but 1 changes transform scale propery on the view. So we need to reset it.
-                image.transform = CGAffineTransform.identity
-                scrollView.setZoomScale(1, animated: false)
+            if oldValue != currentImage {
+                resetZoom(for: oldValue)
             }
         }
     }
@@ -53,6 +50,21 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func resetZoom(for imageIndex: Int) {
+        let imageView = imageViews[imageIndex]
+        UIView.performWithoutAnimation {
+            imageView.transform = CGAffineTransform.identity
+            let scrollView = (imageView.superview as? UIScrollView)
+            scrollView?.layoutIfNeeded()
+            scrollView?.setZoomScale(1, animated: false)
+        }
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        resetZoom(for: currentImage)
     }
     
     override func viewDidLayoutSubviews() {
@@ -164,7 +176,7 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
             containerView.bouncesZoom = false
             containerView.showsHorizontalScrollIndicator = false
             containerView.showsVerticalScrollIndicator = false
-            containerView.maximumZoomScale = 2
+            containerView.maximumZoomScale = 3
             containerView.translatesAutoresizingMaskIntoConstraints = false
             containerView.addSubview(imageView)
             
@@ -194,6 +206,11 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
         }
     }
     
+    private func maximumScale(for image: UIImage) -> CGFloat {
+        // TODO: implement
+        return 0
+    }
+    
     private func updateContentOffset(forCurrentImage index: Int) {
         var contentOffset = scrollView.contentOffset
         contentOffset.x = CGFloat(index) * scrollView.bounds.width
@@ -203,7 +220,7 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     // MARK: - UIScrollViewDelegate
     
     func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-        
+        zoomTransform = view?.transform
     }
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
