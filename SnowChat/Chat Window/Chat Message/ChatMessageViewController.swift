@@ -267,5 +267,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         
         timestampLabel.textColor = theme.timestampColor
         timestampLabel.textAlignment = NSTextAlignment.center
+        
+        view.backgroundColor = theme.backgroundColor
     }    
 }

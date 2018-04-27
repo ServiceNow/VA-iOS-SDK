@@ -51,6 +51,7 @@ class TopicDividerCell: UITableViewCell, Themeable {
     // MARK: Themeable
     
     func applyTheme(_ theme: Theme) {
+        backgroundColor = theme.backgroundColor
         lineView.backgroundColor = theme.separatorColor
     }
 }
