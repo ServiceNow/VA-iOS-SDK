@@ -148,8 +148,8 @@ extension Chatterbox {
         
         setupForAgentConversation(topicInfo: topicInfo)
         
-        // create a new conversation for the user topic
-        _ = chatStore.findOrCreateConversation(topicInfo.conversationId, withName: topicInfo.topicName ?? "New Topic", withState: .chatProgress)
+        // create a new conversation for the agent topic if there isn't one already
+        chatStore.findOrCreateConversation(topicInfo.conversationId, withName: topicInfo.topicName ?? "New Topic", withState: .chatProgress)
 
         let agentInfo = AgentInfo(agentId: "", agentAvatar: nil)
         notifyEventListeners { listener in

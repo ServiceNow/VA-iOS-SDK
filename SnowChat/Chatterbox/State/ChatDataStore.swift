@@ -52,16 +52,17 @@ class ChatDataStore {
     
     func removeResponse(from exchange: MessageExchange, for conversationId: String) -> Bool {
         guard let index = conversations.index(where: { $0.conversationId == conversationId }) else {
-            Logger.default.logError("No conversation found for \(conversationId) in removeResponseData")
+            Logger.default.logError("No conversation found for \(conversationId) in removeResponse")
             return false
         }
         return conversations[index].removeResponse(from: exchange)
     }
     
-    internal func findOrCreateConversation(_ conversationId: String, withName name: String, withState conversationState: Conversation.ConversationState) -> Int {
+    @discardableResult
+    internal func findOrCreateConversation(_ conversationId: String, withName name: String, withState conversationState: Conversation.ConversationState, isPartial: Bool = true) -> Int {
         guard let foundIndex = conversations.index(where: { $0.conversationId == conversationId }) else {
             let index = conversations.count
-            conversations.append(Conversation(withConversationId: conversationId, withTopic: name, withState: conversationState))
+            conversations.append(Conversation(withConversationId: conversationId, withTopic: name, withState: conversationState, partial: isPartial))
             return index
         }
         return foundIndex
@@ -69,11 +70,20 @@ class ChatDataStore {
     
     internal func endConversation(_ conversationId: String, withState state: Conversation.ConversationState) {
         guard let index = conversations.index(where: { $0.conversationId == conversationId }) else {
-            Logger.default.logError("No conversation found for \(conversationId) in storeResponseData")
+            Logger.default.logError("No conversation found for \(conversationId) in endConversation")
             return
         }
         
         conversations[index].state = state
+    }
+    
+    internal func completeConversation(_ conversationId: String) {
+        guard let index = conversations.index(where: { $0.conversationId == conversationId }) else {
+            Logger.default.logError("No conversation found for \(conversationId) in completeConversation")
+            return
+        }
+        
+        conversations[index].isPartial = false
     }
     
     // pendingMessage: get the last pendng message for a conversation, if any
@@ -159,14 +169,16 @@ struct Conversation: Storable, Codable {
     internal var conversationId: String {
         return topicId
     }
+    internal var isPartial: Bool
     private var exchanges = [MessageExchange]()
     
-    init(withConversationId conversationId: String, withTopic topicName: String = "UNKNOWN", withState state: ConversationState = .inProgress, deviceType: DeviceType? = Conversation.DeviceType.iOS) {
+    init(withConversationId conversationId: String, withTopic topicName: String = "UNKNOWN", withState state: ConversationState = .inProgress, deviceType: DeviceType? = Conversation.DeviceType.iOS, partial: Bool = false) {
         id = ChatUtil.uuidString()
         self.topicId = conversationId
         self.state = state
         self.topicTypeName = topicName
         self.deviceType = deviceType
+        self.isPartial = partial
     }
     
     func isForSystemTopic() -> Bool {
@@ -245,7 +257,11 @@ struct Conversation: Storable, Codable {
             exchanges.append(exchange)
         }
     }
-        
+
+    mutating func removeLastExchange() {
+        exchanges.removeLast()
+    }
+    
     @discardableResult
     func checkForDuplicates(_ messageId: String) -> MessageExchange? {
         // see if there are any messages with the given id already in the conversation

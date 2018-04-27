@@ -183,20 +183,29 @@ class ChatDataController {
         controlData = [data] + controlData
     }
     
-    func addHistoryToCollection(_ viewModels: (message: ControlViewModel, response: ControlViewModel?)) {
-        // add response, then message, to the tail-end of the control data
-        if let response = viewModels.response {
-            controlData.append(ChatMessageModel(model: response, messageId: response.id, bubbleLocation: .right, theme: theme))
-        }
-        controlData.append(ChatMessageModel(model: viewModels.message, messageId: viewModels.message.id, bubbleLocation: .left, theme: theme))
+    fileprivate func appendControlData(_ messageModel: ChatMessageModel) {
+        setLastMessageDate(to: messageModel)
+        controlData.append(messageModel)
+        updateLastMessageDate(from: messageModel)
     }
     
-    func addHistoryToCollection(_ viewModel: ControlViewModel, location: BubbleLocation = .left) {
-        addHistoryToCollection(ChatMessageModel(model: viewModel, messageId: viewModel.id, bubbleLocation: location, theme: theme))
+    func addHistoryToCollection(withViewModels viewModels: (message: ControlViewModel, response: ControlViewModel?)) {
+        // add response, then message, to the tail-end of the control data
+        if let response = viewModels.response {
+            addHistoryToCollection(withViewModel: response, location: .right)
+        }
+        
+        addHistoryToCollection(withViewModel: viewModels.message, location: .left)
+    }
+    
+    func addHistoryToCollection(withViewModel viewModel: ControlViewModel, location: BubbleLocation = .left) {
+        let message = ChatMessageModel(model: viewModel, messageId: viewModel.id, bubbleLocation: location, theme: theme)
+        updatedAvatarURL(model: message, withInstance: chatterbox.serverInstance)
+        addHistoryToCollection(withChatModel: message)
     }
 
-    func addHistoryToCollection(_ chatModel: ChatMessageModel) {
-        controlData.append(chatModel)
+    func addHistoryToCollection(withChatModel chatModel: ChatMessageModel) {
+        appendControlData(chatModel)
     }
     
     func presentControlData(_ data: ChatMessageModel) {
@@ -212,7 +221,8 @@ class ChatDataController {
     }
     
     func setLastMessageDate(to model: ChatMessageModel) {
-        model.lastMessageDate = self.lastMessageDate
+        guard let lastMessageDate = self.lastMessageDate else { return }
+        model.lastMessageDate = lastMessageDate
     }
     
     func updateLastMessageDate(from model: ChatMessageModel) {
@@ -418,20 +428,16 @@ class ChatDataController {
         }
     }
 
-    internal func chatMessageModel(withMessage message: ControlData) -> ChatMessageModel? {
-        
-        func modelWithUpdatedAvatarURL(model: ChatMessageModel, withInstance instance: ServerInstance) -> ChatMessageModel {
-            if let path = model.avatarURL?.absoluteString {
-                let updatedURL = URL(string: path, relativeTo: instance.instanceURL)
-                let newModel = model
-                newModel.avatarURL = updatedURL
-                return newModel
-            }
-            return model
+    internal func updatedAvatarURL(model: ChatMessageModel, withInstance instance: ServerInstance) {
+        if let path = model.avatarURL?.absoluteString {
+            let updatedURL = URL(string: path, relativeTo: instance.instanceURL)
+            model.avatarURL = updatedURL
         }
-        
-        if var messageModel = ChatMessageModel.model(withMessage: message, theme: theme) {
-            messageModel = modelWithUpdatedAvatarURL(model: messageModel, withInstance: chatterbox.serverInstance)
+    }
+
+    internal func chatMessageModel(withMessage message: ControlData) -> ChatMessageModel? {
+        if let messageModel = ChatMessageModel.model(withMessage: message, theme: theme) {
+            updatedAvatarURL(model: messageModel, withInstance: chatterbox.serverInstance)
             return messageModel
         }
         return nil
@@ -531,11 +537,11 @@ class ChatDataController {
     func appendTopicTitle(topicInfo: TopicInfo) {
         let messageModel = chatModelFromTopicInfo(topicInfo)
 
-        addHistoryToCollection(messageModel)
+        addHistoryToCollection(withChatModel: messageModel)
     }
     
     func appendTopicStartDivider(topicInfo: TopicInfo) {
-        addHistoryToCollection(ChatMessageModel(type: .topicDivider, theme: theme))
+        addHistoryToCollection(withChatModel: ChatMessageModel(type: .topicDivider, theme: theme))
     }
     
     private func replaceTopicPromptWithTypingIndicator() {

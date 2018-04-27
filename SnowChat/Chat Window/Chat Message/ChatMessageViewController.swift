@@ -197,7 +197,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         
         let interval = messageDate.timeIntervalSince(lastMessageDate)
         
-        if interval > timestampAgeSeconds {
+        if interval.magnitude > timestampAgeSeconds {
             updateTimestamp(messageDate: messageDate)
         } else {
             clearTimestamp()
