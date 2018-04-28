@@ -57,7 +57,7 @@ extension Chatterbox {
             self.startAgentTopic(topicInfo: topicInfo)
 
             // get the agent messages and see if the conversation has been accepted by an agent yet
-            let agentMessages = conversation.messageExchanges().flatMap({ (exchange) -> ControlData? in
+            let agentMessages = conversation.messageExchanges().compactMap({ (exchange) -> ControlData? in
                 let message = exchange.message
                 if let isAgent = message.isAgent, isAgent == true {
                     return message
