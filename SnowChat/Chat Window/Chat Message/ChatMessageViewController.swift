@@ -156,6 +156,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
             
             if preferredControlSize.height != UIViewNoIntrinsicMetric {
                 controlHeightConstraint = controlView.heightAnchor.constraint(equalToConstant: preferredControlSize.height)
+                controlHeightConstraint?.priority = .defaultHigh
                 controlHeightConstraint?.isActive = true
             }
         }
@@ -197,7 +198,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         
         let interval = messageDate.timeIntervalSince(lastMessageDate)
         
-        if interval > timestampAgeSeconds {
+        if interval.magnitude > timestampAgeSeconds {
             updateTimestamp(messageDate: messageDate)
         } else {
             clearTimestamp()
@@ -266,5 +267,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         
         timestampLabel.textColor = theme.timestampColor
         timestampLabel.textAlignment = NSTextAlignment.center
+        
+        view.backgroundColor = theme.backgroundColor
     }    
 }

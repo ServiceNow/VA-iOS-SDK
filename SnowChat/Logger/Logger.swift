@@ -18,7 +18,7 @@
 import Foundation
 import os.log
 
-class Logger {
+public class Logger {
     
     static var loggers = [String: Logger]()
 
@@ -33,17 +33,17 @@ class Logger {
         return loggers[name]!
     }
     
-    enum LogLevel {
+    public enum LogLevel {
         case info
         case debug
         case error
         case fatal
     }
     
-    var logLevel: LogLevel
+    public var logLevel: LogLevel
+    public let category: String
     let osLogger: OSLog
     let domain = "com.servicenow.SnowChat"
-    let category: String
     
     #if DEBUG
         let enabled: Bool = true
