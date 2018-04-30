@@ -9,7 +9,7 @@
 import UIKit
 import SnowChat
 
-class HomeViewController: UIViewController, ChatServiceDelegate {
+class HomeViewController: UIViewController, ChatServiceDelegate, UINavigationControllerDelegate {
     
     private var chatService: ChatService?
     
@@ -27,8 +27,17 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         setupChatService()
         setupNavigationBarButtons()
         setupAuthNotificationObserving()
+        
+        navigationController?.delegate = self
     }
     
+    public func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+        if viewController === self {
+            chatService?.pauseNetwork()
+            NSLog("Pausing network activity while no chat view is showing...")
+        }
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -46,6 +55,17 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         }
     }
     
+    private func setupChatLoggingLevels() {
+        ChatService.loggers().forEach { (logger) in
+            switch logger.category {
+            case "Chatterbox", "DataController":
+                logger.logLevel = .error
+            default:
+                logger.logLevel = .fatal
+            }
+        }
+    }
+    
     // MARK: - UI Setup
     
     private func setupChatService() {
@@ -57,14 +77,7 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         let chatService = ChatService(instanceURL: instanceURL, delegate: self)
         self.chatService = chatService
         
-        ChatService.loggers().forEach { (logger) in
-            switch logger.category {
-            case "Chatterbox", "DataController":
-                logger.logLevel = .error
-            default:
-                logger.logLevel = .fatal
-            }
-        }
+        setupChatLoggingLevels()
     }
     
     private func setupNavigationBarButtons() {
@@ -99,6 +112,9 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     
     private func establishChatSession(credential: OAuthCredential, logOutOnAuthFailure: Bool) {
         guard let chatService = chatService else { return }
+        
+        NSLog("Resuming networking and establishing user session")
+        chatService.resumeNetwork()
         
         let token = credential.idToken ?? credential.accessToken
 

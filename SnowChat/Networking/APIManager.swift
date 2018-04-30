@@ -25,11 +25,12 @@ class APIManager: NSObject, AMBClientDelegate {
         case loggedOut(User?)
     }
     
-    private enum AMBPauseReason {
+    internal enum AMBPauseReason {
         case reachability
         case appBackgrounded
         case repairingSession
         case loggedOut
+        case noView
     }
     
     internal let instance: ServerInstance
@@ -232,22 +233,26 @@ class APIManager: NSObject, AMBClientDelegate {
     
     // MARK: - AMB Pausing
     
-    @discardableResult private func addAMBPauseReason(_ reason: AMBPauseReason) -> Bool {
+    @discardableResult internal func addAMBPauseReason(_ reason: AMBPauseReason) -> Bool {
         Logger.default.logInfo("Adding AMB pause reason: \(reason)")
+        
         let inserted = ambPauseReasons.insert(reason).inserted
         if !ambClient.isPaused {
             Logger.default.logInfo("Pausing AMB")
+            
             ambClient.isPaused = true
             updateAMBTransportAvailabilityIfNeeded()
         }
         return inserted
     }
     
-    @discardableResult private func removeAMBPauseReason(_ reason: AMBPauseReason) -> Bool {
+    @discardableResult internal func removeAMBPauseReason(_ reason: AMBPauseReason) -> Bool {
         Logger.default.logInfo("Removing AMB pause reason: \(reason)")
+        
         let removedReason = ambPauseReasons.remove(reason)
         if ambPauseReasons.isEmpty && ambClient.isPaused {
             Logger.default.logInfo("Unpausing AMB")
+            
             ambClient.isPaused = false
             updateAMBTransportAvailabilityIfNeeded()
         }

@@ -27,6 +27,14 @@ public final class ChatService {
         }
     }
     
+    public func pauseNetwork() {
+        chatterbox.apiManager.addAMBPauseReason(.noView)
+    }
+    
+    public func resumeNetwork() {
+        chatterbox.apiManager.removeAMBPauseReason(.noView)
+    }
+    
     private let chatterbox: Chatterbox
     
     private var isInitializing: Bool = false
