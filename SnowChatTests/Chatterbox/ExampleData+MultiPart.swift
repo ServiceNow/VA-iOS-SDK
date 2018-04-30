@@ -94,37 +94,40 @@ extension ExampleData {
     static func multiPartOutputImageControlMessage() -> MultiPartControlMessage {
         let jsonMultiPart = """
         {
-            "type": "consumerTextMessage",
             "data": {
-                "messageId": "177A862D06194E218FC13A2156E4DF29",
                 "richControl": {
                     "model": {
                         "name": "fieldAck.__silent_MultiPartOutputPrompt_08c84a11821b4f3cbafac4cf96c3a352",
                         "type": "outputMsg"
                     },
                     "content": {
-                        "value": "<html>     <body>          <!-- enter your markup here here -->     <h1>stuff</h1>     </body> </html> ",
-                        "uiType": "OutputHtml",
-                        "uiMetadata": {
-                            "width": 0,
-                            "type": "html",
-                            "height": 0
-                        }
+                        "value": "https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg%3Fauto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+                        "uiType": "OutputImage"
                     },
                     "uiType": "MultiPartOutput",
                     "uiMetadata": {
-                        "index": 4,
+                        "index": 1,
                         "navigationBtnLabel": "more"
                     }
                 },
-                "taskId": "726a2821dbfd1300f7f29cb8db9619ca",
-                "sessionId": "7b88acaddbbd1300f7f29cb8db9619a1",
-                "conversationId": "7e6a2821dbfd1300f7f29cb8db9619c9",
-                "sendTime": 1525108708782,
-                "direction": "inbound",
+                "@class": ".MessageDto",
+                "messageId": "7fd6f4a9dbfd1300416e769e0f9619ea",
+                "sendTime": 1525111530376,
+                "conversationId": "16e37869dbfd1300416e769e0f961906",
+                "receiveTime": 0,
+                "links": [
+
+                ],
+                "sessionId": "32d3f469dbfd1300416e769e0f9619d2",
+                "hidden": false,
+                "taskId": "1ae37869dbfd1300416e769e0f961906",
+                "sequence": "16317bb238a0000001",
                 "isAgent": false,
-                "receiveTime": 0
-            }
+                "direction": "outbound"
+            },
+            "source": "server",
+            "type": "systemTextMessage",
+            "sent_by": 5361929
         }
         """
         return ChatDataFactory.controlFromJSON(jsonMultiPart) as! MultiPartControlMessage
@@ -133,37 +136,49 @@ extension ExampleData {
     static func multiPartOutputLinkControlMessage() -> MultiPartControlMessage {
         let jsonMultiPart = """
         {
-            "type": "consumerTextMessage",
             "data": {
-                "messageId": "177A862D06194E218FC13A2156E4DF29",
                 "richControl": {
                     "model": {
                         "name": "fieldAck.__silent_MultiPartOutputPrompt_08c84a11821b4f3cbafac4cf96c3a352",
                         "type": "outputMsg"
                     },
                     "content": {
-                        "value": "<html>     <body>          <!-- enter your markup here here -->     <h1>stuff</h1>     </body> </html> ",
-                        "uiType": "OutputHtml",
+                        "value": {
+                            "action": "https://google.com"
+                        },
+                        "model": {
+                            "type": "field"
+                        },
+                        "uiType": "OutputLink",
                         "uiMetadata": {
-                            "width": 0,
-                            "type": "html",
-                            "height": 0
+                            "label": "https://google.com",
+                            "header": "blah"
                         }
                     },
                     "uiType": "MultiPartOutput",
                     "uiMetadata": {
-                        "index": 4,
+                        "index": 2,
                         "navigationBtnLabel": "more"
                     }
                 },
-                "taskId": "726a2821dbfd1300f7f29cb8db9619ca",
-                "sessionId": "7b88acaddbbd1300f7f29cb8db9619a1",
-                "conversationId": "7e6a2821dbfd1300f7f29cb8db9619c9",
-                "sendTime": 1525108708782,
-                "direction": "inbound",
+                "@class": ".MessageDto",
+                "messageId": "513774e9dbfd1300416e769e0f9619bd",
+                "sendTime": 1525111618070,
+                "conversationId": "16e37869dbfd1300416e769e0f961906",
+                "receiveTime": 0,
+                "links": [
+
+                ],
+                "sessionId": "32d3f469dbfd1300416e769e0f9619d2",
+                "hidden": false,
+                "taskId": "1ae37869dbfd1300416e769e0f961906",
+                "sequence": "16317bc7a170000001",
                 "isAgent": false,
-                "receiveTime": 0
-            }
+                "direction": "outbound"
+            },
+            "source": "server",
+            "type": "systemTextMessage",
+            "sent_by": 5361929
         }
         """
         return ChatDataFactory.controlFromJSON(jsonMultiPart) as! MultiPartControlMessage

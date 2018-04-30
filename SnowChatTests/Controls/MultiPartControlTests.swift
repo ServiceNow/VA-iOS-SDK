@@ -27,19 +27,6 @@ class MultiPartControlTests: XCTestCase {
         XCTAssertTrue(htmlControlModel.size?.height == UIViewNoIntrinsicMetric)
     }
     
-    func testOutputImageControlModel() {
-        let multiPartOutputImageControlMessage = ExampleData.multiPartOutputImageControlMessage()
-        let chatMessageModel = ChatMessageModel.model(withMessage: multiPartOutputImageControlMessage, theme: theme)
-        
-        XCTAssertNotNil(chatMessageModel?.controlModel)
-        
-        let controlModel = chatMessageModel!.controlModel
-        XCTAssertTrue(controlModel?.type == .outputImage)
-        
-        let imageControlModel = controlModel as! OutputImageViewModel
-        // TODO: to do!
-    }
-    
     func testOutputTextControlModel() {
         let multiPartOutputTextControlMessage = ExampleData.multiPartOutputTextControlMessage()
         let chatMessageModel = ChatMessageModel.model(withMessage: multiPartOutputTextControlMessage, theme: theme)
@@ -50,6 +37,19 @@ class MultiPartControlTests: XCTestCase {
         XCTAssertTrue(controlModel?.type == .text)
         
         let imageControlModel = controlModel as! TextControlViewModel
+        // TODO: to do!
+    }
+    
+    func testOutputImageControlModel() {
+        let multiPartOutputImageControlMessage = ExampleData.multiPartOutputImageControlMessage()
+        let chatMessageModel = ChatMessageModel.model(withMessage: multiPartOutputImageControlMessage, theme: theme)
+        
+        XCTAssertNotNil(chatMessageModel?.controlModel)
+        
+        let controlModel = chatMessageModel!.controlModel
+        XCTAssertTrue(controlModel?.type == .outputImage)
+        
+        let imageControlModel = controlModel as! OutputImageViewModel
         // TODO: to do!
     }
     
