@@ -23,8 +23,8 @@ class MultiPartControlTests: XCTestCase {
         XCTAssertTrue(controlModel?.type == .outputHtml)
         
         let htmlControlModel = controlModel as! OutputHtmlControlViewModel
-        XCTAssertTrue(htmlControlModel.size?.width == UIViewNoIntrinsicMetric)
-        XCTAssertTrue(htmlControlModel.size?.height == UIViewNoIntrinsicMetric)
+        XCTAssertTrue(htmlControlModel.size?.width == 0)
+        XCTAssertTrue(htmlControlModel.size?.height == 0)
     }
     
     func testOutputTextControlModel() {
