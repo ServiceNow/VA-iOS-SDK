@@ -98,6 +98,10 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         }
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        navigationController?.navigationBar.barTintColor = nil
+    }
+    
     internal func loadHistory() {
         dataController.loadHistory { [weak self] error in
             if let error = error {
