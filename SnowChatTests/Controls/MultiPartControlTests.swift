@@ -36,8 +36,8 @@ class MultiPartControlTests: XCTestCase {
         let controlModel = chatMessageModel!.controlModel
         XCTAssertTrue(controlModel?.type == .text)
         
-        let imageControlModel = controlModel as! TextControlViewModel
-        // TODO: to do!
+        let textControlModel = controlModel as! TextControlViewModel
+        XCTAssertTrue(textControlModel.value == "thing 1")
     }
     
     func testOutputImageControlModel() {
@@ -50,7 +50,7 @@ class MultiPartControlTests: XCTestCase {
         XCTAssertTrue(controlModel?.type == .outputImage)
         
         let imageControlModel = controlModel as! OutputImageViewModel
-        // TODO: to do!
+        XCTAssertTrue(imageControlModel.value.absoluteString == "https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg%3Fauto=compress&cs=tinysrgb&dpr=2&h=750&w=1260")
     }
     
     func testOutputLinkControlModel() {
@@ -62,7 +62,9 @@ class MultiPartControlTests: XCTestCase {
         let controlModel = chatMessageModel!.controlModel
         XCTAssertTrue(controlModel?.type == .outputLink)
         
-        let imageControlModel = controlModel as! OutputLinkControl
-        // TODO: to do!
+        let outputLinkControlModel = controlModel as! OutputLinkControlViewModel
+        XCTAssertTrue(outputLinkControlModel.header == "blah")
+        XCTAssertTrue(outputLinkControlModel.label == "https://google.com")
+        XCTAssertTrue(outputLinkControlModel.value.absoluteString == "https://google.com")
     }
 }
