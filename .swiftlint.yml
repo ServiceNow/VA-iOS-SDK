@@ -31,3 +31,5 @@ excluded:
   - Pods
   - Carthage
   - SnowChatTests
+  - AMBClient/AMBClientTests
+  
