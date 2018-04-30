@@ -60,7 +60,7 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         ChatService.loggers().forEach { (logger) in
             switch logger.category {
             case "Chatterbox", "DataController":
-                logger.logLevel = .debug
+                logger.logLevel = .error
             default:
                 logger.logLevel = .fatal
             }
