@@ -16,7 +16,6 @@ protocol ImageBrowserDelegate: AnyObject {
 class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     
     weak var delegate: ImageBrowserDelegate?
-    private var zoomTransform: CGAffineTransform?
     private var photoURLs: [URL]?
     private var images: [UIImage]?
     private var imageDownloader: ImageDownloader?
@@ -213,10 +212,6 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     }
     
     // MARK: - UIScrollViewDelegate
-    
-    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-        zoomTransform = view?.transform
-    }
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         guard self.scrollView != scrollView, imageViews.count > currentImage else {
