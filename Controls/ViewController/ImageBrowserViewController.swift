@@ -176,9 +176,7 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
             containerView.bouncesZoom = false
             containerView.showsHorizontalScrollIndicator = false
             containerView.showsVerticalScrollIndicator = false
-            if let image = imageView.image {
-                containerView.maximumZoomScale = maximumScale(for: image)
-            }
+            containerView.maximumZoomScale = 2
             containerView.translatesAutoresizingMaskIntoConstraints = false
             containerView.addSubview(imageView)
             
@@ -206,11 +204,6 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
             
             imageViews.append(imageView)
         }
-    }
-    
-    private func maximumScale(for image: UIImage) -> CGFloat {
-        let maxScale = max(image.size.width / view.frame.width, image.size.height / view.frame.height)
-        return max(1, maxScale)
     }
     
     private func updateContentOffset(forCurrentImage index: Int) {
