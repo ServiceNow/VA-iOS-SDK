@@ -53,5 +53,7 @@ class OutputLinkControl: NSObject, ControlProtocol {
         outputLinkViewController.headerLabel.textColor = theme?.fontColor
         outputLinkViewController.headerContainerView.backgroundColor = theme?.backgroundColor
         outputLinkViewController.textView.linkTextAttributes = [NSAttributedStringKey.foregroundColor.rawValue: theme?.linkColor ?? .blue]
+        outputLinkViewController.textView.backgroundColor = theme?.buttonBackgroundColor
+        outputLinkViewController.view.backgroundColor = theme?.buttonBackgroundColor
     }
 }
