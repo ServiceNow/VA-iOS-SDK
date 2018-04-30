@@ -66,6 +66,8 @@
 		572C6BC1200C33BC00F142E2 /* ControlCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572C6BC0200C33BC00F142E2 /* ControlCache.swift */; };
 		572FAC181FC47A9C00B0B956 /* MultiSelectControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */; };
 		572FAC1A1FC47B5600B0B956 /* MultiSelectControlViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572FAC191FC47B5600B0B956 /* MultiSelectControlViewModel.swift */; };
+		5732549320977E4E00264862 /* MultiPartControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5732549220977E4E00264862 /* MultiPartControlTests.swift */; };
+		57325495209787FD00264862 /* ExampleData+MultiPart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57325494209787FD00264862 /* ExampleData+MultiPart.swift */; };
 		573BDA8A20614F0000AC6C2D /* Theme+Controls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BDA8920614F0000AC6C2D /* Theme+Controls.swift */; };
 		573BDA8C206153D500AC6C2D /* Theme+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BDA8B206153D500AC6C2D /* Theme+Defaults.swift */; };
 		573BDA8E206162BE00AC6C2D /* DateOrTimePickerControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BDA8D206162BE00AC6C2D /* DateOrTimePickerControlMessage.swift */; };
@@ -290,6 +292,8 @@
 		572C6BC0200C33BC00F142E2 /* ControlCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlCache.swift; sourceTree = "<group>"; };
 		572FAC171FC47A9C00B0B956 /* MultiSelectControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectControl.swift; sourceTree = "<group>"; };
 		572FAC191FC47B5600B0B956 /* MultiSelectControlViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectControlViewModel.swift; sourceTree = "<group>"; };
+		5732549220977E4E00264862 /* MultiPartControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPartControlTests.swift; sourceTree = "<group>"; };
+		57325494209787FD00264862 /* ExampleData+MultiPart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExampleData+MultiPart.swift"; sourceTree = "<group>"; };
 		573BDA8920614F0000AC6C2D /* Theme+Controls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+Controls.swift"; sourceTree = "<group>"; };
 		573BDA8B206153D500AC6C2D /* Theme+Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+Defaults.swift"; sourceTree = "<group>"; };
 		573BDA8D206162BE00AC6C2D /* DateOrTimePickerControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateOrTimePickerControlMessage.swift; sourceTree = "<group>"; };
@@ -556,6 +560,7 @@
 				5778CF971FDEE767004F77D8 /* BooleanControlTests.swift */,
 				5778CF991FE05A3F004F77D8 /* MultiSelectControlTests.swift */,
 				5778CF9F1FE07764004F77D8 /* SingleSelectControlTests.swift */,
+				5732549220977E4E00264862 /* MultiPartControlTests.swift */,
 				575566A6200F963C000953F7 /* ControlCacheTests.swift */,
 			);
 			path = Controls;
@@ -1022,6 +1027,7 @@
 				C4FFCD4B20091B8D00B835C6 /* APIManagerChatSessionTests.swift */,
 				C456300020599D2400B79688 /* ChatSessionTests.swift */,
 				C483C17E2017DAD300C28E46 /* ExampleData.swift */,
+				57325494209787FD00264862 /* ExampleData+MultiPart.swift */,
 				C4C6DD6F207C171700A94322 /* TopicLifecycleTests.swift */,
 			);
 			path = Chatterbox;
@@ -1519,7 +1525,9 @@
 				C4C6DD70207C171800A94322 /* TopicLifecycleTests.swift in Sources */,
 				46EBB01E2065E04300D3B3DF /* AMBTransportTests.swift in Sources */,
 				C4B6A9521FE22208007DBEED /* ChatDataStoreTests.swift in Sources */,
+				5732549320977E4E00264862 /* MultiPartControlTests.swift in Sources */,
 				C4F29F57206D66FB0011754E /* UIColorCSSValueTests.swift in Sources */,
+				57325495209787FD00264862 /* ExampleData+MultiPart.swift in Sources */,
 				5778CF9A1FE05A3F004F77D8 /* MultiSelectControlTests.swift in Sources */,
 				575566A7200F963C000953F7 /* ControlCacheTests.swift in Sources */,
 				C4CAFEA61FBCF4A7007007F5 /* CBDataTests.swift in Sources */,
