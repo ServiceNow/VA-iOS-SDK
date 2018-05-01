@@ -46,6 +46,7 @@ class ButtonControl: ControlProtocol {
     
     var viewController: UIViewController
     
+    // swiftlint:disable:next weak_delegate
     weak var delegate: ControlDelegate?
     
     private var button: UIButton!

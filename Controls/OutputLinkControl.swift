@@ -20,6 +20,7 @@ class OutputLinkControl: NSObject, ControlProtocol {
         return viewController as! OutputLinkViewController
     }
     
+    // swiftlint:disable:next weak_delegate
     weak var delegate: ControlDelegate?
     
     private var outputLinkModel: OutputLinkControlViewModel {
