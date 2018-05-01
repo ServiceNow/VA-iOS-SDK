@@ -150,11 +150,11 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         headerContainerView.backgroundColor = theme?.backgroundColor
         headerLabel.backgroundColor = theme?.backgroundColor
         headerLabel.textColor = theme?.fontColor
-        headerSeperator.backgroundColor = theme?.dividerColor
+        headerSeperator.backgroundColor = theme?.separatorColor
         
         doneButton.backgroundColor = theme?.backgroundColor
         doneButton.setTitleColor(theme?.actionFontColor, for: .normal)
-        footerSeperator.backgroundColor = theme?.dividerColor
+        footerSeperator.backgroundColor = theme?.separatorColor
     }
     
     // MARK: - ImageBrowserDelegate
