@@ -259,8 +259,7 @@ public class AMBClient {
     public func unsubscribe(subscription: AMBSubscription) {
         cleanupSubscriptions()
 
-        guard var subscriptions = subscriptionsByChannel[subscription.channel],
-                  !subscriptions.isEmpty  else {
+        guard var subscriptions = subscriptionsByChannel[subscription.channel] else {
             return
         }
         
