@@ -363,8 +363,8 @@ private extension AMBClient {
             }
             do {
                 if let ambMessage = try AMBMessage(rawMessage: rawMessage) {
-                   handleAMBMessage(ambMessage)
-                   parsedMessages.append(ambMessage)
+                    handleAMBMessage(ambMessage)
+                    parsedMessages.append(ambMessage)
                 }
             } catch {
                 let error = AMBError.messageParserError(description: "message is not well formatted")
@@ -716,13 +716,13 @@ private extension AMBClient {
         var myMessage = message
         
         myMessage["id"] = messageId
+        if let handler = handler {
+            self.postedMessageHandlers[String(messageId)] = PostedMessageHandler(handler: handler)
+        }
         messageId += 1
 
         let path = channelNameToPath(channel)
         let fullPath = String(format:"/amb/%@", path)
-        if let handler = handler {
-            self.postedMessageHandlers[String(messageId)] = PostedMessageHandler(handler: handler)
-        }
         
         let task = httpClient.post(fullPath, jsonParameters: myMessage as Any, timeout: timeout,
             success: { [weak self] (responseObject: Any?) -> Void in
