@@ -70,7 +70,7 @@
 		573BDA8C206153D500AC6C2D /* Theme+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BDA8B206153D500AC6C2D /* Theme+Defaults.swift */; };
 		573BDA8E206162BE00AC6C2D /* DateOrTimePickerControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BDA8D206162BE00AC6C2D /* DateOrTimePickerControlMessage.swift */; };
 		573F78F7202275000008391D /* ButtonControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573F78F6202275000008391D /* ButtonControl.swift */; };
-		573F78FD202288F40008391D /* ControlViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573F78FC202288F40008391D /* ControlViewCell.swift */; };
+		573F78FD202288F40008391D /* AuxiliaryControlViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573F78FC202288F40008391D /* AuxiliaryControlViewCell.swift */; };
 		5740F431202269E90060B349 /* MultiPartControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5740F430202269E90060B349 /* MultiPartControlMessage.swift */; };
 		5748121A206577D4007FAB37 /* ChatDataController+Appearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57481219206577D4007FAB37 /* ChatDataController+Appearance.swift */; };
 		57532BAB1FD777AC001D674C /* PickerControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57532BAA1FD777AC001D674C /* PickerControl.swift */; };
@@ -294,7 +294,7 @@
 		573BDA8B206153D500AC6C2D /* Theme+Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+Defaults.swift"; sourceTree = "<group>"; };
 		573BDA8D206162BE00AC6C2D /* DateOrTimePickerControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateOrTimePickerControlMessage.swift; sourceTree = "<group>"; };
 		573F78F6202275000008391D /* ButtonControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonControl.swift; sourceTree = "<group>"; };
-		573F78FC202288F40008391D /* ControlViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlViewCell.swift; sourceTree = "<group>"; };
+		573F78FC202288F40008391D /* AuxiliaryControlViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuxiliaryControlViewCell.swift; sourceTree = "<group>"; };
 		5740F430202269E90060B349 /* MultiPartControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiPartControlMessage.swift; sourceTree = "<group>"; };
 		57481219206577D4007FAB37 /* ChatDataController+Appearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatDataController+Appearance.swift"; sourceTree = "<group>"; };
 		57532BAA1FD777AC001D674C /* PickerControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerControl.swift; sourceTree = "<group>"; };
@@ -544,7 +544,7 @@
 			isa = PBXGroup;
 			children = (
 				57D1DB6A1FEAC94A00082F78 /* ConversationViewCell.swift */,
-				573F78FC202288F40008391D /* ControlViewCell.swift */,
+				573F78FC202288F40008391D /* AuxiliaryControlViewCell.swift */,
 				C48441C9202D165900D67757 /* TopicDividerCell.swift */,
 			);
 			path = "Supporting Views";
@@ -1421,7 +1421,7 @@
 				5771D2ED2011174000FF2483 /* MultiSelectControlMessage.swift in Sources */,
 				C4666DCA205730DF00DABD1B /* ShowTopicMessage.swift in Sources */,
 				57F7B2541FE17823006D917C /* TextControlViewModel.swift in Sources */,
-				573F78FD202288F40008391D /* ControlViewCell.swift in Sources */,
+				573F78FD202288F40008391D /* AuxiliaryControlViewCell.swift in Sources */,
 				BE3F1AB21FEC315100DCC21B /* APIManager+ChatTopics.swift in Sources */,
 				C41EF5DA1FDB490F00707F45 /* TopicFinishedMessage.swift in Sources */,
 				C4B8D3292021090900871B36 /* TransportStatusListener.swift in Sources */,
