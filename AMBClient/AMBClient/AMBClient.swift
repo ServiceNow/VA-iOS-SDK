@@ -697,9 +697,15 @@ private extension AMBClient {
             }
         })
         
-        self.postedMessageHandlers = postedMessageHandlers.filter {
+        let activeMessageHandlers = postedMessageHandlers.filter {
             (Date().timeIntervalSince1970 - $1.timestamp.timeIntervalSince1970) < (longPollingTimeout / 1000 * 2)
         }
+        self.postedMessageHandlers.forEach({ (messageId, record) in
+            if activeMessageHandlers[messageId] == nil {
+                record.handler(AMBResult.failure(AMBError.httpRequestFailed(description: "http request timeout")))
+            }
+        })
+        self.postedMessageHandlers = activeMessageHandlers
     }
     
     @discardableResult func postBayeuxMessage(_ message: [String : Any],

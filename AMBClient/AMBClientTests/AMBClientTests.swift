@@ -269,7 +269,7 @@ class AMBClientTests: XCTestCase {
         
         self.wait(for: [subscribedExpectation], timeout: 10)
         publishMessage()
-        self.wait(for: [publishedMessageExpectation], timeout: 100)
+        self.wait(for: [publishedMessageExpectation], timeout: 10)
     }
     
     func testDoubleSubscriptions() {
