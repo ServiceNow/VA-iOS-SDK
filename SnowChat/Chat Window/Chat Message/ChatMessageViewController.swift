@@ -262,7 +262,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         
         // Make sure that a little tail in the bubble gets colored like picker background. now it is hardcoded to white but will need to get theme color
         if control.viewController is PickerViewController || control.viewController is OutputLinkViewController {
-            bubbleView.backgroundColor = UIColor.white
+            bubbleView.backgroundColor = controlTheme.buttonBackgroundColor
         }
         
         timestampLabel.textColor = theme.timestampColor

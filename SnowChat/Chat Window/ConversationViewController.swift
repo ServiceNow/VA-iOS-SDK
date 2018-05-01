@@ -160,7 +160,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         tableView.estimatedRowHeight = estimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
-        tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
+        tableView.register(AuxiliaryControlViewCell.self, forCellReuseIdentifier: AuxiliaryControlViewCell.cellIdentifier)
         tableView.register(TopicDividerCell.self, forCellReuseIdentifier: TopicDividerCell.cellIdentifier)
         tableFooterView = PagingTableFooterView.footerView(for: tableView)
     }
@@ -483,7 +483,7 @@ extension ConversationViewController {
             
         case .control:
             if chatMessageModel.isAuxiliary {
-                let controlCell = tableView.dequeueReusableCell(withIdentifier: ControlViewCell.cellIdentifier, for: indexPath) as! ControlViewCell
+                let controlCell = tableView.dequeueReusableCell(withIdentifier: AuxiliaryControlViewCell.cellIdentifier, for: indexPath) as! AuxiliaryControlViewCell
                 controlCell.configure(with: chatMessageModel, resourceProvider: chatterbox.apiManager)
                 controlCell.control?.delegate = self
                 cell = controlCell
