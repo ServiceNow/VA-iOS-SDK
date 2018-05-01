@@ -70,6 +70,8 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
     private func setupNavigationBarButtons() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Log Out", comment: ""), style: .plain, target: self, action: #selector(logOutButtonTapped(_:)))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "🐞", style: .plain, target: self, action: #selector(debugButtonTapped(_:)))
+        
+        navigationController?.navigationBar.barTintColor = UIColor(red: 0.75, green: 0.75, blue: 0.75, alpha: 0.75)
     }
 
     private func setupStatusLabel() {

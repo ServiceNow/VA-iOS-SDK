@@ -56,6 +56,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     
     internal var titleView: UIImageView? {
         didSet {
+            // ChatViewController is our parent, and it is the VC that is being displayed...
             parent?.navigationItem.titleView = titleView
         }
     }
@@ -87,19 +88,12 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         setupTableView()
         initializeSessionIfNeeded()
         
+        updateTitle()
         loadTitleImage()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        if let vendorName = chatterbox.session?.settings?.brandingSettings?.headerLabel {
-            self.navigationController?.navigationBar.topItem?.title = vendorName
-        }
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        navigationController?.navigationBar.barTintColor = nil
     }
     
     internal func loadHistory() {
@@ -137,12 +131,12 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
             }
             
             if let image = response.value {
-                self?.setLogoImage(image)
+                self?.updateTitleView(withImage: image)
             }
         })
     }
     
-    internal func setLogoImage(_ image: UIImage) {
+    internal func updateTitleView(withImage image: UIImage) {
         let height = navigationController?.navigationBar.frame.size.height ?? 40
         let scaledImage: UIImage
         
@@ -157,6 +151,12 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         imageView.addCircleMaskIfNeeded()
         
         titleView = imageView
+    }
+    
+    fileprivate func updateTitle() {
+        if let vendorName = chatterbox.session?.settings?.brandingSettings?.headerLabel {
+            parent?.navigationItem.title = vendorName
+        }
     }
     
     // MARK: - ContentInset fix
@@ -223,10 +223,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     
     func applyTheme(_ theme: Theme) {
         tableView.backgroundColor = theme.backgroundColor
-        self.autoCompletionView.backgroundColor = theme.buttonBackgroundColor
-        
-        // Might need to apply: https://developer.apple.com/library/content/qa/qa1808/_index.html
-        navigationController?.navigationBar.barTintColor = theme.headerBackgroundColor
+        autoCompletionView.backgroundColor = theme.buttonBackgroundColor        
         textInputbar.backgroundColor = theme.inputBackgroundColor
     }
 
