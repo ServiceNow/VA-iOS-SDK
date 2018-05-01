@@ -33,6 +33,7 @@ class TypingIndicatorControl: ControlProtocol {
     
     var viewController: UIViewController
     
+    // swiftlint:disable:next weak_delegate
     weak var delegate: ControlDelegate?
     
     required init(model: ControlViewModel) {

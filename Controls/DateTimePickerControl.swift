@@ -19,6 +19,7 @@ class DateTimePickerControl: ControlProtocol {
         return viewController as! DateTimePickerViewController
     }
     
+    // swiftlint:disable:next weak_delegate
     weak var delegate: ControlDelegate?
     
     required init(model: ControlViewModel) {

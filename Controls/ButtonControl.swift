@@ -40,7 +40,7 @@ class ButtonControl: ControlProtocol {
     
     var model: ControlViewModel
     
-    private var multiPartModel: ButtonControlViewModel {
+    private var buttonModel: ButtonControlViewModel {
         return model as! ButtonControlViewModel
     }
     
@@ -52,11 +52,11 @@ class ButtonControl: ControlProtocol {
     private var button: UIButton!
     
     required init(model: ControlViewModel) {
-        guard let multiPartModel = model as? ButtonControlViewModel else {
+        guard let buttonModel = model as? ButtonControlViewModel else {
             fatalError("Tried to assign wrong model type")
         }
         
-        self.model = multiPartModel
+        self.model = buttonModel
         self.viewController = UIViewController()
         setupButton()
     }
@@ -66,7 +66,7 @@ class ButtonControl: ControlProtocol {
         button.titleLabel?.font = .preferredFont(forTextStyle: .body)
         button.layer.cornerRadius = 4
         button.layer.borderWidth = 1
-        button.setTitle(multiPartModel.label, for: .normal)
+        button.setTitle(buttonModel.label, for: .normal)
         button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 15, bottom: 10, right: 15)
         button.titleLabel?.adjustsFontSizeToFitWidth = true
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -80,14 +80,14 @@ class ButtonControl: ControlProtocol {
     }
     
     @objc func buttonPressed(_ sender: UIButton) {
-        delegate?.control(self, didFinishWithModel: multiPartModel)
+        delegate?.control(self, didFinishWithModel: buttonModel)
     }
     
     func applyTheme(_ theme: ControlTheme?) {
         button.setTitleColor(theme?.linkColor, for: .normal)
         viewController.view.backgroundColor = .clear
-        button.backgroundColor = theme?.backgroundColor
+        button.backgroundColor = theme?.buttonBackgroundColor
         // TODO: Might want to introduce more custom colors for controls. Need to test with different themes first
-        button.layer.borderColor = theme?.dividerColor.cgColor
+        button.layer.borderColor = theme?.separatorColor.cgColor
     }
 }
