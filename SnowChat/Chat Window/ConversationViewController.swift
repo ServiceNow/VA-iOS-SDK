@@ -19,7 +19,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         case inAgentConversation        // in a conversation with an agent
     }
     
-    private let bottomInset: CGFloat = 45
+    private let bottomInset: CGFloat = 40
     private let estimatedRowHeight: CGFloat = 50
     
     private var inputState = InputState.inTopicSelection {
@@ -80,6 +80,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         setupActivityIndicator()
         setupTableView()
         initializeSessionIfNeeded()
+        NotificationCenter.default.addObserver(self, selector: #selector(willShowOrHideKeyboard(_:)), name: .UIKeyboardWillShow, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -131,7 +132,19 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         // we are inverted so top is really a bottom
         contentInset.top = bottomInset
         tableView.contentInset = contentInset
-        tableView.scrollIndicatorInsets = contentInset
+    }
+    
+    // MARK: - Keyboard notification
+    
+    // Default implementation of SlackVC sets hardcoded contentOffset to (0, 0)
+    @objc private func willShowOrHideKeyboard(_ notification: Notification) {
+        let canScroll = tableView.contentSize.height > tableView.frame.height
+        guard notification.name == .UIKeyboardWillShow, canScroll else {
+            return
+        }
+        
+        let contentOffset = CGPoint(x: 0, y: -bottomInset)
+        tableView.setContentOffset(contentOffset, animated: true)
     }
 
     // MARK: - View Setup
@@ -140,8 +153,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         tableView.separatorStyle = .none
         
         tableView.keyboardDismissMode = .onDrag
-        
-        shouldScrollToBottomAfterKeyboardShows = true
         
         // NOTE: making section header height very tiny as 0 make it default size in iOS11
         // see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
