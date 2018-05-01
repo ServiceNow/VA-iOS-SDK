@@ -61,4 +61,10 @@ class TypingIndicatorControl: ControlProtocol {
         
         typingIndicatorView.startAnimating()
     }
+    
+    // MARK: - Theme
+    
+    func applyTheme(_ theme: ControlTheme?) {
+        typingIndicatorView.dotColor = theme?.fontColor
+    }
 }

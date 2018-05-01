@@ -20,6 +20,7 @@ class OutputLinkControl: NSObject, ControlProtocol {
         return viewController as! OutputLinkViewController
     }
     
+    // swiftlint:disable:next weak_delegate
     weak var delegate: ControlDelegate?
     
     private var outputLinkModel: OutputLinkControlViewModel {
@@ -53,5 +54,7 @@ class OutputLinkControl: NSObject, ControlProtocol {
         outputLinkViewController.headerLabel.textColor = theme?.fontColor
         outputLinkViewController.headerContainerView.backgroundColor = theme?.backgroundColor
         outputLinkViewController.textView.linkTextAttributes = [NSAttributedStringKey.foregroundColor.rawValue: theme?.linkColor ?? .blue]
+        outputLinkViewController.textView.backgroundColor = theme?.buttonBackgroundColor
+        outputLinkViewController.view.backgroundColor = theme?.buttonBackgroundColor
     }
 }
