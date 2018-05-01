@@ -29,9 +29,9 @@ class TypingIndicatorView: UIView {
         }
     }
     
-    @IBInspectable var color: UIColor = Theme.defaultBubbleFontColor {
+    @IBInspectable var dotColor: UIColor? = Theme.defaultBubbleFontColor {
         didSet {
-            layer.sublayers?.forEach({ ($0 as? CAShapeLayer)?.fillColor = color.cgColor })
+            layer.sublayers?.forEach({ ($0 as? CAShapeLayer)?.fillColor = dotColor?.cgColor })
         }
     }
     
@@ -93,7 +93,7 @@ class TypingIndicatorView: UIView {
     private func setupIndicatorLayer() {
         let indicatorLayer = layer as! CAReplicatorLayer
         
-        sourceLayer.fillColor = color.cgColor
+        sourceLayer.fillColor = dotColor?.cgColor
         updateCircleLayerWithDiameter(dotDiameter)
         
         indicatorLayer.instanceCount = dotCount

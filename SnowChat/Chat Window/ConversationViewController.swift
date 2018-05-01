@@ -19,7 +19,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         case inAgentConversation        // in a conversation with an agent
     }
     
-    private let bottomInset: CGFloat = 45
+    private let bottomInset: CGFloat = 40
     private let estimatedRowHeight: CGFloat = 50
     
     private var inputState = InputState.inTopicSelection {
@@ -56,6 +56,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     
     internal var titleView: UIImageView? {
         didSet {
+            // ChatViewController is our parent, and it is the VC that is being displayed...
             parent?.navigationItem.titleView = titleView
         }
     }
@@ -87,19 +88,14 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         setupTableView()
         initializeSessionIfNeeded()
         
+        updateTitle()
         loadTitleImage()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(willShowOrHideKeyboard(_:)), name: .UIKeyboardWillShow, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        if let vendorName = chatterbox.session?.settings?.brandingSettings?.headerLabel {
-            self.navigationController?.navigationBar.topItem?.title = vendorName
-        }
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        navigationController?.navigationBar.barTintColor = nil
     }
     
     internal func loadHistory() {
@@ -137,12 +133,12 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
             }
             
             if let image = response.value {
-                self?.setLogoImage(image)
+                self?.updateTitleView(withImage: image)
             }
         })
     }
     
-    internal func setLogoImage(_ image: UIImage) {
+    internal func updateTitleView(withImage image: UIImage) {
         let height = navigationController?.navigationBar.frame.size.height ?? 40
         let scaledImage: UIImage
         
@@ -157,6 +153,12 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         imageView.addCircleMaskIfNeeded()
         
         titleView = imageView
+    }
+    
+    fileprivate func updateTitle() {
+        if let vendorName = chatterbox.session?.settings?.brandingSettings?.headerLabel {
+            parent?.navigationItem.title = vendorName
+        }
     }
     
     // MARK: - ContentInset fix
@@ -190,7 +192,19 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         // we are inverted so top is really a bottom
         contentInset.top = bottomInset
         tableView.contentInset = contentInset
-        tableView.scrollIndicatorInsets = contentInset
+    }
+    
+    // MARK: - Keyboard notification
+    
+    // Default implementation of SlackVC sets hardcoded contentOffset to (0, 0)
+    @objc private func willShowOrHideKeyboard(_ notification: Notification) {
+        let canScroll = tableView.contentSize.height > tableView.frame.height
+        guard notification.name == .UIKeyboardWillShow, canScroll else {
+            return
+        }
+        
+        let contentOffset = CGPoint(x: 0, y: -bottomInset)
+        tableView.setContentOffset(contentOffset, animated: true)
     }
 
     // MARK: - View Setup
@@ -200,15 +214,13 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         
         tableView.keyboardDismissMode = .onDrag
         
-        shouldScrollToBottomAfterKeyboardShows = true
-        
         // NOTE: making section header height very tiny as 0 make it default size in iOS11
         // see https://stackoverflow.com/questions/46594585/how-can-i-hide-section-headers-in-ios-11
         tableView.sectionHeaderHeight = CGFloat(0.01)
         tableView.estimatedRowHeight = estimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(ConversationViewCell.self, forCellReuseIdentifier: ConversationViewCell.cellIdentifier)
-        tableView.register(ControlViewCell.self, forCellReuseIdentifier: ControlViewCell.cellIdentifier)
+        tableView.register(AuxiliaryControlViewCell.self, forCellReuseIdentifier: AuxiliaryControlViewCell.cellIdentifier)
         tableView.register(TopicDividerCell.self, forCellReuseIdentifier: TopicDividerCell.cellIdentifier)
         tableFooterView = PagingTableFooterView.footerView(for: tableView)
     }
@@ -223,10 +235,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     
     func applyTheme(_ theme: Theme) {
         tableView.backgroundColor = theme.backgroundColor
-        self.autoCompletionView.backgroundColor = theme.buttonBackgroundColor
-        
-        // Might need to apply: https://developer.apple.com/library/content/qa/qa1808/_index.html
-        navigationController?.navigationBar.barTintColor = theme.headerBackgroundColor
+        autoCompletionView.backgroundColor = theme.buttonBackgroundColor        
         textInputbar.backgroundColor = theme.inputBackgroundColor
     }
 
@@ -531,7 +540,7 @@ extension ConversationViewController {
             
         case .control:
             if chatMessageModel.isAuxiliary {
-                let controlCell = tableView.dequeueReusableCell(withIdentifier: ControlViewCell.cellIdentifier, for: indexPath) as! ControlViewCell
+                let controlCell = tableView.dequeueReusableCell(withIdentifier: AuxiliaryControlViewCell.cellIdentifier, for: indexPath) as! AuxiliaryControlViewCell
                 controlCell.configure(with: chatMessageModel, resourceProvider: chatterbox.apiManager)
                 controlCell.control?.delegate = self
                 cell = controlCell

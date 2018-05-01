@@ -149,6 +149,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         self.theme = theme
         headerContainerView.backgroundColor = theme?.backgroundColor
         headerLabel.backgroundColor = theme?.backgroundColor
+        headerLabel.textColor = theme?.fontColor
         headerSeperator.backgroundColor = theme?.dividerColor
         
         doneButton.backgroundColor = theme?.backgroundColor

@@ -46,6 +46,7 @@ class ButtonControl: ControlProtocol {
     
     var viewController: UIViewController
     
+    // swiftlint:disable:next weak_delegate
     weak var delegate: ControlDelegate?
     
     private var button: UIButton!
@@ -84,7 +85,8 @@ class ButtonControl: ControlProtocol {
     
     func applyTheme(_ theme: ControlTheme?) {
         button.setTitleColor(theme?.linkColor, for: .normal)
-        viewController.view.backgroundColor = theme?.buttonBackgroundColor
+        viewController.view.backgroundColor = .clear
+        button.backgroundColor = theme?.backgroundColor
         // TODO: Might want to introduce more custom colors for controls. Need to test with different themes first
         button.layer.borderColor = theme?.dividerColor.cgColor
     }

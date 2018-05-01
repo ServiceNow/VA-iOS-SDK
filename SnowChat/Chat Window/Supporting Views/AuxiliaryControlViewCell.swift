@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ControlViewCell: UITableViewCell, ControlPresentable {
+class AuxiliaryControlViewCell: UITableViewCell, ControlPresentable {
     
     static let cellIdentifier = "ControlViewCell"
     
@@ -31,6 +31,7 @@ class ControlViewCell: UITableViewCell, ControlPresentable {
     override func prepareForReuse() {
         super.prepareForReuse()
         control?.viewController.view.removeFromSuperview()
+        self.control = nil
     }
     
     // MARK: ControlPresentable

@@ -15,6 +15,7 @@ protocol ImageBrowserDelegate: AnyObject {
 
 class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     
+    // swiftlint:disable:next weak_delegate
     weak var delegate: ImageBrowserDelegate?
     private var photoURLs: [URL]?
     private var images: [UIImage]?
