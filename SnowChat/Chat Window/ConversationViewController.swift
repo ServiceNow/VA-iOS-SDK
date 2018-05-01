@@ -54,6 +54,13 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     
     var activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
     
+    internal var titleView: UIImageView? {
+        didSet {
+            // ChatViewController is our parent, and it is the VC that is being displayed...
+            parent?.navigationItem.titleView = titleView
+        }
+    }
+    
     // MARK: - Initialization
     
     init(chatterbox: Chatterbox) {
@@ -80,15 +87,15 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         setupActivityIndicator()
         setupTableView()
         initializeSessionIfNeeded()
+        
+        updateTitle()
+        loadTitleImage()
+        
         NotificationCenter.default.addObserver(self, selector: #selector(willShowOrHideKeyboard(_:)), name: .UIKeyboardWillShow, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        if let vendorName = chatterbox.session?.settings?.brandingSettings?.headerLabel {
-            self.navigationController?.navigationBar.topItem?.title = vendorName
-        }
     }
     
     internal func loadHistory() {
@@ -98,6 +105,59 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
             } else {
                 self?.wasHistoryLoadedForUser = true
             }
+        }
+    }
+    
+    internal func loadTitleImage() {
+        guard let path = chatterbox.session?.settings?.brandingSettings?.virtualAgentLogo else { return }
+
+        let logoURL: URL?
+        
+        if let initialURL = URL(string: path), nil != initialURL.host {
+            logoURL = initialURL
+        } else {
+            logoURL = URL(string: path, relativeTo: chatterbox.serverInstance.instanceURL)
+        }
+        
+        guard let imageURL = logoURL else { return }
+        
+        let provider = chatterbox.apiManager
+        let downloader = provider.imageDownloader
+        let request = URLRequest(url: imageURL)
+        
+        downloader.download(request, completion: { [weak self] response in
+            
+            if let error = response.error {
+                Logger.default.logError("Error loading title image: \(error)")
+                return
+            }
+            
+            if let image = response.value {
+                self?.updateTitleView(withImage: image)
+            }
+        })
+    }
+    
+    internal func updateTitleView(withImage image: UIImage) {
+        let height = navigationController?.navigationBar.frame.size.height ?? 40
+        let scaledImage: UIImage
+        
+        if image.size.height > height {
+            scaledImage = image.af_imageAspectScaled(toFit: CGSize(width: height - 4, height: height - 4))
+        } else {
+            scaledImage = image
+        }
+        
+        let imageView = UIImageView(image: scaledImage)
+        imageView.contentMode = .scaleAspectFit
+        imageView.addCircleMaskIfNeeded()
+        
+        titleView = imageView
+    }
+    
+    fileprivate func updateTitle() {
+        if let vendorName = chatterbox.session?.settings?.brandingSettings?.headerLabel {
+            parent?.navigationItem.title = vendorName
         }
     }
     
@@ -175,10 +235,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     
     func applyTheme(_ theme: Theme) {
         tableView.backgroundColor = theme.backgroundColor
-        self.autoCompletionView.backgroundColor = theme.buttonBackgroundColor
-        
-        // Might need to apply: https://developer.apple.com/library/content/qa/qa1808/_index.html
-        navigationController?.navigationBar.barTintColor = theme.headerBackgroundColor
+        autoCompletionView.backgroundColor = theme.buttonBackgroundColor        
         textInputbar.backgroundColor = theme.inputBackgroundColor
     }
 
