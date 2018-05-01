@@ -18,17 +18,17 @@ class ControlVisualTheme: ControlTheme {
     var actionFontColor: UIColor
     var headerBackgroundColor: UIColor
     var headerFontColor: UIColor
-    var dividerColor: UIColor
+    var separatorColor: UIColor
     var linkColor: UIColor
     
-    init(backgroundColor: UIColor, buttonBackgroundColor: UIColor, borderColor: UIColor, fontColor: UIColor, headerBackgroundColor: UIColor, headerFontColor: UIColor, linkColor: UIColor) {
+    init(backgroundColor: UIColor, buttonBackgroundColor: UIColor, borderColor: UIColor, fontColor: UIColor, headerBackgroundColor: UIColor, headerFontColor: UIColor, linkColor: UIColor, separatorColor: UIColor) {
         self.backgroundColor = backgroundColor
         self.buttonBackgroundColor = buttonBackgroundColor
         self.borderColor = borderColor
         self.fontColor = fontColor
         self.headerBackgroundColor = headerBackgroundColor
         self.headerFontColor = headerFontColor
-        self.dividerColor = Theme.dividerColor
+        self.separatorColor = separatorColor
         self.selectedBackgroundColor = Theme.controlSelectedBackgroundColor
         self.actionFontColor = Theme.controlActionFontColor
         self.linkColor = linkColor
@@ -45,7 +45,8 @@ extension Theme {
                                   fontColor: agentBubbleFontColor,
                                   headerBackgroundColor: headerBackgroundColor,
                                   headerFontColor: headerFontColor,
-                                  linkColor: linkColor)
+                                  linkColor: linkColor,
+                                  separatorColor: separatorColor)
     }
     
     func controlThemeForBot() -> ControlTheme {
@@ -55,7 +56,8 @@ extension Theme {
                                   fontColor: botBubbleFontColor,
                                   headerBackgroundColor: headerBackgroundColor,
                                   headerFontColor: headerFontColor,
-                                  linkColor: linkColor)
+                                  linkColor: linkColor,
+                                  separatorColor: separatorColor)
     }
     
     func controlTheme() -> ControlTheme {
@@ -65,6 +67,7 @@ extension Theme {
                                   fontColor: bubbleFontColor,
                                   headerBackgroundColor: headerBackgroundColor,
                                   headerFontColor: headerFontColor,
-                                  linkColor: linkColor)
+                                  linkColor: linkColor,
+                                  separatorColor: separatorColor)
     }
 }

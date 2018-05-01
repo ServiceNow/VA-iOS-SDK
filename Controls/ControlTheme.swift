@@ -21,7 +21,7 @@ protocol ControlTheme {
     var headerBackgroundColor: UIColor { get }
     var headerFontColor: UIColor { get }
     
-    var dividerColor: UIColor { get }
+    var separatorColor: UIColor { get }
 }
 
 // MARK: - ControlThemable

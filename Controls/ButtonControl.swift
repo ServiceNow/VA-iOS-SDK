@@ -86,8 +86,8 @@ class ButtonControl: ControlProtocol {
     func applyTheme(_ theme: ControlTheme?) {
         button.setTitleColor(theme?.linkColor, for: .normal)
         viewController.view.backgroundColor = .clear
-        button.backgroundColor = theme?.backgroundColor
+        button.backgroundColor = theme?.buttonBackgroundColor
         // TODO: Might want to introduce more custom colors for controls. Need to test with different themes first
-        button.layer.borderColor = theme?.dividerColor.cgColor
+        button.layer.borderColor = theme?.separatorColor.cgColor
     }
 }
