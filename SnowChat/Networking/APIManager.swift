@@ -30,7 +30,7 @@ class APIManager: NSObject, AMBClientDelegate {
         case appBackgrounded
         case repairingSession
         case loggedOut
-        case noView
+        case appInvoked
     }
     
     internal let instance: ServerInstance

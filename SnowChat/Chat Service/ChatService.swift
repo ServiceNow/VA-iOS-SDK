@@ -28,11 +28,11 @@ public final class ChatService {
     }
     
     public func pauseNetwork() {
-        chatterbox.apiManager.addAMBPauseReason(.noView)
+        chatterbox.apiManager.addAMBPauseReason(.appInvoked)
     }
     
     public func resumeNetwork() {
-        chatterbox.apiManager.removeAMBPauseReason(.noView)
+        chatterbox.apiManager.removeAMBPauseReason(.appInvoked)
     }
     
     private let chatterbox: Chatterbox
@@ -57,14 +57,13 @@ public final class ChatService {
                 Logger.default]
     }
     
-    public static func defaultLogLevels() {
+    internal static func defaultLogLevels() {
         // Set default log levels for debugging
         Logger.logger(for: "Chatterbox").logLevel = .debug
         Logger.logger(for: "ChatDataController").logLevel = .debug
         Logger.default.logLevel = .debug
     }
     
-    // start a chat, providing a view-controller for the application to manage
     public func chatViewController(modal: Bool = false) -> ChatViewController {
         guard !modal else {
             // FIXME: Handle modal case
