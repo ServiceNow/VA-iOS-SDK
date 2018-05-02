@@ -10,7 +10,7 @@ import UIKit
 
 class BubbleView: UIView {
     
-    private let cornerRadius: CGFloat = 10
+    private let cornerRadius: CGFloat = 15
     
     enum ArrowDirection {
         case left
