@@ -15,6 +15,7 @@ public class AMBSubscription {
         self.uuid = UUID().uuidString
         self.valid = true
     }
+    
     public func tearDown() {
         guard valid else {
             return
@@ -28,15 +29,15 @@ public class AMBSubscription {
     }
     
     deinit {
-        client.unsubscribe(subscription: self)
+        unsubscribe()
     }
-
 }
 
-public struct AMBSubscriptionWeakWrapper {
+public class AMBSubscriptionWeakWrapper {
     public weak var subscription: AMBSubscription?
     
     init(_ subscription: AMBSubscription) {
         self.subscription = subscription
     }
+    
 }

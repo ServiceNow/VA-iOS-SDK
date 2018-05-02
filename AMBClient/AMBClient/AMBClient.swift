@@ -126,7 +126,7 @@ public class AMBClient {
     
     public var maximumRetryAttempts = 5
     
-    struct PostedMessageRecord {
+    struct PostedMessageHandler {
         let timestamp: Date
         var handler: AMBPublishMessageHandler
         
@@ -135,8 +135,8 @@ public class AMBClient {
             self.handler = handler
         }
     }
-    // [messageId: PostedMessageRecord]
-    private var postedMessages = [String : PostedMessageRecord]()
+    // [messageId: PostedMessageHandler]
+    private var postedMessageHandlers = [String : PostedMessageHandler]()
     
     private var subscriptionsByChannel = [String : [AMBSubscriptionWeakWrapper]]()
     private var subscribedChannels = Set<String>()
@@ -260,10 +260,12 @@ public class AMBClient {
     public func unsubscribe(subscription: AMBSubscription) {
         cleanupSubscriptions()
 
-        guard var subscriptions = subscriptionsByChannel[subscription.channel],
-                  !subscriptions.isEmpty  else {
+        guard var subscriptions = subscriptionsByChannel[subscription.channel] else {
             return
         }
+        
+        let wasSubscribed = subscriptions.reduce(false, { $0 || ($1.subscription?.subscribed ?? false) }) ||
+                            subscribedChannels.contains(subscription.channel)
         
         for (index, subscriptionWrapper) in subscriptions.enumerated() {
             if let curSubscription = subscriptionWrapper.subscription {
@@ -274,19 +276,16 @@ public class AMBClient {
             }
         }
         
-        subscriptions = subscriptions
-            .filter({ (subscriptionWrapper) in
-                    subscriptionWrapper.subscription?.subscribed ?? false
-            })
-
-        if subscriptions.isEmpty {
+        let isSubscribed = subscriptions.reduce(false, { $0 || ($1.subscription?.subscribed ?? false) })
+        if wasSubscribed && !isSubscribed {
+            subscribedChannels.remove(subscription.channel)
             sendBayeuxUnsubscribeMessage(channel: subscription.channel)
         }
     }
     
     public func tearDown() {
         cancelAllDataTasks()
-        self.postedMessages.removeAll()
+        self.postedMessageHandlers.removeAll()
         self.clientStatus = .disconnected
     }
 }
@@ -345,7 +344,7 @@ private extension AMBClient {
         }
     }
     
-    // MARK: AMB/Bayeux message handlers
+    // MARK: - AMB/Bayeux message handlers
     
     func parseResponseObject(_ responseObject: Any?) -> AMBResult<[AMBMessage]> {
         var parsedMessages = [AMBMessage]()
@@ -364,8 +363,8 @@ private extension AMBClient {
             }
             do {
                 if let ambMessage = try AMBMessage(rawMessage: rawMessage) {
-                   handleAMBMessage(ambMessage)
-                   parsedMessages.append(ambMessage)
+                    handleAMBMessage(ambMessage)
+                    parsedMessages.append(ambMessage)
                 }
             } catch {
                 let error = AMBError.messageParserError(description: "message is not well formatted")
@@ -400,27 +399,26 @@ private extension AMBClient {
         }
     }
     
+    private func notifyChannelSubscribersWithMessage(_ message: AMBMessage) {
+        if let subscriptionWrappers = subscriptionsByChannel[message.channel] {
+            subscriptionWrappers.forEach({ subscriptionWrapper in
+                if let subscription = subscriptionWrapper.subscription {
+                    subscription.messageHandler(AMBResult.success(message), subscription)
+                }
+            })
+        } else {
+            // no handler for this channel, using delegate
+            delegate?.ambClient(self, didReceiveMessage: message, fromChannel: message.channel)
+        }
+    }
+    
     func handleChannelMessage(_ ambMessage: AMBMessage, channel: String) {
         if self.isPaused {
             log("incoming message when client is paused. Skipping.")
             return
         }
         
-        if subscribedChannels.contains(channel) {
-            guard ambMessage.data != nil else {
-                return
-            }
-            if let subscriptionWrappers = subscriptionsByChannel[channel] {
-                subscriptionWrappers.forEach({ subscriptionWrapper in
-                    if let subscription = subscriptionWrapper.subscription {
-                        subscription.messageHandler(AMBResult.success(ambMessage), subscription)
-                    }
-                })
-            } else {
-                // no handler for this channel, using delegate
-                delegate?.ambClient(self, didReceiveMessage: ambMessage, fromChannel: channel)
-            }
-        } else {
+        if !subscribedChannels.contains(channel) {
             // message was received for a channel client is not subscribed to
             delegate?.ambClient(self,
                               didFailWithError: AMBError.unhandledMessageReceived(channel: channel))
@@ -545,6 +543,7 @@ private extension AMBClient {
                     }
                 })
                 subscriptionsByChannel[channel] = updatedSubscriptions
+                queuedSubscriptionChannels.remove(channel)
                 delegate?.ambClient(self, didSubscribeToChannel: channel)
             }
         } else {
@@ -562,12 +561,12 @@ private extension AMBClient {
         }
     }
 
-    // MARK: Bayeux messages
+    // MARK: - Bayeux messages
     
     func sendBayeuxHandshakeMessage() {
         cancelAllDataTasks()
         connectDataTaskTime = nil
-        self.postedMessages.removeAll()
+        self.postedMessageHandlers.removeAll()
         
         let message = [
             "channel" : AMBChannel.handshake.name,
@@ -686,16 +685,29 @@ private extension AMBClient {
     }
     
     func invokeHandlers(forMessages messages: [AMBMessage]) {
+        guard !self.isPaused else {
+            return
+        }
+        
         messages.forEach({ (message) in
+            notifyChannelSubscribersWithMessage(message)
+            
             if let messageId = message.id,
-               let record = postedMessages[messageId] {
-                record.handler(AMBResult.success(message))
+               let postedMessageHandler = postedMessageHandlers[messageId] {
+                postedMessageHandler.handler(AMBResult.success(message))
+                postedMessageHandlers.removeValue(forKey: messageId)
             }
         })
         
-        self.postedMessages = postedMessages.filter {
+        let activeMessageHandlers = postedMessageHandlers.filter {
             (Date().timeIntervalSince1970 - $1.timestamp.timeIntervalSince1970) < (longPollingTimeout / 1000 * 2)
         }
+        self.postedMessageHandlers.forEach({ (messageId, record) in
+            if activeMessageHandlers[messageId] == nil {
+                record.handler(AMBResult.failure(AMBError.httpRequestFailed(description: "http request timeout")))
+            }
+        })
+        self.postedMessageHandlers = activeMessageHandlers
     }
     
     @discardableResult func postBayeuxMessage(_ message: [String : Any],
@@ -711,19 +723,19 @@ private extension AMBClient {
         var myMessage = message
         
         myMessage["id"] = messageId
+        if let handler = handler {
+            self.postedMessageHandlers[String(messageId)] = PostedMessageHandler(handler: handler)
+        }
         messageId += 1
 
         let path = channelNameToPath(channel)
         let fullPath = String(format:"/amb/%@", path)
-        if let handler = handler {
-            self.postedMessages[String(messageId)] = PostedMessageRecord(handler: handler)
-        }
         
         let task = httpClient.post(fullPath, jsonParameters: myMessage as Any, timeout: timeout,
             success: { [weak self] (responseObject: Any?) -> Void in
                 guard let strongSelf = self else { return }
                 let result = strongSelf.parseResponseObject(responseObject)
-                if  let messages = result.value {
+                if let messages = result.value {
                     strongSelf.invokeHandlers(forMessages: messages)
                 }
             },
