@@ -43,6 +43,10 @@ public final class ChatService {
         ChatService.defaultLogLevels()
     }
     
+    deinit {
+        Logger.default.logFatal("ChatService deinit")
+    }
+    
     public static func loggers() -> [Logger] {
         return [Logger.logger(for: "Chatterbox"),
                 Logger.logger(for: "ChatDataController"),
@@ -75,9 +79,9 @@ public final class ChatService {
         isInitializing = true
         
         if isConnected {
-            chatterbox.restoreUserSession { result in
+            chatterbox.restoreUserSession { [weak self] result in
                 
-                self.isInitializing = false
+                self?.isInitializing = false
                 
                 switch result {
                 case let .success(message):
@@ -89,9 +93,9 @@ public final class ChatService {
                 }
             }
         } else {
-            chatterbox.establishUserSession(vendor: vendor, token: token, userContextData: contextData) { (result) in
+            chatterbox.establishUserSession(vendor: vendor, token: token, userContextData: contextData) { [weak self] result in
                 
-                self.isInitializing = false
+                self?.isInitializing = false
                 
                 switch result {
                 case let .success(message):

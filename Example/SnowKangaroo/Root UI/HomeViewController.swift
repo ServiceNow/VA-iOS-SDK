@@ -11,11 +11,18 @@ import SnowChat
 
 class HomeViewController: UIViewController, ChatServiceDelegate {
     
+    // For leak-detection, turn this on to release the ChatService when the home view is shown
+    private let newServiceForEachViewController = false
+    
     private var chatService: ChatService?
     
     @IBOutlet weak var chatButton: UIButton!
     @IBOutlet private weak var statusLabel: UILabel!
     @IBOutlet weak var forceSessionSwitch: UISwitch!
+    
+    deinit {
+        chatService = nil
+    }
     
     // MARK: - View Life Cycle
     
@@ -35,9 +42,17 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         setupStatusLabel()
 
         chatButton.isEnabled = true
+
+        forceSessionSwitch.isOn = true
+        forceSessionSwitch.isEnabled = false
+
+        // For leak-detection, turn this on to release the ChatService when the home view is shown
+        if newServiceForEachViewController {
+            chatService = nil
+        }
         
         forceSessionSwitch.isOn = false
-        
+
         if chatService?.isConnected ?? false {
             forceSessionSwitch.isEnabled = true
         } else {

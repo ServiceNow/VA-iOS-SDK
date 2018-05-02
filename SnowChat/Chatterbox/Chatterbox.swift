@@ -138,6 +138,10 @@ class Chatterbox {
         self.serverInstance = instance
     }
     
+    deinit {
+        Logger.default.logFatal("Chatterbox deinit")
+    }
+    
     internal func publishMessage<T>(_ message: T) where T: Encodable {
         logger.logInfo("Chatterbox publishing message: \(message)")
         apiManager.sendMessage(message, toChannel: chatChannel, encoder: ChatUtil.jsonEncoder)

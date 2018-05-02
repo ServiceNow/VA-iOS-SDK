@@ -29,6 +29,10 @@ public class ChatViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        Logger.default.logFatal("ChatViewController deinit")
+    }
+    
     // MARK: - View Life Cycle
     
     public override func viewDidLoad() {

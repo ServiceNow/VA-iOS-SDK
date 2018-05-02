@@ -79,6 +79,10 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        Logger.default.logFatal("ConversationViewConteroller deinit")
+    }
+    
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {

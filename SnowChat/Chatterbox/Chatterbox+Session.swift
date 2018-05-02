@@ -42,14 +42,14 @@ extension Chatterbox {
                         completion(.failure(ChatterboxError.unknown(details: "Chat Handshake failed for an unknown reason")))
                         return
                     }
-                    
+
                     strongSelf.contextualActions = actionMessage
                     strongSelf.state = .topicSelection
 
                     strongSelf.notifyEventListeners { listener in
                         listener.chatterbox(strongSelf, didEstablishUserSession:  sessionId, forChat: strongSelf.chatId)
                     }
-                    
+
                     completion(.success(actionMessage))
                 }
             }
@@ -128,7 +128,7 @@ extension Chatterbox {
     
     private func performChatHandshake(_ completion: @escaping (ContextualActionMessage?) -> Void) {
         handshakeCompletedHandler = completion
-        messageHandler = handshakeMessageHandler
+        messageHandler = { [weak self] in self?.handshakeMessageHandler($0) }
         
         setupChatSubscription()
         

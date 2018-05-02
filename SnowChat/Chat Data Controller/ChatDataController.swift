@@ -66,6 +66,10 @@ class ChatDataController {
         self.changeListener = changeListener
     }
     
+    deinit {
+        Logger.default.logFatal("ChatDataController deinit")
+    }
+    
     // MARK: - Theme preparation
     
     func loadTheme() {
