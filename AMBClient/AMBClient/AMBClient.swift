@@ -263,6 +263,9 @@ public class AMBClient {
             return
         }
         
+        let wasSubscribed = subscriptions.reduce(false, { $0 || ($1.subscription?.subscribed ?? false) }) ||
+                            subscribedChannels.contains(subscription.channel)
+        
         for (index, subscriptionWrapper) in subscriptions.enumerated() {
             if let curSubscription = subscriptionWrapper.subscription {
                 if curSubscription.uuid == subscription.uuid {
@@ -272,12 +275,9 @@ public class AMBClient {
             }
         }
         
-        subscriptions = subscriptions
-            .filter({ (subscriptionWrapper) in
-                    subscriptionWrapper.subscription?.subscribed ?? false
-            })
-
-        if subscriptions.isEmpty {
+        let isSubscribed = subscriptions.reduce(false, { $0 || ($1.subscription?.subscribed ?? false) })
+        if wasSubscribed && !isSubscribed {
+            subscribedChannels.remove(subscription.channel)
             sendBayeuxUnsubscribeMessage(channel: subscription.channel)
         }
     }
@@ -694,6 +694,7 @@ private extension AMBClient {
             if let messageId = message.id,
                let postedMessageHandler = postedMessageHandlers[messageId] {
                 postedMessageHandler.handler(AMBResult.success(message))
+                postedMessageHandlers.removeValue(forKey: messageId)
             }
         })
         

@@ -205,7 +205,7 @@ class AMBClientTests: XCTestCase {
         testExpectations[ExpectationType.unsubscribed] = unsubscribedExpectation
         
         ambClient?.connect()
-        let subscription = subscribeToTestChannel()
+        var subscription = subscribeToTestChannel()
         XCTAssert(subscription != nil, "failed to subscribe to test channel")
         
         self.wait(for: [handshakenExpectation], timeout: 10)
@@ -213,6 +213,7 @@ class AMBClientTests: XCTestCase {
         XCTAssert(ambClient?.clientId != nil, "clientId is not received")
         subscription?.unsubscribe()
         self.wait(for: [unsubscribedExpectation], timeout: 10)
+        subscription = nil
     }
     
     func testUnsubscribeOnSubscriptionDestruction() {
