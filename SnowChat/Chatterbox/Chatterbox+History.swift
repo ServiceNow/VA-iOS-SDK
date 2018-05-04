@@ -139,7 +139,7 @@ extension Chatterbox {
                     
                     var conversation = conversation
 
-                    strongSelf.chatStore.findOrCreateConversation(conversation.conversationId, withName: conversation.topicTypeName, withState: conversation.state, isPartial: conversation.isPartial)
+                    strongSelf.chatStore.findOrCreateConversation(conversation.conversationId, withName: conversation.topicName, withState: conversation.state, isPartial: conversation.isPartial)
                     
                     if conversation.conversationId != lastConversation.conversationId {
                         conversation = strongSelf.completeConversationIfNeeded(conversation)
@@ -203,7 +203,7 @@ extension Chatterbox {
         
         if let existingConversation = self.conversation(forId: conversationId),
             existingConversation.isPartial {
-            logger.logDebug("Completing partial conversation: \(existingConversation.topicTypeName)")
+            logger.logDebug("Completing partial conversation: \(existingConversation.topicName)")
             
             chatStore.completeConversation(conversationId)
             updatedConversation.isPartial = false
@@ -278,7 +278,7 @@ extension Chatterbox {
                     }
                     
                     if conversation.isPartial {
-                        strongSelf.logger.logDebug("conversation is incomplete: \(conversation.topicTypeName)")
+                        strongSelf.logger.logDebug("conversation is incomplete: \(conversation.topicName)")
                     }
                     
                     strongSelf.storeConversationAndPublish(conversation)
@@ -308,8 +308,8 @@ extension Chatterbox {
         // we only resume iOS-originated conversations.
         // EXCEPT live-agent conversations are always marked 'web' so we resume them regardless of deviceType
         
-        let topicName = conversation.topicTypeName
-        return deviceType == .iOS || topicName == "_live_agent_support_"
+        let topicName = conversation.topicName
+        return deviceType == .iOS || topicName == Conversation.liveAgentSupportTopicName
     }
     
     internal func storeHistoryAndPublish(_ exchange: MessageExchange, forConversation conversationId: String) {
