@@ -87,7 +87,7 @@ extension Chatterbox {
                 
         state = .topicSelection
         
-        let topicInfo = TopicInfo(topicId: conversation.topicId, topicName: conversation.topicTypeName, taskId: nil, conversationId: conversationId)
+        let topicInfo = TopicInfo(topicId: conversation.topicId, topicName: conversation.topicName, taskId: nil, conversationId: conversationId)
         notifyEventListeners { listener in
             listener.chatterbox(self, didFinishTopic: topicInfo, forChat: chatId)
         }

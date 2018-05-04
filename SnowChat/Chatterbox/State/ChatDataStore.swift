@@ -151,6 +151,8 @@ class ChatDataStore {
 
 struct Conversation: Storable, Codable {
 
+    static let liveAgentSupportTopicName = NSLocalizedString("Live Agent Support", comment: "Topic name for agent conversation")
+    
     enum DeviceType: String, Codable {
         case iOS = "ios"
         case android = "android"
@@ -162,13 +164,21 @@ struct Conversation: Storable, Codable {
     }
     
     private let id: String
+    private var topicTypeName: String
     internal var state: ConversationState
-    internal(set) var topicTypeName: String
     internal var topicId: String
     internal var deviceType: DeviceType?
     internal var conversationId: String {
         return topicId
     }
+    internal var topicName: String {
+        var topicName = topicTypeName
+        if topicName == "_live_agent_support_" {
+            topicName = Conversation.liveAgentSupportTopicName
+        }
+        return topicName
+    }
+    
     internal var isPartial: Bool
     private var exchanges = [MessageExchange]()
     
