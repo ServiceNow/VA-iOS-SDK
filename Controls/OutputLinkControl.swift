@@ -45,7 +45,8 @@ class OutputLinkControl: NSObject, ControlProtocol {
         let attributedString = NSAttributedString(string: label, attributes: [NSAttributedStringKey.link: outputLinkModel.value.absoluteString,
                                                                               NSAttributedStringKey.font: UIFont.preferredFont(forTextStyle: .body)])
         outputLinkViewController.textView.attributedText = attributedString
-        outputLinkViewController.headerLabel.text = outputLinkModel.header
+        
+        outputLinkViewController.headerLabel.text = outputLinkModel.header ?? outputLinkModel.value.host
     }
     
     // MARK: Theme

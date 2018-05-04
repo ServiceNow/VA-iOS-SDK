@@ -74,6 +74,81 @@ class ExampleData {
         return ChatDataFactory.controlFromJSON(jsonInputText) as! InputControlMessage
     }
     
+    static func exampleOutputLinkControlMessage() -> OutputLinkControlMessage {
+        let json = """
+        {
+            "type": "systemTextMessage",
+            "data": {
+                "richControl": {
+                    "value": {
+                        "action": "https://www.google.com/search?q=Porsche+cars"
+                    },
+                    "model": {
+                        "name": "fieldAck.__silent_LinkOutputPrompt_5c564eee7ab143759a418f8fe2c1bb30",
+                        "type": "outputMsg"
+                    },
+                    "uiType": "OutputLink",
+                    "uiMetadata": {
+                        "label": "Search for Porsche cars",
+                        "header": "Porsche"
+                    }
+                },
+                "@class": ".MessageDto",
+                "messageId": "78e4c864dbfc13003503d8c75e961938",
+                "sendTime": 1520535023903,
+                "conversationId": "7fd48864dbfc13003503d8c75e9619e0",
+                "receiveTime": 0,
+                "links": [
+
+                ],
+                "sessionId": "d1d38864dbfc13003503d8c75e9619bd",
+                "taskId": "73d48864dbfc13003503d8c75e9619e1",
+                "sequence": "16206f331270000001",
+                "isAgent": false,
+                "direction": "outbound"
+            },
+            "source": "server"
+        }
+        """
+        return ChatDataFactory.controlFromJSON(json) as! OutputLinkControlMessage
+    }
+    
+    static func exampleOutputLinkControlMessageNoLabelOrHeader() -> OutputLinkControlMessage {
+        let json = """
+        {
+            "type": "systemTextMessage",
+            "data": {
+                "richControl": {
+                    "value": {
+                        "action": "https://www.google.com/search?q=Porsche+cars"
+                    },
+                    "model": {
+                        "name": "fieldAck.__silent_LinkOutputPrompt_5c564eee7ab143759a418f8fe2c1bb30",
+                        "type": "outputMsg"
+                    },
+                    "uiType": "OutputLink",
+                    "uiMetadata": {}
+                },
+                "@class": ".MessageDto",
+                "messageId": "78e4c864dbfc13003503d8c75e961938",
+                "sendTime": 1520535023903,
+                "conversationId": "7fd48864dbfc13003503d8c75e9619e0",
+                "receiveTime": 0,
+                "links": [
+
+                ],
+                "sessionId": "d1d38864dbfc13003503d8c75e9619bd",
+                "taskId": "73d48864dbfc13003503d8c75e9619e1",
+                "sequence": "16206f331270000001",
+                "isAgent": false,
+                "direction": "outbound"
+            },
+            "source": "server"
+        }
+        """
+        return ChatDataFactory.controlFromJSON(json) as! OutputLinkControlMessage
+    }
+    
     // swiftlint:disable:next function_body_length
     static func examplePickerControlMessage() -> PickerControlMessage {
         let jsonPicker = """
