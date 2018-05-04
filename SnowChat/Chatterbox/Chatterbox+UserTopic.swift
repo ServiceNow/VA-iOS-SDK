@@ -103,19 +103,21 @@ extension Chatterbox {
         }
     }
 
-    internal func installPostHandshakeMessageHandler() {
+    internal func installPostHandshakeMessageHandler(_ handshakeCompletion: @escaping (ContextualActionMessage?) -> Void) {
         state = .topicSelection
-        messageHandler = { [weak self] in self?.postHandshakeMessageHandler($0) }
+        
+        messageHandler = { [weak self] in
+            self?.postHandshakeMessageHandler($0, handshakeCompletion)
+        }
     }
     
-    private func postHandshakeMessageHandler(_ message: String) {
+    private func postHandshakeMessageHandler(_ message: String, _ handshakeCompletion: (ContextualActionMessage?) -> Void) {
         
         if let subscribeMessage = ChatDataFactory.actionFromJSON(message) as? SubscribeToSupportQueueMessage {
             didReceiveSubscribeToSupportAction(subscribeMessage)
             
         } else if let topicChoices = ChatDataFactory.controlFromJSON(message) as? ContextualActionMessage {
-            handshakeCompletedHandler?(topicChoices)
-            handshakeCompletedHandler = nil
+            handshakeCompletion(topicChoices)
         }
     }
     
@@ -206,7 +208,6 @@ extension Chatterbox {
     }
     
     internal func installTopicMessageHandler() {
-        clearMessageHandlers()
         messageHandler = { [weak self] in self?.userTopicMessageHandler($0) }
     }
     

@@ -126,9 +126,10 @@ extension Chatterbox {
         }
     }
     
-    private func performChatHandshake(_ completion: @escaping (ContextualActionMessage?) -> Void) {
-        handshakeCompletedHandler = completion
-        messageHandler = { [weak self] in self?.handshakeMessageHandler($0) }
+    private func performChatHandshake(_ handshakeCompletedHandler: @escaping (ContextualActionMessage?) -> Void) {
+        messageHandler = { [weak self] in
+            self?.handshakeMessageHandler($0, handshakeCompletedHandler)
+        }
         
         setupChatSubscription()
         
@@ -168,7 +169,7 @@ extension Chatterbox {
         return initUserEvent
     }
     
-    private func handshakeMessageHandler(_ message: String) {
+    private func handshakeMessageHandler(_ message: String, _ handshakeCompletion: @escaping (ContextualActionMessage?) -> Void) {
         let event = ChatDataFactory.actionFromJSON(message)
         guard event.eventType == .channelInit,
             let initEvent = event as? InitMessage else {
@@ -185,7 +186,7 @@ extension Chatterbox {
             conversationContext.systemConversationId = initEvent.data.conversationId
             conversationContext.sessionId = initEvent.data.sessionId
             
-            installPostHandshakeMessageHandler()
+            installPostHandshakeMessageHandler(handshakeCompletion)
         default:
             break
         }
