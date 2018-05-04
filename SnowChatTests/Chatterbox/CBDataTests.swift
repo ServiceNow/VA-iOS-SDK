@@ -103,6 +103,22 @@ class ChatterboxDataTests: XCTestCase {
         XCTAssertEqual(textObj.data.richControl?.value, "Glad I could assist you.")
     }
     
+    func testOutputLinkMessageExanples() {
+        var outputLink = ExampleData.exampleOutputLinkControlMessage()
+        XCTAssertNotNil(outputLink)
+        XCTAssertEqual(outputLink.controlType, .outputLink)
+        XCTAssertEqual(outputLink.data.richControl?.value?.action, "https://www.google.com/search?q=Porsche+cars")
+        XCTAssertEqual(outputLink.data.richControl?.uiMetadata?.label, "Search for Porsche cars")
+        XCTAssertEqual(outputLink.data.richControl?.uiMetadata?.header, "Porsche")
+        
+        outputLink = ExampleData.exampleOutputLinkControlMessageNoLabelOrHeader()
+        XCTAssertNotNil(outputLink)
+        XCTAssertEqual(outputLink.controlType, .outputLink)
+        XCTAssertEqual(outputLink.data.richControl?.value?.action, "https://www.google.com/search?q=Porsche+cars")
+        XCTAssertNil(outputLink.data.richControl?.uiMetadata?.label)
+        XCTAssertNil(outputLink.data.richControl?.uiMetadata?.header)
+    }
+    
     func testContextualActionMessageExample() {
         let contextualAction = ExampleData.exampleContextualActionMessage()
         XCTAssertNotNil(contextualAction)
