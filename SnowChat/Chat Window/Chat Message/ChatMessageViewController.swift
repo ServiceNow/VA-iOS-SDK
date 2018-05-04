@@ -207,13 +207,13 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
 
     private func updateTimestamp(messageDate: Date) {
         bubbleToSuperviewTopConstraint.priority = .lowest
-        bubbleToTimestampTopConstraint.priority = .veryHigh
+        bubbleToTimestampTopConstraint.priority = .defaultHigh
         timestampLabel.isHidden = false
         timestampLabel.text = DateFormatter.now_timeAgoSince(messageDate)
     }
     
     private func clearTimestamp() {
-        bubbleToSuperviewTopConstraint.priority = .veryHigh
+        bubbleToSuperviewTopConstraint.priority = .defaultHigh
         bubbleToTimestampTopConstraint.priority = .lowest
         timestampLabel.isHidden = true
         timestampLabel.text = ""

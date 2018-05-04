@@ -216,10 +216,10 @@ extension ChatDataController: ChatDataListener {
     
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversation conversationId: String, forChat chatId: String) {
         guard let conversation = chatterbox.conversation(forId: conversationId) else { fatalError("Conversation cannot be found for id \(conversationId)") }
-        logger.logInfo("Conversation will load: topicName=\(conversation.topicTypeName) conversationId=\(conversationId) state=\(conversation.state)")
+        logger.logInfo("Conversation will load: topicName=\(conversation.topicName) conversationId=\(conversationId) state=\(conversation.state)")
         
         if !conversation.isPartial {
-            let topicName = conversation.topicTypeName
+            let topicName = conversation.topicName
             let topicId = conversationId
             let topicInfo = TopicInfo(topicId: topicId, topicName: topicName, taskId: nil, conversationId: conversationId)
             presentTopicTitle(topicInfo: topicInfo)
@@ -228,7 +228,7 @@ extension ChatDataController: ChatDataListener {
     
     func chatterbox(_ chatterbox: Chatterbox, didLoadConversation conversationId: String, forChat chatId: String) {
         guard let conversation = chatterbox.conversation(forId: conversationId) else { fatalError("Conversation cannot be found for id \(conversationId)") }
-        logger.logInfo("Conversation did load: topicName=\(conversation.topicTypeName) conversationId=\(conversationId) state=\(conversation.state)")
+        logger.logInfo("Conversation did load: topicName=\(conversation.topicName) conversationId=\(conversationId) state=\(conversation.state)")
 
         if let conversation = chatterbox.conversation(forId: conversationId), !conversation.state.isInProgress {
             presentEndOfTopicDividerIfNeeded()
@@ -246,7 +246,7 @@ extension ChatDataController: ChatDataListener {
             
             if !conversation.isPartial {
                 let topicId = conversationId
-                let topicInfo = TopicInfo(topicId: topicId, topicName: conversation.topicTypeName, taskId: nil, conversationId: conversationId)
+                let topicInfo = TopicInfo(topicId: topicId, topicName: conversation.topicName, taskId: nil, conversationId: conversationId)
                 appendTopicTitle(topicInfo: topicInfo)
                 appendTopicStartDivider(topicInfo: topicInfo)
             }
