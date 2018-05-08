@@ -113,16 +113,7 @@ extension Chatterbox {
                 return
         }
 
-        notifyDataListeners { listener in
-            listener.chatterbox(self, willLoadConversationsForConsumerAccount: consumerAccountId, forChat: chatId)
-        }
-        
-        apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { [weak self] conversations in
-            guard let strongSelf = self else {
-                completion(0)
-                return
-            }
-            
+        apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { conversations in
             var count = 0
             
             let reversedConversations = conversations.reversed()
@@ -147,10 +138,6 @@ extension Chatterbox {
 
                     count += strongSelf.loadConversationHistory(conversation)
                 }
-            }
-            
-            strongSelf.notifyDataListeners { listener in
-                listener.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
             }
             
             completion(count)
@@ -284,7 +271,6 @@ extension Chatterbox {
                     strongSelf.storeConversationAndPublish(conversation)
                     
                     if isLastConversation {
-                        // notify that load is complete, unless we already did (for the in-progress conversation)
                         strongSelf.notifyDataListeners { listener in
                             listener.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
                         }
