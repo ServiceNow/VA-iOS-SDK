@@ -168,7 +168,7 @@ class TopicLifecycleTests: XCTestCase {
         // assert conversation is now there and has correct values
         let conversation = chatterbox.conversation(forId: "ee86092a733a0300d63a566a4cf6a702")
         XCTAssertNotNil(conversation)
-        XCTAssertEqual("Create Incident", conversation?.topicTypeName)
+        XCTAssertEqual("Create Incident", conversation?.topicName)
         XCTAssertEqual(Conversation.ConversationState.inProgress, conversation?.state)
     }
     
@@ -181,7 +181,7 @@ class TopicLifecycleTests: XCTestCase {
         let conversation = chatterbox.conversation(forId: "ee86092a733a0300d63a566a4cf6a702")
         XCTAssertNotNil(conversation)
         XCTAssertEqual(Conversation.ConversationState.completed, conversation?.state)
-        XCTAssertEqual("Create Incident", conversation?.topicTypeName)
+        XCTAssertEqual("Create Incident", conversation?.topicName)
     }
     
     func testStartAndEndTopicUpdatesChatterboxState() {
@@ -202,7 +202,7 @@ class TopicLifecycleTests: XCTestCase {
         let conversation = chatterbox.conversation(forId: "42f17fd373501300d63a566a4cf6a7d6")
         XCTAssertNotNil(conversation)
         XCTAssertEqual(Conversation.ConversationState.chatProgress, conversation?.state)
-        XCTAssertEqual("Live Agent", conversation?.topicTypeName)
+        XCTAssertEqual("Live Agent", conversation?.topicName)
     }
     
     func testAgentChatEndedUpdatesConversation() {
@@ -215,7 +215,7 @@ class TopicLifecycleTests: XCTestCase {
         let conversation = chatterbox.conversation(forId: "42f17fd373501300d63a566a4cf6a7d6")
         XCTAssertNotNil(conversation)
         XCTAssertEqual(Conversation.ConversationState.completed, conversation?.state)
-        XCTAssertEqual("Live Agent", conversation?.topicTypeName)
+        XCTAssertEqual("Live Agent", conversation?.topicName)
     }
     
     func testStartAndEndAgentChatUpdatesChatterboxState() {
