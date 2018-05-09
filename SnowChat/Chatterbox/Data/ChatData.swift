@@ -58,6 +58,13 @@ struct ChatSession: Codable {
 struct ChatTopic: Codable {
     let title: String
     let name: String
+    let isEnabled: Bool
+    
+    init(title: String, name: String, isEnabled: Bool = true) {
+        self.title = title
+        self.name = name
+        self.isEnabled = isEnabled
+    }
 }
 
 protocol Storable {
