@@ -21,7 +21,8 @@ extension Chatterbox {
         
         cancelPendingExchangeIfNeeded()
         
-        messageHandler = startLiveAgentHandshakeHandler
+        messageHandler = { [weak self] in self?.startLiveAgentHandshakeHandler($0) }
+        
         publishStartAgentChatMessage(sessionId, conversationId)
     }
     

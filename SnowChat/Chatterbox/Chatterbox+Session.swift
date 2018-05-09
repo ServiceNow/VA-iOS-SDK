@@ -42,14 +42,14 @@ extension Chatterbox {
                         completion(.failure(ChatterboxError.unknown(details: "Chat Handshake failed for an unknown reason")))
                         return
                     }
-                    
+
                     strongSelf.contextualActions = actionMessage
                     strongSelf.state = .topicSelection
 
                     strongSelf.notifyEventListeners { listener in
                         listener.chatterbox(strongSelf, didEstablishUserSession:  sessionId, forChat: strongSelf.chatId)
                     }
-                    
+
                     completion(.success(actionMessage))
                 }
             }
@@ -126,9 +126,10 @@ extension Chatterbox {
         }
     }
     
-    private func performChatHandshake(_ completion: @escaping (ContextualActionMessage?) -> Void) {
-        handshakeCompletedHandler = completion
-        messageHandler = handshakeMessageHandler
+    private func performChatHandshake(_ handshakeCompletedHandler: @escaping (ContextualActionMessage?) -> Void) {
+        messageHandler = { [weak self] in
+            self?.handshakeMessageHandler($0, handshakeCompletedHandler)
+        }
         
         setupChatSubscription()
         
@@ -168,7 +169,7 @@ extension Chatterbox {
         return initUserEvent
     }
     
-    private func handshakeMessageHandler(_ message: String) {
+    private func handshakeMessageHandler(_ message: String, _ handshakeCompletion: @escaping (ContextualActionMessage?) -> Void) {
         let event = ChatDataFactory.actionFromJSON(message)
         guard event.eventType == .channelInit,
             let initEvent = event as? InitMessage else {
@@ -185,7 +186,7 @@ extension Chatterbox {
             conversationContext.systemConversationId = initEvent.data.conversationId
             conversationContext.sessionId = initEvent.data.sessionId
             
-            installPostHandshakeMessageHandler()
+            installPostHandshakeMessageHandler(handshakeCompletion)
         default:
             break
         }

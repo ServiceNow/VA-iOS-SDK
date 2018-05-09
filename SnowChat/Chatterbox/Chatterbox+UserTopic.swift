@@ -18,7 +18,7 @@ extension Chatterbox {
         }
         
         conversationContext.topicName = topicName
-        messageHandler = startTopicMessageHandler
+        messageHandler = { [weak self] in self?.startTopicMessageHandler($0) }
         
         let startTopic = StartTopicMessage(withSessionId: sessionId, withConversationId: conversationId)
         publishMessage(startTopic)
@@ -103,18 +103,21 @@ extension Chatterbox {
         }
     }
 
-    internal func installPostHandshakeMessageHandler() {
+    internal func installPostHandshakeMessageHandler(_ handshakeCompletion: @escaping (ContextualActionMessage?) -> Void) {
         state = .topicSelection
-        messageHandler = postHandshakeMessageHandler
+        
+        messageHandler = { [weak self] in
+            self?.postHandshakeMessageHandler($0, handshakeCompletion)
+        }
     }
     
-    private func postHandshakeMessageHandler(_ message: String) {
+    private func postHandshakeMessageHandler(_ message: String, _ handshakeCompletion: (ContextualActionMessage?) -> Void) {
         
         if let subscribeMessage = ChatDataFactory.actionFromJSON(message) as? SubscribeToSupportQueueMessage {
             didReceiveSubscribeToSupportAction(subscribeMessage)
             
         } else if let topicChoices = ChatDataFactory.controlFromJSON(message) as? ContextualActionMessage {
-            handshakeCompletedHandler?(topicChoices)
+            handshakeCompletion(topicChoices)
         }
     }
     
@@ -133,7 +136,7 @@ extension Chatterbox {
         guard controlMessage.direction == .fromServer else { return }
         
         if let topicPicker = controlMessage as? UserTopicPickerMessage {
-            messageHandler = startUserTopicHandshakeHandler
+            messageHandler = { [weak self] in self?.startUserTopicHandshakeHandler($0) }
             
             let outgoingMessage = selectedTopicPickerMessage(from: topicPicker)
             
@@ -205,8 +208,7 @@ extension Chatterbox {
     }
     
     internal func installTopicMessageHandler() {
-        clearMessageHandlers()
-        messageHandler = userTopicMessageHandler
+        messageHandler = { [weak self] in self?.userTopicMessageHandler($0) }
     }
     
     private func userTopicMessageHandler(_ message: String) {

@@ -26,6 +26,10 @@ class TopicSelectionHandler: AutoCompleteHandler {
         setupInputBar()
     }
     
+    deinit {
+        Logger.default.logFatal("TopicSelection deinit")
+    }
+    
     internal func setupAutoCompletionView() {
         conversationController?.autoCompletionView.register(TopicSelectionTableCell.self, forCellReuseIdentifier: TopicSelectionTableCell.cellIdentifier)
         conversationController?.autoCompletionView.estimatedRowHeight = TopicSelectionTableCell.estimatedCellHeight

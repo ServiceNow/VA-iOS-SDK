@@ -113,7 +113,6 @@ class Chatterbox {
     }
     
     internal var messageHandler: ((String) -> Void)?
-    internal var handshakeCompletedHandler: ((ContextualActionMessage?) -> Void)?
     
     internal let logger = Logger.logger(for: "Chatterbox")
     
@@ -136,6 +135,10 @@ class Chatterbox {
     
     init(instance: ServerInstance) {
         self.serverInstance = instance
+    }
+    
+    deinit {
+        Logger.default.logFatal("Chatterbox deinit")
     }
     
     internal func publishMessage<T>(_ message: T) where T: Encodable {
@@ -503,11 +506,6 @@ class Chatterbox {
     
     func conversation(forId conversationId: String) -> Conversation? {
         return chatStore.conversation(forId: conversationId)
-    }
-    
-    internal func clearMessageHandlers() {
-        messageHandler = nil
-        handshakeCompletedHandler = nil
     }
     
     // MARK: Structures and Types

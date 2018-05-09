@@ -35,9 +35,16 @@ class HomeViewController: UIViewController, ChatServiceDelegate {
         setupStatusLabel()
 
         chatButton.isEnabled = true
+
+        forceSessionSwitch.isOn = true
+        forceSessionSwitch.isEnabled = false
+
+        // For leak-detection, release the ChatService when the home view is shown
+        // (which corresponds to the ChatViewController being dismissed)
+        //chatService = nil
         
         forceSessionSwitch.isOn = false
-        
+
         if chatService?.isConnected ?? false {
             forceSessionSwitch.isEnabled = true
         } else {
