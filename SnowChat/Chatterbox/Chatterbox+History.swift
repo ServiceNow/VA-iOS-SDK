@@ -106,6 +106,7 @@ extension Chatterbox {
     
     func fetchOlderMessages(_ completion: @escaping (Int) -> Void) {
         // request another page of messages prior to the first message we have
+        
         guard let oldestMessage = chatStore.oldestMessage(),
             let consumerAccountId = session?.user.consumerAccountId  else {
                 logger.logError("No oldest message or consumerAccountId in fetchOlderMessages")
@@ -113,16 +114,7 @@ extension Chatterbox {
                 return
         }
 
-        notifyDataListeners { listener in
-            listener.chatterbox(self, willLoadConversationsForConsumerAccount: consumerAccountId, forChat: chatId)
-        }
-        
-        apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { [weak self] conversations in
-            guard let strongSelf = self else {
-                completion(0)
-                return
-            }
-            
+        apiManager.fetchOlderConversations(forConsumer: consumerAccountId, beforeMessage: oldestMessage.messageId, completionHandler: { conversations in
             var count = 0
             
             let reversedConversations = conversations.reversed()
@@ -132,14 +124,12 @@ extension Chatterbox {
                 reversedConversations.forEach { [weak self] conversation in
                     guard let strongSelf = self else { return }
                     
-                    guard !conversation.isForSystemTopic() else {
-                        strongSelf.logger.logError("Unexpected SystemTopic conversation in fetchOlderMessages!!! skipping...")
-                        return
-                    }
-                    
                     var conversation = conversation
 
-                    strongSelf.chatStore.findOrCreateConversation(conversation.conversationId, withName: conversation.topicName, withState: conversation.state, isPartial: conversation.isPartial)
+                    strongSelf.chatStore.findOrCreateConversation(conversation.conversationId,
+                                                                  withName: conversation.topicName,
+                                                                  withState: conversation.state,
+                                                                  isPartial: conversation.isPartial)
                     
                     if conversation.conversationId != lastConversation.conversationId {
                         conversation = strongSelf.completeConversationIfNeeded(conversation)
@@ -147,10 +137,6 @@ extension Chatterbox {
 
                     count += strongSelf.loadConversationHistory(conversation)
                 }
-            }
-            
-            strongSelf.notifyDataListeners { listener in
-                listener.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerAccountId, forChat: strongSelf.chatId)
             }
             
             completion(count)
@@ -263,11 +249,6 @@ extension Chatterbox {
                 }
                 
                 conversations.forEach { conversation in
-                    guard !conversation.isForSystemTopic() else {
-                        strongSelf.logger.logError("Unexpected SystemTopic conversation in refreshConversation!!!")
-                        return
-                    }
-                    
                     var conversation = conversation
                     let isLastConversation = conversation.conversationId == lastConversation.conversationId
                     let isInProgress = isLastConversation && conversation.state.isInProgress && strongSelf.canResumeConversation(conversation)
@@ -284,7 +265,6 @@ extension Chatterbox {
                     strongSelf.storeConversationAndPublish(conversation)
                     
                     if isLastConversation {
-                        // notify that load is complete, unless we already did (for the in-progress conversation)
                         strongSelf.notifyDataListeners { listener in
                             listener.chatterbox(strongSelf, didLoadConversationsForConsumerAccount: consumerId, forChat: strongSelf.chatId)
                         }

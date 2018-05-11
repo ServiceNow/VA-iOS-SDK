@@ -256,6 +256,8 @@ extension ChatDataController: ChatDataListener {
     func chatterbox(_ chatterbox: Chatterbox, willLoadConversationsForConsumerAccount consumerAccountId: String, forChat chatId: String) {
         logger.logInfo("History will load for \(consumerAccountId) - disabling buffering...")
         
+        controlData.removeAll()
+
         // disable caching while doing a history load
         isBufferingEnabled = false
         
