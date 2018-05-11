@@ -463,8 +463,7 @@ private extension AMBClient {
             glideStatus = AMBGlideStatus(ambActive: ambActive, sessionStatus: sessionStatus)
         }
         
-        if  let advice = ambMessage.advice,
-            let reconnectAdvice = advice["reconnect"] as? String {
+        if let reconnectAdvice = ambMessage.advice["reconnect"] as? String {
             if reconnectAdvice == "handshake" {
                 self.clientStatus = .disconnected
                 sendBayeuxHandshakeMessage()
@@ -475,8 +474,8 @@ private extension AMBClient {
         if ambMessage.successful {
             scheduledConnectTask = nil
     
-            if let ext = ambMessage.ext {
-                parseGlideSessionStatus(from: ext)
+            if ambMessage.ext.count > 0 {
+                parseGlideSessionStatus(from: ambMessage.ext)
             }
             
             if self.reopenChannelsAfterSuccessfulConnectMessages {
@@ -486,17 +485,15 @@ private extension AMBClient {
             
             self.clientStatus = .connected
             
-            if  let advice = ambMessage.advice {
-                let interval = advice["interval"] as? TimeInterval ?? 0.0
-                if let timeout = advice["timeout"] as? TimeInterval {
-                    self.longPollingTimeout = timeout
-                }
-                
-                if interval > 0 {
-                    log("Delaying connection by: \(interval)")
-                    startConnectRequest(after: interval)
-                    return
-                }
+            let interval = ambMessage.advice["interval"] as? TimeInterval ?? 0.0
+            if let timeout = ambMessage.advice["timeout"] as? TimeInterval {
+                self.longPollingTimeout = timeout
+            }
+            
+            if interval > 0 {
+                log("Delaying connection by: \(interval)")
+                startConnectRequest(after: interval)
+                return
             }
             startConnectRequest()
         } else {

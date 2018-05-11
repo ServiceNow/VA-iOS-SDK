@@ -57,7 +57,7 @@ struct ContextualActionMessage: Codable, ControlData {
     typealias ContextualActionWrapper = ControlWrapper<String?, ContextualActionMetadata>
     
     struct ContextualActionMetadata: Codable {
-        let inputControls: [ControlWrapper<String?, ContextualControlMetadata>]?
+        var inputControls: [ControlWrapper<String?, ContextualControlMetadata>] = []
     }
     
     struct ContextualControlMetadata: Codable {

@@ -210,9 +210,9 @@ class Theme {
         return color
     }
     
-    init(dictionary: [String : Any]? = nil) {
-        dictionary?.keys.forEach { [weak self] key in
-            if let value = dictionary?[key] as? String {
+    init(dictionary: [String : Any] = [:]) {
+        dictionary.keys.forEach { [weak self] key in
+            if let value = dictionary[key] as? String {
                 self?.colorPropertiesMap[key] = UIColor.now_color(withCSS: value)
             }
         }

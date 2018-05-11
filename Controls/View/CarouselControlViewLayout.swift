@@ -59,6 +59,7 @@ class CarouselControlViewLayout: UICollectionViewFlowLayout {
         return CGSize(width: collectionViewWidth, height: collectionViewHeight)
     }
 
+    // swiftlint:disable:next discouraged_optional_collection
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         guard let attributes = super.layoutAttributesForElements(in: rect)?.map({ $0.copy() as! UICollectionViewLayoutAttributes }),
             let collectionView = collectionView else {

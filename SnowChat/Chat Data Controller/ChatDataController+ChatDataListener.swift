@@ -415,8 +415,8 @@ extension ChatDataController: ChatDataListener {
         let questionModel = TextControlViewModel(id: ChatUtil.uuidString(), value: label, messageDate: message.messageTime)
         
         let answerModel: TextControlViewModel?
-        if let response = messageExchange.response as? MultiSelectControlMessage,
-            let values: [String] = response.data.richControl?.value ?? [""] {
+        if let response = messageExchange.response as? MultiSelectControlMessage {
+            let values: [String] = response.data.richControl?.value ?? [""] 
             let options = response.data.richControl?.uiMetadata?.options.filter({ values.contains($0.value) }).map({ $0.label })
             let displayValue = options?.joinedWithCommaSeparator()
             answerModel = TextControlViewModel(id: ChatUtil.uuidString(), value: displayValue ?? "", messageDate: response.messageTime)
