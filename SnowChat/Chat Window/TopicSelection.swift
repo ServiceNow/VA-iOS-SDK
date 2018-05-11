@@ -9,7 +9,7 @@
 import Foundation
 
 class TopicSelectionHandler: AutoCompleteHandler {
-    fileprivate let NO_TOPICS_NAME = "__NO_TOPICS_FOUND__"
+    private let noTopicName = "__NO_TOPICS_FOUND__"
 
     private var topics = [ChatTopic]()
     private var isAllTopics = false
@@ -175,7 +175,7 @@ class TopicSelectionHandler: AutoCompleteHandler {
             
             if topics.count == 0 {
                 strongSelf.topics = [ChatTopic(title: NSLocalizedString("No Topics Found", comment: "Text to display when there are no topics matching the search phrase"),
-                                               name: strongSelf.NO_TOPICS_NAME,
+                                               name: strongSelf.noTopicName,
                                                isEnabled: false)]
             } else {
                 strongSelf.topics = topics

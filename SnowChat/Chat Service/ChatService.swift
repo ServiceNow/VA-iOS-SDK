@@ -15,7 +15,6 @@ public enum ChatServiceError: Error {
 
 public final class ChatService {
     
-    // swiftlint:disable:next weak_delegate
     public weak var delegate: ChatServiceDelegate?
     
     public var isConnected: Bool {

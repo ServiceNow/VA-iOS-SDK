@@ -22,7 +22,6 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var footerSeperator: UIView!
     
-    // swiftlint:disable:next weak_delegate
     weak var delegate: PickerViewControllerDelegate?
     var resourceProvider: ControlResourceProvider?
     
