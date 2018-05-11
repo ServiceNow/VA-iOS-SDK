@@ -9,6 +9,8 @@
 import Foundation
 
 class TopicSelectionHandler: AutoCompleteHandler {
+    private let noTopicName = "__NO_TOPICS_FOUND__"
+
     private var topics = [ChatTopic]()
     private var isAllTopics = false
     
@@ -90,6 +92,8 @@ class TopicSelectionHandler: AutoCompleteHandler {
         cell.topicLabel?.text = text
         cell.topicLabel?.textColor = theme.linkColor
         
+        cell.isUserInteractionEnabled = (topics[row].isEnabled)
+        
         return cell
     }
     
@@ -166,14 +170,18 @@ class TopicSelectionHandler: AutoCompleteHandler {
     // MARK: - API Manager Calls
     
     func showAllTopics() {
-        chatterbox.apiManager.allTopics { topics in
+        chatterbox.apiManager.allTopics { [weak self] topics in
+            guard let strongSelf = self else { return }
+            
             if topics.count == 0 {
-                self.topics = [ChatTopic(title: NSLocalizedString("No Topics Found", comment: "Text to display when there are no topics matching the search phrase"), name: "")]
+                strongSelf.topics = [ChatTopic(title: NSLocalizedString("No Topics Found", comment: "Text to display when there are no topics matching the search phrase"),
+                                               name: strongSelf.noTopicName,
+                                               isEnabled: false)]
             } else {
-                self.topics = topics
+                strongSelf.topics = topics
             }
-            self.isAllTopics = true
-            self.conversationController?.showAutoCompletionView(true)
+            strongSelf.isAllTopics = true
+            strongSelf.conversationController?.showAutoCompletionView(true)
         }
     }
     

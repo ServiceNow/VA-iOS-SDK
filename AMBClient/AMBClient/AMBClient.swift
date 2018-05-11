@@ -118,7 +118,6 @@ public class AMBClient {
         }
     }
     
-    // swiftlint:disable:next weak_delegate
     weak public var delegate: AMBClientDelegate?
     let httpClient: SNOWHTTPSessionClientProtocol
     
