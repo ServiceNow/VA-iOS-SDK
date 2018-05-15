@@ -38,7 +38,7 @@ struct MultiSelectControlMessage: Codable, ControlData {
     }
     
     let type: String = "consumerTextMessage"
-    var data: RichControlData<ControlWrapper<[String]?, PickerMetadata>>
+    var data: RichControlData<ControlWrapper<[String], PickerMetadata>>
     
     // define the properties that we decode / encode
     private enum CodingKeys: String, CodingKey {
@@ -46,7 +46,7 @@ struct MultiSelectControlMessage: Codable, ControlData {
         case data
     }
     
-    init(withData: RichControlData<ControlWrapper<[String]?, PickerMetadata>>) {
+    init(withData: RichControlData<ControlWrapper<[String], PickerMetadata>>) {
         data = withData
     }
     

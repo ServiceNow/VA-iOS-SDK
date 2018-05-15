@@ -26,6 +26,7 @@ opt_in_rules:
   - contains_over_first_not_nil
   - first_where
   - literal_expression_end_indentation
+  - discouraged_optional_collection
 
 excluded:
   - Pods

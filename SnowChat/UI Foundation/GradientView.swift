@@ -10,15 +10,15 @@ import UIKit
 
 class GradientView: UIView {
     
-    var locations: [NSNumber]? {
+    var locations: [NSNumber] = [] {
         didSet {
             (layer.mask as? CAGradientLayer)?.locations = locations
         }
     }
     
-    var colors: [UIColor]? {
+    var colors: [UIColor] = [] {
         didSet {
-            (layer.mask as? CAGradientLayer)?.colors = colors?.map({ $0.cgColor })
+            (layer.mask as? CAGradientLayer)?.colors = colors.map({ $0.cgColor })
         }
     }
     

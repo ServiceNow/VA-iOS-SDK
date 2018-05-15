@@ -16,8 +16,8 @@ protocol ImageBrowserDelegate: AnyObject {
 class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     
     weak var delegate: ImageBrowserDelegate?
-    private var photoURLs: [URL]?
-    private var images: [UIImage]?
+    private var photoURLs: [URL] = []
+    private var images: [UIImage] = []
     private var imageDownloader: ImageDownloader?
     private var currentImage: Int {
         didSet {
@@ -76,8 +76,8 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Done", comment: ""), style: .plain, target: self, action: #selector(doneButtonTapped(_:)))
         view.backgroundColor = .white
         
-        let urlCount = photoURLs?.count ?? 0
-        let imageCount = images?.count ?? 0
+        let urlCount = photoURLs.count
+        let imageCount = images.count
         if urlCount > 1 || imageCount > 1 {
             setupPageControl()
         }
@@ -102,9 +102,9 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
                                      scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                                      scrollView.topAnchor.constraint(equalTo: view.topAnchor)])
         
-        if photoURLs != nil {
+        if photoURLs.count > 0 {
             scrollView.bottomAnchor.constraint(equalTo: pageControl.topAnchor).isActive = true
-        } else if images != nil {
+        } else if images.count > 0 {
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         }
         
@@ -142,22 +142,19 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
             NSLayoutConstraint.activate([pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 30)])
         }
         
-        if let photoURLs = photoURLs {
-            pageControl.numberOfPages = photoURLs.count
-        }
-        
+        pageControl.numberOfPages = photoURLs.count
         pageControl.currentPage = currentImage
     }
     
     private func setupImageViews() {
-        if let images = self.images {
+        if images.count > 0 {
             images.forEach({ image in
                 let imageView = UIImageView(image: image)
                 setup(for: imageView, count: images.count)
             })
         }
         
-        if let photoURLs = self.photoURLs {
+        if photoURLs.count > 0 {
             photoURLs.forEach({ url in
                 let imageView = UIImageView()
                 imageView.af_setImage(withURL: url)

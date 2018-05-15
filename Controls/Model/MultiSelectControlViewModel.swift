@@ -22,7 +22,7 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     
     let messageDate: Date?
     
-    init(id: String, label: String? = nil, required: Bool, items: [PickerItem], resultValue: [String]? = nil, messageDate: Date) {
+    init(id: String, label: String? = nil, required: Bool, items: [PickerItem], resultValue: [String] = [], messageDate: Date) {
         self.id = id
         self.label = label
         self.isRequired = required
@@ -46,19 +46,17 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
         item.isSelected = !item.isSelected
     }
     
-    private func selectItems(withValues values: [String]?) {
+    private func selectItems(withValues values: [String]) {
         items.forEach({ $0.isSelected = false })
         
-        if let values = values {
-            items.filter({ values.contains($0.value) }).forEach({ $0.isSelected = true })
-        }
+        items.filter({ values.contains($0.value) }).forEach({ $0.isSelected = true })
     }
     
     // MARK: - ValueRepresentable
     
-    var resultValue: [String]? {
+    var resultValue: [String] {
         guard selectedItems.count != 0, selectedItems.first?.type != .skip else {
-            return nil
+            return []
         }
         
         // Array of selected values
@@ -67,6 +65,6 @@ class MultiSelectControlViewModel: PickerControlViewModel, ValueRepresentable {
     }
     
     var displayValue: String? {
-        return resultValue?.joinedWithCommaSeparator()
+        return resultValue.joinedWithCommaSeparator()
     }
 }
