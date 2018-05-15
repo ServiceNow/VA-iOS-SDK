@@ -26,4 +26,4 @@ fastlane [match](https://docs.fastlane.tools/actions/match) is used to manage ce
 
 Alternatively, you can [manually install fastlane](https://docs.fastlane.tools/getting-started/ios/setup/#choose-your-installation-method).
 
-fastlane is also used by Jenkins for automated builds.
+fastlane is also used by [Jenkins] (https://jenkins-charlie.lab3.service-now.com/job/mobile/job/SnowKangaroo-iOS/) for automated builds.
