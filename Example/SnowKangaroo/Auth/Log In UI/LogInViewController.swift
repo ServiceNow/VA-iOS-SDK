@@ -14,6 +14,10 @@ protocol LogInViewControllerDelegate: class {
 
 class LogInViewController: UIViewController {
     
+    let sampleUsername = "sampleUser"
+    let samplePassword = "samplePassword"
+    let sampleInstance = "https://snowchat.service-now.com"
+    
     private var authManager: OAuthManager?
     private var initialInstanceURL: URL?
     
@@ -67,28 +71,38 @@ class LogInViewController: UIViewController {
     // MARK: - Actions
     
     @IBAction private func logInButtonTapped(_ sender: Any) {
-        logIn(authProvider: .local)
+        guard let username = usernameTextField.text,
+            let password = passwordTextField.text,
+            let instanceURL = self.instanceURL else { return }
+        
+        logIn(username: username, password: password,  instanceURL: instanceURL, authProvider: .local)
+    }
+
+    @objc private func enterPressed() {
+        guard let username = usernameTextField.text,
+            let password = passwordTextField.text,
+            let instanceURL = self.instanceURL else { return }
+        
+        logIn(username: username, password: password,  instanceURL: instanceURL, authProvider: .local)
     }
     
     @IBAction private func useOpenIDButtonTapped(_ sender: Any) {
-        logIn(authProvider: .openID)
-    }
-    
-    @objc private func enterPressed() {
-        logIn(authProvider: .local)
-    }
-    
-    // MARK: - Log In
-    
-    private func logIn(authProvider: AuthProvider) {
-        view.endEditing(true)
-        
         guard let username = usernameTextField.text,
             let password = passwordTextField.text,
-            let instanceURL = instanceURL else {
-                updateUI(isLoading: false)
-                return
-        }
+            let instanceURL = self.instanceURL else { return }
+        
+        logIn(username: username, password: password, instanceURL: instanceURL, authProvider: .openID)
+    }
+    
+    @IBAction func sampleLoginTapped(_ sender: Any) {
+        guard let sampleInstanceURL = URL(string: sampleInstance) else { return }
+        logIn(username: sampleUsername, password: samplePassword,  instanceURL: sampleInstanceURL, authProvider: .local)
+    }
+
+    // MARK: - Log In
+    
+    private func logIn(username: String, password: String, instanceURL: URL, authProvider: AuthProvider) {
+        view.endEditing(true)
         
         updateUI(isLoading: true)
         
