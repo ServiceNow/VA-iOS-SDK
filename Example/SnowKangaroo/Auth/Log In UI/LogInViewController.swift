@@ -75,7 +75,7 @@ class LogInViewController: UIViewController {
             let password = passwordTextField.text,
             let instanceURL = self.instanceURL else { return }
         
-        logIn(username: username, password: password,  instanceURL: instanceURL, authProvider: .local)
+        logIn(username: username, password: password, instanceURL: instanceURL, authProvider: .local)
     }
 
     @objc private func enterPressed() {
@@ -83,7 +83,7 @@ class LogInViewController: UIViewController {
             let password = passwordTextField.text,
             let instanceURL = self.instanceURL else { return }
         
-        logIn(username: username, password: password,  instanceURL: instanceURL, authProvider: .local)
+        logIn(username: username, password: password, instanceURL: instanceURL, authProvider: .local)
     }
     
     @IBAction private func useOpenIDButtonTapped(_ sender: Any) {
@@ -96,7 +96,7 @@ class LogInViewController: UIViewController {
     
     @IBAction func sampleLoginTapped(_ sender: Any) {
         guard let sampleInstanceURL = URL(string: sampleInstance) else { return }
-        logIn(username: sampleUsername, password: samplePassword,  instanceURL: sampleInstanceURL, authProvider: .local)
+        logIn(username: sampleUsername, password: samplePassword, instanceURL: sampleInstanceURL, authProvider: .local)
     }
 
     // MARK: - Log In
