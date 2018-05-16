@@ -50,8 +50,8 @@ class MultiSelectControlTests: XCTestCase {
         model.selectItem(at: 1)
         
         let result = model.resultValue
-        XCTAssert(result![0] == "1")
-        XCTAssert(result![1] == "2")
+        XCTAssert(result[0] == "1")
+        XCTAssert(result[1] == "2")
     }
     
     func testMultiSelectSelectionWithRequiredFalse() {
@@ -66,19 +66,19 @@ class MultiSelectControlTests: XCTestCase {
         model.selectItem(at: 1)
         
         var result = model.resultValue
-        XCTAssert(result![0] == "1")
-        XCTAssert(result![1] == "2")
+        XCTAssert(result[0] == "1")
+        XCTAssert(result[1] == "2")
         
         // select Skip
         model.selectItem(at: 4)
         result = model.resultValue
-        XCTAssertNil(result)
+        XCTAssertEqual(0, result.count)
     }
     
     func testMultiSelectReturnValue() {
         var model = MultiSelectControlViewModel(id: "123", label: "Choice", required: false, items: multiSelectItems!, resultValue: ["1", "3"], messageDate: Date())
         var result = model.resultValue
-        XCTAssert(result! == ["1", "3"])
+        XCTAssert(result == ["1", "3"])
         
         var displayValue = model.displayValue
         XCTAssert(displayValue! == "1, 3")
@@ -87,7 +87,7 @@ class MultiSelectControlTests: XCTestCase {
         model = MultiSelectControlViewModel(id: "123", label: "Choice", required: false, items: multiSelectItems!, resultValue: ["1", "5"], messageDate: Date())
         
         result = model.resultValue
-        XCTAssert(result! == ["1"])
+        XCTAssert(result == ["1"])
         
         displayValue = model.displayValue
         XCTAssert(displayValue! == "1")

@@ -124,7 +124,7 @@ class ChatterboxDataTests: XCTestCase {
         XCTAssertNotNil(contextualAction)
         XCTAssertEqual(contextualAction.controlType, .contextualAction)
         XCTAssertEqual(contextualAction.data.richControl?.uiType, "ContextualAction")
-        XCTAssertEqual(contextualAction.data.richControl?.uiMetadata?.inputControls?.count, 3)
+        XCTAssertEqual(contextualAction.data.richControl?.uiMetadata?.inputControls.count, 3)
         XCTAssertEqual(contextualAction.options.count, 3)
         XCTAssertEqual(contextualAction.options[0].value, "showTopic")
         XCTAssertEqual(contextualAction.options[1].value, "startTopic")
