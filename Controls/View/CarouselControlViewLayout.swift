@@ -8,8 +8,19 @@
 
 import UIKit
 
+protocol CarouselControlViewLayoutDelegate: AnyObject {
+    func carouselControlLayout(_ layout: CarouselControlViewLayout, didFocusItemAt indexPath: IndexPath)
+}
+
 class CarouselControlViewLayout: UICollectionViewFlowLayout {
-    private(set) var focusedIndexPath = IndexPath(item: 0, section: 0)
+    
+    weak var uiDelegate: CarouselControlViewLayoutDelegate?
+    
+    private(set) var focusedIndexPath = IndexPath(item: 0, section: 0) {
+        didSet {
+            uiDelegate?.carouselControlLayout(self, didFocusItemAt: focusedIndexPath)
+        }
+    }
     
     private var nextIndexPath: IndexPath {
         let nextItem = min(focusedIndexPath.item + 1, itemCount - 1)

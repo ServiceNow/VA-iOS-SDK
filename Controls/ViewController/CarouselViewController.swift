@@ -9,7 +9,7 @@
 import UIKit
 import AlamofireImage
 
-class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ImageBrowserDelegate, ThemeableControl {
+class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ImageBrowserDelegate, ThemeableControl, CarouselControlViewLayoutDelegate {
     
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var fullSizeContainerView: FullSizeScrollViewContainerView!
@@ -57,6 +57,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         setupCollectionView()
         setupGradientOverlay()
         setupHeaderFooterViews()
+        carouselControlViewLayout.uiDelegate = self
     }
     
     private func setupGradientOverlay() {
@@ -79,7 +80,6 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     private func setupHeaderFooterViews() {
         headerLabel.text = model.label
-        doneButton.setTitle(NSLocalizedString("Select", comment: "Completed selection action"), for: .normal)
         doneButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
     }
     
@@ -160,5 +160,13 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     func imageBrowser(_ browser: ImageBrowserViewController, didSelectImageAt index: Int) {
         carouselControlViewLayout.selectItem(at: IndexPath(row: index, section: 0))
+    }
+    
+    // MARK: - CarouselControlViewLayoutDelegate
+    
+    func carouselControlLayout(_ layout: CarouselControlViewLayout, didFocusItemAt indexPath: IndexPath) {
+        if let label = model.items[indexPath.row].label {
+            doneButton.setTitle(label, for: .normal)
+        }
     }
 }
