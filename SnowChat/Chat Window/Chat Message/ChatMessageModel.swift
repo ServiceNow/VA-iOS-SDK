@@ -38,6 +38,7 @@ class ChatMessageModel {
     var isAuxiliary = false
     
     var lastMessageDate: Date?
+    var isPending = false
     
     init(model: ControlViewModel, messageId: String? = nil, bubbleLocation: BubbleLocation, requiresInput: Bool = false, theme: Theme, isAgentMessage: Bool = false) {
         self.type = .control

@@ -32,203 +32,23 @@ extension ChatDataController: ChatDataListener {
     
     // MARK: - ChatDataListener (from client)
     
-    //swiftlint:disable:next cyclomatic_complexity
     func chatterbox(_ chatterbox: Chatterbox, didCompleteMessageExchange messageExchange: MessageExchange, forChat chatId: String) {
         guard chatterbox.id == self.chatterbox.id else {
             return
         }
         
-        if messageExchange.message.isOutputOnly {
-            logger.logError("OutputOnly message is unexpected in didCompleteMessageExchange: caller should use didReceiveControlMessage instead")
+        // find the control with the response's id and mark it as delivered
+        guard let response = messageExchange.response,
+            let index = controlData.index(where: { (chatModel) -> Bool in return chatModel.messageId == response.messageId }) else {
+                // if the response is _not_ already displayed, then just display it
+                userDidCompleteMessageExchange(messageExchange)
+                return
         }
         
-        switch messageExchange.message.controlType {
-        case .boolean:
-            guard messageExchange.message is BooleanControlMessage else { fatalError("Could not view message as BooleanControlMessage in ChatDataListener") }
-            self.didCompleteBooleanExchange(messageExchange, forChat: chatId)
-        case .input:
-            guard messageExchange.message is InputControlMessage else { fatalError("Could not view message as InputControlMessage in ChatDataListener") }
-            self.didCompleteInputExchange(messageExchange, forChat: chatId)
-        case .picker:
-            guard messageExchange.message is PickerControlMessage else { fatalError("Could not view message as PickerControlMessage in ChatDataListener") }
-            self.didCompletePickerExchange(messageExchange, forChat: chatId)
-        case .multiSelect:
-            guard messageExchange.message is MultiSelectControlMessage else { fatalError("Could not view message as MultiSelectControlMessage in ChatDataListener") }
-            self.didCompleteMultiSelectExchange(messageExchange, forChat: chatId)
-        case .dateTime:
-            guard messageExchange.message is DateTimePickerControlMessage else { fatalError("Could not view message as DateTimePickerControlMessage in ChatDataListener") }
-            self.didCompleteDateTimeExchange(messageExchange, forChat: chatId)
-        case .date, .time:
-            guard messageExchange.message is DateOrTimePickerControlMessage else { fatalError("Could not view message as DateTimePickerControlMessage in ChatDataListener") }
-            self.didCompleteDateOrTimeExchange(messageExchange, forChat: chatId)
-        case .multiPart:
-            guard messageExchange.message is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
-            self.didCompleteMultiPartExchange(messageExchange, forChat: chatId)
-        case .fileUpload:
-            guard messageExchange.message is FileUploadControlMessage else { fatalError("Could not view message as FileUploadControlMessage in ChatDataListener") }
-            self.didCompleteFileUploadExchange(messageExchange, forChat: chatId)
-        case .unknown:
-            guard let message = messageExchange.message as? ControlDataUnknown else { fatalError("Could not view message as ControlDataUnknown in ChatDataListener") }
-            guard let chatControl = chatMessageModel(withMessage: message) else { return }
-            self.bufferControlMessage(chatControl)
-            logger.logDebug("Unknown control type in ChatDataListener didCompleteMessageExchange: \(messageExchange.message.controlType)")
-        return  // skip any post-processing, we canot proceed with unknown control
-        default:
-            logger.logError("Unhandled control type in ChatDataListener didCompleteMessageExchange: \(messageExchange.message.controlType)")
-        }
-        
-        // we updated the controls for the response, so push a typing indicator while we wait for a new control to come in
-        if isBufferingEnabled {
-            pushTypingIndicatorIfNeeded()
-        }
-    }
-    
-    private func replaceOrPresentControlData(_ model: ControlViewModel, messageId: String) {
-        let messageModel = ChatMessageModel(model: model, messageId: messageId, bubbleLocation: .left, theme: theme)
-        
-        // if buffering, we replace the last control with the new one, otherwise we just present the control
-        if isBufferingEnabled {
-            replaceLastControl(with: messageModel)
-        } else {
-            presentControlData(messageModel)
-        }
-    }
-    private func didCompleteBooleanExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        if let viewModels = controlsForBoolean(from: messageExchange) {
-            replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
-            if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
-            }
-        }
-    }
-    
-    private func didCompleteInputExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        if let viewModels = controlsForInput(from: messageExchange) {
-            replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
-            
-            if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
-            }
-        }
-    }
-    
-    private func didCompletePickerExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        if let viewModels = controlsForPicker(from: messageExchange) {
-            replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
-            if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
-            }
-        }
-    }
-    
-    private func didCompleteMultiSelectExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        // replace the picker with the picker's label, and add the response
-        if let viewModels = controlsForMultiSelect(from: messageExchange) {
-            replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
-            if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
-            }
-        }
-    }
-    
-    private func didCompleteDateTimeExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        if let viewModels = controlsForDateTimePicker(from: messageExchange) {
-            
-            // We need to check the last displayed control. In case of regular topic flow we will have TextControl and DateTimeControl as a seperate controls but they will represent one message coming from the server.
-            let lastMessage = controlData.first
-            var shouldReplaceLastControlWithResponse = true
-            
-            // By comparing ids we can distinguish between loading messages from the history and actual topic flow scenarios.
-            // In case when user selected a date during topic flow - we are already presenting the question and the dateTime picker (2 controls from one message).
-            // Hence we don't want to show question again.
-            // During the history load the last control will not be for this message so we _do_ show the question
-            //
-            // THIS is different from other didComplete methods, where we show just one control per message. In those cases we want to replace control with question and insert an answer.
-
-            if lastMessage == nil || lastMessage?.messageId != messageExchange.message.messageId {
-                let chatMessage = ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme)
-                
-                if isShowingTypingIndicator() {
-                    replaceLastControl(with: chatMessage)
-                } else {
-                    presentControlData(chatMessage)
-                }
-                
-                shouldReplaceLastControlWithResponse = false
-            }
-            
-            guard let response = viewModels.response else { return }
-            
-            let answer = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme)
-            if shouldReplaceLastControlWithResponse {
-                replaceLastControl(with: answer)
-            } else {
-                presentControlData(answer)
-            }
-        }
-    }
-    
-    private func didCompleteDateOrTimeExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        if let viewModels = controlsForDateOrTimePicker(from: messageExchange) {
-            let lastMessage = controlData.first
-            var shouldReplaceLastControlWithResponse = true
-
-            // see comment above in didCompleteDateTimeExchange
-            
-            if lastMessage == nil || lastMessage?.messageId != messageExchange.message.messageId {
-                let chatMessage = ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme)
-                
-                if isShowingTypingIndicator() {
-                    replaceLastControl(with: chatMessage)
-                } else {
-                    presentControlData(chatMessage)
-                }
-                
-                shouldReplaceLastControlWithResponse = false
-            }
-            
-            guard let response = viewModels.response else { return }
-            
-            let answer = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme)
-            if shouldReplaceLastControlWithResponse {
-                replaceLastControl(with: answer)
-            } else {
-                presentControlData(answer)
-            }
-        }
-    }
-    
-    private func didCompleteMultiPartExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        let typingIndicatorModel = ChatMessageModel(model: typingIndicator, bubbleLocation: .left, theme: theme)
-        replaceLastControl(with: typingIndicatorModel)
-    }
-    
-    private func isImageUploadIndicatorShown() -> Bool {
-        guard let lastControl = controlData.first,
-            let text = lastControl.controlModel as? TextControlViewModel,
-            text.id == ChatDataController.imageUploadControlId else {
-                return false
-        }
-
-        return true
-    }
-
-    private func didCompleteFileUploadExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
-        if let viewModels = controlsForFileUpload(from: messageExchange) {
-            let message = ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme)
-            
-            // if the image-uploading control is being shown, replace it, otherwise just display the message
-            if isImageUploadIndicatorShown() {
-                replaceLastControl(with: message)
-            } else {
-                presentControlData(message)
-            }
-            
-            if let response = viewModels.response {
-                presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
-            }
-        }
-        
+        let messageModel = controlData[index]
+        messageModel.isPending = false
+        addModelChange(.update(index: index, oldModel: messageModel, model: messageModel))
+        applyModelChanges()
     }
     
     // MARK: - ChatDataListener (bulk uopdates / history)
