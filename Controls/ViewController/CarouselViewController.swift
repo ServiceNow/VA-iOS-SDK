@@ -80,6 +80,8 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     private func setupHeaderFooterViews() {
         headerLabel.text = model.label
+        let label = model.items[0].label
+        doneButton.setTitle(label, for: .normal)
         doneButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
     }
     
@@ -115,7 +117,9 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     private func zoomIn(itemAt indexPath: IndexPath) {
         guard let imageDownloader = resourceProvider?.imageDownloader else { return }
         let urls = model.items.compactMap({ ($0 as? CarouselItem)?.attachment })
-        let browserViewController = ImageBrowserViewController(photoURLs: urls, imageDownloader: imageDownloader, selectedImage: indexPath.row)
+        let labels = model.items.compactMap({ $0.label })
+        let browserViewController = ImageBrowserViewController(photoURLs: urls, labels: labels, imageDownloader: imageDownloader, selectedImage: indexPath.row)
+        browserViewController.canSelectImage = true
         browserViewController.delegate = self
         browserViewController.pageControl.currentPageIndicatorTintColor = currentPageIndicatorTintColor
         browserViewController.pageControl.pageIndicatorTintColor = pageIndicatorTintColor
@@ -165,8 +169,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     // MARK: - CarouselControlViewLayoutDelegate
     
     func carouselControlLayout(_ layout: CarouselControlViewLayout, didFocusItemAt indexPath: IndexPath) {
-        if let label = model.items[indexPath.row].label {
-            doneButton.setTitle(label, for: .normal)
-        }
+        let label = model.items[indexPath.row].label
+        doneButton.setTitle(label, for: .normal)
     }
 }
