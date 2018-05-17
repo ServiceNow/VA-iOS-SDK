@@ -19,7 +19,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     @IBOutlet weak var headerContainerView: UIView!
     @IBOutlet weak var headerLabel: UILabel!
     @IBOutlet weak var headerSeperator: UIView!
-    @IBOutlet weak var doneButton: UIButton!
+    @IBOutlet weak var selectButton: UIButton!
     @IBOutlet weak var footerSeperator: UIView!
     
     weak var delegate: PickerViewControllerDelegate?
@@ -81,8 +81,8 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     private func setupHeaderFooterViews() {
         headerLabel.text = model.label
         let label = model.items[0].label
-        doneButton.setTitle(label, for: .normal)
-        doneButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
+        selectButton.setTitle(label, for: .normal)
+        selectButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
     }
     
     override func viewWillLayoutSubviews() {
@@ -155,8 +155,8 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         headerLabel.textColor = theme?.fontColor
         headerSeperator.backgroundColor = theme?.separatorColor
         
-        doneButton.backgroundColor = theme?.backgroundColor
-        doneButton.setTitleColor(theme?.actionFontColor, for: .normal)
+        selectButton.backgroundColor = theme?.backgroundColor
+        selectButton.setTitleColor(theme?.actionFontColor, for: .normal)
         footerSeperator.backgroundColor = theme?.separatorColor
     }
     
@@ -172,6 +172,6 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     func carouselControlLayout(_ layout: CarouselControlViewLayout, didFocusItemAt indexPath: IndexPath) {
         let label = model.items[indexPath.row].label
-        doneButton.setTitle(label, for: .normal)
+        selectButton.setTitle(label, for: .normal)
     }
 }

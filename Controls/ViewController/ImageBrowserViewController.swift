@@ -263,8 +263,10 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     }
     
     private func updateTitleLabel() {
-        if imageLabels.count > currentImage {
-            titleLabel?.text = imageLabels[currentImage]
+        guard imageLabels.count > currentImage else {
+            return
         }
+        
+        titleLabel?.text = imageLabels[currentImage]
     }
 }
