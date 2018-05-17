@@ -164,6 +164,8 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     func imageBrowser(_ browser: ImageBrowserViewController, didSelectImageAt index: Int) {
         carouselControlViewLayout.selectItem(at: IndexPath(row: index, section: 0))
+        model.selectItem(at: index)
+        delegate?.pickerViewController(self, didFinishWithModel: model)
     }
     
     // MARK: - CarouselControlViewLayoutDelegate
