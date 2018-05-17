@@ -54,6 +54,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     
     var activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
     
+    var scrolled: Bool = false
+    var newMessagesButton: UIButton?
+    
     internal var titleView: UIImageView? {
         didSet {
             // ChatViewController is our parent, and it is the VC that is being displayed...
@@ -323,12 +326,15 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
                 switch change {
                 case .insert(let index, _):
                     self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .top)
+                    self?.handleScrolled()
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    self?.handleScrolled()
                 case .update(let index, let oldModel, let model):
                     if model.controlModel == nil || oldModel.controlModel == nil ||
                        model.type != oldModel.type || model.isAuxiliary != oldModel.isAuxiliary {
-                        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)                        
+                        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                        self?.handleScrolled()
                     } else {
                         updateModel(model, atIndex: index)
                     }
@@ -346,6 +352,38 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
             modelUpdates()
             tableView.endUpdates()
         }
+    }
+    
+    func handleScrolled() {
+        if scrolled {
+            if let newMessagesButton = newMessagesButton, newMessagesButton.window != nil {
+                return
+            }
+            
+            newMessagesButton = UIButton()
+            if let newMessagesButton = newMessagesButton {
+                newMessagesButton.setTitle("New Messages Below", for: .normal)
+                newMessagesButton.addTarget(self, action: #selector(click), for: .touchUpInside)
+                newMessagesButton.setTitleColor(UIColor.blue, for: .normal)
+                newMessagesButton.sizeToFit()
+                
+                self.view.addSubview(newMessagesButton)
+                
+                newMessagesButton.translatesAutoresizingMaskIntoConstraints = false
+                newMessagesButton.centerXAnchor.constraint(equalTo: self.tableView.centerXAnchor).isActive = true
+                newMessagesButton.bottomAnchor.constraint(equalTo: self.tableView.bottomAnchor, constant: -10).isActive = true
+            }
+        }
+    }
+    
+    @objc func click(_ sender: UIButton) {
+        sender.removeFromSuperview()
+        scrollToLastRow()
+    }
+    
+    func scrollToLastRow() {
+        let indexPath = IndexPath(row: 0, section: 0)
+        self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
     }
     
     func controllerWillLoadContent(_ dataController: ChatDataController) {
@@ -413,6 +451,37 @@ extension ConversationViewController {
         let scrollOffsetToFetch: CGFloat = 100
         if scrollView.contentOffset.y + tableView.bounds.height > (tableView.contentSize.height + scrollOffsetToFetch) {
             fetchOlderMessagesIfPossible()
+        }
+        
+        didScollFromBottom()
+    }
+    
+    func didScollFromBottom() {
+        let visibleCells = self.tableView.visibleCells
+        if visibleCells.count > 0 {
+            guard let control = dataController.controlForIndex(0),
+                    let controlModel = control.controlModel,
+                    controlModel.id.count != 0 else {
+                return
+            }
+            
+            var id: String = ""
+            if let cell: AuxiliaryControlViewCell = visibleCells[0] as? AuxiliaryControlViewCell,
+                    let control = cell.control {
+                id = control.model.id
+            } else if let cell: ConversationViewCell = visibleCells[0] as? ConversationViewCell,
+                    let viewController = cell.messageViewController {
+                id = viewController.id()
+            }
+            if id.count == 0 {
+                return
+            }
+            
+            if id == controlModel.id {
+                scrolled = false
+            } else {
+                scrolled = true
+            }
         }
     }
     

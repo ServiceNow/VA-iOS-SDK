@@ -182,6 +182,18 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         
         return uiControlView.superview == bubbleView.contentView
     }
+        
+    func id() -> String {
+        guard let model = model else {
+            return ""
+        }
+        
+        guard let controlModel = model.controlModel else {
+            return ""
+        }
+        
+        return controlModel.id
+    }
     
     // MARK: Timestamp
 
