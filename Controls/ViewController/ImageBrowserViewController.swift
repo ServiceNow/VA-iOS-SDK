@@ -123,11 +123,8 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
         } else {
             label.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 20).isActive = true
         }
-        if imageLabels.count > 0 {
-            label.text = imageLabels[0]
-        }
-        
         titleLabel = label
+        updateTitleLabel()
     }
     
     private func setupScrollView() {
@@ -261,9 +258,13 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
             currentImage = Int(scrollView.bounds.midX / scrollView.bounds.width)
             
             // update title label
-            if imageLabels.count > currentImage {
-                titleLabel?.text = imageLabels[currentImage]
-            }
+            updateTitleLabel()
+        }
+    }
+    
+    private func updateTitleLabel() {
+        if imageLabels.count > currentImage {
+            titleLabel?.text = imageLabels[currentImage]
         }
     }
 }
