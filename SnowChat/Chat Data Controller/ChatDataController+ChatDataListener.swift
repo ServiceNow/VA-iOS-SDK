@@ -203,13 +203,32 @@ extension ChatDataController: ChatDataListener {
         replaceLastControl(with: typingIndicatorModel)
     }
     
+    private func isImageUploadIndicatorShown() -> Bool {
+        guard let lastControl = controlData.first,
+            let text = lastControl.controlModel as? TextControlViewModel,
+            text.id == ChatDataController.imageUploadControlId else {
+                return false
+        }
+
+        return true
+    }
+
     private func didCompleteFileUploadExchange(_ messageExchange: MessageExchange, forChat chatId: String) {
         if let viewModels = controlsForFileUpload(from: messageExchange) {
-            replaceLastControl(with: ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme))
+            let message = ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme)
+            
+            // if the image-uploading control is being shown, replace it, otherwise just display the message
+            if isImageUploadIndicatorShown() {
+                replaceLastControl(with: message)
+            } else {
+                presentControlData(message)
+            }
+            
             if let response = viewModels.response {
                 presentControlData(ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme))
             }
         }
+        
     }
     
     // MARK: - ChatDataListener (bulk uopdates / history)

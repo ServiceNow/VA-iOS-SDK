@@ -34,9 +34,8 @@ class TextControl: ControlProtocol {
     
     var model: ControlViewModel {
         didSet {
-            guard let textViewController = viewController as? TextViewController,
-                let textModel = model as? TextControlViewModel else {
-                    return
+            guard let textModel = model as? TextControlViewModel else {
+                return
             }
             
             textViewController.textLabel.text = textModel.value
