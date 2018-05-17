@@ -156,11 +156,11 @@ class ChatDataController {
         }
     }
     
-    private func addModelChange(_ type: ModelChangeType) {
+    internal func addModelChange(_ type: ModelChangeType) {
         changeSet.append(type)
     }
     
-    private func applyModelChanges() {
+    internal func applyModelChanges() {
         if isBufferingEnabled {
             changeListener?.controller(self, didChangeModel: changeSet)
         }
@@ -300,7 +300,7 @@ class ChatDataController {
     }
     
     //swiftlint:disable:next cyclomatic_complexity
-    fileprivate func updateChatterbox(_ data: ControlViewModel) {
+    func updateChatterbox(_ data: ControlViewModel) {
         guard let conversationId = self.conversationId else {
             logger.logError("No ConversationID in updateChatterbox!")
             return
@@ -331,94 +331,115 @@ class ChatDataController {
         }
     }
     
-    fileprivate func updateBooleanData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
+    func updateBooleanData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         if let booleanViewModel = data as? BooleanControlViewModel,
-            var boolMessage = lastPendingMessage as? BooleanControlMessage {
+            let boolMessage = lastPendingMessage as? BooleanControlMessage {
             
-            boolMessage.id = ChatUtil.uuidString()
-            boolMessage.data.messageId = ChatUtil.uuidString()
-            boolMessage.data.richControl?.value = booleanViewModel.resultValue
-            chatterbox.update(control: boolMessage)
+            var boolResponse = boolMessage
+            boolResponse.id = data.id
+            boolResponse.data.messageId = ChatUtil.uuidString()
+            boolResponse.data.richControl?.value = booleanViewModel.resultValue
+            
+            userDidCompleteMessageExchange(MessageExchange(withMessage: boolMessage, withResponse: boolResponse), markDelivered: false)
+            chatterbox.update(control: boolResponse)
         }
     }
     
-    fileprivate func updateInputData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
+    func updateInputData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         if let textViewModel = data as? TextControlViewModel,
-            var inputMessage = lastPendingMessage as? InputControlMessage {
+            let inputMessage = lastPendingMessage as? InputControlMessage {
             
-            inputMessage.id = ChatUtil.uuidString()
-            inputMessage.data.messageId = ChatUtil.uuidString()
-            inputMessage.data.richControl?.value = textViewModel.value
-            chatterbox.update(control: inputMessage)
+            var inputResponse = inputMessage
+            inputResponse.id = data.id
+            inputResponse.data.messageId = ChatUtil.uuidString()
+            inputResponse.data.richControl?.value = textViewModel.value
+            
+            userDidCompleteMessageExchange(MessageExchange(withMessage: inputMessage, withResponse: inputResponse), markDelivered: false)
+            chatterbox.update(control: inputResponse)
         }
     }
     
-    fileprivate func updatePickerData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
-        guard var pickerMessage = lastPendingMessage as? PickerControlMessage else { return }
+    func updatePickerData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
+        guard let pickerMessage = lastPendingMessage as? PickerControlMessage else { return }
         
-        pickerMessage.id = ChatUtil.uuidString()
-        pickerMessage.data.messageId = ChatUtil.uuidString()
+        var pickerResponse = pickerMessage
+        pickerResponse.id = data.id
+        pickerResponse.data.messageId = ChatUtil.uuidString()
         
         if let carouselViewModel = data as? CarouselControlViewModel {
-            pickerMessage.data.richControl?.value = carouselViewModel.resultValue
+            pickerResponse.data.richControl?.value = carouselViewModel.resultValue
         } else if let pickerViewModel = data as? SingleSelectControlViewModel {
-            pickerMessage.data.richControl?.value = pickerViewModel.resultValue
+            pickerResponse.data.richControl?.value = pickerViewModel.resultValue
         }
-        
-        chatterbox.update(control: pickerMessage)
+    
+        userDidCompleteMessageExchange(MessageExchange(withMessage: pickerMessage, withResponse: pickerResponse), markDelivered: false)
+        chatterbox.update(control: pickerResponse)
     }
     
-    fileprivate func updateMultiSelectData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
+    func updateMultiSelectData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         if let multiSelectViewModel = data as? MultiSelectControlViewModel,
-            var multiSelectMessage = lastPendingMessage as? MultiSelectControlMessage {
+            let multiSelectMessage = lastPendingMessage as? MultiSelectControlMessage {
             
-            multiSelectMessage.id = multiSelectViewModel.id
-            multiSelectMessage.data.messageId = ChatUtil.uuidString()
-            multiSelectMessage.data.richControl?.value = multiSelectViewModel.resultValue
-            chatterbox.update(control: multiSelectMessage)
+            var multiSelectResponse = multiSelectMessage
+            multiSelectResponse.id = multiSelectViewModel.id
+            multiSelectResponse.data.messageId = ChatUtil.uuidString()
+            multiSelectResponse.data.richControl?.value = multiSelectViewModel.resultValue
+            
+            userDidCompleteMessageExchange(MessageExchange(withMessage: multiSelectMessage, withResponse: multiSelectResponse), markDelivered: false)
+            chatterbox.update(control: multiSelectResponse)
         }
     }
     
-    fileprivate func updateDateTimeData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
+    func updateDateTimeData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         if let dateTimeViewModel = data as? DateTimePickerControlViewModel,
-            var dateTimeMessage = lastPendingMessage as? DateTimePickerControlMessage {
+            let dateTimeMessage = lastPendingMessage as? DateTimePickerControlMessage {
             
-            dateTimeMessage.id = dateTimeViewModel.id
-            dateTimeMessage.data.messageId = ChatUtil.uuidString()
-            dateTimeMessage.data.richControl?.value = dateTimeViewModel.resultValue
-            chatterbox.update(control: dateTimeMessage)
+            var dateTimeResponse = dateTimeMessage
+            dateTimeResponse.id = dateTimeViewModel.id
+            dateTimeResponse.data.messageId = ChatUtil.uuidString()
+            dateTimeResponse.data.richControl?.value = dateTimeViewModel.resultValue
+            
+            userDidCompleteMessageExchange(MessageExchange(withMessage: dateTimeMessage, withResponse: dateTimeResponse), markDelivered: false)
+            chatterbox.update(control: dateTimeResponse)
         }
     }
     
-    fileprivate func updateDateOrTimeData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
+    func updateDateOrTimeData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         // TODO: Add DatePickerControlViewModel
         if let dateTimeViewModel = data as? DateTimePickerControlViewModel,
-            var dateTimeMessage = lastPendingMessage as? DateOrTimePickerControlMessage {
+            let dateTimeMessage = lastPendingMessage as? DateOrTimePickerControlMessage {
             
-            dateTimeMessage.id = dateTimeViewModel.id
+            var dateTimeResponse = dateTimeMessage
+            dateTimeResponse.id = dateTimeViewModel.id
             let dateTimeDisplayValue = dateTimeViewModel.displayValue
-            dateTimeMessage.data.richControl?.value = dateTimeDisplayValue
-            chatterbox.update(control: dateTimeMessage)
+            dateTimeResponse.data.richControl?.value = dateTimeDisplayValue
+            
+            userDidCompleteMessageExchange(MessageExchange(withMessage: dateTimeMessage, withResponse: dateTimeResponse), markDelivered: false)
+            chatterbox.update(control: dateTimeResponse)
         }
     }
     
-    fileprivate func updateMultiPartData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
+    func updateMultiPartData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         if let buttonViewModel = data as? ButtonControlViewModel,
-            var multiPartMessage = lastPendingMessage as? MultiPartControlMessage {
+            let multiPartMessage = lastPendingMessage as? MultiPartControlMessage {
             
-            multiPartMessage.id = buttonViewModel.id
-            multiPartMessage.data.messageId = ChatUtil.uuidString()
-            multiPartMessage.data.richControl?.uiMetadata?.index = buttonViewModel.value + 1
-            chatterbox.update(control: multiPartMessage)
+            var multiPartResponse = multiPartMessage
+            multiPartResponse.id = buttonViewModel.id
+            multiPartResponse.data.messageId = ChatUtil.uuidString()
+            multiPartResponse.data.richControl?.uiMetadata?.index = buttonViewModel.value + 1
+            
+            userDidCompleteMessageExchange(MessageExchange(withMessage: multiPartMessage, withResponse: multiPartResponse), markDelivered: false)
+            chatterbox.update(control: multiPartResponse)
         }
     }
     
-    fileprivate func updateFileUploadData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
+    func updateFileUploadData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
         if let fileUploadViewModel = data as? FileUploadViewModel,
-            var fileUploadMessage = lastPendingMessage as? FileUploadControlMessage {
+            let fileUploadMessage = lastPendingMessage as? FileUploadControlMessage {
             
-            fileUploadMessage.id = ChatUtil.uuidString()
-            fileUploadMessage.data.messageId = ChatUtil.uuidString()
+            var fileUploadResponse = fileUploadMessage
+            fileUploadResponse.id = data.id
+            fileUploadResponse.data.messageId = ChatUtil.uuidString()
             
             guard let imageData = fileUploadViewModel.selectedImageData,
                 let taskId = fileUploadMessage.data.taskId else { return }
@@ -426,8 +447,10 @@ class ChatDataController {
             let imageName = fileUploadViewModel.imageName ?? "image"
             
             chatterbox.apiManager.uploadImage(data: imageData, withName:imageName, taskId: taskId, completion: { [weak self] result in
-                fileUploadMessage.data.richControl?.value = result
-                self?.chatterbox.update(control: fileUploadMessage)
+                fileUploadResponse.data.richControl?.value = result
+                
+                self?.userDidCompleteMessageExchange(MessageExchange(withMessage: fileUploadMessage, withResponse: fileUploadResponse), markDelivered: false)
+                self?.chatterbox.update(control: fileUploadResponse)
             })
         }
     }
@@ -447,6 +470,199 @@ class ChatDataController {
         return nil
     }
 
+    //swiftlint:disable:next cyclomatic_complexity
+    func userDidCompleteMessageExchange(_ messageExchange: MessageExchange, markDelivered: Bool = true) {
+        if messageExchange.message.isOutputOnly {
+            logger.logError("OutputOnly message is unexpected in didCompleteMessageExchange: caller should use didReceiveControlMessage instead")
+        }
+        
+        switch messageExchange.message.controlType {
+        case .boolean:
+            guard messageExchange.message is BooleanControlMessage else { fatalError("Could not view message as BooleanControlMessage in ChatDataListener") }
+            self.didCompleteBooleanExchange(messageExchange, markDelivered: markDelivered)
+        case .input:
+            guard messageExchange.message is InputControlMessage else { fatalError("Could not view message as InputControlMessage in ChatDataListener") }
+            self.didCompleteInputExchange(messageExchange, markDelivered: markDelivered)
+        case .picker:
+            guard messageExchange.message is PickerControlMessage else { fatalError("Could not view message as PickerControlMessage in ChatDataListener") }
+            self.didCompletePickerExchange(messageExchange, markDelivered: markDelivered)
+        case .multiSelect:
+            guard messageExchange.message is MultiSelectControlMessage else { fatalError("Could not view message as MultiSelectControlMessage in ChatDataListener") }
+            self.didCompleteMultiSelectExchange(messageExchange, markDelivered: markDelivered)
+        case .dateTime:
+            guard messageExchange.message is DateTimePickerControlMessage else { fatalError("Could not view message as DateTimePickerControlMessage in ChatDataListener") }
+            self.didCompleteDateTimeExchange(messageExchange, markDelivered: markDelivered)
+        case .date, .time:
+            guard messageExchange.message is DateOrTimePickerControlMessage else { fatalError("Could not view message as DateTimePickerControlMessage in ChatDataListener") }
+            self.didCompleteDateOrTimeExchange(messageExchange, markDelivered: markDelivered)
+        case .multiPart:
+            guard messageExchange.message is MultiPartControlMessage else { fatalError("Could not view message as MultiPartControlMessage in ChatDataListener") }
+            self.didCompleteMultiPartExchange(messageExchange, markDelivered: markDelivered)
+        case .fileUpload:
+            guard messageExchange.message is FileUploadControlMessage else { fatalError("Could not view message as FileUploadControlMessage in ChatDataListener") }
+            self.didCompleteFileUploadExchange(messageExchange, markDelivered: markDelivered)
+        case .unknown:
+            guard let message = messageExchange.message as? ControlDataUnknown else { fatalError("Could not view message as ControlDataUnknown in ChatDataListener") }
+            guard let chatControl = chatMessageModel(withMessage: message) else { return }
+            self.bufferControlMessage(chatControl)
+            logger.logDebug("Unknown control type in ChatDataListener didCompleteMessageExchange: \(messageExchange.message.controlType)")
+        return  // skip any post-processing, we canot proceed with unknown control
+        default:
+            logger.logError("Unhandled control type in ChatDataListener didCompleteMessageExchange: \(messageExchange.message.controlType)")
+        }
+        
+        // we updated the controls for the response, so push a typing indicator while we wait for a new control to come in
+        if isBufferingEnabled {
+            pushTypingIndicatorIfNeeded()
+        }
+    }
+    
+    private func replaceOrPresentControlData(_ model: ControlViewModel, messageId: String) {
+        let messageModel = ChatMessageModel(model: model, messageId: messageId, bubbleLocation: .left, theme: theme)
+        
+        // if buffering, we replace the last control with the new one, otherwise we just present the control
+        if isBufferingEnabled {
+            replaceLastControl(with: messageModel)
+        } else {
+            presentControlData(messageModel)
+        }
+    }
+    private func didCompleteBooleanExchange(_ messageExchange: MessageExchange, markDelivered: Bool) {
+        if let viewModels = controlsForBoolean(from: messageExchange) {
+            replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
+            if let response = viewModels.response {
+                let messageModel = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme)
+                messageModel.isPending = !markDelivered
+                presentControlData(messageModel)
+            }
+        }
+    }
+    
+    private func didCompleteInputExchange(_ messageExchange: MessageExchange, markDelivered: Bool) {
+        if let viewModels = controlsForInput(from: messageExchange) {
+            replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
+            
+            if let response = viewModels.response {
+                let messageModel = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme)
+                messageModel.isPending = !markDelivered
+                presentControlData(messageModel)
+            }
+        }
+    }
+    
+    private func didCompletePickerExchange(_ messageExchange: MessageExchange, markDelivered: Bool) {
+        if let viewModels = controlsForPicker(from: messageExchange) {
+            replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
+            if let response = viewModels.response {
+                let messageModel = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme)
+                messageModel.isPending = !markDelivered
+                presentControlData(messageModel)
+            }
+        }
+    }
+    
+    private func didCompleteMultiSelectExchange(_ messageExchange: MessageExchange, markDelivered: Bool) {
+        // replace the picker with the picker's label, and add the response
+        if let viewModels = controlsForMultiSelect(from: messageExchange) {
+            replaceOrPresentControlData(viewModels.message, messageId: messageExchange.message.messageId)
+            if let response = viewModels.response {
+                let messageModel = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme)
+                messageModel.isPending = !markDelivered
+                presentControlData(messageModel)
+            }
+        }
+    }
+    
+    private func didCompleteDateTimeExchange(_ messageExchange: MessageExchange, markDelivered: Bool) {
+        if let viewModels = controlsForDateTimePicker(from: messageExchange) {
+            
+            // We need to check the last displayed control. In case of regular topic flow we will have TextControl and DateTimeControl as a seperate controls but they will represent one message coming from the server.
+            let lastMessage = controlData.first
+            var shouldReplaceLastControlWithResponse = true
+            
+            // By comparing ids we can distinguish between loading messages from the history and actual topic flow scenarios.
+            // In case when user selected a date during topic flow - we are already presenting the question and the dateTime picker (2 controls from one message).
+            // Hence we don't want to show question again.
+            // During the history load the last control will not be for this message so we _do_ show the question
+            //
+            // THIS is different from other didComplete methods, where we show just one control per message. In those cases we want to replace control with question and insert an answer.
+            
+            if lastMessage == nil || lastMessage?.messageId != messageExchange.message.messageId {
+                let chatMessage = ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme)
+                chatMessage.isPending = !markDelivered
+                
+                if isShowingTypingIndicator() {
+                    replaceLastControl(with: chatMessage)
+                } else {
+                    presentControlData(chatMessage)
+                }
+                
+                shouldReplaceLastControlWithResponse = false
+            }
+            
+            guard let response = viewModels.response else { return }
+            
+            let answer = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme)
+            answer.isPending = !markDelivered
+            
+            if shouldReplaceLastControlWithResponse {
+                replaceLastControl(with: answer)
+            } else {
+                presentControlData(answer)
+            }
+        }
+    }
+    
+    private func didCompleteDateOrTimeExchange(_ messageExchange: MessageExchange, markDelivered: Bool) {
+        if let viewModels = controlsForDateOrTimePicker(from: messageExchange) {
+            let lastMessage = controlData.first
+            var shouldReplaceLastControlWithResponse = true
+            
+            // see comment above in didCompleteDateTimeExchange
+            
+            if lastMessage == nil || lastMessage?.messageId != messageExchange.message.messageId {
+                let chatMessage = ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme)
+                chatMessage.isPending = !markDelivered
+                
+                if isShowingTypingIndicator() {
+                    replaceLastControl(with: chatMessage)
+                } else {
+                    presentControlData(chatMessage)
+                }
+                
+                shouldReplaceLastControlWithResponse = false
+            }
+            
+            guard let response = viewModels.response else { return }
+            
+            let answer = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme)
+            answer.isPending = !markDelivered
+            
+            if shouldReplaceLastControlWithResponse {
+                replaceLastControl(with: answer)
+            } else {
+                presentControlData(answer)
+            }
+        }
+    }
+    
+    private func didCompleteMultiPartExchange(_ messageExchange: MessageExchange, markDelivered: Bool) {
+        let typingIndicatorModel = ChatMessageModel(model: typingIndicator, bubbleLocation: .left, theme: theme)
+        replaceLastControl(with: typingIndicatorModel)
+    }
+    
+    private func didCompleteFileUploadExchange(_ messageExchange: MessageExchange, markDelivered: Bool) {
+        if let viewModels = controlsForFileUpload(from: messageExchange) {
+            let messageModel = ChatMessageModel(model: viewModels.message, messageId: messageExchange.message.messageId, bubbleLocation: .left, theme: theme)
+            replaceLastControl(with: messageModel)
+            if let response = viewModels.response {
+                let response = ChatMessageModel(model: response, messageId: messageExchange.response?.messageId, bubbleLocation: .right, theme: theme)
+                response.isPending = !markDelivered
+                presentControlData(response)
+            }
+        }
+    }
+    
     // MARK: - Topic Notifications
     
     func topicWillStart(_ topicInfo: TopicInfo) {
