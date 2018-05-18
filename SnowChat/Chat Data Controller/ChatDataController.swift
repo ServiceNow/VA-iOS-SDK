@@ -55,6 +55,7 @@ class ChatDataController {
     private(set) var theme = Theme()
 
     static internal let showAllTopicsAction = 999
+    static internal let imageUploadControlId = ChatUtil.uuidString()
     
     private(set) var lastMessageDate: Date?
     
@@ -287,6 +288,16 @@ class ChatDataController {
         addModelChange(ModelChangeType.delete(index: 0))
         applyModelChanges()
     }
+
+    fileprivate func removeImageUploadIndicatorIfPresent() {
+        guard let lastControl = controlData.first,
+            let text = lastControl.controlModel as? TextControlViewModel,
+            text.id == ChatDataController.imageUploadControlId else { return }
+
+        controlData.remove(at: 0)
+        addModelChange(ModelChangeType.delete(index: 0))
+        applyModelChanges()
+    }
     
     func sendLiveAgentResponse(_ data: ControlViewModel) {
         if let textViewModel = data as? TextControlViewModel,
@@ -445,6 +456,8 @@ class ChatDataController {
                 let taskId = fileUploadMessage.data.taskId else { return }
             
             let imageName = fileUploadViewModel.imageName ?? "image"
+            
+            replaceWithImageUploadMessage()
             
             chatterbox.apiManager.uploadImage(data: imageData, withName:imageName, taskId: taskId, completion: { [weak self] result in
                 fileUploadResponse.data.richControl?.value = result
@@ -728,6 +741,12 @@ class ChatDataController {
         let welcomeTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message, messageDate: nil)
 
         bufferControlMessage(ChatMessageModel(model: welcomeTextControl, bubbleLocation: .left, theme: theme))
+    }
+    
+    func replaceWithImageUploadMessage() {
+        let message = NSLocalizedString("Uploading image...", comment: "Message displayed when image-upload is uploading to server")
+        let uploadingTextControl = TextControlViewModel(id: ChatDataController.imageUploadControlId, value: message, messageDate: nil)
+        replaceLastControl(with: ChatMessageModel(model: uploadingTextControl, bubbleLocation: .left, theme: theme))
     }
     
     func presentEndOfTopicDividerIfNeeded() {
