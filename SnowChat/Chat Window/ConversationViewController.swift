@@ -392,14 +392,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     
     @objc func buttonTapped(_ sender: UIButton) {
         sender.removeFromSuperview()
-        scrollToLastRow()
+        scrollToBottom()
     }
-    
-    func scrollToLastRow() {
-        let indexPath = IndexPath(row: 0, section: 0)
-        self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-    }
-    
+        
     func controllerWillLoadContent(_ dataController: ChatDataController) {
         isLoading = true
 
