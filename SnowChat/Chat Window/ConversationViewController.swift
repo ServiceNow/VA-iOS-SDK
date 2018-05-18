@@ -55,7 +55,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     var activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
     
     var scrolled: Bool = false
-    var newMessagesButton: UIButton?
+    var messageNotificationButton: UIButton?
     
     internal var titleView: UIImageView? {
         didSet {
@@ -99,6 +99,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         loadTitleImage()
         
         NotificationCenter.default.addObserver(self, selector: #selector(willShowOrHideKeyboard(_:)), name: .UIKeyboardWillShow, object: nil)
+        
+        setupMessagesButton()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -326,15 +328,15 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
                 switch change {
                 case .insert(let index, _):
                     self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .top)
-                    self?.handleScrolled()
+                    self?.showMessagesButtonIfNeeded()
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
-                    self?.handleScrolled()
+                    self?.showMessagesButtonIfNeeded()
                 case .update(let index, let oldModel, let model):
                     if model.controlModel == nil || oldModel.controlModel == nil ||
                        model.type != oldModel.type || model.isAuxiliary != oldModel.isAuxiliary {
                         self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-                        self?.handleScrolled()
+                        self?.showMessagesButtonIfNeeded()
                     } else {
                         updateModel(model, atIndex: index)
                     }
@@ -354,29 +356,41 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         }
     }
     
-    func handleScrolled() {
-        if scrolled {
-            if let newMessagesButton = newMessagesButton, newMessagesButton.window != nil {
-                return
-            }
+    func setupMessagesButton() {
+        messageNotificationButton = UIButton()
+        if let messageNotificationButton = messageNotificationButton {
+            messageNotificationButton.setTitle("New Messages Below", for: .normal)
+            messageNotificationButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+            messageNotificationButton.layer.cornerRadius = 5
+            messageNotificationButton.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
+            messageNotificationButton.setTitleColor(dataController.theme.buttonBackgroundColor, for: .normal)
+            messageNotificationButton.backgroundColor =
+                dataController.theme.linkColor            
+            messageNotificationButton.isHidden = true
             
-            newMessagesButton = UIButton()
-            if let newMessagesButton = newMessagesButton {
-                newMessagesButton.setTitle("New Messages Below", for: .normal)
-                newMessagesButton.addTarget(self, action: #selector(click), for: .touchUpInside)
-                newMessagesButton.setTitleColor(UIColor.blue, for: .normal)
-                newMessagesButton.sizeToFit()
-                
-                self.view.addSubview(newMessagesButton)
-                
-                newMessagesButton.translatesAutoresizingMaskIntoConstraints = false
-                newMessagesButton.centerXAnchor.constraint(equalTo: self.tableView.centerXAnchor).isActive = true
-                newMessagesButton.bottomAnchor.constraint(equalTo: self.tableView.bottomAnchor, constant: -10).isActive = true
-            }
+            self.view.addSubview(messageNotificationButton)
+            
+            messageNotificationButton.translatesAutoresizingMaskIntoConstraints = false
+            messageNotificationButton.centerXAnchor.constraint(equalTo: self.tableView.centerXAnchor).isActive = true
+            messageNotificationButton.bottomAnchor.constraint(equalTo: self.tableView.bottomAnchor, constant: -10).isActive = true
+        }
+    }
+ 
+    func showMessagesButtonIfNeeded() {
+        if let messageNotificationButton = messageNotificationButton, scrolled,
+                messageNotificationButton.isHidden {
+            messageNotificationButton.isHidden = false
         }
     }
     
-    @objc func click(_ sender: UIButton) {
+    func hideMessagesButtonIfNeeded() {
+        if let messageNotificationButton = messageNotificationButton, scrolled == false,
+                messageNotificationButton.isHidden == false {
+            messageNotificationButton.isHidden = true
+        }
+    }
+    
+    @objc func buttonTapped(_ sender: UIButton) {
         sender.removeFromSuperview()
         scrollToLastRow()
     }
@@ -453,35 +467,21 @@ extension ConversationViewController {
             fetchOlderMessagesIfPossible()
         }
         
-        didScollFromBottom()
+        didScrollFromBottom()
     }
     
-    func didScollFromBottom() {
-        let visibleCells = self.tableView.visibleCells
-        if visibleCells.count > 0 {
-            guard let control = dataController.controlForIndex(0),
-                    let controlModel = control.controlModel,
-                    controlModel.id.count != 0 else {
-                return
-            }
-            
-            var id: String = ""
-            if let cell: AuxiliaryControlViewCell = visibleCells[0] as? AuxiliaryControlViewCell,
-                    let control = cell.control {
-                id = control.model.id
-            } else if let cell: ConversationViewCell = visibleCells[0] as? ConversationViewCell,
-                    let viewController = cell.messageViewController {
-                id = viewController.id()
-            }
-            if id.count == 0 {
-                return
-            }
-            
-            if id == controlModel.id {
-                scrolled = false
-            } else {
-                scrolled = true
-            }
+    func didScrollFromBottom() {
+        if tableView.visibleCells.count <= 0 {
+            return
+        }
+        
+        let isFirstRowVisible = tableView.indexPathsForVisibleRows?.contains { $0.row == 0 } ?? false
+        
+        if isFirstRowVisible {
+            scrolled = false
+            hideMessagesButtonIfNeeded()
+        } else {
+            scrolled = true
         }
     }
     
