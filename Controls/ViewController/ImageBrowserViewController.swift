@@ -16,8 +16,12 @@ protocol ImageBrowserDelegate: AnyObject {
 class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     
     weak var delegate: ImageBrowserDelegate?
-    private var photoURLs: [URL] = []
-    private var images: [UIImage] = []
+    
+    var canSelectImage: Bool = false
+    private var imageLabels: [String]
+    private var titleLabel: UILabel?
+    private var photoURLs = [URL]()
+    private var images = [UIImage]()
     private var imageDownloader: ImageDownloader?
     private var currentImage: Int {
         didSet {
@@ -34,16 +38,18 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     private let doubleTapGestureRecognizer = UITapGestureRecognizer()
     let pageControl = UIPageControl()
     
-    init(photoURLs: [URL], imageDownloader: ImageDownloader, selectedImage index: Int = 0) {
+    init(photoURLs: [URL], labels: [String] = [String](), imageDownloader: ImageDownloader, selectedImage index: Int = 0) {
         self.photoURLs = photoURLs
         self.imageDownloader = imageDownloader
+        self.imageLabels = labels
         currentImage = index
         super.init(nibName: nil, bundle: nil)
     }
     
-    init(images: [UIImage], selectedImage index: Int = 0) {
+    init(images: [UIImage], labels: [String] = [String](), selectedImage index: Int = 0) {
         self.images = images
         currentImage = index
+        self.imageLabels = labels
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -71,11 +77,19 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
         updateContentOffset(forCurrentImage: currentImage)
     }
     
+    private func updateNavigationButtons() {
+        if canSelectImage {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Cancel", comment: ""), style: .plain, target: self, action: #selector(cancelButtonTapped(_:)))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Select", comment: ""), style: .plain, target: self, action: #selector(selectButtonTapped(_:)))
+        } else {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Done", comment: ""), style: .plain, target: self, action: #selector(cancelButtonTapped(_:)))
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Done", comment: ""), style: .plain, target: self, action: #selector(doneButtonTapped(_:)))
-        view.backgroundColor = .white
         
+        view.backgroundColor = .white
         let urlCount = photoURLs.count
         let imageCount = images.count
         if urlCount > 1 || imageCount > 1 {
@@ -84,11 +98,33 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
         
         setupScrollView()
         updateContentOffset(forCurrentImage: currentImage)
+        setupTitleLabel()
+        updateNavigationButtons()
     }
     
-    @objc func doneButtonTapped(_ sender: UIBarButtonItem) {
+    @objc func selectButtonTapped(_ sender: UIBarButtonItem) {
         delegate?.imageBrowser(self, didSelectImageAt: currentImage)
         dismiss(animated: true, completion: nil)
+    }
+    
+    @objc func cancelButtonTapped(_ sender: UIBarButtonItem) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    private func setupTitleLabel() {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .preferredFont(forTextStyle: .body)
+        label.textColor = UIColor(red: 0.4, green: 0.4, blue: 0.4, alpha: 1)
+        view.addSubview(label)
+        label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        if #available(iOS 11, *) {
+            label.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        } else {
+            label.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 20).isActive = true
+        }
+        titleLabel = label
+        updateTitleLabel()
     }
     
     private func setupScrollView() {
@@ -147,20 +183,16 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     }
     
     private func setupImageViews() {
-        if images.count > 0 {
-            images.forEach({ image in
-                let imageView = UIImageView(image: image)
-                setup(for: imageView, count: images.count)
-            })
-        }
+        images.forEach({ image in
+            let imageView = UIImageView(image: image)
+            setup(for: imageView, count: images.count)
+        })
         
-        if photoURLs.count > 0 {
-            photoURLs.forEach({ url in
-                let imageView = UIImageView()
-                imageView.af_setImage(withURL: url)
-                setup(for: imageView, count: photoURLs.count)
-            })
-        }
+        photoURLs.forEach({ url in
+            let imageView = UIImageView()
+            imageView.af_setImage(withURL: url)
+            setup(for: imageView, count: photoURLs.count)
+        })
         
         func setup(for imageView: UIImageView, count: Int) {
             imageView.contentMode = .scaleAspectFit
@@ -176,6 +208,7 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
             containerView.translatesAutoresizingMaskIntoConstraints = false
             containerView.addSubview(imageView)
             
+            // Add image view to container
             NSLayoutConstraint.activate([imageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
                                          imageView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
                                          imageView.widthAnchor.constraint(equalTo: containerView.widthAnchor),
@@ -188,6 +221,7 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
                 NSLayoutConstraint.activate([containerView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor)])
             }
             
+            // Add container to the main scroll view
             NSLayoutConstraint.activate([containerView.topAnchor.constraint(equalTo: scrollView.topAnchor),
                                          containerView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
                                          containerView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
@@ -222,6 +256,17 @@ class ImageBrowserViewController: UIViewController, UIScrollViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         if self.scrollView == scrollView {
             currentImage = Int(scrollView.bounds.midX / scrollView.bounds.width)
+            
+            // update title label
+            updateTitleLabel()
         }
+    }
+    
+    private func updateTitleLabel() {
+        guard imageLabels.count > currentImage else {
+            return
+        }
+        
+        titleLabel?.text = imageLabels[currentImage]
     }
 }

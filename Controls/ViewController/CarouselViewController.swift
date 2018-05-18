@@ -9,7 +9,7 @@
 import UIKit
 import AlamofireImage
 
-class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ImageBrowserDelegate, ThemeableControl {
+class CarouselViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, ImageBrowserDelegate, ThemeableControl, CarouselControlViewLayoutDelegate {
     
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var fullSizeContainerView: FullSizeScrollViewContainerView!
@@ -19,7 +19,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     @IBOutlet weak var headerContainerView: UIView!
     @IBOutlet weak var headerLabel: UILabel!
     @IBOutlet weak var headerSeperator: UIView!
-    @IBOutlet weak var doneButton: UIButton!
+    @IBOutlet weak var selectButton: UIButton!
     @IBOutlet weak var footerSeperator: UIView!
     
     weak var delegate: PickerViewControllerDelegate?
@@ -57,6 +57,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         setupCollectionView()
         setupGradientOverlay()
         setupHeaderFooterViews()
+        carouselControlViewLayout.uiDelegate = self
     }
     
     private func setupGradientOverlay() {
@@ -79,8 +80,9 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     private func setupHeaderFooterViews() {
         headerLabel.text = model.label
-        doneButton.setTitle(NSLocalizedString("Select", comment: "Completed selection action"), for: .normal)
-        doneButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
+        let label = model.items[0].label
+        selectButton.setTitle(label, for: .normal)
+        selectButton.addTarget(self, action: #selector(doneButtonSelected(_:)), for: .touchUpInside)
     }
     
     override func viewWillLayoutSubviews() {
@@ -115,7 +117,9 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     private func zoomIn(itemAt indexPath: IndexPath) {
         guard let imageDownloader = resourceProvider?.imageDownloader else { return }
         let urls = model.items.compactMap({ ($0 as? CarouselItem)?.attachment })
-        let browserViewController = ImageBrowserViewController(photoURLs: urls, imageDownloader: imageDownloader, selectedImage: indexPath.row)
+        let labels = model.items.compactMap({ $0.label })
+        let browserViewController = ImageBrowserViewController(photoURLs: urls, labels: labels, imageDownloader: imageDownloader, selectedImage: indexPath.row)
+        browserViewController.canSelectImage = true
         browserViewController.delegate = self
         browserViewController.pageControl.currentPageIndicatorTintColor = currentPageIndicatorTintColor
         browserViewController.pageControl.pageIndicatorTintColor = pageIndicatorTintColor
@@ -151,8 +155,8 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
         headerLabel.textColor = theme?.fontColor
         headerSeperator.backgroundColor = theme?.separatorColor
         
-        doneButton.backgroundColor = theme?.backgroundColor
-        doneButton.setTitleColor(theme?.actionFontColor, for: .normal)
+        selectButton.backgroundColor = theme?.backgroundColor
+        selectButton.setTitleColor(theme?.actionFontColor, for: .normal)
         footerSeperator.backgroundColor = theme?.separatorColor
     }
     
@@ -160,5 +164,14 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     func imageBrowser(_ browser: ImageBrowserViewController, didSelectImageAt index: Int) {
         carouselControlViewLayout.selectItem(at: IndexPath(row: index, section: 0))
+        model.selectItem(at: index)
+        delegate?.pickerViewController(self, didFinishWithModel: model)
+    }
+    
+    // MARK: - CarouselControlViewLayoutDelegate
+    
+    func carouselControlLayout(_ layout: CarouselControlViewLayout, didFocusItemAt indexPath: IndexPath) {
+        let label = model.items[indexPath.row].label
+        selectButton.setTitle(label, for: .normal)
     }
 }
