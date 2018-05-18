@@ -391,7 +391,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     }
     
     @objc func buttonTapped(_ sender: UIButton) {
-        sender.removeFromSuperview()
+        sender.isHidden = true
         scrollToBottom()
     }
         
