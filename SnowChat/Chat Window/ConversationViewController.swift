@@ -298,23 +298,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     
     // MARK: - ViewDataChangeListener
     
-    private func updateModel(_ model: ChatMessageModel, atIndex index: Int) {
-        let indexPath = IndexPath(row: index, section: 0)
-        guard let cell = tableView.cellForRow(at: indexPath) as? ConversationViewCell else {
-            return
-        }
-        
-        adjustModelSizeIfNeeded(model)
-        cell.messageViewController?.configure(withChatMessageModel: model,
-                                              controlCache: uiControlCache,
-                                              controlDelegate: self,
-                                              resourceProvider: chatterbox.apiManager)
-        UIView.animate(withDuration: 0.3, animations: {
-            self.tableView.beginUpdates()
-            self.tableView.endUpdates()
-        })
-    }
-    
     func controller(_ dataController: ChatDataController, didChangeModel changes: [ModelChangeType]) {
         manageInputControl()
         
@@ -325,13 +308,8 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
                     self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .top)
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
-                case .update(let index, let oldModel, let model):
-                    if model.controlModel == nil || oldModel.controlModel == nil ||
-                       model.type != oldModel.type || model.isAuxiliary != oldModel.isAuxiliary {
-                        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)                        
-                    } else {
-                        updateModel(model, atIndex: index)
-                    }
+                case .update(let index, _, _):
+                    self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 }
             })
         }
