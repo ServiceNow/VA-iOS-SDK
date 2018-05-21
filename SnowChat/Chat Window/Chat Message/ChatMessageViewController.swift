@@ -68,6 +68,8 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         uiControl?.delegate = delegate
         loadAvatar()
         
+        bubbleView.alpha = model.isPending ? 0.5 : 1.0
+
         uiControl?.controlDidLoad()
     }
     
