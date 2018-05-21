@@ -32,7 +32,7 @@ class PickerTableViewCell: UITableViewCell, ConfigurablePickerCell {
         contentView.backgroundColor = theme?.buttonBackgroundColor
         
         let cellBackgroundView = UIView()
-        selectedBackgroundView = backgroundView
+        selectedBackgroundView = cellBackgroundView
         cellBackgroundView.backgroundColor = theme?.selectedBackgroundColor
     }
 }
