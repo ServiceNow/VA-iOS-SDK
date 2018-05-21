@@ -41,7 +41,7 @@ extension Chatterbox: TransportStatusListener {
         
         logger.logInfo("Synchronizing conversations due to transport becoming available")
         Chatterbox.alreadySynchronizing = true
-        syncConversation { count in
+        refreshChatSession {
             Chatterbox.alreadySynchronizing = false
         }
     }

@@ -151,9 +151,9 @@ class ChatDataController {
         }
     }
     
-    func syncConversation() {
-        chatterbox.syncConversation { count in
-            self.logger.logInfo("Synchronized \(count) conversations")
+    func refreshUserSession() {        
+        chatterbox.refreshChatSession {
+            self.logger.logInfo("User Session Refreshed")            
         }
     }
     

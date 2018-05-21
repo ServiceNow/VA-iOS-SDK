@@ -44,7 +44,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     private var maxMessageHeight: CGFloat?
     private var tableFooterView: PagingTableFooterView?
     
-    private var wasHistoryLoadedForUser: Bool = false
     private var viewDidPerformInitialHistoryLoad = false
     
     override var tableView: UITableView {
@@ -90,7 +89,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         
         setupActivityIndicator()
         setupTableView()
-        initializeSessionIfNeeded()
+        loadHistoryForSession()
         
         updateTitle()
         loadTitleImage()
@@ -103,12 +102,13 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     }
     
     internal func loadHistory() {
+        showActivityIndicator = true
+        
         dataController.loadHistory { [weak self] error in
             if let error = error {
                 Logger.default.logError("Error loading history! \(error)")
-            } else {
-                self?.wasHistoryLoadedForUser = true
             }
+            self?.showActivityIndicator = false
         }
     }
     
@@ -661,12 +661,10 @@ extension ConversationViewController: ChatEventListener {
         dataController.agentTopicDidFinish()
     }
     
-    private func initializeSessionIfNeeded() {
-        if !wasHistoryLoadedForUser {
-            loadHistory()
-            dataController.loadTheme()
-            applyTheme(dataController.theme)
-        }
+    private func loadHistoryForSession() {
+        loadHistory()
+        dataController.loadTheme()
+        applyTheme(dataController.theme)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
@@ -674,7 +672,7 @@ extension ConversationViewController: ChatEventListener {
             return
         }
 
-        initializeSessionIfNeeded()
+        loadHistoryForSession()
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didRestoreUserSession sessionId: String, forChat chatId: String ) {
@@ -682,7 +680,7 @@ extension ConversationViewController: ChatEventListener {
             return
         }
 
-        initializeSessionIfNeeded()
+        loadHistoryForSession()
     }
 
     func chatterbox(_ chatterbox: Chatterbox, willStartTopic topicInfo: TopicInfo, forChat chatId: String) {

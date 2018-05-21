@@ -23,15 +23,16 @@ class PickerTableViewCell: UITableViewCell, ConfigurablePickerCell {
     
     func configure(withModel model: PickerItem) {
         titleLabel.text = model.label
-        let backgroundView = UIView()
-        selectedBackgroundView = backgroundView
     }
     
     // MARK: - ThemeableControl
     
     func applyTheme(_ theme: ControlTheme?) {
         titleLabel.textColor = theme?.linkColor
-        backgroundView?.backgroundColor = theme?.selectedBackgroundColor
         contentView.backgroundColor = theme?.buttonBackgroundColor
+        
+        let cellBackgroundView = UIView()
+        selectedBackgroundView = cellBackgroundView
+        cellBackgroundView.backgroundColor = theme?.selectedBackgroundColor
     }
 }
