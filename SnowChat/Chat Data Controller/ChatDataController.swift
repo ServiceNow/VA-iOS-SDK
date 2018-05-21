@@ -60,15 +60,34 @@ class ChatDataController {
     private(set) var lastMessageDate: Date?
     
     private var reachedBeginningOfHistory = false
+    private var undeliveredMessageTimer: Timer?
     
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
         self.chatterbox.chatDataListeners.addListener(self)
         self.changeListener = changeListener
+        
+        setupUndeliveredSweeper()
     }
     
     deinit {
         Logger.default.logFatal("ChatDataController deinit")
+        undeliveredMessageTimer?.invalidate()
+    }
+    
+    func setupUndeliveredSweeper() {
+        undeliveredMessageTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
+            guard let strongSelf = self else { return }
+
+            var index = 0
+            strongSelf.controlData.forEach { chatMessage in
+                if !chatMessage.wasMarkedUndelivered && chatMessage.isUndelivered {
+                    strongSelf.addModelChange(.update(index: index, oldModel: chatMessage, model: chatMessage))
+                    strongSelf.applyModelChanges()
+                }
+                index += 1
+            }
+        }
     }
     
     // MARK: - Theme preparation
