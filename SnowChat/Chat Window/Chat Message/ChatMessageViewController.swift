@@ -184,7 +184,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         
         return uiControlView.superview == bubbleView.contentView
     }
-    
+            
     // MARK: Timestamp
 
     private func updateTimestamp(messageDate: Date?, lastMessageDate: Date?) {
