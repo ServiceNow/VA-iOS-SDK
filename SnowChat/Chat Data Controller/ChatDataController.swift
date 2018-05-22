@@ -173,9 +173,11 @@ class ChatDataController {
         }
     }
     
-    func refreshUserSession() {        
+    func refreshUserSession(_ completion: @escaping () -> Void) {
         chatterbox.refreshChatSession {
-            self.logger.logInfo("User Session Refreshed")            
+            self.logger.logInfo("User Session Refreshed")
+            
+            completion()
         }
     }
     
