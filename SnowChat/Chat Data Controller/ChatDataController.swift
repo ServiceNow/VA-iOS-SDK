@@ -741,7 +741,10 @@ class ChatDataController {
     }
 
     func agentTopicWillStart() {
-        // TODO: set timer waiting?
+        replaceTopicPromptWithTypingIndicator()
+        
+        // a 'Please Wait' text message will come in between this and the agentDidStart,
+        // so we use the typing indicator to show the user that more is coming
     }
     
     func agentTopicDidStart(agentInfo: AgentInfo) {
