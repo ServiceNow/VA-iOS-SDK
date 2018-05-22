@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -22,6 +22,7 @@
                 <outlet property="bubbleTrailingConstraint" destination="xMf-vP-2K3" id="gBR-fD-Nt2"/>
                 <outlet property="bubbleView" destination="zQD-cm-Q41" id="xUj-pT-jtt"/>
                 <outlet property="timestampLabel" destination="HFI-cm-AqK" id="tWS-KF-HZQ"/>
+                <outlet property="undeliveredImageView" destination="56c-ap-fBR" id="tKA-qc-2mI"/>
                 <outlet property="view" destination="D7e-qt-X1x" id="Ftx-HT-igc"/>
             </connections>
         </placeholder>
@@ -48,18 +49,28 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <imageView hidden="YES" opaque="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalCompressionResistancePriority="751" image="undelivered" translatesAutoresizingMaskIntoConstraints="NO" id="56c-ap-fBR">
+                    <rect key="frame" x="13" y="95" width="32" height="32"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="32" id="Wq1-Zb-9d3"/>
+                    </constraints>
+                </imageView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="zQD-cm-Q41" firstAttribute="top" secondItem="D7e-qt-X1x" secondAttribute="top" priority="1" constant="8" id="33E-TJ-g3x"/>
                 <constraint firstItem="zQD-cm-Q41" firstAttribute="leading" secondItem="sE2-NG-Z0e" secondAttribute="leading" priority="250" constant="10" id="BYk-kB-HH3"/>
+                <constraint firstItem="56c-ap-fBR" firstAttribute="centerY" secondItem="sE2-NG-Z0e" secondAttribute="centerY" id="DoY-MA-or4"/>
                 <constraint firstItem="zQD-cm-Q41" firstAttribute="top" secondItem="HFI-cm-AqK" secondAttribute="bottom" priority="999" constant="8" id="O6u-rh-ilx"/>
+                <constraint firstItem="56c-ap-fBR" firstAttribute="width" secondItem="56c-ap-fBR" secondAttribute="height" multiplier="1:1" id="PcZ-w6-jI4"/>
                 <constraint firstAttribute="bottom" secondItem="zQD-cm-Q41" secondAttribute="bottom" constant="8" id="Poo-kv-ccW"/>
                 <constraint firstItem="HFI-cm-AqK" firstAttribute="leading" secondItem="sE2-NG-Z0e" secondAttribute="leading" constant="20" id="Rhw-SZ-lVF"/>
                 <constraint firstItem="TbH-h7-fly" firstAttribute="bottom" secondItem="D7e-qt-X1x" secondAttribute="bottom" constant="-8" id="VIa-ku-AGG"/>
                 <constraint firstItem="HFI-cm-AqK" firstAttribute="top" secondItem="D7e-qt-X1x" secondAttribute="top" constant="8" id="Wpo-NJ-zSn"/>
                 <constraint firstItem="sE2-NG-Z0e" firstAttribute="leading" secondItem="TbH-h7-fly" secondAttribute="leading" constant="-10" id="abd-r6-HuA"/>
                 <constraint firstItem="zQD-cm-Q41" firstAttribute="leading" secondItem="TbH-h7-fly" secondAttribute="trailing" priority="750" constant="5" id="bFc-Gq-72f"/>
+                <constraint firstItem="zQD-cm-Q41" firstAttribute="leading" secondItem="56c-ap-fBR" secondAttribute="trailing" constant="10" id="jRp-Fr-gZZ"/>
                 <constraint firstItem="TbH-h7-fly" firstAttribute="top" relation="greaterThanOrEqual" secondItem="D7e-qt-X1x" secondAttribute="top" priority="999" constant="10" id="lSH-w5-aR5"/>
                 <constraint firstItem="sE2-NG-Z0e" firstAttribute="trailing" secondItem="HFI-cm-AqK" secondAttribute="trailing" constant="20" id="n0G-K5-Onl"/>
                 <constraint firstItem="sE2-NG-Z0e" firstAttribute="trailing" secondItem="zQD-cm-Q41" secondAttribute="trailing" priority="750" constant="10" id="xMf-vP-2K3"/>
@@ -68,5 +79,12 @@
             <viewLayoutGuide key="safeArea" id="sE2-NG-Z0e"/>
             <point key="canvasLocation" x="42.5" y="166.5"/>
         </view>
+        <imageView hidden="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="undelivered" id="hj1-lF-Ea5">
+            <rect key="frame" x="0.0" y="0.0" width="47" height="53"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+        </imageView>
     </objects>
+    <resources>
+        <image name="undelivered" width="42" height="42"/>
+    </resources>
 </document>

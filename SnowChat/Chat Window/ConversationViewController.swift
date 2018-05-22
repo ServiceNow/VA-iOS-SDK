@@ -74,7 +74,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         super.init(tableViewStyle: .plain)!        
         
         self.chatterbox.chatEventListeners.addListener(self)
-        self.dataController.setChangeListener(self)
+        self.dataController.changeListener = self
     }
     
     required init?(coder decoder: NSCoder) {
