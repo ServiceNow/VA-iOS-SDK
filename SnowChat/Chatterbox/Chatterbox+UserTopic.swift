@@ -143,8 +143,6 @@ extension Chatterbox {
             notifyWillStartTopic(outgoingMessage)
 
             publishMessage(outgoingMessage)
-        } else {
-            logger.logError("StartTopicMessageHandler expected UserTopicMessage but got \(controlMessage)")
         }
     }
     

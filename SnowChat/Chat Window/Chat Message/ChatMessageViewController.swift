@@ -20,6 +20,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     @IBOutlet private weak var bubbleToTimestampTopConstraint: NSLayoutConstraint!
     @IBOutlet private weak var agentImageTopConstraint: NSLayoutConstraint!
     @IBOutlet private weak var timestampLabel: UILabel!
+    @IBOutlet weak var undeliveredImageView: UIImageView!
     
     private var controlHeightConstraint: NSLayoutConstraint?
     private var controlWidthConstraint: NSLayoutConstraint?
@@ -69,7 +70,8 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         loadAvatar()
         
         bubbleView.alpha = model.isPending ? 0.5 : 1.0
-
+        undeliveredImageView.isHidden = !model.isUndelivered
+        
         uiControl?.controlDidLoad()
     }
     
@@ -100,6 +102,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         controlHeightConstraint = nil
         controlWidthConstraint?.isActive = false
         controlWidthConstraint = nil
+        undeliveredImageView.isHidden = true
         
         if let control = uiControl, isPresentingControl(control) {
             control.removeFromParent()
@@ -116,6 +119,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         uiControl = nil
         resourceProvider = nil
         agentImageView.image = nil
+        undeliveredImageView.isHidden = true
         
         if let receipt = requestReceipt,
             let imageDownloader = resourceProvider?.imageDownloader {
@@ -184,7 +188,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         
         return uiControlView.superview == bubbleView.contentView
     }
-    
+            
     // MARK: Timestamp
 
     private func updateTimestamp(messageDate: Date?, lastMessageDate: Date?) {
