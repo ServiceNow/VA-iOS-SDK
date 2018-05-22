@@ -26,7 +26,7 @@ enum ChatMessageType {
 }
 
 class ChatMessageModel {
-    let deliveryTimeout: TimeInterval = 5
+    let deliveryTimeout: TimeInterval = 10
     
     let type: ChatMessageType
     let controlModel: ControlViewModel?
@@ -51,9 +51,10 @@ class ChatMessageModel {
         if isPending,
            let date = controlModel?.messageDate,
            Date() > date.addingTimeInterval(deliveryTimeout) {
-            wasMarkedUndelivered = true
+            // pending message has exceeded delivery timeout, is is considered undelivered
             return true
         }
+        
         return false
     }
     
