@@ -616,15 +616,31 @@ extension ConversationViewController {
         return cell
     }
     
+    @objc private func userDidTapRefresh(gestureRecognizer: UIGestureRecognizer) {
+        showActivityIndicator = true
+        
+        dataController.refreshUserSession { [weak self] in
+            self?.showActivityIndicator = false
+        }
+    }
+    
     private func configureConversationCell(_ cell: ConversationViewCell, messageModel model: ChatMessageModel, at indexPath: IndexPath) {
         let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
         cell.messageViewController = messageViewController
         adjustModelSizeIfNeeded(model)
+
+        configureMessageViewController(messageViewController, model: model)
+    }
+    
+    private func configureMessageViewController(_ messageViewController: ChatMessageViewController, model: ChatMessageModel) {
         messageViewController.configure(withChatMessageModel: model,
                                         controlCache: uiControlCache,
                                         controlDelegate: self,
                                         resourceProvider: chatterbox.apiManager)
         messageViewController.didMove(toParentViewController: self)
+        
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(userDidTapRefresh))
+        messageViewController.undeliveredImageView.addGestureRecognizer(tapRecognizer)
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
