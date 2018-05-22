@@ -44,7 +44,7 @@ class ChatDataController {
     internal(set) var conversationId: String?
     internal let typingIndicator = TypingIndicatorViewModel()
     
-    internal weak var changeListener: ViewDataChangeListener?
+    internal(set) weak var changeListener: ViewDataChangeListener?
 
     private var controlMessageBuffer = [ChatMessageModel]()
     private var bufferProcessingTimer: Timer?
@@ -105,10 +105,6 @@ class ChatDataController {
         }
         
         applyAppearance()
-    }
-    
-    func setChangeListener(_ listener: ViewDataChangeListener) {
-        changeListener = listener
     }
     
     // MARK: - access to controls

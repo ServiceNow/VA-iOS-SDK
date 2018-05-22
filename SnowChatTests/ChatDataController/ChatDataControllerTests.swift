@@ -50,7 +50,7 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
     override func setUp() {
         mockChatterbox = MockChatterbox(instance: ServerInstance(instanceURL: URL(fileURLWithPath: "/")))
         controller = ChatDataController(chatterbox: mockChatterbox!)
-        controller?.setChangeListener(self)
+        controller?.changeListener = self
         
         mockChatterbox?.updatedControl = nil
     }
@@ -134,29 +134,30 @@ class DataControllerTests: XCTestCase, ViewDataChangeListener {
     func testBooleanUpdateRendersTwoTextControls() {
         startConversationAndUpdateBooleanControl()
         
-        let initialCount = controller?.controlCount()
-        
-        // now mimic chatterbox sending out the notification of the update
-        let booleanMessage = mockChatterbox?.pendingControlMessage
-        var me = MessageExchange(withMessage: booleanMessage!)
-        me.response = mockChatterbox?.updatedControl
-        
-        controller?.chatterbox(mockChatterbox!, didCompleteMessageExchange: me, forChat: "ChatID")
-        
-        // make sure 2 controls were added
-        XCTAssertEqual(initialCount! + 2, controller?.controlCount())
-        XCTAssertEqual(ControlType.text, controller?.controlForIndex(1)?.controlModel?.type)
-        XCTAssertEqual(ControlType.text, controller?.controlForIndex(2)?.controlModel?.type)
+        XCTAssertEqual(3, controller?.controlCount())
+        XCTAssertEqual(ControlType.text, controller!.controlForIndex(1)!.controlModel!.type)
+        XCTAssertEqual(ControlType.text, controller?.controlForIndex(2)!.controlModel!.type)
+        XCTAssertTrue(controller!.controlForIndex(1)!.isPending)
         
         // typing indicator gets put as first control after a response is entered
         XCTAssertEqual(ControlType.typingIndicator, controller?.controlForIndex(0)?.controlModel?.type)
-
+        
+        let booleanMessage = mockChatterbox?.pendingControlMessage
+        
         // make sure the label and value are correct
         let label = (booleanMessage as! BooleanControlMessage).data.richControl?.uiMetadata?.label
         let value = "Yes"
         XCTAssertEqual(value, (controller?.controlForIndex(1)?.controlModel as! TextControlViewModel).value)
         XCTAssertEqual(label, (controller?.controlForIndex(2)?.controlModel as! TextControlViewModel).value)
+        
+        // now mimic chatterbox sending out the notification of the update
+        var me = MessageExchange(withMessage: booleanMessage!)
+        me.response = mockChatterbox?.updatedControl
 
+        controller?.chatterbox(mockChatterbox!, didCompleteMessageExchange: me, forChat: "ChatID")
+        
+        // make sure response was set to not-pending
+        XCTAssertFalse(controller!.controlForIndex(1)!.isPending)
     }
     
     func testDateRendersTextAndHasAuxiliary() {
