@@ -14,35 +14,10 @@ extension Chatterbox {
     
     // MARK: - Sync Current Conversation
     
-    func syncConversation(_ completion: @escaping (Int) -> Void) {
-        // get the newest message and see if there are any messages newer than that for this consumer
-
-        guard let consumerAccountId = session?.user.consumerAccountId else {
-            logger.logError("No consumerAccountId in syncConversation!")
-            return
+    func refreshChatSession(_ completion: @escaping () -> Void) {        
+        establishChatSession { (result) in
+            completion()
         }
-        guard let conversationId = conversationContext.conversationId,
-            let conversation = chatStore.conversation(forId: conversationId),
-            let newestServerMessage = conversation.newestServerMessage() else {
-                logger.logError("Could not determine last message ID")
-                completion(0)
-                return
-        }
-        
-        apiManager.fetchNewerConversations(forConsumer: consumerAccountId, afterMessage: newestServerMessage.messageId, completionHandler: { [weak self] conversations in
-            guard let strongSelf = self else { return }
-            
-            if conversations.count == 0 {
-                strongSelf.logger.logDebug("Sync with NO conversation returned - nothing to do!")
-                completion(0)
-            } else {
-                // changes on the server - reload from saved state
-                strongSelf.loadDataFromPersistence { (error) in
-                    let count = strongSelf.chatStore.conversations.count
-                    completion(count)
-                }
-            }
-        })
     }
     
     fileprivate func syncConversationState(_ conversation: Conversation) {
