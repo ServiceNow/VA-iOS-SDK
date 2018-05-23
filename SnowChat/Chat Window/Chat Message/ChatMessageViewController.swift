@@ -156,14 +156,6 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         uiControl = control
         updateTimestamp(messageDate: control.model.messageDate, lastMessageDate: lastMessageDate)
     }
-    
-    private func isPresentingControl(_ control: ControlProtocol?) -> Bool {
-        guard let uiControlView = control?.viewController.view else {
-            return false
-        }
-        
-        return uiControlView.superview == bubbleView.contentView
-    }
             
     // MARK: Timestamp
 
