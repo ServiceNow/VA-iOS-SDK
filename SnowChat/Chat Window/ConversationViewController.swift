@@ -310,9 +310,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
                 case .insert(let index, _):
                     self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .top)
                 case .delete(let index):
-                    self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .fade)
                 case .update(let index, _, _):
-                    self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
                 }
             })
             
