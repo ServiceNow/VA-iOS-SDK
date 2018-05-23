@@ -155,12 +155,11 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         updateTimestamp(messageDate: control.model.messageDate, lastMessageDate: lastMessageDate)
         
         // Since control view is reused and have new model we need to redraw it to update constraints
-        controlView.updateConstraintsIfNeeded()
+        controlView.layoutIfNeeded()
     }
     
     private func updateContentInsets(for control: ControlProtocol) {
-        let modelType = control.model.type
-        if modelType == .outputImage {
+        if control.model.type == .outputImage {
             bubbleView.contentViewInsets = UIEdgeInsets.zero
         }
     }
