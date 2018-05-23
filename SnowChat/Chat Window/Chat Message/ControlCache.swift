@@ -28,7 +28,6 @@ class ControlCache {
     }
     
     func cacheControl(_ control: ControlProtocol) {
-        control.removeFromParent()
         control.prepareForReuse()
         
         let model = control.model

@@ -96,6 +96,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     }
     
     func prepareForReuse() {
+        uiControl?.removeFromParent()
         if let control = uiControl, control.isReusable {
             controlCache?.cacheControl(control)
         }
@@ -115,12 +116,9 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     }
     
     func addUIControl(_ control: ControlProtocol, at location: BubbleLocation, lastMessageDate: Date?) {
-        updateConstraints(forLocation: location)
-
         let controlViewController = control.viewController
         let controlView: UIView = controlViewController.view
         
-        applyTheme(for: control, at: location)
         controlViewController.willMove(toParentViewController: self)
         addChildViewController(controlViewController)
 
@@ -148,13 +146,23 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
             }
         }
         
-        if control.model.type == .outputImage {
-            bubbleView.contentViewInsets = UIEdgeInsets.zero
-        }
+        updateContentInsets(for: control)
+        updateConstraints(forLocation: location)
+        applyTheme(for: control, at: location)
         
         controlViewController.didMove(toParentViewController: self)
         uiControl = control
         updateTimestamp(messageDate: control.model.messageDate, lastMessageDate: lastMessageDate)
+        
+        // Since control view is reused and have new model we need to redraw it to update constraints
+        controlView.updateConstraintsIfNeeded()
+    }
+    
+    private func updateContentInsets(for control: ControlProtocol) {
+        let modelType = control.model.type
+        if modelType == .outputImage {
+            bubbleView.contentViewInsets = UIEdgeInsets.zero
+        }
     }
             
     // MARK: Timestamp
