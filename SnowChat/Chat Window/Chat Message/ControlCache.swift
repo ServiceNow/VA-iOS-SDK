@@ -14,11 +14,7 @@ class ControlCache {
     private var uiControlByModelId = [String: ControlProtocol]()
     private var controlsToReuse = [ControlType: [ControlProtocol]]()
     
-    func control(forModel model: ControlViewModel, forResourceProvider provider: ControlResourceProvider) -> ControlProtocol {     
-        if let storedControl = uiControlByModelId[model.id] {
-            return storedControl
-        }
-        
+    func control(forModel model: ControlViewModel, forResourceProvider provider: ControlResourceProvider) -> ControlProtocol {
         let uiControl: ControlProtocol
         if let control = controlsToReuse[model.type]?.popLast() {
             // update uiControl for a given model. Internally it will update UIViewController
@@ -28,24 +24,20 @@ class ControlCache {
             uiControl = ControlsUtil.controlForViewModel(model, resourceProvider: provider)
         }
         
-        uiControlByModelId[model.id] = uiControl
         return uiControl
     }
     
-    func cacheControl(forModel model: ControlViewModel) {
-        guard let control = uiControlByModelId[model.id], control.model.type == model.type else {
-            return
-        }
-
+    func cacheControl(_ control: ControlProtocol) {
+        control.removeFromParent()
         control.prepareForReuse()
+        
+        let model = control.model
         if var controlsList = controlsToReuse[model.type] {
             controlsList.append(control)
             controlsToReuse[model.type] = controlsList
         } else {
             controlsToReuse[model.type] = [control]
         }
-        
-        uiControlByModelId.removeValue(forKey: model.id)
     }
     
     func removeAll() {

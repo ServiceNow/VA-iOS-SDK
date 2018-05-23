@@ -39,5 +39,6 @@ class ConversationViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        messageViewController.prepareForReuse()
     }
 }

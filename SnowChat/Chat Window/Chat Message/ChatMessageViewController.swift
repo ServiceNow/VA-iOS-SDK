@@ -10,6 +10,7 @@ import UIKit
 import AlamofireImage
 
 class ChatMessageViewController: UIViewController, ControlPresentable {
+    private let timestampAgeSeconds: TimeInterval = 30.0
     
     @IBOutlet private weak var bubbleView: BubbleView!
     @IBOutlet private weak var agentImageView: UIImageView!
@@ -42,18 +43,15 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         }
     }
     
-    private let timestampAgeSeconds: TimeInterval = 30.0
-    
     private func updateWithModel(_ model: ChatMessageModel) {
         guard let controlModel = model.controlModel,
             let resourceProvider = resourceProvider,
             let bubbleLocation = model.bubbleLocation,
-            let control = controlCache?.control(forModel: controlModel, forResourceProvider: resourceProvider) else {
+            let controlCache = controlCache else {
                 return
         }
 
-        // if previous uiControl had a delegate we will pass it over to a new control
-        control.delegate = uiControl?.delegate
+        let control = controlCache.control(forModel: controlModel, forResourceProvider: resourceProvider)
         addUIControl(control, at: bubbleLocation, lastMessageDate: model.lastMessageDate)
     }
     
@@ -99,13 +97,12 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     func prepareForReuse() {
         if let control = uiControl, control.isReusable {
-            controlCache?.cacheControl(forModel: control.model)
-            control.removeFromParent()
+            controlCache?.cacheControl(control)
         }
         
-        undeliveredImageView.isHidden = true
-        model = nil
         uiControl = nil
+        model = nil
+        undeliveredImageView.isHidden = true
         resourceProvider = nil
         agentImageView.image = nil
         undeliveredImageView.isHidden = true
@@ -118,11 +115,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     }
     
     func addUIControl(_ control: ControlProtocol, at location: BubbleLocation, lastMessageDate: Date?) {
-        
         updateConstraints(forLocation: location)
-        guard uiControl?.model.id != control.model.id else {
-            return
-        }
 
         let controlViewController = control.viewController
         let controlView: UIView = controlViewController.view
@@ -160,17 +153,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         }
         
         controlViewController.didMove(toParentViewController: self)
-        
-        if control is TypingIndicatorControl {
-            bubbleView.layer.borderColor = UIColor.red.cgColor
-            bubbleView.layer.borderWidth = 1
-        } else {
-            bubbleView.layer.borderColor = UIColor.yellow.cgColor
-            bubbleView.layer.borderWidth = 1
-        }
-        
         uiControl = control
-        
         updateTimestamp(messageDate: control.model.messageDate, lastMessageDate: lastMessageDate)
     }
     

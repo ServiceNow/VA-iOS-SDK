@@ -307,20 +307,16 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         func modelUpdates() {
             changes.forEach({ [weak self] change in
                 switch change {
-                case .insert(let index, let model):
-                    if let controlModel = model.controlModel {
-//                        print("\t\t --------------- Inserting model: \(controlModel.type) --------------- at index: \(index) \n")
-                    }
+                case .insert(let index, _):
                     self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .top)
-                    self?.showMessagesButtonIfNeeded()
                 case .delete(let index):
                     self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
-                    self?.showMessagesButtonIfNeeded()
                 case .update(let index, _, _):
                     self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-                    self?.showMessagesButtonIfNeeded()
                 }
             })
+            
+            showMessagesButtonIfNeeded()
         }
         
         // Begin/End Updates will be depracated in a future release so switching to performBatchUpdates
@@ -607,16 +603,6 @@ extension ConversationViewController {
         return cell
     }
     
-    private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
-        guard let chatMessageModel = dataController.controlForIndex(indexPath.row) else {
-            return UITableViewCell()
-        }
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
-        configureConversationCell(cell, messageModel: chatMessageModel, at: indexPath)
-        return cell
-    }
-    
     private func configureConversationCell(_ cell: ConversationViewCell, messageModel model: ChatMessageModel, at indexPath: IndexPath) {
         adjustModelSizeIfNeeded(model)
         cell.configure(withChatMessageModel: model,
@@ -650,26 +636,6 @@ extension ConversationViewController {
             outputHtmlModel.size?.width = UIViewNoIntrinsicMetric
         }
     }
-    
-    // MARK: - ChatMessageViewController reuse
-    
-//    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        if tableView == autoCompletionView {
-//            return
-//        }
-    
-//        prepareChatMessageViewControllerForReuse(for: cell)
-//    }
-    
-//    private func prepareChatMessageViewControllerForReuse(for cell: UITableViewCell) {
-//        guard let conversationCell = cell as? ConversationViewCell,
-//            let messageViewController = conversationCell.messageViewController else {
-//            return
-//        }
-//
-//        messageViewControllerCache.cacheViewController(messageViewController)
-//        conversationCell.messageViewController = nil
-//    }
 }
 
 extension ConversationViewController: ChatEventListener {
