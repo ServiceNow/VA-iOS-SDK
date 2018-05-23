@@ -36,7 +36,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     private var model: ChatMessageModel? {
         didSet {
-            if let model = model {
+            if let model = model, oldValue?.controlModel?.id != model.controlModel?.id {
                 updateWithModel(model)
             }
         }
@@ -97,24 +97,13 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         agentImageView.addCircleMaskIfNeeded()
     }
     
-    private func prepareControlForReuse() {
-        controlHeightConstraint?.isActive = false
-        controlHeightConstraint = nil
-        controlWidthConstraint?.isActive = false
-        controlWidthConstraint = nil
-        undeliveredImageView.isHidden = true
-        
-        if let control = uiControl, isPresentingControl(control) {
-            control.removeFromParent()
-            
-            if control.isReusable {
-                controlCache?.cacheControl(forModel: control.model)
-            }
-        }
-    }
-    
     func prepareForReuse() {
-        prepareControlForReuse()
+        if let control = uiControl, control.isReusable {
+            controlCache?.cacheControl(forModel: control.model)
+            control.removeFromParent()
+        }
+        
+        undeliveredImageView.isHidden = true
         model = nil
         uiControl = nil
         resourceProvider = nil
@@ -128,18 +117,15 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         }
     }
     
-    internal func addUIControl(_ control: ControlProtocol, at location: BubbleLocation, lastMessageDate: Date?) {
-        guard uiControl?.model.id != control.model.id,
-            uiControl?.model.type != control.model.type else {
+    func addUIControl(_ control: ControlProtocol, at location: BubbleLocation, lastMessageDate: Date?) {
+        
+        updateConstraints(forLocation: location)
+        guard uiControl?.model.id != control.model.id else {
             return
         }
-        
+
         let controlViewController = control.viewController
         let controlView: UIView = controlViewController.view
-        controlView.removeFromSuperview()
-        
-        // Remove current control if needed
-        prepareControlForReuse()
         
         applyTheme(for: control, at: location)
         controlViewController.willMove(toParentViewController: self)
@@ -153,6 +139,8 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
                                      controlView.bottomAnchor.constraint(equalTo: bubbleView.contentView.bottomAnchor)])
         
         // Adjust width and height of the control if needed
+        controlWidthConstraint?.isActive = false
+        controlHeightConstraint?.isActive = false
         if let preferredControlSize = control.preferredContentSize {
             if preferredControlSize.width != UIViewNoIntrinsicMetric {
                 controlWidthConstraint = controlView.widthAnchor.constraint(equalToConstant: preferredControlSize.width)
@@ -167,14 +155,19 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
             }
         }
         
-        updateConstraints(forLocation: location)
-        
         if control.model.type == .outputImage {
             bubbleView.contentViewInsets = UIEdgeInsets.zero
         }
         
         controlViewController.didMove(toParentViewController: self)
-        view.layoutIfNeeded()
+        
+        if control is TypingIndicatorControl {
+            bubbleView.layer.borderColor = UIColor.red.cgColor
+            bubbleView.layer.borderWidth = 1
+        } else {
+            bubbleView.layer.borderColor = UIColor.yellow.cgColor
+            bubbleView.layer.borderWidth = 1
+        }
         
         uiControl = control
         

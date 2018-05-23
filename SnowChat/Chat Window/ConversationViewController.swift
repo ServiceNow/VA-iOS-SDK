@@ -32,8 +32,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
 
     private let dataController: ChatDataController
     private let chatterbox: Chatterbox
-
-    private var messageViewControllerCache = ChatMessageViewControllerCache()
     private var uiControlCache = ControlCache()
     
     private var canFetchOlderMessages = false
@@ -309,7 +307,10 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         func modelUpdates() {
             changes.forEach({ [weak self] change in
                 switch change {
-                case .insert(let index, _):
+                case .insert(let index, let model):
+                    if let controlModel = model.controlModel {
+//                        print("\t\t --------------- Inserting model: \(controlModel.type) --------------- at index: \(index) \n")
+                    }
                     self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .top)
                     self?.showMessagesButtonIfNeeded()
                 case .delete(let index):
@@ -617,14 +618,11 @@ extension ConversationViewController {
     }
     
     private func configureConversationCell(_ cell: ConversationViewCell, messageModel model: ChatMessageModel, at indexPath: IndexPath) {
-        let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
-        cell.messageViewController = messageViewController
         adjustModelSizeIfNeeded(model)
-        messageViewController.configure(withChatMessageModel: model,
-                                        controlCache: uiControlCache,
-                                        controlDelegate: self,
-                                        resourceProvider: chatterbox.apiManager)
-        messageViewController.didMove(toParentViewController: self)
+        cell.configure(withChatMessageModel: model,
+                       controlCache: uiControlCache,
+                       controlDelegate: self,
+                       resourceProvider: chatterbox.apiManager)
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -655,23 +653,23 @@ extension ConversationViewController {
     
     // MARK: - ChatMessageViewController reuse
     
-    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if tableView == autoCompletionView {
-            return
-        }
-        
-        prepareChatMessageViewControllerForReuse(for: cell)
-    }
+//    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        if tableView == autoCompletionView {
+//            return
+//        }
     
-    private func prepareChatMessageViewControllerForReuse(for cell: UITableViewCell) {
-        guard let conversationCell = cell as? ConversationViewCell,
-            let messageViewController = conversationCell.messageViewController else {
-            return
-        }
-        
-        messageViewControllerCache.cacheViewController(messageViewController)
-        conversationCell.messageViewController = nil
-    }
+//        prepareChatMessageViewControllerForReuse(for: cell)
+//    }
+    
+//    private func prepareChatMessageViewControllerForReuse(for cell: UITableViewCell) {
+//        guard let conversationCell = cell as? ConversationViewCell,
+//            let messageViewController = conversationCell.messageViewController else {
+//            return
+//        }
+//
+//        messageViewControllerCache.cacheViewController(messageViewController)
+//        conversationCell.messageViewController = nil
+//    }
 }
 
 extension ConversationViewController: ChatEventListener {

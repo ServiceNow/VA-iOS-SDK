@@ -7,33 +7,37 @@
 //
 
 class ConversationViewCell: UITableViewCell {
-    
+    private(set) var messageViewController: ChatMessageViewController
     static let cellIdentifier = "ConversationViewCell"
     
-    var messageViewController: ChatMessageViewController? {
-        didSet {
-            messageView = messageViewController?.view
-        }
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        messageViewController = ChatMessageViewController(nibName: "ChatMessageViewController", bundle: Bundle(for: type(of: self)))
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setupMessageView()
     }
     
-    private var messageView: UIView? {
-        didSet {
-            
-            // MessageView might have been reused in other cell, so if it was moved to a different parent, we shouldn't remove it
-            if oldValue?.superview == contentView, oldValue != messageView {
-                oldValue?.removeFromSuperview()
-            }
-            
-            guard let messageView = messageView else {
-                return
-            }
-
-            messageView.translatesAutoresizingMaskIntoConstraints = false
-            contentView.addSubview(messageView)
-            NSLayoutConstraint.activate([messageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-                                         messageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-                                         messageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-                                         messageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)])
-        }
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupMessageView() {
+        let messageView: UIView = messageViewController.view
+        messageView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(messageView)
+        NSLayoutConstraint.activate([messageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                                     messageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                                     messageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+                                     messageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)])
+    }
+    
+    func configure(withChatMessageModel model: ChatMessageModel,
+                   controlCache cache: ControlCache,
+                   controlDelegate delegate: ControlDelegate,
+                   resourceProvider provider: ControlResourceProvider) {
+        messageViewController.configure(withChatMessageModel: model, controlCache: cache, controlDelegate: delegate, resourceProvider: provider)
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
     }
 }
