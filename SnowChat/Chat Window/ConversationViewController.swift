@@ -37,6 +37,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     private var canFetchOlderMessages = false
     private var timeLastHistoryFetch: Date = Date()
     private var isLoading = false
+    private var isRefreshing = false
     
     private var defaultMessageHeight: CGFloat?
     private var maxMessageHeight: CGFloat?
@@ -603,12 +604,29 @@ extension ConversationViewController {
         return cell
     }
     
+    @objc private func userDidTapRefresh(gestureRecognizer: UIGestureRecognizer) {
+        guard !isRefreshing else { return }
+        
+        Logger.default.logDebug("Refreshing due to user tapping deliver warning")
+        
+        showActivityIndicator = true
+        isRefreshing = true
+        
+        dataController.refreshUserSession { [weak self] in
+            self?.showActivityIndicator = false
+            self?.isRefreshing = false
+        }
+    }
+    
     private func configureConversationCell(_ cell: ConversationViewCell, messageModel model: ChatMessageModel, at indexPath: IndexPath) {
         adjustModelSizeIfNeeded(model)
         cell.configure(withChatMessageModel: model,
                        controlCache: uiControlCache,
                        controlDelegate: self,
                        resourceProvider: chatterbox.apiManager)
+
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(userDidTapRefresh))
+        cell.messageViewController.undeliveredImageView.addGestureRecognizer(tapRecognizer)
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
