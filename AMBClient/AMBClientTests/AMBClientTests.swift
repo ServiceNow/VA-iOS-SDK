@@ -128,9 +128,13 @@ class AMBClientTests: XCTestCase {
     private func login() {
         // swiftlint:disable:next force_unwrapping
         httpRequest(url: privateRESTAPI!, headers: authHeaders) { [weak self] result in
-            XCTAssert(result.isSuccess, "login failed")
+            guard result.isSuccess else {
+                XCTFail("login failed")
+                return
+            }
+            
             self?.loggedInExpectation.fulfill()
-            print("looged in")
+            print("logged in")
         }
     }
     
@@ -159,18 +163,17 @@ class AMBClientTests: XCTestCase {
                                             messageHandler: { [weak self] (result, subscription) in
             if result.isSuccess {
                 if let message = result.value {
+                    let messageString = message.jsonFullMessageString
+                    print("Received AMB message on channel \(subscription.channel): \(messageString)")
+                    
                     if message.messageType == .dataMessage {
                         if let messageReceivedExpectation = self?.testExpectations[ExpectationType.messageReceived] {
                             messageReceivedExpectation.fulfill()
                         }
-                    } else {
-                        if let subscribedExpectation = self?.testExpectations[ExpectationType.subscribed] {
-                            subscribedExpectation.fulfill()
-                        }
                     }
                 }
             } else {
-                XCTFail("AMB message received with error")
+                XCTFail("AMB message received with error: \(result.error!)")
             }
         })
         return subscription
@@ -237,24 +240,6 @@ class AMBClientTests: XCTestCase {
         self.wait(for: [unsubscribedExpectation], timeout: 10)
     }
 
-    // Test started failing, because Glide Servers does not send logged.in status after connect()
-    // TODO: Talk to Glide team if it is expected.
-    
-/*
-    func testGlideStateLoggedIn() {
-        waitForLogin()
-        
-        let glideLoggedInExpectation = XCTestExpectation(description: "AMB Glide session is \"logged in\"")
-        
-        testExpectations.removeAll()
-        testExpectations[ExpectationType.glideLoggedIn] = glideLoggedInExpectation
-
-        ambClient?.connect()
-        
-        self.wait(for: [glideLoggedInExpectation], timeout: 10)
-    }
-*/
-
     func testPublishMessage() {
         waitForLogin()
         
@@ -289,6 +274,45 @@ class AMBClientTests: XCTestCase {
         XCTAssert(subscription2!.subscribed, "subscription object should be subscribed")
     }
     
+    func testPublishedMessageReceived() {
+        waitForLogin()
+    
+        let publishedMessageExpectation = XCTestExpectation(description: "AMB published message")
+        let subscribedMessageExpectation = XCTestExpectation(description: "AMB subscribed to test channel")
+        let receivedMessageExpectation = XCTestExpectation(description: "AMB message received on test channel")
+        
+        testExpectations[ExpectationType.subscribed] = subscribedMessageExpectation
+        testExpectations[ExpectationType.published] = publishedMessageExpectation
+        testExpectations[ExpectationType.messageReceived] = receivedMessageExpectation
+        
+        ambClient?.connect()
+        let subscription = subscribeToTestChannel()
+        XCTAssert(subscription != nil, "subscription object is nil")
+        self.wait(for: [subscribedMessageExpectation], timeout: 10)
+        
+        publishMessage()
+        self.wait(for: [publishedMessageExpectation], timeout: 10)
+        self.wait(for: [receivedMessageExpectation], timeout: 10)
+        
+    }
+    
+    // Test started failing, because Glide Servers does not send logged.in status after connect()
+    // TODO: Talk to Glide team if it is expected.
+    
+    /*
+     func testGlideStateLoggedIn() {
+     waitForLogin()
+     
+     let glideLoggedInExpectation = XCTestExpectation(description: "AMB Glide session is \"logged in\"")
+     
+     testExpectations.removeAll()
+     testExpectations[ExpectationType.glideLoggedIn] = glideLoggedInExpectation
+     
+     ambClient?.connect()
+     
+     self.wait(for: [glideLoggedInExpectation], timeout: 10)
+     }
+     */
 }
 
 // MARK: - SNOWAMBClientDelegate
