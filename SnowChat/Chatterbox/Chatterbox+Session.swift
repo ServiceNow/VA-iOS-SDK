@@ -19,39 +19,47 @@ extension Chatterbox {
         logger.logDebug("--> Preparing session for user with token: \(token)")
         
         apiManager.prepareUserSession(token: token) { [weak self] result in
-            guard let strongSelf = self else { return }
-            guard result.error == nil else {
+            guard let strongSelf = self, result.error == nil else {
                 if let error = result.error {
                     completion(.failure(error))
                 }
                 return
             }
             
-            strongSelf.createChatSession(vendor: vendor) { [weak self] error in
+            strongSelf.establishChatSession(completion: completion)
+        }
+    }
+    
+    func establishChatSession(completion: @escaping (Result<ContextualActionMessage>) -> Void) {
+        guard let vendor = self.vendor else {
+            logger.logError("No vendor in establishChatSession - cannot continue")
+            completion(.failure(ChatterboxError.illegalState(details: "No Vendor in establishChatSession")))
+            return
+        }
+        
+        createChatSession(vendor: vendor) { [weak self] error in
+            guard error == nil else {
+                if let error = error {
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            self?.performChatHandshake { [weak self] actionMessage in
                 guard let strongSelf = self else { return }
-                guard error == nil else {
-                    if let error = error {
-                        completion(.failure(error))
-                    }
+                guard let actionMessage = actionMessage, let sessionId = strongSelf.session?.id else {
+                    completion(.failure(ChatterboxError.unknown(details: "Chat Handshake failed for an unknown reason")))
                     return
                 }
                 
-                strongSelf.performChatHandshake { [weak self] actionMessage in
-                    guard let strongSelf = self else { return }
-                    guard let actionMessage = actionMessage, let sessionId = strongSelf.session?.id else {
-                        completion(.failure(ChatterboxError.unknown(details: "Chat Handshake failed for an unknown reason")))
-                        return
-                    }
-
-                    strongSelf.contextualActions = actionMessage
-                    strongSelf.state = .topicSelection
-
-                    strongSelf.notifyEventListeners { listener in
-                        listener.chatterbox(strongSelf, didEstablishUserSession:  sessionId, forChat: strongSelf.chatId)
-                    }
-
-                    completion(.success(actionMessage))
+                strongSelf.contextualActions = actionMessage
+                strongSelf.state = .topicSelection
+                
+                strongSelf.notifyEventListeners { listener in
+                    listener.chatterbox(strongSelf, didEstablishUserSession:  sessionId, forChat: strongSelf.chatId)
                 }
+                
+                completion(.success(actionMessage))
             }
         }
     }
@@ -64,11 +72,15 @@ extension Chatterbox {
                 return
         }
         
-        notifyEventListeners { listener in
-            listener.chatterbox(self, didRestoreUserSession: sessionId, forChat: self.chatId)
+        establishChatSession { [weak self] result in
+            guard let strongSelf = self else { return }
+            
+            strongSelf.notifyEventListeners { listener in
+                listener.chatterbox(strongSelf, didRestoreUserSession: sessionId, forChat: strongSelf.chatId)
+            }
+            
+            completion(.success(actionMessage))
         }
-        
-        completion(.success(actionMessage))
     }
     
     private func createChatSession(vendor: ChatVendor, completion: @escaping (Error?) -> Void) {

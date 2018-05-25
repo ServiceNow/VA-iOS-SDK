@@ -26,6 +26,8 @@ enum ChatMessageType {
 }
 
 class ChatMessageModel {
+    let deliveryTimeout: TimeInterval = 10
+    
     let type: ChatMessageType
     let controlModel: ControlViewModel?
     let requiresInput: Bool
@@ -39,6 +41,22 @@ class ChatMessageModel {
     
     var lastMessageDate: Date?
     var isPending = false
+    var wasMarkedUndelivered: Bool = false
+    
+    var isUndelivered: Bool {
+        if wasMarkedUndelivered {
+            return true
+        }
+        
+        if isPending,
+           let date = controlModel?.messageDate,
+           Date() > date.addingTimeInterval(deliveryTimeout) {
+            // pending message has exceeded delivery timeout, is is considered undelivered
+            return true
+        }
+        
+        return false
+    }
     
     init(model: ControlViewModel, messageId: String? = nil, bubbleLocation: BubbleLocation, requiresInput: Bool = false, theme: Theme, isAgentMessage: Bool = false) {
         self.type = .control

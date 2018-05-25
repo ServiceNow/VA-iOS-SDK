@@ -33,9 +33,11 @@ extension ChatDataController: ContextItemProvider {
     }
     
     fileprivate func refreshConversationMenuItem() -> ContextMenuItem {
-        let menuItem = ContextMenuItem(withTitle: NSLocalizedString("Refresh Conversation", comment: "Context Menu Item Title")) { viewController, sender in
-            self.logger.logDebug("Refresh Conversation menu selected")
-            self.syncConversation()
+        let menuItem = ContextMenuItem(withTitle: NSLocalizedString("Refresh", comment: "Context Menu Item Title")) { viewController, sender in
+            self.logger.logDebug("Refresh menu selected")
+            self.refreshUserSession {
+                // nothing to do...
+            }
         }
         return menuItem
     }

@@ -44,7 +44,7 @@ class ChatDataController {
     internal(set) var conversationId: String?
     internal let typingIndicator = TypingIndicatorViewModel()
     
-    internal weak var changeListener: ViewDataChangeListener?
+    internal(set) weak var changeListener: ViewDataChangeListener?
 
     private var controlMessageBuffer = [ChatMessageModel]()
     private var bufferProcessingTimer: Timer?
@@ -60,15 +60,41 @@ class ChatDataController {
     private(set) var lastMessageDate: Date?
     
     private var reachedBeginningOfHistory = false
+    private var undeliveredMessageTimer: Timer?
     
     init(chatterbox: Chatterbox, changeListener: ViewDataChangeListener? = nil) {
         self.chatterbox = chatterbox
         self.chatterbox.chatDataListeners.addListener(self)
         self.changeListener = changeListener
+        
+        setupUndeliveredSweeper()
     }
     
     deinit {
         Logger.default.logFatal("ChatDataController deinit")
+        undeliveredMessageTimer?.invalidate()
+    }
+    
+    func setupUndeliveredSweeper() {
+        undeliveredMessageTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
+            guard let strongSelf = self else { return }
+
+            var index = 0
+            strongSelf.controlData.forEach { chatMessage in
+                guard !chatMessage.wasMarkedUndelivered else {
+                    // was already marked undelivered, no need to do it again
+                    return
+                }
+                
+                if chatMessage.isUndelivered {
+                    chatMessage.wasMarkedUndelivered = true
+                    
+                    strongSelf.addModelChange(.update(index: index, oldModel: chatMessage, model: chatMessage))
+                    strongSelf.applyModelChanges()
+                }
+                index += 1
+            }
+        }
     }
     
     // MARK: - Theme preparation
@@ -79,10 +105,6 @@ class ChatDataController {
         }
         
         applyAppearance()
-    }
-    
-    func setChangeListener(_ listener: ViewDataChangeListener) {
-        changeListener = listener
     }
     
     // MARK: - access to controls
@@ -151,9 +173,11 @@ class ChatDataController {
         }
     }
     
-    func syncConversation() {
-        chatterbox.syncConversation { count in
-            self.logger.logInfo("Synchronized \(count) conversations")
+    func refreshUserSession(_ completion: @escaping () -> Void) {
+        chatterbox.refreshChatSession {
+            self.logger.logInfo("User Session Refreshed")
+            
+            completion()
         }
     }
     
@@ -310,6 +334,8 @@ class ChatDataController {
         }
     }
     
+    // MARK: - Control Updates
+    
     //swiftlint:disable:next cyclomatic_complexity
     func updateChatterbox(_ data: ControlViewModel) {
         guard let conversationId = self.conversationId else {
@@ -348,7 +374,9 @@ class ChatDataController {
             
             var boolResponse = boolMessage
             boolResponse.id = data.id
+            boolResponse.data.sendTime = Date()
             boolResponse.data.messageId = ChatUtil.uuidString()
+            
             boolResponse.data.richControl?.value = booleanViewModel.resultValue
             
             userDidCompleteMessageExchange(MessageExchange(withMessage: boolMessage, withResponse: boolResponse), markDelivered: false)
@@ -364,6 +392,7 @@ class ChatDataController {
             inputResponse.id = data.id
             inputResponse.data.messageId = ChatUtil.uuidString()
             inputResponse.data.richControl?.value = textViewModel.value
+            inputResponse.data.sendTime = Date()
             
             userDidCompleteMessageExchange(MessageExchange(withMessage: inputMessage, withResponse: inputResponse), markDelivered: false)
             chatterbox.update(control: inputResponse)
@@ -382,7 +411,8 @@ class ChatDataController {
         } else if let pickerViewModel = data as? SingleSelectControlViewModel {
             pickerResponse.data.richControl?.value = pickerViewModel.resultValue
         }
-    
+        pickerResponse.data.sendTime = Date()
+        
         userDidCompleteMessageExchange(MessageExchange(withMessage: pickerMessage, withResponse: pickerResponse), markDelivered: false)
         chatterbox.update(control: pickerResponse)
     }
@@ -395,6 +425,7 @@ class ChatDataController {
             multiSelectResponse.id = multiSelectViewModel.id
             multiSelectResponse.data.messageId = ChatUtil.uuidString()
             multiSelectResponse.data.richControl?.value = multiSelectViewModel.resultValue
+            multiSelectResponse.data.sendTime = Date()
             
             userDidCompleteMessageExchange(MessageExchange(withMessage: multiSelectMessage, withResponse: multiSelectResponse), markDelivered: false)
             chatterbox.update(control: multiSelectResponse)
@@ -408,6 +439,7 @@ class ChatDataController {
             var dateTimeResponse = dateTimeMessage
             dateTimeResponse.id = dateTimeViewModel.id
             dateTimeResponse.data.messageId = ChatUtil.uuidString()
+            dateTimeResponse.data.sendTime = Date()
             dateTimeResponse.data.richControl?.value = dateTimeViewModel.resultValue
             
             userDidCompleteMessageExchange(MessageExchange(withMessage: dateTimeMessage, withResponse: dateTimeResponse), markDelivered: false)
@@ -422,8 +454,9 @@ class ChatDataController {
             
             var dateTimeResponse = dateTimeMessage
             dateTimeResponse.id = dateTimeViewModel.id
-            let dateTimeDisplayValue = dateTimeViewModel.displayValue
-            dateTimeResponse.data.richControl?.value = dateTimeDisplayValue
+            dateTimeResponse.data.messageId = ChatUtil.uuidString()
+            dateTimeResponse.data.sendTime = Date()
+            dateTimeResponse.data.richControl?.value = dateTimeViewModel.displayValue
             
             userDidCompleteMessageExchange(MessageExchange(withMessage: dateTimeMessage, withResponse: dateTimeResponse), markDelivered: false)
             chatterbox.update(control: dateTimeResponse)
@@ -437,6 +470,7 @@ class ChatDataController {
             var multiPartResponse = multiPartMessage
             multiPartResponse.id = buttonViewModel.id
             multiPartResponse.data.messageId = ChatUtil.uuidString()
+            multiPartResponse.data.sendTime = Date()
             multiPartResponse.data.richControl?.uiMetadata?.index = buttonViewModel.value + 1
             
             userDidCompleteMessageExchange(MessageExchange(withMessage: multiPartMessage, withResponse: multiPartResponse), markDelivered: false)
@@ -445,27 +479,28 @@ class ChatDataController {
     }
     
     func updateFileUploadData(_ data: ControlViewModel, _ lastPendingMessage: ControlData) {
-        if let fileUploadViewModel = data as? FileUploadViewModel,
-            let fileUploadMessage = lastPendingMessage as? FileUploadControlMessage {
-            
-            var fileUploadResponse = fileUploadMessage
-            fileUploadResponse.id = data.id
-            fileUploadResponse.data.messageId = ChatUtil.uuidString()
-            
-            guard let imageData = fileUploadViewModel.selectedImageData,
-                let taskId = fileUploadMessage.data.taskId else { return }
-            
-            let imageName = fileUploadViewModel.imageName ?? "image"
-            
-            replaceWithImageUploadMessage()
-            
-            chatterbox.apiManager.uploadImage(data: imageData, withName:imageName, taskId: taskId, completion: { [weak self] result in
-                fileUploadResponse.data.richControl?.value = result
-                
-                self?.userDidCompleteMessageExchange(MessageExchange(withMessage: fileUploadMessage, withResponse: fileUploadResponse), markDelivered: false)
-                self?.chatterbox.update(control: fileUploadResponse)
-            })
+        guard let fileUploadViewModel = data as? FileUploadViewModel,
+            let fileUploadMessage = lastPendingMessage as? FileUploadControlMessage,
+            let imageData = fileUploadViewModel.selectedImageData,
+            let taskId = fileUploadMessage.data.taskId else {
+                return
         }
+            
+        var fileUploadResponse = fileUploadMessage
+        fileUploadResponse.id = data.id
+        fileUploadResponse.data.messageId = ChatUtil.uuidString()
+        
+        let imageName = fileUploadViewModel.imageName ?? ""
+        
+        replaceWithImageUploadMessage()
+        
+        chatterbox.apiManager.uploadImage(data: imageData, withName:imageName, taskId: taskId, completion: { [weak self] result in
+            fileUploadResponse.data.richControl?.value = result
+            fileUploadResponse.data.sendTime = Date()
+            
+            self?.userDidCompleteMessageExchange(MessageExchange(withMessage: fileUploadMessage, withResponse: fileUploadResponse), markDelivered: false)
+            self?.chatterbox.update(control: fileUploadResponse)
+        })
     }
 
     internal func updatedAvatarURL(model: ChatMessageModel, withInstance instance: ServerInstance) {
@@ -706,7 +741,10 @@ class ChatDataController {
     }
 
     func agentTopicWillStart() {
-        // TODO: set timer waiting?
+        replaceTopicPromptWithTypingIndicator()
+        
+        // a 'Please Wait' text message will come in between this and the agentDidStart,
+        // so we use the typing indicator to show the user that more is coming
     }
     
     func agentTopicDidStart(agentInfo: AgentInfo) {

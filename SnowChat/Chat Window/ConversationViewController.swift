@@ -32,19 +32,17 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
 
     private let dataController: ChatDataController
     private let chatterbox: Chatterbox
-
-    private var messageViewControllerCache = ChatMessageViewControllerCache()
     private var uiControlCache = ControlCache()
     
     private var canFetchOlderMessages = false
     private var timeLastHistoryFetch: Date = Date()
     private var isLoading = false
+    private var isRefreshing = false
     
     private var defaultMessageHeight: CGFloat?
     private var maxMessageHeight: CGFloat?
     private var tableFooterView: PagingTableFooterView?
     
-    private var wasHistoryLoadedForUser: Bool = false
     private var viewDidPerformInitialHistoryLoad = false
     
     override var tableView: UITableView {
@@ -53,6 +51,9 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     }
     
     var activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+    
+    var scrolled: Bool = false
+    var messageNotificationButton: UIButton?
     
     internal var titleView: UIImageView? {
         didSet {
@@ -72,7 +73,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         super.init(tableViewStyle: .plain)!        
         
         self.chatterbox.chatEventListeners.addListener(self)
-        self.dataController.setChangeListener(self)
+        self.dataController.changeListener = self
     }
     
     required init?(coder decoder: NSCoder) {
@@ -90,12 +91,14 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         
         setupActivityIndicator()
         setupTableView()
-        initializeSessionIfNeeded()
+        loadHistoryForSession()
         
         updateTitle()
         loadTitleImage()
         
         NotificationCenter.default.addObserver(self, selector: #selector(willShowOrHideKeyboard(_:)), name: .UIKeyboardWillShow, object: nil)
+        
+        setupMessagesButton()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -103,12 +106,13 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     }
     
     internal func loadHistory() {
+        showActivityIndicator = true
+        
         dataController.loadHistory { [weak self] error in
             if let error = error {
                 Logger.default.logError("Error loading history! \(error)")
-            } else {
-                self?.wasHistoryLoadedForUser = true
             }
+            self?.showActivityIndicator = false
         }
     }
     
@@ -307,11 +311,13 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
                 case .insert(let index, _):
                     self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .top)
                 case .delete(let index):
-                    self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .fade)
                 case .update(let index, _, _):
-                    self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
                 }
             })
+            
+            showMessagesButtonIfNeeded()
         }
         
         // Begin/End Updates will be depracated in a future release so switching to performBatchUpdates
@@ -326,6 +332,45 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
         }
     }
     
+    func setupMessagesButton() {
+        messageNotificationButton = UIButton()
+        if let messageNotificationButton = messageNotificationButton {
+            messageNotificationButton.setTitle("New Messages Below", for: .normal)
+            messageNotificationButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+            messageNotificationButton.layer.cornerRadius = 5
+            messageNotificationButton.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
+            messageNotificationButton.setTitleColor(dataController.theme.buttonBackgroundColor, for: .normal)
+            messageNotificationButton.backgroundColor =
+                dataController.theme.linkColor            
+            messageNotificationButton.isHidden = true
+            
+            self.view.addSubview(messageNotificationButton)
+            
+            messageNotificationButton.translatesAutoresizingMaskIntoConstraints = false
+            messageNotificationButton.centerXAnchor.constraint(equalTo: self.tableView.centerXAnchor).isActive = true
+            messageNotificationButton.bottomAnchor.constraint(equalTo: self.tableView.bottomAnchor, constant: -10).isActive = true
+        }
+    }
+ 
+    func showMessagesButtonIfNeeded() {
+        if let messageNotificationButton = messageNotificationButton, scrolled,
+                messageNotificationButton.isHidden {
+            messageNotificationButton.isHidden = false
+        }
+    }
+    
+    func hideMessagesButtonIfNeeded() {
+        if let messageNotificationButton = messageNotificationButton, scrolled == false,
+                messageNotificationButton.isHidden == false {
+            messageNotificationButton.isHidden = true
+        }
+    }
+    
+    @objc func buttonTapped(_ sender: UIButton) {
+        sender.isHidden = true
+        scrollToBottom()
+    }
+        
     func controllerWillLoadContent(_ dataController: ChatDataController) {
         isLoading = true
 
@@ -391,6 +436,23 @@ extension ConversationViewController {
         let scrollOffsetToFetch: CGFloat = 100
         if scrollView.contentOffset.y + tableView.bounds.height > (tableView.contentSize.height + scrollOffsetToFetch) {
             fetchOlderMessagesIfPossible()
+        }
+        
+        didScrollFromBottom()
+    }
+    
+    func didScrollFromBottom() {
+        if tableView.visibleCells.count <= 0 {
+            return
+        }
+        
+        let isFirstRowVisible = tableView.indexPathsForVisibleRows?.contains { $0.row == 0 } ?? false
+        
+        if isFirstRowVisible {
+            scrolled = false
+            hideMessagesButtonIfNeeded()
+        } else {
+            scrolled = true
         }
     }
     
@@ -542,25 +604,29 @@ extension ConversationViewController {
         return cell
     }
     
-    private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
-        guard let chatMessageModel = dataController.controlForIndex(indexPath.row) else {
-            return UITableViewCell()
-        }
+    @objc private func userDidTapRefresh(gestureRecognizer: UIGestureRecognizer) {
+        guard !isRefreshing else { return }
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
-        configureConversationCell(cell, messageModel: chatMessageModel, at: indexPath)
-        return cell
+        Logger.default.logDebug("Refreshing due to user tapping deliver warning")
+        
+        showActivityIndicator = true
+        isRefreshing = true
+        
+        dataController.refreshUserSession { [weak self] in
+            self?.showActivityIndicator = false
+            self?.isRefreshing = false
+        }
     }
     
     private func configureConversationCell(_ cell: ConversationViewCell, messageModel model: ChatMessageModel, at indexPath: IndexPath) {
-        let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
-        cell.messageViewController = messageViewController
         adjustModelSizeIfNeeded(model)
-        messageViewController.configure(withChatMessageModel: model,
-                                        controlCache: uiControlCache,
-                                        controlDelegate: self,
-                                        resourceProvider: chatterbox.apiManager)
-        messageViewController.didMove(toParentViewController: self)
+        cell.configure(withChatMessageModel: model,
+                       controlCache: uiControlCache,
+                       controlDelegate: self,
+                       resourceProvider: chatterbox.apiManager)
+
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(userDidTapRefresh))
+        cell.messageViewController.undeliveredImageView.addGestureRecognizer(tapRecognizer)
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -587,26 +653,6 @@ extension ConversationViewController {
         if size.width < 1 {
             outputHtmlModel.size?.width = UIViewNoIntrinsicMetric
         }
-    }
-    
-    // MARK: - ChatMessageViewController reuse
-    
-    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if tableView == autoCompletionView {
-            return
-        }
-        
-        prepareChatMessageViewControllerForReuse(for: cell)
-    }
-    
-    private func prepareChatMessageViewControllerForReuse(for cell: UITableViewCell) {
-        guard let conversationCell = cell as? ConversationViewCell,
-            let messageViewController = conversationCell.messageViewController else {
-            return
-        }
-        
-        messageViewControllerCache.cacheViewController(messageViewController)
-        conversationCell.messageViewController = nil
     }
 }
 
@@ -661,12 +707,10 @@ extension ConversationViewController: ChatEventListener {
         dataController.agentTopicDidFinish()
     }
     
-    private func initializeSessionIfNeeded() {
-        if !wasHistoryLoadedForUser {
-            loadHistory()
-            dataController.loadTheme()
-            applyTheme(dataController.theme)
-        }
+    private func loadHistoryForSession() {
+        loadHistory()
+        dataController.loadTheme()
+        applyTheme(dataController.theme)
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didEstablishUserSession sessionId: String, forChat chatId: String ) {
@@ -674,7 +718,7 @@ extension ConversationViewController: ChatEventListener {
             return
         }
 
-        initializeSessionIfNeeded()
+        loadHistoryForSession()
     }
     
     func chatterbox(_ chatterbox: Chatterbox, didRestoreUserSession sessionId: String, forChat chatId: String ) {
@@ -682,7 +726,7 @@ extension ConversationViewController: ChatEventListener {
             return
         }
 
-        initializeSessionIfNeeded()
+        loadHistoryForSession()
     }
 
     func chatterbox(_ chatterbox: Chatterbox, willStartTopic topicInfo: TopicInfo, forChat chatId: String) {

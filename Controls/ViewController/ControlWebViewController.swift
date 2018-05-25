@@ -69,10 +69,10 @@ class ControlWebViewController: UIViewController, WKNavigationDelegate {
         
         webView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(webView)
-        NSLayoutConstraint.activate([webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 5),
-                                     webView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5),
-                                     webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 5),
-                                     webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -5)])
+        NSLayoutConstraint.activate([webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+                                     webView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+                                     webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
+                                     webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10)])
         
         self.webView = webView
     }
