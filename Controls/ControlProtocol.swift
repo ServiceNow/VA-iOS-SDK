@@ -65,6 +65,8 @@ protocol ControlProtocol: AnyObject, ThemeableControl {
     
     var isReusable: Bool { get }
     
+    var copyableContent: Any? { get }
+    
     // removes viewController and view of the control from the hierarchy
     func removeFromParent()
     
@@ -79,10 +81,8 @@ protocol ControlProtocol: AnyObject, ThemeableControl {
 
 extension ControlProtocol {
     
-    func controlDidLoad() {
-    }
-    
-    func prepareForReuse() {
+    var copyableContent: Any? {
+        return nil
     }
     
     var preferredContentSize: CGSize? {
@@ -97,5 +97,11 @@ extension ControlProtocol {
         viewController.willMove(toParentViewController: nil)
         viewController.view.removeFromSuperview()
         viewController.removeFromParentViewController()
+    }
+    
+    func controlDidLoad() {
+    }
+    
+    func prepareForReuse() {
     }
 }

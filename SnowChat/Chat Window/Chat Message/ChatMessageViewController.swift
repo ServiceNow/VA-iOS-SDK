@@ -25,6 +25,7 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     
     private var controlHeightConstraint: NSLayoutConstraint?
     private var controlWidthConstraint: NSLayoutConstraint?
+    private let longPressGestureRecognizer = UILongPressGestureRecognizer()
     
     private var isAgentMessage: Bool!
     private var theme: Theme!
@@ -43,6 +44,11 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         }
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureGestureRecognizer()
+    }
+    
     private func updateWithModel(_ model: ChatMessageModel) {
         guard let controlModel = model.controlModel,
             let resourceProvider = resourceProvider,
@@ -53,6 +59,11 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
 
         let control = controlCache.control(forModel: controlModel, forResourceProvider: resourceProvider)
         addUIControl(control, at: bubbleLocation, lastMessageDate: model.lastMessageDate)
+    }
+    
+    private func configureGestureRecognizer() {
+        longPressGestureRecognizer.addTarget(self, action: #selector(handleLongPress(_:)))
+        bubbleView.addGestureRecognizer(longPressGestureRecognizer)
     }
     
     func configure(withChatMessageModel model: ChatMessageModel,
@@ -66,12 +77,51 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         self.model = model
         uiControl?.delegate = delegate
         loadAvatar()
-        
         bubbleView.alpha = model.isPending ? 0.5 : 1.0
         undeliveredImageView.isHidden = !model.isUndelivered
-        
         uiControl?.controlDidLoad()
     }
+    
+    // MARK: - Long Press gesture
+    
+    @objc private func handleLongPress(_ gestureRecognizer: UILongPressGestureRecognizer) {
+        guard gestureRecognizer.state == .recognized else {
+            return
+        }
+        
+        if becomeFirstResponder() {
+            let menu = UIMenuController.shared
+            menu.setTargetRect(bubbleView.frame, in: view)
+            menu.setMenuVisible(true, animated: true)
+        }
+    }
+    
+    // MARK: - Copy action
+    
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        
+        // Only allow copy if there is content to copy
+        guard uiControl?.copyableContent != nil else {
+            return false
+        }
+        
+        return action == #selector(copy(_:))
+    }
+    
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+    
+    override func copy(_ sender: Any?) {
+        let copyableContent = uiControl?.copyableContent
+        if let string = copyableContent as? String {
+            UIPasteboard.general.string = string
+        } else if let image = copyableContent as? UIImage {
+            UIPasteboard.general.image = image
+        }
+    }
+    
+    // MARK: - Avatar fetch
     
     private func loadAvatar() {
         guard let provider = resourceProvider,
@@ -96,23 +146,22 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     }
     
     func prepareForReuse() {
-        uiControl?.removeFromParent()
-        if let control = uiControl, control.isReusable {
-            controlCache?.cacheControl(control)
-        }
-        
-        uiControl = nil
-        model = nil
-        undeliveredImageView.isHidden = true
-        resourceProvider = nil
-        agentImageView.image = nil
-        undeliveredImageView.isHidden = true
-        
         if let receipt = requestReceipt,
             let imageDownloader = resourceProvider?.imageDownloader {
             imageDownloader.cancelRequest(with: receipt)
             requestReceipt = nil
         }
+        
+        uiControl?.removeFromParent()
+        if let control = uiControl, control.isReusable {
+            controlCache?.cacheControl(control)
+        }
+        
+        model = nil
+        uiControl = nil
+        resourceProvider = nil
+        agentImageView.image = nil
+        undeliveredImageView.isHidden = true
     }
     
     func addUIControl(_ control: ControlProtocol, at location: BubbleLocation, lastMessageDate: Date?) {
