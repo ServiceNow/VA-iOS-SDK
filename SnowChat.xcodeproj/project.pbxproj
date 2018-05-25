@@ -43,6 +43,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		461D05DB20B8245900BE53C9 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4602490520744CCE005CA635 /* AMBClient.framework */; };
+		461D05DC20B8245A00BE53C9 /* AMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4602490520744CCE005CA635 /* AMBClient.framework */; };
 		4635789A2040CCE900947541 /* APIManager+AMB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 463578992040CCE900947541 /* APIManager+AMB.swift */; };
 		46EBB01E2065E04300D3B3DF /* AMBTransportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46EBB01D2065E04300D3B3DF /* AMBTransportTests.swift */; };
 		57026187204E2B14003D56DE /* Handlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57026186204E2B14003D56DE /* Handlers.swift */; };
@@ -487,6 +489,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE50E2271FB9337D00948FBC /* Alamofire.framework in Frameworks */,
+				461D05DB20B8245900BE53C9 /* AMBClient.framework in Frameworks */,
 				BE29E0C91FDEF74C0029D1F0 /* SlackTextViewController.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -496,6 +499,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BEB6C8611FB92CD700B1D497 /* SnowChat.framework in Frameworks */,
+				461D05DC20B8245A00BE53C9 /* AMBClient.framework in Frameworks */,
 				C420ED821FC6031C002476C0 /* Alamofire.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
