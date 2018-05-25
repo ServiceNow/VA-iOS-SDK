@@ -96,6 +96,12 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
     }
     
     func prepareForReuse() {
+        if let receipt = requestReceipt,
+            let imageDownloader = resourceProvider?.imageDownloader {
+            imageDownloader.cancelRequest(with: receipt)
+            requestReceipt = nil
+        }
+        
         uiControl?.removeFromParent()
         if let control = uiControl, control.isReusable {
             controlCache?.cacheControl(control)
@@ -107,12 +113,6 @@ class ChatMessageViewController: UIViewController, ControlPresentable {
         resourceProvider = nil
         agentImageView.image = nil
         undeliveredImageView.isHidden = true
-        
-        if let receipt = requestReceipt,
-            let imageDownloader = resourceProvider?.imageDownloader {
-            imageDownloader.cancelRequest(with: receipt)
-            requestReceipt = nil
-        }
     }
     
     func addUIControl(_ control: ControlProtocol, at location: BubbleLocation, lastMessageDate: Date?) {
