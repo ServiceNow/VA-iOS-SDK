@@ -767,7 +767,7 @@ class ChatDataController {
             let completionTextControl = TextControlViewModel(id: ChatUtil.uuidString(), value: message, messageDate: nil)
             bufferControlMessage(ChatMessageModel(model: completionTextControl, bubbleLocation: .left, theme: theme))
             
-            let completionActionButton = ButtonControlViewModel(id: ChatUtil.uuidString(), label: "View all Topics", value: ChatDataController.showAllTopicsAction, messageDate: nil)
+            let completionActionButton = ButtonControlViewModel(id: ChatUtil.uuidString(), label: NSLocalizedString("View all Topics", comment: "View all of the topics avialable"), value: ChatDataController.showAllTopicsAction, messageDate: nil)
             let buttonModel = ChatMessageModel(model: completionActionButton, bubbleLocation: .left, theme: theme)
             buttonModel.isAuxiliary = true
             bufferControlMessage(buttonModel)
