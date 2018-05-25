@@ -20,10 +20,6 @@ class OutputImageViewController: UIViewController {
     
     var image: UIImage? {
         didSet {
-            guard outputImageView.image != image else {
-                return
-            }
-            
             outputImageView.image = image
             updateImageConstraints()
         }

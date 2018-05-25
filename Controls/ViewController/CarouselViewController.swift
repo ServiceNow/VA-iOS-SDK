@@ -32,6 +32,7 @@ class CarouselViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     var model: CarouselControlViewModel {
         didSet {
+            setupHeaderFooterViews()
             collectionView.reloadData()
             carouselControlViewLayout.invalidateLayout()
         }

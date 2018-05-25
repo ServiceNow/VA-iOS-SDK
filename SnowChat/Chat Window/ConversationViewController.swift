@@ -32,8 +32,6 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
 
     private let dataController: ChatDataController
     private let chatterbox: Chatterbox
-
-    private var messageViewControllerCache = ChatMessageViewControllerCache()
     private var uiControlCache = ControlCache()
     
     private var canFetchOlderMessages = false
@@ -312,15 +310,14 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
                 switch change {
                 case .insert(let index, _):
                     self?.tableView.insertRows(at: [IndexPath(row: index, section: 0)], with: .top)
-                    self?.showMessagesButtonIfNeeded()
                 case .delete(let index):
-                    self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .none)
-                    self?.showMessagesButtonIfNeeded()
+                    self?.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .fade)
                 case .update(let index, _, _):
-                    self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-                    self?.showMessagesButtonIfNeeded()
+                    self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
                 }
             })
+            
+            showMessagesButtonIfNeeded()
         }
         
         // Begin/End Updates will be depracated in a future release so switching to performBatchUpdates
@@ -607,16 +604,6 @@ extension ConversationViewController {
         return cell
     }
     
-    private func conversationCellForRowAt(_ indexPath: IndexPath) -> UITableViewCell {
-        guard let chatMessageModel = dataController.controlForIndex(indexPath.row) else {
-            return UITableViewCell()
-        }
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: ConversationViewCell.cellIdentifier, for: indexPath) as! ConversationViewCell
-        configureConversationCell(cell, messageModel: chatMessageModel, at: indexPath)
-        return cell
-    }
-    
     @objc private func userDidTapRefresh(gestureRecognizer: UIGestureRecognizer) {
         guard !isRefreshing else { return }
         
@@ -632,22 +619,14 @@ extension ConversationViewController {
     }
     
     private func configureConversationCell(_ cell: ConversationViewCell, messageModel model: ChatMessageModel, at indexPath: IndexPath) {
-        let messageViewController = messageViewControllerCache.cachedViewController(movedToParentViewController: self)
-        cell.messageViewController = messageViewController
         adjustModelSizeIfNeeded(model)
+        cell.configure(withChatMessageModel: model,
+                       controlCache: uiControlCache,
+                       controlDelegate: self,
+                       resourceProvider: chatterbox.apiManager)
 
-        configureMessageViewController(messageViewController, model: model)
-    }
-    
-    private func configureMessageViewController(_ messageViewController: ChatMessageViewController, model: ChatMessageModel) {
-        messageViewController.configure(withChatMessageModel: model,
-                                        controlCache: uiControlCache,
-                                        controlDelegate: self,
-                                        resourceProvider: chatterbox.apiManager)
-        messageViewController.didMove(toParentViewController: self)
-        
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(userDidTapRefresh))
-        messageViewController.undeliveredImageView.addGestureRecognizer(tapRecognizer)
+        cell.messageViewController.undeliveredImageView.addGestureRecognizer(tapRecognizer)
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -674,26 +653,6 @@ extension ConversationViewController {
         if size.width < 1 {
             outputHtmlModel.size?.width = UIViewNoIntrinsicMetric
         }
-    }
-    
-    // MARK: - ChatMessageViewController reuse
-    
-    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if tableView == autoCompletionView {
-            return
-        }
-        
-        prepareChatMessageViewControllerForReuse(for: cell)
-    }
-    
-    private func prepareChatMessageViewControllerForReuse(for cell: UITableViewCell) {
-        guard let conversationCell = cell as? ConversationViewCell,
-            let messageViewController = conversationCell.messageViewController else {
-            return
-        }
-        
-        messageViewControllerCache.cacheViewController(messageViewController)
-        conversationCell.messageViewController = nil
     }
 }
 
