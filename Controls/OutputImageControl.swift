@@ -28,6 +28,10 @@ class OutputImageControl: ControlProtocol {
     
     var model: ControlViewModel
     
+    var copyableContent: Any? {
+        return imageViewController.image
+    }
+    
     required init(model: ControlViewModel, resourceProvider: ControlResourceProvider) {
         guard let imageModel = model as? OutputImageViewModel else {
             fatalError("Wrong model class")

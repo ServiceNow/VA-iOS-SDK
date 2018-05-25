@@ -12,7 +12,7 @@ import AlamofireImage
 class ChatMessageViewController: UIViewController, ControlPresentable {
     private let timestampAgeSeconds: TimeInterval = 30.0
     
-    @IBOutlet private weak var bubbleView: BubbleView!
+    @IBOutlet weak var bubbleView: BubbleView!
     @IBOutlet private weak var agentImageView: UIImageView!
     @IBOutlet private weak var agentBubbleLeadingConstraint: NSLayoutConstraint!
     @IBOutlet private weak var bubbleLeadingConstraint: NSLayoutConstraint!

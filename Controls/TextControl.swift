@@ -32,6 +32,10 @@ class TextControl: ControlProtocol {
         }
     }
     
+    var copyableContent: Any? {
+        return textModel.value
+    }
+    
     var model: ControlViewModel {
         didSet {
             guard let textModel = model as? TextControlViewModel else {
@@ -40,6 +44,10 @@ class TextControl: ControlProtocol {
             
             textViewController.textLabel.text = textModel.value
         }
+    }
+    
+    private var textModel: TextControlViewModel {
+        return model as! TextControlViewModel
     }
     
     let viewController: UIViewController
