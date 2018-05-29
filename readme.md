@@ -11,6 +11,8 @@ SnowChat iOS is the ServiceNow Virtual Agent Chat framework for iOS.
 - Run `SnowKangaroo` demo app 🎉
 
 ## Dependencies
+#### Xcode
+You will need Xcode [9.3.1](https://download.developer.apple.com/Developer_Tools/Xcode_9.3.1/Xcode_9.3.1.xip)
 
 #### Carthage
 SnowChat uses [Carthage](https://github.com/Carthage/Carthage) for dependency management. 
