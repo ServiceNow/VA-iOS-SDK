@@ -33,38 +33,32 @@ extension APIManager {
     
     func allTopics(completionHandler: @escaping ([ChatTopic]) -> Void) {
         if allTopicsCache.count > 0 {
-            Logger.default.logDebug("'allTopics' cache: ")
-            Logger.default.logDebug(allTopicsCache.description)
+            Logger.default.logDebug("'allTopics' cache: \(allTopicsCache)")
             
             completionHandler(allTopicsCache)
-            allTopics()
+            fetchAllTopics()
         } else {
-            allTopics(completionHandler: completionHandler, cacheHandler: setTopics)
+            fetchAllTopics(completionHandler: completionHandler)
         }
     }
     
-    func allTopics() {
-        allTopics(completionHandler: { topics in
-        }, cacheHandler: setTopics)
-    }
-    
-    private func allTopics(completionHandler: @escaping ([ChatTopic]) -> Void, cacheHandler: @escaping ([ChatTopic]) -> Void) {
+    internal func fetchAllTopics(completionHandler: (([ChatTopic]) -> Void)? = nil) {
         if !updatingAllTopicsCache {
             updatingAllTopicsCache = true
             sessionManager.request(apiURLWithPath("cs/topics/tree"),
-                                   method: .get,
-                                   encoding: JSONEncoding.default).validate().responseJSON { response in
-                                    
-                                    var topics = [ChatTopic]()
-                                    if response.error == nil {
-                                        if let result = response.result.value {
-                                            topics = APIManager.topicsFromResult(result)
-                                        }
-                                    }
-                                    
-                                    completionHandler(topics)
-                                    cacheHandler(topics)
-                                    self.updatingAllTopicsCache = false
+               method: .get,
+               encoding: JSONEncoding.default).validate().responseJSON { [weak self] response in
+                    var topics = [ChatTopic]()
+                    if response.error == nil {
+                        if let result = response.result.value {
+                            topics = APIManager.topicsFromResult(result)
+                        }
+                    }
+                
+                    self?.allTopicsCache = topics
+                    self?.updatingAllTopicsCache = false
+                
+                    completionHandler?(topics)
                 }
                 .resume()
         } else {
@@ -72,10 +66,6 @@ extension APIManager {
         }
     }
     
-    private func setTopics(topics: [ChatTopic]) {
-        self.allTopicsCache = topics
-    }
-
     // MARK: - Response Parsing
     
     static func topicsFromResult(_ result: Any) -> [ChatTopic] {
@@ -89,5 +79,4 @@ extension APIManager {
         
         return topics
     }
-    
 }
