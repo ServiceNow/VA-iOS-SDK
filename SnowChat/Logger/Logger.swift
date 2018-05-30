@@ -96,11 +96,11 @@ public class Logger {
         case .fatal:
             return true
         case .error:
-            return logLevel == .info || logLevel == .debug || logLevel == .error
-        case .debug:
-            return logLevel == .info || logLevel == .debug
+            return logLevel == .error || logLevel == .info || logLevel == .debug 
         case .info:
-            return logLevel == .info
+            return logLevel == .info || logLevel == .debug
+        case .debug:
+            return logLevel == .debug
         }
     }
     

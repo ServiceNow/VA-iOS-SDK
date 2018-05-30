@@ -335,7 +335,7 @@ class ConversationViewController: SLKTextViewController, ViewDataChangeListener,
     func setupMessagesButton() {
         messageNotificationButton = UIButton()
         if let messageNotificationButton = messageNotificationButton {
-            messageNotificationButton.setTitle("New Messages Below", for: .normal)
+            messageNotificationButton.setTitle(NSLocalizedString("New Messages Below", comment: "Scroll the screen to view new messages"), for: .normal)
             messageNotificationButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
             messageNotificationButton.layer.cornerRadius = 5
             messageNotificationButton.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
