@@ -71,6 +71,9 @@ class APIManager: NSObject, AMBClientDelegate {
     
     internal private(set) var authStatus: AuthStatus
     
+    var allTopicsCache: [ChatTopic] = []
+    var updatingAllTopicsCache: Bool = false
+
     // MARK: - Initialization
     
     init(instance: ServerInstance, transportListener: TransportStatusListener? = nil) {
@@ -144,6 +147,8 @@ class APIManager: NSObject, AMBClientDelegate {
                 }
                 
                 completion(.success(user))
+                
+                strongSelf.fetchAllTopics()
         }
         .resume()
     }

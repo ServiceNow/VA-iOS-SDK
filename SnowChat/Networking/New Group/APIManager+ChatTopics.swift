@@ -16,8 +16,8 @@ extension APIManager {
             method: .get,
             parameters: ["sysparm_message" : searchText],
             encoding: URLEncoding.queryString).validate().responseJSON { response in
-                var topics = [ChatTopic]()
                 
+                var topics = [ChatTopic]()
                 if response.error == nil {
                     if let result = response.result.value {
                         topics = APIManager.topicsFromResult(result)
@@ -29,20 +29,56 @@ extension APIManager {
     }
     
     func allTopics(completionHandler: @escaping ([ChatTopic]) -> Void) {
-        sessionManager.request(apiURLWithPath("cs/topics/tree"),
-            method: .get,
-            encoding: JSONEncoding.default).validate().responseJSON { response in
-                var topics = [ChatTopic]()
-                if response.error == nil {
-                    if let result = response.result.value {
-                        topics = APIManager.topicsFromResult(result)
-                    }
+        if allTopicsCache.count > 0 {
+            Logger.default.logDebug("'allTopics' cache: \(allTopicsCache)")
+            
+            completionHandler(allTopicsCache)
+            fetchAllTopics()
+        } else {
+            allTopics(completionHandler: completionHandler, cacheHandler: { [weak self] topics in
+                if let strongSelf = self {
+                    strongSelf.allTopicsCache = topics
                 }
-                completionHandler(topics)
+            })
         }
-        .resume()
     }
     
+    func fetchAllTopics() {
+        allTopics(completionHandler: { topics in
+        }, cacheHandler: { [weak self] topics in
+            if let strongSelf = self {
+                strongSelf.allTopicsCache = topics
+            }
+        })
+    }
+    
+    private func allTopics(completionHandler: @escaping ([ChatTopic]) -> Void, cacheHandler: @escaping ([ChatTopic]) -> Void) {
+        if !updatingAllTopicsCache {
+            updatingAllTopicsCache = true
+            sessionManager.request(apiURLWithPath("cs/topics/tree"),
+                                   method: .get,
+                                   encoding: JSONEncoding.default).validate().responseJSON { [weak self] response in
+                                    
+                                    var topics = [ChatTopic]()
+                                    if response.error == nil {
+                                        if let result = response.result.value {
+                                            topics = APIManager.topicsFromResult(result)
+                                        }
+                                    }
+                                    
+                                    completionHandler(topics)
+                                    cacheHandler(topics)
+                                    
+                                    if let strongSelf = self {
+                                        strongSelf.updatingAllTopicsCache = false
+                                    }
+                }
+                .resume()
+        } else {
+            Logger.default.logDebug("already updating 'all topics' cache, skipping")
+        }
+    }
+
     // MARK: - Response Parsing
     
     static func topicsFromResult(_ result: Any) -> [ChatTopic] {
