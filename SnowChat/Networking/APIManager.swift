@@ -148,7 +148,7 @@ class APIManager: NSObject, AMBClientDelegate {
                 
                 completion(.success(user))
                 
-                strongSelf.allTopics()
+                strongSelf.fetchAllTopics()
         }
         .resume()
     }

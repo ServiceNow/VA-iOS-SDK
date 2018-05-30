@@ -17,9 +17,6 @@ extension APIManager {
             parameters: ["sysparm_message" : searchText],
             encoding: URLEncoding.queryString).validate().responseJSON { response in
                 
-                print("allTopics:")
-                print(response.description)
-
                 var topics = [ChatTopic]()
                 if response.error == nil {
                     if let result = response.result.value {
@@ -33,19 +30,26 @@ extension APIManager {
     
     func allTopics(completionHandler: @escaping ([ChatTopic]) -> Void) {
         if allTopicsCache.count > 0 {
-            Logger.default.logDebug("'allTopics' cache: ")
-            Logger.default.logDebug(allTopicsCache.description)
+            Logger.default.logDebug("'allTopics' cache: \(allTopicsCache)")
             
             completionHandler(allTopicsCache)
-            allTopics()
+            fetchAllTopics()
         } else {
-            allTopics(completionHandler: completionHandler, cacheHandler: setTopics)
+            allTopics(completionHandler: completionHandler, cacheHandler: { [weak self] topics in
+                if let strongSelf = self {
+                    strongSelf.allTopicsCache = topics
+                }
+            })
         }
     }
     
-    func allTopics() {
+    func fetchAllTopics() {
         allTopics(completionHandler: { topics in
-        }, cacheHandler: setTopics)
+        }, cacheHandler: { [weak self] topics in
+            if let strongSelf = self {
+                strongSelf.allTopicsCache = topics
+            }
+        })
     }
     
     private func allTopics(completionHandler: @escaping ([ChatTopic]) -> Void, cacheHandler: @escaping ([ChatTopic]) -> Void) {
@@ -53,7 +57,7 @@ extension APIManager {
             updatingAllTopicsCache = true
             sessionManager.request(apiURLWithPath("cs/topics/tree"),
                                    method: .get,
-                                   encoding: JSONEncoding.default).validate().responseJSON { response in
+                                   encoding: JSONEncoding.default).validate().responseJSON { [weak self] response in
                                     
                                     var topics = [ChatTopic]()
                                     if response.error == nil {
@@ -64,16 +68,15 @@ extension APIManager {
                                     
                                     completionHandler(topics)
                                     cacheHandler(topics)
-                                    self.updatingAllTopicsCache = false
+                                    
+                                    if let strongSelf = self {
+                                        strongSelf.updatingAllTopicsCache = false
+                                    }
                 }
                 .resume()
         } else {
             Logger.default.logDebug("already updating 'all topics' cache, skipping")
         }
-    }
-    
-    private func setTopics(topics: [ChatTopic]) {
-        self.allTopicsCache = topics
     }
 
     // MARK: - Response Parsing
